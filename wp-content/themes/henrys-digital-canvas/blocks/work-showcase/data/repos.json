@@ -1,0 +1,88 @@
+[
+  {
+    "name": "meeting-transcript-summarizer",
+    "description": "Workflow that converts transcript files into concise client-ready summaries for easier post-meeting follow-up.",
+    "language": "Python",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2026-02-21",
+    "topics": [
+      "python",
+      "automation",
+      "openai",
+      "summarization"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "private"
+  },
+  {
+    "name": "ai-faq-chatbot-prototype",
+    "description": "Client-facing FAQ assistant prototype designed for support-style conversations with custom knowledge grounding.",
+    "language": "JavaScript",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2026-02-18",
+    "topics": [
+      "javascript",
+      "openai",
+      "support",
+      "chatbot"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "private"
+  },
+  {
+    "name": "client-ecommerce-implementation",
+    "description": "Responsive e-commerce implementation with payment integration, conversion-focused UX, and production hardening.",
+    "language": "PHP",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2026-02-15",
+    "topics": [
+      "wordpress",
+      "woocommerce",
+      "stripe",
+      "cloudflare"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "private"
+  },
+  {
+    "name": "lakefront-digital-portfolio",
+    "description": "Portfolio and consulting website for showcasing delivery approach, services, and selected project outcomes.",
+    "language": "TypeScript",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2026-02-28",
+    "url": "https://hperkins.com",
+    "topics": [
+      "react",
+      "typescript",
+      "tailwindcss",
+      "portfolio"
+    ],
+    "featured": false,
+    "origin": "curated",
+    "access": "public"
+  },
+  {
+    "name": "wordpress-support-runbooks",
+    "description": "Support documentation templates and runbook structures used to reduce repeat requests and improve handoffs.",
+    "language": "Markdown",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2026-02-10",
+    "topics": [
+      "documentation",
+      "support",
+      "wordpress",
+      "operations"
+    ],
+    "featured": false,
+    "origin": "curated",
+    "access": "private"
+  }
+]

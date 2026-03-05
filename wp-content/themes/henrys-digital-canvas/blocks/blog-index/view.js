@@ -1,0 +1,477 @@
+( function ( wp ) {
+	if ( ! wp || ! wp.element ) {
+		return;
+	}
+
+	const element = wp.element;
+	const h = element.createElement;
+	const useEffect = element.useEffect;
+	const useMemo = element.useMemo;
+	const useState = element.useState;
+	const createRoot = element.createRoot;
+	const legacyRender = element.render;
+
+	const utils = window.hdcSharedUtils || {};
+
+	function ensureString( value, fallback ) {
+		if ( typeof value !== 'string' ) {
+			return fallback;
+		}
+
+		const trimmed = value.trim();
+		return trimmed || fallback;
+	}
+
+	function ensureArray( value ) {
+		return Array.isArray( value ) ? value : [];
+	}
+
+	function parseConfig( section ) {
+		let parsed = {};
+		try {
+			parsed = JSON.parse( section.getAttribute( 'data-config' ) || '{}' );
+		} catch ( error ) {
+			parsed = {};
+		}
+
+		return {
+			heading: ensureString( parsed.heading, 'Blog' ),
+			description: ensureString( parsed.description, '' ),
+			showNewsletterCta: !! parsed.showNewsletterCta,
+			endpoint: ensureString( parsed.endpoint, '' ),
+			fallbackUrl: ensureString( parsed.fallbackUrl, '' ),
+			blogBaseUrl: ensureString( parsed.blogBaseUrl, '/blog/' ),
+			contactUrl: ensureString( parsed.contactUrl, '/contact/' ),
+			linkedinUrl: ensureString( parsed.linkedinUrl, 'https://linkedin.com/in/henryperkins' ),
+		};
+	}
+
+	function fetchJson( url ) {
+		if ( ! url ) {
+			throw new Error( 'Missing URL' );
+		}
+
+		return fetch( url, {
+			headers: {
+				Accept: 'application/json',
+			},
+		} ).then( function ( response ) {
+			if ( ! response.ok ) {
+				throw new Error( 'Request failed with status ' + response.status );
+			}
+
+			return response.json();
+		} );
+	}
+
+	function parseDateValue( value ) {
+		if ( utils.parseDate ) {
+			return utils.parseDate( value );
+		}
+
+		const parsed = new Date( value || '' );
+		return Number.isNaN( parsed.getTime() ) ? new Date( 0 ) : parsed;
+	}
+
+	function formatDateLabel( value ) {
+		const date = parseDateValue( value );
+		if ( Number.isNaN( date.getTime() ) || date.getTime() <= 0 ) {
+			return ensureString( value, '' );
+		}
+
+		return date.toLocaleDateString( undefined, {
+			year: 'numeric',
+			month: 'short',
+			day: 'numeric',
+		} );
+	}
+
+	function resolveBlogPayload( payload ) {
+		if ( payload && typeof payload === 'object' && Array.isArray( payload.posts ) ) {
+			return {
+				source: ensureString( payload.source, 'unknown' ),
+				posts: payload.posts,
+			};
+		}
+
+		if ( Array.isArray( payload ) ) {
+			return {
+				source: 'local',
+				posts: payload,
+			};
+		}
+
+		return {
+			source: 'unknown',
+			posts: [],
+		};
+	}
+
+	function normalizePost( post, index ) {
+		const tags = ensureArray( post && post.tags )
+			.map( function ( tag ) {
+				return ensureString( String( tag ), '' );
+			} )
+			.filter( Boolean );
+		const contentHtml = ensureString( post && post.contentHtml, '' );
+		const content = ensureString( post && post.content, '' );
+		const excerpt = ensureString( post && post.excerpt, '' );
+		const readingTime = ensureString(
+			post && post.readingTime,
+			utils.estimateReadingTimeLabel ? utils.estimateReadingTimeLabel( contentHtml || content || excerpt ) : '1 min read'
+		);
+
+		return {
+			slug: ensureString( post && post.slug, 'post-' + String( index + 1 ) ),
+			title: ensureString( post && post.title, 'Untitled Post' ),
+			excerpt: excerpt,
+			date: ensureString( post && post.date, '' ),
+			tags: tags.length ? tags : [ 'General' ],
+			featured: !! ( post && post.featured ),
+			readingTime: readingTime,
+			content: content,
+			contentHtml: contentHtml,
+			url: ensureString( post && post.url, '' ),
+		};
+	}
+
+	function normalizePosts( posts ) {
+		return ensureArray( posts )
+			.map( normalizePost )
+			.sort( function ( left, right ) {
+				return parseDateValue( right.date ).getTime() - parseDateValue( left.date ).getTime();
+			} );
+	}
+
+	function buildPostUrl( post, config ) {
+		if ( post && post.slug ) {
+			const base = ensureString( config.blogBaseUrl, '/blog/' ).replace( /\/+$/, '' );
+			return base + '/' + encodeURIComponent( post.slug ) + '/';
+		}
+
+		if ( post && post.url ) {
+			return post.url;
+		}
+
+		return ensureString( config.blogBaseUrl, '/blog/' );
+	}
+
+	function BlogIndexApp( props ) {
+		const config = props.config;
+		const [ state, setState ] = useState( {
+			loading: true,
+			error: '',
+			source: 'unknown',
+			posts: [],
+		} );
+		const [ search, setSearch ] = useState( '' );
+		const [ activeTag, setActiveTag ] = useState( 'All' );
+
+		const signature = useMemo( function () {
+			return JSON.stringify( config );
+		}, [ config ] );
+
+		useEffect(
+			function () {
+				let cancelled = false;
+
+				async function load() {
+					setState( {
+						loading: true,
+						error: '',
+						source: 'unknown',
+						posts: [],
+					} );
+
+					try {
+						const payload = await fetchJson( config.endpoint );
+						const resolved = resolveBlogPayload( payload );
+
+						if ( ! cancelled ) {
+							setState( {
+								loading: false,
+								error: '',
+								source: resolved.source,
+								posts: normalizePosts( resolved.posts ),
+							} );
+						}
+						return;
+					} catch ( endpointError ) {
+						try {
+							const fallback = await fetchJson( config.fallbackUrl );
+							const resolvedFallback = resolveBlogPayload( fallback );
+
+							if ( ! cancelled ) {
+								setState( {
+									loading: false,
+									error: '',
+									source: resolvedFallback.source || 'local',
+									posts: normalizePosts( resolvedFallback.posts ),
+								} );
+							}
+						} catch ( fallbackError ) {
+							if ( ! cancelled ) {
+								setState( {
+									loading: false,
+									error: 'Unable to load blog posts.',
+									source: 'unknown',
+									posts: [],
+								} );
+							}
+						}
+					}
+				}
+
+				load();
+
+				return function () {
+					cancelled = true;
+				};
+			},
+			[ signature ]
+		);
+
+		const featured = useMemo(
+			function () {
+				if ( ! state.posts.length ) {
+					return null;
+				}
+
+				const marked = state.posts.find( function ( post ) {
+					return !! post.featured;
+				} );
+
+				return marked || null;
+			},
+			[ state.posts ]
+		);
+
+		const allTags = useMemo(
+			function () {
+				const unique = new Set();
+				state.posts.forEach( function ( post ) {
+					ensureArray( post.tags ).forEach( function ( tag ) {
+						unique.add( tag );
+					} );
+				} );
+
+				return [ 'All' ].concat( Array.from( unique ) );
+			},
+			[ state.posts ]
+		);
+
+		useEffect(
+			function () {
+				if ( allTags.indexOf( activeTag ) === -1 ) {
+					setActiveTag( 'All' );
+				}
+			},
+			[ allTags, activeTag ]
+		);
+
+		const filtered = useMemo(
+			function () {
+				const normalizedSearch = search.trim().toLowerCase();
+				const featuredSlug = featured ? featured.slug : '';
+
+				return state.posts.filter( function ( post ) {
+					if ( featuredSlug && post.slug === featuredSlug ) {
+						return false;
+					}
+
+					const matchesSearch =
+						! normalizedSearch ||
+						post.title.toLowerCase().indexOf( normalizedSearch ) !== -1 ||
+						post.excerpt.toLowerCase().indexOf( normalizedSearch ) !== -1;
+
+					const matchesTag = activeTag === 'All' || post.tags.indexOf( activeTag ) !== -1;
+					return matchesSearch && matchesTag;
+				} );
+			},
+			[ state.posts, search, activeTag, featured ]
+		);
+
+		if ( state.loading ) {
+			return h( 'p', { className: 'hdc-blog-index__status' }, 'Loading posts…' );
+		}
+
+		if ( state.error ) {
+			return h( 'p', { className: 'hdc-blog-index__error' }, state.error );
+		}
+
+		if ( state.posts.length === 0 ) {
+			return h(
+				'div',
+				{ className: 'hdc-blog-index__empty-wrap' },
+				h( 'h2', { className: 'hdc-blog-index__title' }, config.heading || 'Blog' ),
+				h( 'p', { className: 'hdc-blog-index__empty' }, 'No posts published yet.' )
+			);
+		}
+
+		return h(
+			'div',
+			{},
+			h(
+				'header',
+				{ className: 'hdc-blog-index__intro' },
+				h( 'p', { className: 'hdc-blog-index__eyebrow' }, 'Insights' ),
+				h( 'h2', { className: 'hdc-blog-index__title' }, config.heading || 'Blog' ),
+				config.description ? h( 'p', { className: 'hdc-blog-index__description' }, config.description ) : null,
+				state.source && state.source !== 'unknown'
+					? h( 'p', { className: 'hdc-blog-index__source' }, 'Source: ' + state.source )
+					: null
+			),
+			featured
+				? h(
+					'a',
+					{
+						className: 'hdc-blog-index__featured',
+						href: buildPostUrl( featured, config ),
+					},
+					h( 'span', { className: 'hdc-blog-index__featured-pill' }, 'Featured' ),
+					h( 'h3', { className: 'hdc-blog-index__featured-title' }, featured.title ),
+					h( 'p', { className: 'hdc-blog-index__featured-excerpt' }, featured.excerpt ),
+					h(
+						'div',
+						{ className: 'hdc-blog-index__featured-meta' },
+						h( 'span', {}, formatDateLabel( featured.date ) ),
+						h( 'span', {}, featured.readingTime || '' ),
+						h( 'span', { className: 'hdc-blog-index__featured-read' }, 'Read →' )
+					)
+				)
+				: null,
+			h(
+				'div',
+				{ className: 'hdc-blog-index__header-row' },
+				h( 'h3', { className: 'hdc-blog-index__section-title' }, 'All Posts' )
+			),
+			h(
+				'div',
+				{ className: 'hdc-blog-index__filters' },
+				h( 'input', {
+					type: 'search',
+					className: 'hdc-blog-index__search',
+					placeholder: 'Search posts…',
+					value: search,
+					onChange: function ( event ) {
+						setSearch( ensureString( event.target.value, '' ) );
+					},
+					'aria-label': 'Search blog posts',
+				} ),
+				h(
+					'div',
+					{ className: 'hdc-blog-index__chips' },
+					allTags.map( function ( tag ) {
+						const isActive = tag === activeTag;
+						return h(
+							'button',
+							{
+								type: 'button',
+								className: 'hdc-blog-index__chip' + ( isActive ? ' is-active' : '' ),
+								onClick: function () {
+									setActiveTag( tag );
+								},
+								key: 'tag-' + tag,
+							},
+							tag
+						);
+					} )
+				)
+			),
+			filtered.length === 0
+				? h(
+					'div',
+					{ className: 'hdc-blog-index__empty-state' },
+					h( 'h4', { className: 'hdc-blog-index__empty-title' }, 'No posts found' ),
+					h(
+						'p',
+						{ className: 'hdc-blog-index__empty' },
+						'Try a different keyword or clear active filters.'
+					)
+				)
+				: h(
+					'div',
+					{ className: 'hdc-blog-index__list' },
+					filtered.map( function ( post ) {
+						return h(
+							'a',
+							{
+								className: 'hdc-blog-index__card',
+								href: buildPostUrl( post, config ),
+								key: post.slug,
+							},
+							h(
+								'div',
+								{ className: 'hdc-blog-index__card-main' },
+								h( 'h4', { className: 'hdc-blog-index__card-title' }, post.title ),
+								h( 'p', { className: 'hdc-blog-index__card-excerpt' }, post.excerpt ),
+								h(
+									'div',
+									{ className: 'hdc-blog-index__tags' },
+									post.tags.map( function ( tag ) {
+										return h( 'span', { className: 'hdc-blog-index__tag', key: post.slug + '-tag-' + tag }, tag );
+									} )
+								)
+							),
+							h(
+								'div',
+								{ className: 'hdc-blog-index__card-meta' },
+								h( 'span', {}, formatDateLabel( post.date ) ),
+								h( 'span', {}, post.readingTime || '' )
+							)
+						);
+					} )
+				),
+			config.showNewsletterCta
+				? h(
+					'section',
+					{ className: 'hdc-blog-index__cta' },
+					h( 'h3', { className: 'hdc-blog-index__cta-title' }, 'Stay updated' ),
+					h(
+						'p',
+						{ className: 'hdc-blog-index__cta-description' },
+						'I do not run a newsletter yet. The best way to catch new posts is to follow me on LinkedIn.'
+					),
+					h(
+						'div',
+						{ className: 'hdc-blog-index__cta-actions' },
+						h(
+							'a',
+							{
+								className: 'hdc-blog-index__cta-primary',
+								href: config.linkedinUrl,
+								target: '_blank',
+								rel: 'noopener noreferrer',
+							},
+							'Follow on LinkedIn'
+						),
+						h(
+							'a',
+							{
+								className: 'hdc-blog-index__cta-secondary',
+								href: config.contactUrl,
+							},
+							'Reach out'
+						)
+						)
+					)
+				: null
+		);
+	}
+
+	function mountBlogIndex( section ) {
+		const rootNode = section.querySelector( '[data-hdc-blog-index-root]' );
+		if ( ! rootNode ) {
+			return;
+		}
+
+		const app = h( BlogIndexApp, { config: parseConfig( section ) } );
+		if ( typeof createRoot === 'function' ) {
+			createRoot( rootNode ).render( app );
+		} else {
+			legacyRender( app, rootNode );
+		}
+	}
+
+	document.querySelectorAll( '.hdc-blog-index' ).forEach( mountBlogIndex );
+} )( window.wp );

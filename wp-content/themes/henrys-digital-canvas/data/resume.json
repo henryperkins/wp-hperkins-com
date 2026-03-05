@@ -1,0 +1,292 @@
+{
+  "headline": "Customer-Facing Technical Consultant & Community Builder",
+  "subheadline": "I blend technical support, developer enablement, and operations leadership to improve customer outcomes and platform adoption.",
+  "targetRoles": [
+    "Customer Success Engineer",
+    "Technical Support / Solutions",
+    "Developer Community Enablement"
+  ],
+  "impactStrip": [
+    {
+      "value": "10+ Years",
+      "label": "Customer-facing technical and operations experience"
+    },
+    {
+      "value": "50+",
+      "label": "Developers supported in the PageLines ecosystem"
+    },
+    {
+      "value": "18%",
+      "label": "Year-over-year service speed improvement"
+    },
+    {
+      "value": "$35K-$45K",
+      "label": "Weekly sales overseen in Starbucks operations"
+    },
+    {
+      "value": "25+",
+      "label": "Team members managed and mentored in retail leadership roles"
+    }
+  ],
+  "summary": "Customer-facing technical professional based in Lisle, Illinois with experience across SaaS support, developer community management, web consulting, and high-volume operations leadership. I diagnose complex user issues, document repeatable solutions, and connect customer feedback to practical product and process improvements.",
+  "differentiator": "I bridge digital support and real-world operations: from developer ecosystems and technical troubleshooting to frontline team leadership, coaching, and customer experience execution under pressure.",
+  "capabilityMap": [
+    {
+      "category": "Adoption & Retention",
+      "items": [
+        "Technical onboarding and customer enablement",
+        "Escalation triage and root-cause analysis",
+        "Knowledge base and documentation improvement",
+        "Developer community growth and relationship management",
+        "Product feedback loops from support conversations"
+      ]
+    },
+    {
+      "category": "Technical Execution",
+      "items": [
+        "Technical troubleshooting across web, DNS, and publishing workflows",
+        "REST API integration and debugging",
+        "WordPress and WooCommerce implementation",
+        "Cloudflare performance and reliability tuning",
+        "AI-assisted workflow prototyping",
+        "Technical writing, internal docs, and customer-facing guides"
+      ]
+    },
+    {
+      "category": "Leadership & Operations",
+      "items": [
+        "Cross-functional collaboration (Support, Engineering, Product)",
+        "Team leadership and performance coaching",
+        "Process and service-quality improvement",
+        "High-volume operations management",
+        "Mentoring and training program design",
+        "Stakeholder communication and reporting",
+        "Community event participation and facilitation"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "id": "lakefront-digital-consultant",
+      "title": "Independent Technology Consultant",
+      "company": "Lakefront Digital",
+      "location": "Greater Chicago Area, IL (Open to US Remote)",
+      "period": "Oct 2022 - Present",
+      "highlights": [
+        "Delivering consulting services across resume development, IT strategy, web development, and WordPress design.",
+        "Owning projects end-to-end from discovery and scoping through implementation and post-launch support.",
+        "Reducing manual workflows through API integrations, automation, and repeatable client handoff documentation.",
+        "Building support-focused web solutions with WordPress, WooCommerce, Cloudflare, and AI-assisted workflows."
+      ]
+    },
+    {
+      "id": "starbucks-shift-supervisor",
+      "title": "Shift Supervisor",
+      "company": "Starbucks",
+      "location": "Greater Chicago Area, IL",
+      "period": "Apr 2019 - Sep 2022",
+      "highlights": [
+        "Led teams in high-volume stores while enforcing service, safety, and operational standards.",
+        "Improved service speed by 18% year over year through coaching, workflow consistency, and escalation handling.",
+        "Sustained weekly sales in the $35K-$45K range while mentoring team members into leadership roles."
+      ]
+    },
+    {
+      "id": "sodexo-starbucks-manager",
+      "title": "Starbucks Manager",
+      "company": "Sodexo",
+      "location": "Illinois",
+      "period": "2018 - 2019",
+      "highlights": [
+        "Managed daily operations for a Starbucks unit with food safety and quality control accountability.",
+        "Led approximately 25 baristas in scheduling, coaching, and service-quality execution.",
+        "Maintained high weekly sales performance while balancing staffing and customer experience goals."
+      ]
+    },
+    {
+      "id": "clinique-freelance-consultant",
+      "title": "Freelance Artist / Consultant",
+      "company": "Clinique",
+      "location": "Illinois",
+      "period": "2015 - 2017",
+      "highlights": [
+        "Provided customer-facing product consulting, education, and recommendation support.",
+        "Applied sales and service best practices to build trust and repeat engagement."
+      ]
+    },
+    {
+      "id": "automattic-happiness-engineer",
+      "title": "Happiness Engineer",
+      "company": "Automattic, Inc. (WordPress.com)",
+      "location": "Remote",
+      "period": "Oct 2012 - Nov 2012",
+      "highlights": [
+        "Provided technical support across publishing, site configuration, billing, and domain/DNS setup.",
+        "Documented solutions and improved support guidance for common user issues.",
+        "Collaborated with product and engineering through clear bug reports and reproducible issue details."
+      ]
+    },
+    {
+      "id": "pagelines-community-manager",
+      "title": "Community Manager",
+      "company": "PageLines, Inc.",
+      "location": "Remote",
+      "period": "May 2012 - Oct 2012",
+      "highlights": [
+        "Built and supported a community of 50+ developers around the PageLines ecosystem.",
+        "Helped grow app marketplace participation through onboarding content, tutorials, and community engagement.",
+        "Managed developer relationships and translated user feedback into clearer product priorities."
+      ]
+    },
+    {
+      "id": "micro-center-customer-service-rep",
+      "title": "Customer Service Representative",
+      "company": "Micro Center",
+      "location": "Illinois",
+      "period": "2009 - 2012",
+      "highlights": [
+        "Delivered customer support in a fast-paced retail technology environment.",
+        "Contributed to loss prevention, internal communications, and inventory process improvements."
+      ]
+    },
+    {
+      "id": "youth-communication-editor-coach",
+      "title": "Writing Coach / Editor",
+      "company": "Youth Communication Chicago",
+      "location": "Chicago, IL",
+      "period": "2007 - 2008",
+      "highlights": [
+        "Facilitated writing and journalism workshops for Chicago-area students.",
+        "Edited student work and coached communication skills through structured feedback."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Meeting Transcript Summarizer",
+      "description": "Python workflow that transforms transcript files into concise, structured client summaries for delivery teams.",
+      "impact": "Reduced manual meeting-summary effort by around 80% and improved consistency across client updates.",
+      "tech": [
+        "Python",
+        "OpenAI API",
+        "File I/O"
+      ],
+      "link": "https://github.com/henryperkins"
+    },
+    {
+      "name": "AI-Powered FAQ Chatbot Prototype",
+      "description": "Client-facing FAQ assistant built with a custom knowledge base and prompt design tuned for support-style conversations.",
+      "impact": "Improved response consistency and created a reusable framework for AI-enabled customer self-service.",
+      "tech": [
+        "JavaScript",
+        "OpenAI API",
+        "HTML",
+        "CSS"
+      ],
+      "link": "https://github.com/henryperkins"
+    },
+    {
+      "name": "Client E-commerce Implementation (NDA)",
+      "description": "Responsive e-commerce implementation with payment integration, conversion-oriented UX, and production hardening.",
+      "impact": "Enabled measurable online revenue growth while maintaining stable launch and post-launch operations.",
+      "tech": [
+        "WordPress",
+        "PHP",
+        "Stripe API",
+        "Cloudflare"
+      ],
+      "link": "https://hperkins.com"
+    }
+  ],
+  "education": [
+    {
+      "id": "asu-organizational-leadership-bs",
+      "degree": "B.S., Organizational Leadership",
+      "school": "Arizona State University",
+      "period": "Expected May 2026"
+    },
+    {
+      "id": "cod-business-administration-as",
+      "degree": "A.S., Business Administration & Management",
+      "school": "College of DuPage",
+      "period": "2013"
+    },
+    {
+      "id": "columbia-journalism-studies",
+      "degree": "Studies in Journalism & Mass Communications",
+      "school": "Columbia College Chicago",
+      "period": "2007 - 2008"
+    },
+    {
+      "id": "manteno-high-school",
+      "degree": "High School Diploma",
+      "school": "Manteno High School",
+      "period": "2001 - 2005"
+    }
+  ],
+  "skills": [
+    {
+      "category": "Languages",
+      "items": [
+        "JavaScript",
+        "Python",
+        "PHP",
+        "SQL (basic)"
+      ]
+    },
+    {
+      "category": "Customer & Support",
+      "items": [
+        "Technical support",
+        "Escalation triage",
+        "Customer communication",
+        "Documentation",
+        "Community management"
+      ]
+    },
+    {
+      "category": "Web & Platform",
+      "items": [
+        "WordPress.com",
+        "WordPress.org",
+        "WooCommerce",
+        "HTML/CSS",
+        "Cloudflare"
+      ]
+    },
+    {
+      "category": "APIs & Integration",
+      "items": [
+        "REST APIs",
+        "OpenAI API",
+        "Stripe API",
+        "Webhook configuration"
+      ]
+    },
+    {
+      "category": "Tools",
+      "items": [
+        "Git",
+        "GitHub",
+        "Zendesk",
+        "Jira",
+        "Trello",
+        "Asana",
+        "Google Workspace",
+        "Microsoft 365"
+      ]
+    },
+    {
+      "category": "Operations Leadership",
+      "items": [
+        "Team coaching",
+        "Staff scheduling",
+        "Service quality management",
+        "Food safety compliance"
+      ]
+    }
+  ],
+  "certifications": [
+    "Certified Professional Food Manager (CPFM), ServSafe (previously held)"
+  ]
+}

@@ -1,0 +1,122 @@
+# Smoke Check — Henry's Digital Canvas
+#
+# Runs the full smoke suite (route + API + browser) against the live site.
+# Triggers: manual dispatch, scheduled (daily 06:00 UTC), and push to main.
+#
+# Escalation: If any check fails, the workflow fails and the job summary
+# includes the failing phase. The engineering owner should:
+#   1. Review the uploaded smoke-output artifact for details.
+#   2. Run `npm run smoke:full` locally to reproduce.
+#   3. If regression confirmed, follow CUTOVER_CHECKLIST.md rollback plan.
+
+name: Smoke Check
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Target site URL (default: https://wp.hperkins.com)"
+        required: false
+        default: "https://wp.hperkins.com"
+      run_label:
+        description: "Cadence run label (e.g. deploy-2026-03-04)"
+        required: false
+        default: "ci-manual"
+      skip_browser:
+        description: "Skip browser smoke (faster, route+API only)"
+        required: false
+        type: boolean
+        default: false
+  schedule:
+    - cron: "0 6 * * *" # Daily at 06:00 UTC
+  push:
+    branches: [main]
+    paths:
+      - "wp-content/themes/henrys-digital-canvas/**"
+
+concurrency:
+  group: smoke-check-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  THEME_DIR: wp-content/themes/henrys-digital-canvas
+  BASE_URL: ${{ github.event.inputs.base_url || 'https://wp.hperkins.com' }}
+
+jobs:
+  smoke:
+    name: Full Smoke Suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ${{ env.THEME_DIR }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ env.THEME_DIR }}
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: ${{ env.THEME_DIR }}
+        run: npx playwright install --with-deps chromium
+
+      - name: Install ripgrep
+        run: sudo apt-get install -y ripgrep
+
+      - name: Run smoke suite
+        working-directory: ${{ env.THEME_DIR }}
+        env:
+          BASE_URL: ${{ env.BASE_URL }}
+          RUN_BROWSER_SMOKE: ${{ github.event.inputs.skip_browser == 'true' && '0' || '1' }}
+          RUN_LABEL: ${{ github.event.inputs.run_label || format('ci-{0}', github.run_number) }}
+        run: |
+          RUN_LABEL="${RUN_LABEL}" ./scripts/smoke_cadence.sh
+
+      - name: Upload smoke output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-output-${{ github.run_number }}
+          path: |
+            ${{ env.THEME_DIR }}/ops/smoke-*.log
+            ${{ env.THEME_DIR }}/ops/smoke-history.log
+          retention-days: 30
+
+      - name: Post job summary
+        if: always()
+        working-directory: ${{ env.THEME_DIR }}
+        run: |
+          LATEST=$(tail -1 ops/smoke-history.log)
+          TIMESTAMP=$(echo "$LATEST" | cut -f1)
+          LABEL=$(echo "$LATEST" | cut -f2)
+          STATUS=$(echo "$LATEST" | cut -f3)
+          LOG=$(echo "$LATEST" | cut -f4)
+
+          echo "## Smoke Check Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Field | Value |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|-------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Timestamp | ${TIMESTAMP} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Label | ${LABEL} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Status | ${STATUS} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Log | ${LOG} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Target | ${BASE_URL} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          if echo "$STATUS" | grep -q "status=0"; then
+            echo ":white_check_mark: **All smoke checks passed.**" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo ":x: **Smoke check failed.** Review the uploaded artifact for details." >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "### Escalation" >> "$GITHUB_STEP_SUMMARY"
+            echo "1. Download the \`smoke-output\` artifact from this run." >> "$GITHUB_STEP_SUMMARY"
+            echo "2. Reproduce locally: \`npm run smoke:full\`" >> "$GITHUB_STEP_SUMMARY"
+            echo "3. If confirmed, follow rollback in \`CUTOVER_CHECKLIST.md\`." >> "$GITHUB_STEP_SUMMARY"
+          fi

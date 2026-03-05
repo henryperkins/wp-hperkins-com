@@ -1,0 +1,25 @@
+514:                                "background": "var(--wp--preset--color--accent-2)",
+515:                                "text": "var(--wp--preset--color--accent-3)"
+519:                                    "background": "color-mix(in srgb, var(--wp--preset--color--accent-2) 85%, transparent)",
+520:                                    "text": "var(--wp--preset--color--accent-3)"
+826:                    "top": "var(--wp--preset--spacing--40)",
+827:                    "bottom": "var(--wp--preset--spacing--40)"
+1590:                                "background": "var(--wp--preset--color--accent-2)",
+1591:                                "text": "var(--wp--preset--color--accent-3)"
+1595:                                    "background": "color-mix(in srgb, var(--wp--preset--color--accent-2) 85%, transparent)",
+1596:                                    "text": "var(--wp--preset--color--accent-3)"
+2175:                                "background": "var(--wp--preset--color--accent-2)",
+2176:                                "text": "var(--wp--preset--color--accent-3)"
+2180:                                    "background": "color-mix(in srgb, var(--wp--preset--color--accent-2) 85%, transparent)",
+2181:                                    "text": "var(--wp--preset--color--accent-3)"
+2464:                    "color": "var(--wp--preset--color--accent-4)",
+2480:                "fontSize": "var(--wp--preset--font-size--small)",
+2486:                "fontSize": "var(--wp--preset--font-size--xx-large)"
+2491:                "fontSize": "var(--wp--preset--font-size--x-large)"
+2496:                "fontSize": "var(--wp--preset--font-size--large)"
+2501:                "fontSize": "var(--wp--preset--font-size--medium)"
+2506:                "fontSize": "var(--wp--preset--font-size--small)",
+2512:                "fontSize": "var(--wp--preset--font-size--small)",
+2547:            "right": "var(--wp--preset--spacing--50)",
+2549:            "left": "var(--wp--preset--spacing--50)"
+2558:        "fontSize": "var(--wp--preset--font-size--large)",

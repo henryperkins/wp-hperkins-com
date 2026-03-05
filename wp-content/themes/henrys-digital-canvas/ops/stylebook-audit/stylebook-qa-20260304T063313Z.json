@@ -1,0 +1,23 @@
+{
+  "stamp": "20260304T063313Z",
+  "baseUrl": "https://wp.hperkins.com",
+  "screenshots": {
+    "defaultPage": "ops/stylebook-audit/stylebook-default-page-20260304T063313Z.png",
+    "defaultIframe": "ops/stylebook-audit/stylebook-default-iframe-20260304T063313Z.png",
+    "emberDarkPage": "ops/stylebook-audit/stylebook-ember-dark-page-20260304T063313Z.png",
+    "emberDarkIframe": "ops/stylebook-audit/stylebook-ember-dark-iframe-20260304T063313Z.png"
+  },
+  "checks": {
+    "defaultIframeBodyClass": "block-editor-iframe__body editor-styles-wrapper admin-color-modern wp-embed-responsive",
+    "emberDarkIframeBodyClass": "block-editor-iframe__body editor-styles-wrapper admin-color-modern wp-embed-responsive",
+    "defaultIsDarkTheme": false,
+    "emberDarkIsDarkTheme": false,
+    "iframeDiffChangedPixels": 0,
+    "iframeDiffTotalPixels": 64476,
+    "iframeDiffPercent": 0.0
+  },
+  "errors": [],
+  "artifacts": {
+    "iframeDiff": "ops/stylebook-audit/stylebook-iframe-diff-20260304T063313Z.png"
+  }
+}

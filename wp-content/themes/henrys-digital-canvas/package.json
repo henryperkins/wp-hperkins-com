@@ -1,0 +1,17 @@
+{
+  "name": "henrys-digital-canvas-theme",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Operational smoke checks for Henry's Digital Canvas WordPress child theme",
+  "scripts": {
+    "smoke:route": "./scripts/route_smoke.sh",
+    "smoke:api": "./scripts/api_smoke.sh",
+    "smoke:browser": "./scripts/browser_smoke.sh",
+    "smoke:full": "./scripts/full_smoke.sh",
+    "smoke:cadence": "./scripts/smoke_cadence.sh",
+    "smoke:history": "./scripts/smoke_history_tail.sh 10"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
+  }
+}

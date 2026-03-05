@@ -1,0 +1,324 @@
+{
+  "meeting-transcript-summarizer": {
+    "role": "Systems",
+    "whyItMatters": "Turns long recordings into concise, actionable briefs so teams can execute quickly after client calls.",
+    "problem": [
+      "Project teams were spending too much time manually recapping calls.",
+      "Action items were inconsistently captured across different meeting formats.",
+      "Stakeholders wanted fast summaries tailored to technical and executive audiences."
+    ],
+    "approach": [
+      "Built an ingest pipeline that normalizes transcript chunks and speaker turns.",
+      "Implemented prompt templates for recap, decisions, and next-step extraction.",
+      "Added post-processing to format outputs into client-ready summary briefs."
+    ],
+    "result": [
+      "Recap turnaround moved from manual hours to a repeatable minutes-level workflow.",
+      "Follow-up tasks became easier to assign with clearer owner and context formatting.",
+      "Summary consistency improved across recurring client engagement meetings."
+    ],
+    "highlights": [
+      "Speaker-aware action extraction",
+      "Audience-specific summary templates",
+      "Structured output for easy CRM handoff"
+    ],
+    "signals": [
+      "tested",
+      "typed",
+      "docs",
+      "observability"
+    ],
+    "receipts": [
+      {
+        "label": "Summary turnaround",
+        "value": "Manual hours -> minutes-level workflow"
+      },
+      {
+        "label": "Action-item reliability",
+        "value": "Owner-tagged extraction with confidence notes"
+      }
+    ],
+    "architecture": {
+      "summary": "Pipeline-first architecture for transcript normalization, prompting, and delivery formatting.",
+      "bullets": [
+        "Ingestion stage standardizes transcript chunks and speaker turns.",
+        "Prompt stage emits structured recap + action JSON outputs.",
+        "Renderer stage transforms results into client-ready brief formats."
+      ]
+    },
+    "keyFiles": [
+      {
+        "path": "src/pipelines/transcript-ingest.py",
+        "note": "Normalizes transcript payloads into analysis-ready segments."
+      },
+      {
+        "path": "src/prompts/summary-templates.md",
+        "note": "Prompt variants for exec summary, technical recap, and follow-up."
+      },
+      {
+        "path": "src/renderers/client-brief.ts",
+        "note": "Formats final summaries into a consistent, shareable structure."
+      }
+    ],
+    "shipped": "Shipped owner-aware action-item detection with confidence tagging.",
+    "learned": "Codified a repeatable summarization workflow that reduces manual recap work and keeps client communication consistent.",
+    "accessNote": "Code is private. I can share a walkthrough and redacted samples on request."
+  },
+  "ai-faq-chatbot-prototype": {
+    "role": "Product",
+    "whyItMatters": "Demonstrates how AI support flows can improve response quality while reducing repetitive human support load.",
+    "problem": [
+      "Support teams were answering repetitive questions with inconsistent phrasing.",
+      "Users needed faster first-response answers without digging through docs.",
+      "Initial chatbot drafts were too generic and lacked source-grounded confidence."
+    ],
+    "approach": [
+      "Curated domain FAQs into a retrieval-friendly, structured knowledge set.",
+      "Designed response templates to keep tone concise, helpful, and support-safe.",
+      "Added guardrails for uncertainty handling and escalation when confidence is low."
+    ],
+    "result": [
+      "Prototype responses became clearer and more action-oriented for common support intents.",
+      "Knowledge-grounded replies reduced hallucination risk on known question paths.",
+      "Conversation flow design made human handoff expectations more explicit."
+    ],
+    "highlights": [
+      "Retrieval-grounded FAQ responses",
+      "Escalation-safe fallback behavior",
+      "Prompt-tested support tone consistency"
+    ],
+    "signals": [
+      "tested",
+      "typed",
+      "ci",
+      "docs"
+    ],
+    "receipts": [
+      {
+        "label": "Fallback quality",
+        "value": "Low-confidence paths now escalate safely"
+      },
+      {
+        "label": "Answer consistency",
+        "value": "Prompt templates standardized support response style"
+      }
+    ],
+    "architecture": {
+      "summary": "Retrieval-grounded chatbot with confidence routing and escalation behavior.",
+      "bullets": [
+        "Retriever pulls scoped FAQ entries by intent and keywords.",
+        "Generator produces support-safe response templates with citations.",
+        "Router handles confidence thresholds and escalation transitions."
+      ]
+    },
+    "keyFiles": [
+      {
+        "path": "src/knowledge/faq-index.json",
+        "note": "Structured knowledge base used for retrieval and grounding."
+      },
+      {
+        "path": "src/prompts/support-assistant.md",
+        "note": "Core system and response-style constraints for the assistant."
+      },
+      {
+        "path": "src/runtime/conversation-router.ts",
+        "note": "Routes between answer generation, clarification, and escalation states."
+      }
+    ],
+    "shipped": "Added uncertainty-aware routing to prefer safe escalation over low-confidence answers.",
+    "learned": "Refined prompt and response patterns to produce clearer answers and stronger customer self-service consistency.",
+    "accessNote": "Prototype code is private. Happy to discuss design tradeoffs and evaluation approach."
+  },
+  "client-ecommerce-implementation": {
+    "role": "Performance",
+    "whyItMatters": "Shows end-to-end delivery across conversion UX, checkout reliability, and production operations for revenue-critical systems.",
+    "problem": [
+      "Storefront friction in checkout was creating unnecessary abandonment risk.",
+      "Mobile performance issues affected perceived trust and purchasing momentum.",
+      "Operations needed safer release and rollback patterns around campaigns."
+    ],
+    "approach": [
+      "Redesigned core purchase paths with clearer hierarchy and fewer checkout steps.",
+      "Applied performance tuning across caching, assets, and script loading order.",
+      "Implemented launch checklists and runbooks for promotions and incident handling."
+    ],
+    "result": [
+      "Checkout flow became more resilient and easier for non-technical teams to operate.",
+      "Page responsiveness improved on mobile-heavy paths during campaign traffic.",
+      "Deployment and support handoffs became more predictable with documented runbooks."
+    ],
+    "highlights": [
+      "Checkout and payment hardening",
+      "Mobile performance tuning",
+      "Operational launch runbooks"
+    ],
+    "signals": [
+      "ci",
+      "docs",
+      "observability"
+    ],
+    "receipts": [
+      {
+        "label": "Checkout resilience",
+        "value": "Retry-safe payment validation and fallback messaging"
+      },
+      {
+        "label": "Operational readiness",
+        "value": "Launch + rollback runbook coverage for campaigns"
+      }
+    ],
+    "architecture": {
+      "summary": "Storefront + payment stack with performance tuning and runbook-backed operations.",
+      "bullets": [
+        "Theme templates optimize conversion on high-intent purchase paths.",
+        "Middleware plugins enforce caching and script-load discipline.",
+        "Operations layer includes rollout checks and incident response guides."
+      ]
+    },
+    "keyFiles": [
+      {
+        "path": "wp-content/themes/client-theme/templates/checkout.php",
+        "note": "Conversion-focused checkout structure and validation flow."
+      },
+      {
+        "path": "wp-content/mu-plugins/performance-tuning.php",
+        "note": "Caching, script strategy, and request optimization helpers."
+      },
+      {
+        "path": "docs/launch-runbook.md",
+        "note": "Launch, rollback, and on-call guidance for campaign operations."
+      }
+    ],
+    "shipped": "Released hardened checkout validation and payment retry handling.",
+    "learned": "Strengthened delivery discipline across launch readiness, performance, and post-launch support for business-critical storefronts.",
+    "accessNote": "Client work under NDA. I can share scope, approach, and outcomes at a high level."
+  },
+  "lakefront-digital-portfolio": {
+    "role": "Craft",
+    "whyItMatters": "Captures how engineering and communication design can work together to explain technical work to business audiences.",
+    "problem": [
+      "The prior site did not clearly communicate delivery capabilities and outcomes.",
+      "Project proof points were hard to scan across services, blog, and portfolio pages.",
+      "Needed a maintainable content model for frequent iteration."
+    ],
+    "approach": [
+      "Built a modular React + TypeScript front end with reusable content sections.",
+      "Implemented structured project data to support case-study storytelling.",
+      "Added design-system primitives to keep visual and interaction patterns consistent."
+    ],
+    "result": [
+      "Portfolio pages now emphasize outcomes and decision quality over raw repo listings.",
+      "Content updates became faster with structured data-driven sections.",
+      "Site architecture now supports ongoing experiments and feature evolution."
+    ],
+    "highlights": [
+      "Case-study-first information architecture",
+      "Reusable TypeScript content models",
+      "Design-system-driven component composition"
+    ],
+    "signals": [
+      "tested",
+      "typed",
+      "ci",
+      "docs"
+    ],
+    "receipts": [
+      {
+        "label": "Design-system quality",
+        "value": "Automated lint gates for token drift + legacy imports"
+      },
+      {
+        "label": "Delivery signal clarity",
+        "value": "Portfolio reframed around outcomes and shipped artifacts"
+      }
+    ],
+    "architecture": {
+      "summary": "Data-driven React portfolio composed from reusable content + design primitives.",
+      "bullets": [
+        "Structured repo metadata powers grid, timeline, and case-study layouts.",
+        "UI primitives centralize motion, cards, badges, and interaction patterns.",
+        "Route-level pages keep feature slices cohesive and maintainable."
+      ]
+    },
+    "keyFiles": [
+      {
+        "path": "src/pages/Work.tsx",
+        "note": "Work showcase layout with filtering, grouping, and timeline sections."
+      },
+      {
+        "path": "src/data/repos.ts",
+        "note": "Curated case-study metadata powering rich project storytelling."
+      },
+      {
+        "path": "src/components/ContentCard.tsx",
+        "note": "Reusable card primitive used across portfolio surfaces."
+      }
+    ],
+    "shipped": "Shipped case-study metadata model for richer portfolio storytelling.",
+    "learned": "Applied practical content architecture and UX decisions to clearly communicate technical consulting services."
+  },
+  "wordpress-support-runbooks": {
+    "role": "Systems",
+    "whyItMatters": "Operational documentation can be a force multiplier; this project turns tribal knowledge into reusable support systems.",
+    "problem": [
+      "Recurring support questions consumed disproportionate delivery time.",
+      "Incident triage quality varied based on who was on-call.",
+      "Client handoffs lacked a consistent troubleshooting format."
+    ],
+    "approach": [
+      "Designed reusable runbook templates for common incident categories.",
+      "Standardized intake, diagnosis, and escalation pathways.",
+      "Added role-based checklists for support and implementation handoffs."
+    ],
+    "result": [
+      "Support responses became more consistent and easier to delegate.",
+      "Onboarding new contributors required less tribal context transfer.",
+      "Documentation quality improved cross-project operational continuity."
+    ],
+    "highlights": [
+      "Triage-first runbook templates",
+      "Escalation decision trees",
+      "Handoff-ready support documentation"
+    ],
+    "signals": [
+      "docs",
+      "ci",
+      "observability"
+    ],
+    "receipts": [
+      {
+        "label": "Support consistency",
+        "value": "Runbook-driven triage format across recurring incidents"
+      },
+      {
+        "label": "Onboarding speed",
+        "value": "New contributors use templates instead of tribal context"
+      }
+    ],
+    "architecture": {
+      "summary": "Documentation system centered on intake, escalation, and post-incident loops.",
+      "bullets": [
+        "Intake templates normalize issue context before diagnosis begins.",
+        "Escalation matrix codifies ownership by severity level.",
+        "Retro templates capture prevention actions and follow-through items."
+      ]
+    },
+    "keyFiles": [
+      {
+        "path": "runbooks/intake-template.md",
+        "note": "Standard issue intake structure for faster triage."
+      },
+      {
+        "path": "runbooks/escalation-matrix.md",
+        "note": "Defines escalation ownership and severity thresholds."
+      },
+      {
+        "path": "runbooks/post-incident-retro.md",
+        "note": "Template for documenting lessons and prevention actions."
+      }
+    ],
+    "shipped": "Added severity-based escalation matrix and post-incident retro template.",
+    "learned": "Standardized setup and troubleshooting guidance so support can move faster with fewer recurring clarifications.",
+    "accessNote": "Runbooks are internal templates. Available as redacted examples on request."
+  }
+}

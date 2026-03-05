@@ -1,0 +1,97 @@
+[
+  {
+    "id": "dev-scripting-after-dinner",
+    "title": "Terminal tinkering after dinner",
+    "category": "dev",
+    "timeframe": "now",
+    "story": "Most weeknights end with tea, a terminal window, and one tiny problem to solve. I keep the scope intentionally small so I can feel the full loop in one sitting: write it, run it, refine it.",
+    "takeaway": "Small loops keep the hobby fun and momentum high."
+  },
+  {
+    "id": "music-midnight-guitar-loop",
+    "title": "Chasing a tone at midnight",
+    "category": "music",
+    "timeframe": "now",
+    "story": "Late at night I usually start with one guitar note and a reverb tail, then see where it goes. The best sessions happen when I stop aiming for a finished track and just follow whatever texture feels alive.",
+    "takeaway": "Constraints create better creative decisions.",
+    "media": {
+      "type": "image",
+      "src": "/images/hero-piano-ide.png",
+      "alt": "Music desk with keys and ambient lighting"
+    }
+  },
+  {
+    "id": "learning-notes-system-design",
+    "title": "Weekly learning notes",
+    "category": "learning",
+    "timeframe": "now",
+    "story": "I keep a lightweight notes ritual every weekend: one concept, one practical example, one open question. It helps me keep curiosity structured without turning free time into homework.",
+    "takeaway": "A tiny cadence beats occasional deep dives."
+  },
+  {
+    "id": "dev-ui-motion-lab",
+    "title": "Micro-interaction motion lab",
+    "category": "dev",
+    "timeframe": "recently",
+    "story": "I spent a weekend comparing easing curves on the same button transition to understand why some animations feel calm and others feel noisy. It was mostly visual trial-and-error with a lot of side-by-side toggling.",
+    "takeaway": "Subtle motion improves feel more than feature count."
+  },
+  {
+    "id": "music-sample-of-week",
+    "title": "Sample/patch of the week",
+    "category": "music",
+    "timeframe": "recently",
+    "story": "I started collecting one sound per week that I actually love, then writing a short note about why it works. This became a better habit than endlessly downloading presets I never revisit.",
+    "takeaway": "Curated inputs produce stronger output."
+  },
+  {
+    "id": "learning-rabbit-hole-typography",
+    "title": "Typography rabbit hole",
+    "category": "learning",
+    "timeframe": "recently",
+    "story": "A quick article on readability turned into a full rabbit hole on rhythm, spacing, and contrast. I now keep a tiny checklist for what to inspect before calling a text-heavy UI done.",
+    "takeaway": "Readability is a system, not a single setting.",
+    "media": {
+      "type": "image",
+      "src": "/images/amber-pattern.png",
+      "alt": "Abstract pattern used as a visual reference board"
+    }
+  },
+  {
+    "id": "dev-tool-of-month",
+    "title": "Favorite tool of the month",
+    "category": "dev",
+    "timeframe": "recently",
+    "story": "I keep a short running list of one utility that made my workflow meaningfully smoother each month. The goal is not novelty; it is noticing what consistently removes friction.",
+    "takeaway": "The best tools disappear into your process."
+  },
+  {
+    "id": "music-live-loop-session",
+    "title": "Live loop practice sessions",
+    "category": "music",
+    "timeframe": "next",
+    "story": "Next up is a monthly 30-minute session where I build a loop from scratch in one take. No perfection pass, no over-editing, just committing to decisions and enjoying the moment.",
+    "takeaway": "Commitment creates confidence.",
+    "media": {
+      "type": "image",
+      "src": "/images/footer-cinematic-scene.png",
+      "alt": "Cinematic studio scene for creative practice"
+    }
+  },
+  {
+    "id": "dev-fake-terminal-toy",
+    "title": "Build a playful terminal toy",
+    "category": "dev",
+    "timeframe": "next",
+    "story": "I want to ship a tiny scripted terminal interaction that tells a story in a few commands. It is a fun way to blend interface writing, pacing, and a bit of personality.",
+    "takeaway": "Playful constraints make stronger UI storytelling."
+  },
+  {
+    "id": "learning-field-guide",
+    "title": "Create a personal field guide",
+    "category": "learning",
+    "timeframe": "next",
+    "story": "I am planning a one-page field guide for recurring lessons from side experiments: what surprised me, what broke, and what I would do differently next time.",
+    "takeaway": "Reflection turns experiments into reusable knowledge."
+  }
+]

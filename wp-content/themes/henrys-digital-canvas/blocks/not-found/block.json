@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "henrys-digital-canvas/not-found",
+	"title": "Not Found",
+	"category": "widgets",
+	"icon": "warning",
+	"description": "404 state with requested path echo and recovery actions.",
+	"textdomain": "henrys-digital-canvas",
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"attributes": {
+		"heading": {
+			"type": "string",
+			"default": "Page not found"
+		},
+		"homeLabel": {
+			"type": "string",
+			"default": "Go Home"
+		},
+		"backLabel": {
+			"type": "string",
+			"default": "Go Back"
+		}
+	},
+	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
+	"style": "file:./style.css",
+	"editorStyle": "file:./style.css",
+	"render": "file:./render.php"
+}

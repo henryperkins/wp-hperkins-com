@@ -1,0 +1,47 @@
+[
+  {
+    "slug": "building-ai-powered-content-pipeline",
+    "title": "Building an AI-Powered Content Pipeline from Scratch",
+    "excerpt": "How I designed and built an automated content processing workflow using NLP, careful evaluation, and a lot of edge-case handling.",
+    "date": "2026-01-18",
+    "tags": [
+      "AI",
+      "Python",
+      "Architecture"
+    ],
+    "featured": true,
+    "readingTime": "8 min read",
+    "content": "The system has three stages: ingestion, processing, and routing.",
+    "contentHtml": "<h2>The Problem</h2><p>Every content team hits manual tagging bottlenecks at scale.</p><h2>Architecture Overview</h2><p>The pipeline automates summarization, tagging, and routing with human review for low-confidence cases.</p>"
+  },
+  {
+    "slug": "design-systems-that-actually-work",
+    "title": "Design Systems That Actually Work",
+    "excerpt": "Lessons from building and maintaining design systems across different teams. Spoiler: the hard part isn't components.",
+    "date": "2025-11-22",
+    "tags": [
+      "Design",
+      "React",
+      "CSS"
+    ],
+    "featured": false,
+    "readingTime": "6 min read",
+    "content": "Adoption is the hard part, not component APIs.",
+    "contentHtml": "<h2>Why Most Design Systems Fail</h2><p>Adoption and workflow fit determine whether systems survive.</p><h2>What Actually Works</h2><p>Start with tokens, then make the right thing the easy thing.</p>"
+  },
+  {
+    "slug": "music-and-code",
+    "title": "What Playing Guitar Taught Me About Writing Code",
+    "excerpt": "The surprising parallels between learning an instrument and becoming a better programmer.",
+    "date": "2025-09-10",
+    "tags": [
+      "Personal",
+      "Music",
+      "Career"
+    ],
+    "featured": false,
+    "readingTime": "5 min read",
+    "content": "Practice means isolating hard parts and improving deliberately.",
+    "contentHtml": "<h2>Practice vs. Performance</h2><p>Skill growth comes from focused repetition, not passive repetition.</p><h2>The Ensemble Effect</h2><p>Great software teams, like bands, require listening and timing.</p>"
+  }
+]

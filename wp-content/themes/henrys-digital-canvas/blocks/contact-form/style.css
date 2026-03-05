@@ -1,0 +1,204 @@
+.hdc-contact-form {
+  display: block;
+}
+
+.hdc-contact-form__shell {
+  margin: 0 auto;
+  max-width: 860px;
+  padding: 2rem 1rem;
+}
+
+.hdc-contact-form__status,
+.hdc-contact-form__error,
+.hdc-contact-form__hint,
+.hdc-contact-form__description {
+  color: hsl(var(--text-meta));
+  font-size: 0.92rem;
+}
+
+.hdc-contact-form__header {
+  margin-bottom: 1rem;
+}
+
+.hdc-contact-form__title {
+  color: hsl(var(--foreground));
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  line-height: 1.2;
+  margin: 0;
+}
+
+.hdc-contact-form__description {
+  color: hsl(var(--text-body));
+  line-height: 1.65;
+  margin: 0.45rem 0 0;
+  max-width: 72ch;
+}
+
+.hdc-contact-form__social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-bottom: 1.15rem;
+}
+
+.hdc-contact-form__social-link {
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-pill);
+  color: hsl(var(--text-body));
+  display: inline-flex;
+  gap: 0.38rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1;
+  min-height: 2rem;
+  padding: 0.45rem 0.72rem;
+  text-decoration: none;
+}
+
+.hdc-contact-form__social-icon {
+  align-items: center;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.7rem;
+  font-weight: 700;
+  height: 1.2rem;
+  justify-content: center;
+  width: 1.2rem;
+}
+
+.hdc-contact-form__social-icon-svg {
+  display: block;
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.hdc-contact-form__form {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.hdc-contact-form__field {
+  display: grid;
+  gap: 0.38rem;
+}
+
+.hdc-contact-form__label {
+  color: hsl(var(--foreground));
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.hdc-contact-form__input {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-control);
+  color: hsl(var(--foreground));
+  font-size: 0.95rem;
+  line-height: 1.45;
+  padding: 0.66rem 0.72rem;
+  width: 100%;
+}
+
+.hdc-contact-form__input[aria-invalid="true"] {
+  border-color: hsl(var(--status-destructive));
+}
+
+.hdc-contact-form__textarea {
+  min-height: 8.2rem;
+  resize: vertical;
+}
+
+.hdc-contact-form__hint {
+  color: hsl(var(--text-meta));
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.hdc-contact-form__hint--error,
+.hdc-contact-form__error {
+  color: hsl(var(--status-destructive));
+}
+
+.hdc-contact-form__error {
+  font-size: 0.86rem;
+  margin: 0;
+}
+
+.hdc-contact-form__submit {
+  align-items: center;
+  background: hsl(var(--primary));
+  border: 1px solid hsl(var(--primary));
+  border-radius: var(--radius-control);
+  color: hsl(var(--primary-foreground));
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.9rem;
+  font-weight: 700;
+  justify-content: center;
+  line-height: 1;
+  min-height: 2.5rem;
+  padding: 0.7rem 1rem;
+}
+
+.hdc-contact-form__submit-icon {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  margin-right: 0.35rem;
+}
+
+.hdc-contact-form__submit-icon-svg {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+}
+
+.hdc-contact-form__submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.hdc-contact-form__success-wrap {
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-surface);
+  padding: 1rem;
+}
+
+.hdc-contact-form__success-title {
+  color: hsl(var(--foreground));
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.45rem;
+  margin: 0;
+}
+
+.hdc-contact-form__success-message {
+  color: hsl(var(--text-body));
+  font-size: 0.95rem;
+  margin: 0.5rem 0 0;
+}
+
+.hdc-contact-form-editor {
+  border: 1px dashed hsl(var(--border));
+  border-radius: var(--radius-surface);
+  padding: 0.8rem;
+}
+
+.hdc-contact-form-editor__title {
+  color: hsl(var(--foreground));
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.hdc-contact-form-editor__description {
+  color: hsl(var(--text-meta));
+  font-size: 0.9rem;
+  margin-top: 0.45rem;
+}

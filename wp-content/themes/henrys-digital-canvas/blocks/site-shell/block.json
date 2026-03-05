@@ -1,0 +1,40 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "henrys-digital-canvas/site-shell",
+	"title": "Site Shell",
+	"category": "widgets",
+	"icon": "menu-alt3",
+	"description": "Sticky header shell with navigation, theme switcher, and command palette launcher.",
+	"textdomain": "henrys-digital-canvas",
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"attributes": {
+		"siteTitle": {
+			"type": "string",
+			"default": "Henry T. Perkins"
+		},
+		"tagline": {
+			"type": "string",
+			"default": "Customer Success \u00b7 Developer Enablement \u00b7 AI Workflows"
+		},
+		"showCommandLauncher": {
+			"type": "boolean",
+			"default": true
+		},
+		"enableThemeToggle": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
+	"style": "file:./style.css",
+	"editorStyle": "file:./style.css",
+	"render": "file:./render.php"
+}

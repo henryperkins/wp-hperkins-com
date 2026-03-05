@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "henrys-digital-canvas/blog-post",
+	"title": "Blog Post",
+	"category": "widgets",
+	"icon": "media-text",
+	"description": "Blog post detail with reading progress, rich content rendering, and related posts.",
+	"textdomain": "henrys-digital-canvas",
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"attributes": {
+		"slug": {
+			"type": "string",
+			"default": ""
+		},
+		"showProgress": {
+			"type": "boolean",
+			"default": true
+		},
+		"showScrollTop": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
+	"style": "file:./style.css",
+	"editorStyle": "file:./style.css",
+	"render": "file:./render.php"
+}

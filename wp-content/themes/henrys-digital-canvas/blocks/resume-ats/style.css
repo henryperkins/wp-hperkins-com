@@ -1,0 +1,156 @@
+.hdc-resume-ats {
+  display: block;
+}
+
+.hdc-resume-ats__shell {
+  margin: 0 auto;
+  max-width: 980px;
+  padding: 1.5rem 1rem 2rem;
+}
+
+.hdc-resume-ats__status,
+.hdc-resume-ats__error {
+  color: hsl(var(--text-meta));
+  font-size: 0.95rem;
+}
+
+.hdc-resume-ats__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-bottom: 1rem;
+}
+
+.hdc-resume-ats__button,
+.hdc-resume-ats__link {
+  align-items: center;
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-control);
+  color: hsl(var(--text-body));
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1;
+  min-height: 2.1rem;
+  padding: 0.5rem 0.75rem;
+  text-decoration: none;
+}
+
+.hdc-resume-ats__button {
+  cursor: pointer;
+}
+
+.hdc-resume-ats__article {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-surface);
+  box-shadow: var(--shadow-surface-1);
+  padding: 1rem;
+}
+
+.hdc-resume-ats__heading {
+  color: hsl(var(--text-meta));
+  font-size: 0.73rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  margin: 0 0 0.35rem;
+  text-transform: uppercase;
+}
+
+.hdc-resume-ats__name {
+  color: hsl(var(--foreground));
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  margin: 0;
+}
+
+.hdc-resume-ats__headline {
+  color: hsl(var(--foreground));
+  font-size: 1.05rem;
+  margin: 0.35rem 0 0;
+}
+
+.hdc-resume-ats__contact {
+  color: hsl(var(--text-meta));
+  font-size: 0.86rem;
+  line-height: 1.5;
+  margin: 0.6rem 0 0;
+}
+
+.hdc-resume-ats__section {
+  margin-top: 1rem;
+}
+
+.hdc-resume-ats__section-title {
+  color: hsl(var(--foreground));
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.35rem;
+  text-transform: uppercase;
+}
+
+.hdc-resume-ats__text,
+.hdc-resume-ats__list li {
+  color: hsl(var(--text-body));
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.hdc-resume-ats__list {
+  margin: 0;
+  padding-left: 1rem;
+}
+
+.hdc-resume-ats__list li {
+  margin: 0.28rem 0;
+}
+
+.hdc-resume-ats__entry {
+  margin-bottom: 0.7rem;
+}
+
+.hdc-resume-ats__entry-title {
+  color: hsl(var(--foreground));
+  font-size: 0.98rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.hdc-resume-ats__entry-meta {
+  color: hsl(var(--text-meta));
+  font-size: 0.84rem;
+  margin: 0.22rem 0 0.4rem;
+}
+
+.hdc-resume-ats-editor {
+  border: 1px dashed hsl(var(--border));
+  border-radius: var(--radius-surface);
+  padding: 0.8rem;
+}
+
+.hdc-resume-ats-editor__title {
+  color: hsl(var(--foreground));
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.hdc-resume-ats-editor__meta {
+  color: hsl(var(--text-meta));
+  font-size: 0.9rem;
+  margin-top: 0.45rem;
+}
+
+@media print {
+  .hdc-resume-ats__controls {
+    display: none;
+  }
+
+  .hdc-resume-ats__article {
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+}

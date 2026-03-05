@@ -1,0 +1,237 @@
+.hdc-hobbies-moments {
+  display: block;
+}
+
+.hdc-hobbies-moments__shell {
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 2rem 1rem;
+}
+
+.hdc-hobbies-moments__status,
+.hdc-hobbies-moments__error,
+.hdc-hobbies-moments__empty {
+  color: hsl(var(--text-meta));
+  font-size: 0.95rem;
+}
+
+.hdc-hobbies-moments__hero {
+  margin-bottom: 1.2rem;
+}
+
+.hdc-hobbies-moments__title {
+  color: hsl(var(--foreground));
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+  margin: 0;
+}
+
+.hdc-hobbies-moments__desc {
+  color: hsl(var(--text-body));
+  font-size: 0.96rem;
+  margin: 0.45rem 0 0;
+  max-width: 72ch;
+}
+
+.hdc-hobbies-moments__filters {
+  display: grid;
+  gap: 0.9rem;
+  margin: 1rem 0 1.3rem;
+}
+
+.hdc-hobbies-moments__filter-label {
+  color: hsl(var(--text-meta));
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.35rem;
+  text-transform: uppercase;
+}
+
+.hdc-hobbies-moments__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.hdc-hobbies-moments__chip {
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-pill);
+  color: hsl(var(--text-body));
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1;
+  min-height: 2rem;
+  padding: 0.45rem 0.65rem;
+}
+
+.hdc-hobbies-moments__chip.is-active {
+  background: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.hdc-hobbies-moments__group {
+  margin-top: 1.5rem;
+}
+
+.hdc-hobbies-moments__group-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.hdc-hobbies-moments__group-title {
+  color: hsl(var(--foreground));
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.45rem;
+  margin: 0;
+}
+
+.hdc-hobbies-moments__group-count {
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-pill);
+  color: hsl(var(--text-meta));
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0.26rem 0.48rem;
+  text-transform: uppercase;
+}
+
+.hdc-hobbies-moments__group-desc {
+  color: hsl(var(--text-subtle));
+  font-size: 0.88rem;
+  margin: 0.25rem 0 0.75rem;
+}
+
+.hdc-hobbies-moments__grid {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.hdc-hobbies-moments__card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-surface);
+  box-shadow: var(--shadow-surface-1);
+  padding: 0.8rem;
+}
+
+.hdc-hobbies-moments__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+.hdc-hobbies-moments__badge {
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-pill);
+  color: hsl(var(--text-meta));
+  font-size: 0.72rem;
+  line-height: 1;
+  padding: 0.25rem 0.5rem;
+}
+
+.hdc-hobbies-moments__trigger {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: hsl(var(--foreground));
+  cursor: pointer;
+  display: flex;
+  font-size: 1rem;
+  font-weight: 700;
+  gap: 0.4rem;
+  justify-content: space-between;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.hdc-hobbies-moments__summary,
+.hdc-hobbies-moments__story,
+.hdc-hobbies-moments__takeaway {
+  color: hsl(var(--text-body));
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.hdc-hobbies-moments__summary {
+  margin: 0.45rem 0 0;
+}
+
+.hdc-hobbies-moments__expanded {
+  margin-top: 0.7rem;
+}
+
+.hdc-hobbies-moments__story {
+  margin: 0;
+}
+
+.hdc-hobbies-moments__media {
+  margin-top: 0.55rem;
+}
+
+.hdc-hobbies-moments__media img,
+.hdc-hobbies-moments__media video,
+.hdc-hobbies-moments__media audio {
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-control);
+  display: block;
+  max-width: 100%;
+}
+
+.hdc-hobbies-moments__takeaway {
+  background: hsl(var(--secondary));
+  border-radius: var(--radius-control);
+  margin: 0.55rem 0 0;
+  padding: 0.55rem;
+}
+
+.hdc-hobbies-moments__takeaway-label {
+  color: hsl(var(--text-meta));
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin: 0.55rem 0 0;
+  text-transform: uppercase;
+}
+
+.hdc-hobbies-moments-editor {
+  border: 1px dashed hsl(var(--border));
+  border-radius: var(--radius-surface);
+  padding: 0.8rem;
+}
+
+.hdc-hobbies-moments-editor__title {
+  color: hsl(var(--foreground));
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.hdc-hobbies-moments-editor__desc {
+  color: hsl(var(--text-meta));
+  font-size: 0.9rem;
+  margin-top: 0.4rem;
+}
+
+@media (min-width: 840px) {
+  .hdc-hobbies-moments__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1120px) {
+  .hdc-hobbies-moments__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

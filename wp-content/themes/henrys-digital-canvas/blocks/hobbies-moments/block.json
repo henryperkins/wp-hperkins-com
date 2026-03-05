@@ -1,0 +1,32 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "henrys-digital-canvas/hobbies-moments",
+	"title": "Hobbies Moments",
+	"category": "widgets",
+	"icon": "smiley",
+	"description": "Filterable hobbies timeline with grouped moments and expandable stories.",
+	"textdomain": "henrys-digital-canvas",
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"attributes": {
+		"heading": {
+			"type": "string",
+			"default": "Hobbies"
+		},
+		"description": {
+			"type": "string",
+			"default": "Outside work, I spend time building small tools, making music, and tracking what I am learning now, recently, and next."
+		}
+	},
+	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
+	"style": "file:./style.css",
+	"editorStyle": "file:./style.css",
+	"render": "file:./render.php"
+}

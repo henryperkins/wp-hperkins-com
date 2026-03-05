@@ -1,0 +1,29 @@
+# Sensitive files
+wp-config.php
+.env
+*.sql
+*.sql.gz
+
+# Uploads (large media files)
+wp-content/uploads/
+
+# Cache and generated files
+wp-content/cache/
+wp-content/upgrade/
+wp-content/backups/
+wp-content/advanced-cache.php
+wp-content/object-cache.php
+wp-content/db.php
+
+# Temporary/output directories
+tmp/
+output/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
