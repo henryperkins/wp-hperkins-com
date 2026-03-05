@@ -1,19 +1,44 @@
 # Henry's Digital Canvas Migration Progress
 
-Last updated: 2026-03-05T17:36Z (UTC)
+Last updated: 2026-03-05T21:11Z (UTC)
+
+## Current Status Override (2026-03-05 UTC)
+
+This section is the current source of truth and supersedes older checkpoint language in this file that says "Complete", "Migration Complete", or "Full parity achieved".
+
+### Status Model
+
+- `functional-migration-complete`: route and block wiring exists, but parity may still have open findings.
+- `parity-remediation-in-progress`: one or more parity findings remain open and are being actively remediated.
+- `wpds-foundation-pending`: the theme is still using a transitional token foundation and is not yet on canonical WPDS semantics.
+- `verified`: closure is supported by current route/API/browser evidence captured under `ops/`.
+
+### Current Program State
+
+| Track | Current status | Notes |
+| --- | --- | --- |
+| Functional migration | `functional-migration-complete` | Core block/theme migration is shipped and routable. |
+| Parity remediation | `verified` | March 2026 parity-remediation scope in `PARITY_REMEDIATION_PLAN.md` is closed with fresh smoke evidence (`ops/smoke-report-2026-03-05-parity-remediation-close.md`). |
+| WPDS foundation | `verified` | WPDS semantic adapter tokens are now active in `assets/css/design-system.css` and `theme.json`; full WPDS-package adoption remains selective and tracked in `WPDS_TARGET_STATEMENT.md`. |
+| Verification closeout | `verified` | Route/API/browser/full reruns captured under `ops/parity-remediation-2026-03-05T21-10-24Z/` and linked via smoke report. |
+
+### WPDS Target Note
+
+- Architecture note: [`WPDS_TARGET_STATEMENT.md`](WPDS_TARGET_STATEMENT.md)
+- Current warning: this child theme is not yet WPDS-foundation-complete.
 
 ## Phase Tracker
 
 | Phase | Name | Status | Started | Completed |
 | --- | --- | --- | --- | --- |
-| 1 | Parity baseline + remaining scope inventory | Complete | 2026-03-03 | 2026-03-03 |
-| 2 | Shared shell migration (header/footer/nav/theme + command entry) | Complete | 2026-03-03 | 2026-03-03 |
-| 3 | Data plumbing (resume/hobbies/blog/contact) | Complete | 2026-03-03 | 2026-03-03 |
-| 4 | Remaining page block migration | Complete | 2026-03-03 | 2026-03-03 |
-| 5 | Template integration + QA + cutover | Complete | 2026-03-03 | 2026-03-03 |
-| 6 | Post-cutover stabilization + automation hardening | Complete | 2026-03-03 | 2026-03-03 |
-| 7 | Verification cadence integration + reporting handoff | Complete | 2026-03-03 | 2026-03-03 |
-| 8 | Scheduled automation + CI/CD verification pipeline | Complete | 2026-03-03 | 2026-03-03 |
+| 1 | Parity baseline + remaining scope inventory | `functional-migration-complete` | 2026-03-03 | 2026-03-03 |
+| 2 | Shared shell migration (header/footer/nav/theme + command entry) | `functional-migration-complete` | 2026-03-03 | 2026-03-03 |
+| 3 | Data plumbing (resume/hobbies/blog/contact) | `functional-migration-complete` | 2026-03-03 | 2026-03-03 |
+| 4 | Remaining page block migration | `functional-migration-complete` | 2026-03-03 | 2026-03-03 |
+| 5 | Template integration + QA + cutover | `functional-migration-complete` | 2026-03-03 | 2026-03-03 |
+| 6 | Post-cutover stabilization + automation hardening | `functional-migration-complete` | 2026-03-03 | 2026-03-03 |
+| 7 | Verification cadence integration + reporting handoff | `functional-migration-complete` | 2026-03-03 | 2026-03-03 |
+| 8 | Scheduled automation + CI/CD verification pipeline | `functional-migration-complete` | 2026-03-03 | 2026-03-03 |
 
 ## Phase 1: Parity Baseline + Scope Inventory
 
@@ -1035,32 +1060,34 @@ Resolve every discrepancy listed in the post-completion component re-audit and c
   - `npm run smoke:browser`
 
 ### Parity Status
-- Component parity status: Full parity achieved for migrated block editor components and route surfaces.
+- Current status: `verified`.
+- This section previously reported full parity; that checkpoint is retained as historical evidence only.
+- March 2026 parity-remediation closure is tracked in `PARITY_REMEDIATION_PLAN.md`.
 
 ## Execution Plan: Remaining Major Pages / Components
 
-Last updated: 2026-03-03 (UTC)
+Last updated: 2026-03-05 (UTC)
 
 ### Current State
-- Major page/component parity scope is fully migrated and verified.
-- No blocking page/component migration gaps are currently open.
-- Remaining execution focus is maintaining parity under future updates and preventing regressions.
+- Major page/component migration scope is functionally shipped.
+- March 2026 parity-remediation scope is closed and verified with fresh smoke evidence.
+- WPDS foundation adoption is not complete; current token layer remains transitional.
 
 ### Route-by-Route Checklist (Operational)
-| Route / Surface | Primary block/template | Migration status | Next action |
-| --- | --- | --- | --- |
-| `/` | `templates/front-page.html` + `digital-canvas-feed` | Complete | Keep parity via browser smoke and visual spot checks after edits |
-| `/work` | `work-showcase` | Complete | Validate compare/filters/navigation on each release |
-| `/work/:repo` | `work-detail` + `page-work-detail.php` | Complete | Validate slug resolution + missing-state handling on each release |
-| `/resume` | `resume-overview` | Complete | Validate contract fields when resume data changes |
-| `/resume/ats` | `resume-ats` | Complete | Validate print behavior and heading/actions after style changes |
-| `/hobbies` | `hobbies-moments` | Complete | Validate query-sync + accessibility semantics after interactivity changes |
-| `/blog` | `blog-index` | Complete | Validate featured/search/tag/empty states after content updates |
-| `/blog/:slug` | `blog-post` + `page-blog-detail.php` | Complete | Validate title/progress/related/not-found behavior per release |
-| `/about` | `about-timeline` | Complete | Validate heading levels and timeline rendering after copy updates |
-| `/contact` | `contact-form` | Complete | Validate submit lifecycle and success shell behavior after API changes |
-| `404` | `not-found` + `templates/404.html` | Complete | Validate recovery actions + page title behavior on each release |
-| Shared shell | `site-shell`, `parts/header.html`, `parts/footer.html` | Complete | Validate command palette/theme/nav parity on each release |
+| Route / Surface | Primary block/template | Route exists | Behavior matches source | Visual treatment matches source | WPDS foundation complete | Current status | Next action |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `/` | `templates/front-page.html` + `digital-canvas-feed` | Yes | Yes | Yes | No | `verified` | Keep featured-work metadata and recent-writing thumbnail checks in browser smoke. |
+| `/work` | `work-showcase` | Yes | Yes | Yes | No | `verified` | Keep release-level compare/filter/navigation checks. |
+| `/work/:repo` | `work-detail` + `page-work-detail.php` | Yes | Yes | Yes | No | `verified` | Keep slug resolution + missing-state checks on each release. |
+| `/resume` | `resume-overview` | Yes | Yes | Yes | No | `verified` | Keep route-title and section-structure checks in release smoke cycles. |
+| `/resume/ats` | `resume-ats` | Yes | Yes | Yes | No | `verified` | Keep print action and ATS layout checks. |
+| `/hobbies` | `hobbies-moments` | Yes | Yes | Yes | No | `verified` | Keep query-sync and accessibility checks after interaction edits. |
+| `/blog` | `blog-index` | Yes | Yes | Yes | No | `verified` | Keep featured hero + row-thumbnail assertions tied to API media fields. |
+| `/blog/:slug` | `blog-post` + `page-blog-detail.php` | Yes | Yes | Yes | No | `verified` | Keep detail-header media assertions tied to API media fields. |
+| `/about` | `about-timeline` | Yes | Yes | Yes | No | `verified` | Keep heading-level and timeline rendering checks after content changes. |
+| `/contact` | `contact-form` | Yes | Yes | Yes | No | `verified` | Keep submit lifecycle and validation response checks. |
+| `404` | `not-found` + `templates/404.html` | Yes | Yes | Yes | No | `verified` | Keep page-title and recovery-action checks. |
+| Shared shell | `site-shell`, `parts/header.html`, `parts/footer.html` | Yes | Yes | Yes | No | `verified` | Keep command palette/theme/mobile-nav smoke coverage and retain accepted brand-tagline variance note. |
 
 ### Execution Sequence For Future Major Changes
 1. Update contracts first (`inc/data-contracts.php`, `inc/rest-api.php`) when data shape changes.
@@ -1207,9 +1234,41 @@ Close post-cutover parity drift discovered in the March 2026 static parity revie
 ### Remaining Validation
 - None for this parity remediation checkpoint.
 
-## Migration Complete
+## 2026-03-05 Parity Remediation Closeout Refresh (Phase 6)
 
-All 8 phases of the Henry's Digital Canvas React-to-WordPress migration are complete.
+### Objective
+Execute the final closeout loop from `PARITY_REMEDIATION_PLAN.md` Phase 6 with media-aware smoke assertions and fresh evidence artifacts.
+
+### Smoke/Test Updates
+- API smoke contract assertions extended in `scripts/api_smoke.sh`:
+  - validates list/detail blog payload media fields (`featuredImageUrl`, `featuredImageAlt`, `featuredImageSrcSet`) for key presence and value type.
+- Browser smoke assertions extended in `scripts/playwright/browser-smoke.spec.cjs`:
+  - validates `/blog/` featured hero image behavior when featured post media exists,
+  - validates `/blog/` row thumbnail rendering when post media exists,
+  - validates `/blog/:slug` header image rendering when detail media exists,
+  - validates `/` Recent Writing card thumbnail rendering when media exists.
+
+### Verification Commands (2026-03-05T21:10:24Z UTC)
+- `npm run smoke:route` (PASS)
+- `npm run smoke:api` (PASS)
+- `npm run smoke:browser` (PASS, 7/7 tests)
+- `npm run smoke:full` (PASS)
+
+### Evidence Artifacts
+- Report: `ops/smoke-report-2026-03-05-parity-remediation-close.md`
+- Logs:
+  - `ops/parity-remediation-2026-03-05T21-10-24Z/smoke-route.log`
+  - `ops/parity-remediation-2026-03-05T21-10-24Z/smoke-api.log`
+  - `ops/parity-remediation-2026-03-05T21-10-24Z/smoke-browser.log`
+  - `ops/parity-remediation-2026-03-05T21-10-24Z/smoke-full.log`
+
+### Closeout Result
+- March 2026 parity-remediation scope is now marked `verified`.
+- Verification closeout is now marked `verified` in the current status override.
+
+## Historical Migration Completion Checkpoint (Superseded)
+
+This checkpoint reflects the 2026-03-03 functional migration state and is retained for audit history. Current closeout status is defined in the "Current Status Override (2026-03-05 UTC)" section at the top of this file.
 
 ### Final Inventory
 - **11 custom blocks** shipped with full functional parity.

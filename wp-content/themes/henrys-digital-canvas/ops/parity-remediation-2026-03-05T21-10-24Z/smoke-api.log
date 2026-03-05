@@ -1,0 +1,16 @@
+
+> henrys-digital-canvas-theme@0.1.0 smoke:api
+> ./scripts/api_smoke.sh
+
+API smoke against https://wp.hperkins.com
+PASS	/wp-json/henrys-digital-canvas/v1/resume                               status=200
+PASS	/wp-json/henrys-digital-canvas/v1/resume-ats                           status=200
+PASS	/wp-json/henrys-digital-canvas/v1/moments                              status=200
+PASS	/wp-json/henrys-digital-canvas/v1/blog?limit=3                         status=200
+PASS	/wp-json/henrys-digital-canvas/v1/blog/wordpress-ai-use-cases-developers-admins status=200
+PASS	/wp-json/henrys-digital-canvas/v1/work?limit=3                         status=200
+PASS	/wp-json/henrys-digital-canvas/v1/work/lakefront-digital-portfolio     status=200
+PASS	/wp-json/henrys-digital-canvas/v1/blog?limit=3                         fields=featuredImageUrl,featuredImageAlt,featuredImageSrcSet
+PASS	/wp-json/henrys-digital-canvas/v1/blog/wordpress-ai-use-cases-developers-admins fields=featuredImageUrl,featuredImageAlt,featuredImageSrcSet
+
+API smoke passed.

@@ -143,6 +143,9 @@
 			content: content,
 			contentHtml: contentHtml,
 			url: ensureString( post && post.url, '' ),
+			featuredImageUrl: ensureString( post && post.featuredImageUrl, '' ),
+			featuredImageAlt: ensureString( post && post.featuredImageAlt, '' ),
+			featuredImageSrcSet: ensureString( post && post.featuredImageSrcSet, '' ),
 		};
 	}
 
@@ -165,6 +168,16 @@
 		}
 
 		return ensureString( config.blogBaseUrl, '/blog/' );
+	}
+
+	function buildImageAlt( post ) {
+		const explicitAlt = ensureString( post && post.featuredImageAlt, '' );
+		if ( explicitAlt ) {
+			return explicitAlt;
+		}
+
+		const title = ensureString( post && post.title, 'Blog post' );
+		return title + ' featured image';
 	}
 
 	function BlogIndexApp( props ) {
@@ -356,6 +369,21 @@
 						href: buildPostUrl( featured, config ),
 					},
 					h( 'span', { className: 'hdc-blog-index__featured-pill' }, 'Featured' ),
+					featured.featuredImageUrl
+						? h(
+							'div',
+							{ className: 'hdc-blog-index__featured-image-wrap' },
+							h( 'img', {
+								className: 'hdc-blog-index__featured-image',
+								src: featured.featuredImageUrl,
+								srcSet: featured.featuredImageSrcSet || undefined,
+								sizes: '(max-width: 900px) 100vw, 1120px',
+								alt: buildImageAlt( featured ),
+								loading: 'eager',
+								decoding: 'async',
+							} )
+						)
+						: null,
 					h( 'h3', { className: 'hdc-blog-index__featured-title' }, featured.title ),
 					h( 'p', { className: 'hdc-blog-index__featured-excerpt' }, featured.excerpt ),
 					h(
@@ -423,10 +451,25 @@
 						return h(
 							'a',
 							{
-								className: 'hdc-blog-index__card',
+								className: 'hdc-blog-index__card' + ( post.featuredImageUrl ? ' has-thumbnail' : '' ),
 								href: buildPostUrl( post, config ),
 								key: post.slug,
 							},
+							post.featuredImageUrl
+								? h(
+									'div',
+									{ className: 'hdc-blog-index__card-thumb-wrap' },
+									h( 'img', {
+										className: 'hdc-blog-index__card-thumb',
+										src: post.featuredImageUrl,
+										srcSet: post.featuredImageSrcSet || undefined,
+										sizes: '(max-width: 900px) 100vw, 180px',
+										alt: buildImageAlt( post ),
+										loading: 'lazy',
+										decoding: 'async',
+									} )
+								)
+								: null,
 							h(
 								'div',
 								{ className: 'hdc-blog-index__card-main' },

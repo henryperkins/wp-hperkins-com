@@ -172,6 +172,9 @@
 			readingTime: readingTime,
 			content: content,
 			contentHtml: contentHtml,
+			featuredImageUrl: ensureString( post && post.featuredImageUrl, '' ),
+			featuredImageAlt: ensureString( post && post.featuredImageAlt, '' ),
+			featuredImageSrcSet: ensureString( post && post.featuredImageSrcSet, '' ),
 		};
 	}
 
@@ -181,6 +184,16 @@
 			.sort( function ( left, right ) {
 				return parseDateValue( right.date ).getTime() - parseDateValue( left.date ).getTime();
 			} );
+	}
+
+	function buildImageAlt( post ) {
+		const explicitAlt = ensureString( post && post.featuredImageAlt, '' );
+		if ( explicitAlt ) {
+			return explicitAlt;
+		}
+
+		const title = ensureString( post && post.title, 'Blog post' );
+		return title + ' featured image';
 	}
 
 	function renderInline( text, keyPrefix ) {
@@ -529,6 +542,21 @@
 				h(
 					'header',
 					{ className: 'hdc-blog-post__header' },
+					post.featuredImageUrl
+						? h(
+							'div',
+							{ className: 'hdc-blog-post__hero' },
+							h( 'img', {
+								className: 'hdc-blog-post__hero-image',
+								src: post.featuredImageUrl,
+								srcSet: post.featuredImageSrcSet || undefined,
+								sizes: '(max-width: 980px) 100vw, 860px',
+								alt: buildImageAlt( post ),
+								loading: 'eager',
+								decoding: 'async',
+							} )
+						)
+						: null,
 					h(
 						'div',
 						{ className: 'hdc-blog-post__tags' },

@@ -1,36 +1,80 @@
 :root,
 .editor-styles-wrapper {
-  --background: 36 40% 97%;
-  --foreground: 20 16% 14%;
+  /* WPDS semantic adapter tokens (source-of-truth for foundation values). */
+  --wpds-color-surface-canvas: 36 40% 97%;
+  --wpds-color-surface-card: 0 0% 100%;
+  --wpds-color-surface-popover: 0 0% 100%;
+  --wpds-color-surface-subtle: 36 30% 90%;
+  --wpds-color-surface-muted: 36 20% 92%;
+  --wpds-color-text-primary: 20 16% 14%;
+  --wpds-color-text-secondary: 20 12% 26%;
+  --wpds-color-text-muted: 20 9% 36%;
+  --wpds-color-text-meta: 20 8% 40%;
+  --wpds-color-border-subtle: 30 20% 82%;
+  --wpds-color-accent: 38 92% 45%;
+  --wpds-color-accent-strong: 38 92% 50%;
+  --wpds-color-accent-foreground: 20 20% 8%;
+  --wpds-color-link: 38 92% 32%;
+  --wpds-color-link-hover: 38 92% 29%;
+  --wpds-color-focus-ring: 38 92% 40%;
+  --wpds-color-destructive: 0 84% 60%;
+  --wpds-color-success: 148 60% 38%;
+  --wpds-color-warning: 36 94% 46%;
+  --wpds-color-info: 213 90% 52%;
 
-  --card: 0 0% 100%;
-  --card-foreground: 20 16% 14%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 20 16% 14%;
+  --wpds-radius-base: 0.75rem;
+  --wpds-radius-control: calc(var(--wpds-radius-base) - 2px);
+  --wpds-radius-surface: calc(var(--wpds-radius-base) + 0.125rem);
+  --wpds-radius-emphasis: calc(var(--wpds-radius-base) + 0.375rem);
+  --wpds-radius-pill: 9999px;
+  --wpds-radius-floating: calc(var(--wpds-radius-base) + 0.25rem);
 
-  --primary: 38 92% 45%;
-  --primary-foreground: 20 20% 8%;
-  --secondary: 36 30% 90%;
-  --secondary-foreground: 20 12% 26%;
-  --muted: 36 20% 92%;
-  --muted-foreground: 20 8% 40%;
-  --accent: 38 92% 50%;
-  --accent-foreground: 20 20% 8%;
+  --wpds-space-2xs: 0.25rem;
+  --wpds-space-xs: 0.5rem;
+  --wpds-space-sm: 0.75rem;
+  --wpds-space-md: 1rem;
+  --wpds-space-lg: 1.5rem;
+  --wpds-space-xl: 2rem;
+  --wpds-space-2xl: 3rem;
 
-  --destructive: 0 84% 60%;
+  --wpds-font-serif: "Playfair Display", Georgia, serif;
+  --wpds-font-sans: "Source Serif 4", Georgia, serif;
+  --wpds-font-mono: "JetBrains Mono", monospace;
+
+  --wpds-focus-ring-width: 3px;
+  --wpds-focus-ring-offset: 2px;
+
+  --background: var(--wpds-color-surface-canvas);
+  --foreground: var(--wpds-color-text-primary);
+
+  --card: var(--wpds-color-surface-card);
+  --card-foreground: var(--wpds-color-text-primary);
+  --popover: var(--wpds-color-surface-popover);
+  --popover-foreground: var(--wpds-color-text-primary);
+
+  --primary: var(--wpds-color-accent);
+  --primary-foreground: var(--wpds-color-accent-foreground);
+  --secondary: var(--wpds-color-surface-subtle);
+  --secondary-foreground: var(--wpds-color-text-secondary);
+  --muted: var(--wpds-color-surface-muted);
+  --muted-foreground: var(--wpds-color-text-meta);
+  --accent: var(--wpds-color-accent-strong);
+  --accent-foreground: var(--wpds-color-accent-foreground);
+
+  --destructive: var(--wpds-color-destructive);
   --destructive-foreground: 210 40% 98%;
-  --success: 148 60% 38%;
+  --success: var(--wpds-color-success);
   --success-foreground: 152 67% 97%;
-  --warning: 36 94% 46%;
+  --warning: var(--wpds-color-warning);
   --warning-foreground: 44 96% 95%;
-  --info: 213 90% 52%;
+  --info: var(--wpds-color-info);
   --info-foreground: 210 40% 98%;
 
-  --border: 30 20% 82%;
-  --input: 30 20% 82%;
-  --ring: 38 92% 40%;
-  --focus-ring-width: 3px;
-  --focus-ring-offset: 2px;
+  --border: var(--wpds-color-border-subtle);
+  --input: var(--wpds-color-border-subtle);
+  --ring: var(--wpds-color-focus-ring);
+  --focus-ring-width: var(--wpds-focus-ring-width);
+  --focus-ring-offset: var(--wpds-focus-ring-offset);
   --overlay-blur-soft: 8px;
   --overlay-blur-subtle: 2px;
   --touch-target-size: 44px;
@@ -46,19 +90,19 @@
   --layer-toast: 80;
   --space-safe-area-bottom: max(0.75rem, env(safe-area-inset-bottom));
 
-  --radius: 0.75rem;
+  --radius: var(--wpds-radius-base);
   --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
+  --radius-md: var(--wpds-radius-control);
   --radius-sm: calc(var(--radius) - 4px);
-  --radius-control: var(--radius-md);
-  --radius-surface: calc(var(--radius) + 0.125rem);
-  --radius-emphasis: calc(var(--radius) + 0.375rem);
-  --radius-pill: 9999px;
-  --radius-floating: calc(var(--radius) + 0.25rem);
+  --radius-control: var(--wpds-radius-control);
+  --radius-surface: var(--wpds-radius-surface);
+  --radius-emphasis: var(--wpds-radius-emphasis);
+  --radius-pill: var(--wpds-radius-pill);
+  --radius-floating: var(--wpds-radius-floating);
 
-  --font-serif: "Playfair Display", Georgia, serif;
-  --font-sans: "Source Serif 4", Georgia, serif;
-  --font-mono: "JetBrains Mono", monospace;
+  --font-serif: var(--wpds-font-serif);
+  --font-sans: var(--wpds-font-sans);
+  --font-mono: var(--wpds-font-mono);
 
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
@@ -164,12 +208,12 @@
   --surface-hover: 36 26% 94%;
   --surface-active: 36 30% 90%;
 
-  --text-strong: 20 16% 14%;
-  --text-body: 20 12% 26%;
-  --text-subtle: 20 9% 36%;
-  --text-meta: 20 8% 40%;
-  --link: 38 92% 32%;
-  --link-hover: 38 92% 29%;
+  --text-strong: var(--wpds-color-text-primary);
+  --text-body: var(--wpds-color-text-secondary);
+  --text-subtle: var(--wpds-color-text-muted);
+  --text-meta: var(--wpds-color-text-meta);
+  --link: var(--wpds-color-link);
+  --link-hover: var(--wpds-color-link-hover);
 
   --interactive-border-hover: 38 72% 56%;
   --interactive-border-active: 38 82% 50%;
@@ -260,36 +304,58 @@ body.dark,
 body.is-dark-theme,
 .editor-styles-wrapper[data-theme="dark"],
 .editor-styles-wrapper.is-dark-theme {
-  --background: 20 14% 4%;
-  --foreground: 36 33% 92%;
+  /* Keep dark values anchored to the WPDS adapter before local aliases. */
+  --wpds-color-surface-canvas: 20 14% 4%;
+  --wpds-color-surface-card: 20 10% 8%;
+  --wpds-color-surface-popover: 20 10% 8%;
+  --wpds-color-surface-subtle: 20 8% 14%;
+  --wpds-color-surface-muted: 20 8% 12%;
+  --wpds-color-text-primary: 36 33% 92%;
+  --wpds-color-text-secondary: 36 20% 72%;
+  --wpds-color-text-muted: 36 13% 60%;
+  --wpds-color-text-meta: 36 10% 50%;
+  --wpds-color-border-subtle: 20 10% 16%;
+  --wpds-color-accent: 38 92% 50%;
+  --wpds-color-accent-strong: 38 92% 50%;
+  --wpds-color-accent-foreground: 20 14% 4%;
+  --wpds-color-link: 38 92% 58%;
+  --wpds-color-link-hover: 40 96% 62%;
+  --wpds-color-focus-ring: 38 92% 50%;
+  --wpds-color-destructive: 0 84% 60%;
+  --wpds-color-success: 152 62% 45%;
+  --wpds-color-warning: 40 96% 56%;
+  --wpds-color-info: 213 95% 64%;
 
-  --card: 20 10% 8%;
-  --card-foreground: 36 33% 92%;
-  --popover: 20 10% 8%;
-  --popover-foreground: 36 33% 92%;
+  --background: var(--wpds-color-surface-canvas);
+  --foreground: var(--wpds-color-text-primary);
 
-  --primary: 38 92% 50%;
-  --primary-foreground: 20 14% 4%;
-  --secondary: 20 8% 14%;
-  --secondary-foreground: 36 20% 72%;
-  --muted: 20 8% 12%;
-  --muted-foreground: 36 10% 52%;
-  --accent: 38 92% 50%;
-  --accent-foreground: 20 14% 4%;
-  --destructive: 0 84% 60%;
+  --card: var(--wpds-color-surface-card);
+  --card-foreground: var(--wpds-color-text-primary);
+  --popover: var(--wpds-color-surface-popover);
+  --popover-foreground: var(--wpds-color-text-primary);
+
+  --primary: var(--wpds-color-accent);
+  --primary-foreground: var(--wpds-color-accent-foreground);
+  --secondary: var(--wpds-color-surface-subtle);
+  --secondary-foreground: var(--wpds-color-text-secondary);
+  --muted: var(--wpds-color-surface-muted);
+  --muted-foreground: var(--wpds-color-text-meta);
+  --accent: var(--wpds-color-accent-strong);
+  --accent-foreground: var(--wpds-color-accent-foreground);
+  --destructive: var(--wpds-color-destructive);
   --destructive-foreground: 210 40% 98%;
-  --success: 152 62% 45%;
+  --success: var(--wpds-color-success);
   --success-foreground: 152 70% 12%;
-  --warning: 40 96% 56%;
+  --warning: var(--wpds-color-warning);
   --warning-foreground: 34 74% 14%;
-  --info: 213 95% 64%;
+  --info: var(--wpds-color-info);
   --info-foreground: 224 76% 12%;
 
-  --border: 20 10% 16%;
-  --input: 20 10% 16%;
-  --ring: 38 92% 50%;
-  --focus-ring-width: 3px;
-  --focus-ring-offset: 2px;
+  --border: var(--wpds-color-border-subtle);
+  --input: var(--wpds-color-border-subtle);
+  --ring: var(--wpds-color-focus-ring);
+  --focus-ring-width: var(--wpds-focus-ring-width);
+  --focus-ring-offset: var(--wpds-focus-ring-offset);
   --overlay-blur-soft: 8px;
   --overlay-blur-subtle: 2px;
   --touch-target-size: 44px;
@@ -329,12 +395,12 @@ body.is-dark-theme,
   --surface-hover: 20 10% 14%;
   --surface-active: 20 11% 17%;
 
-  --text-strong: 36 33% 92%;
-  --text-body: 36 20% 72%;
-  --text-subtle: 36 13% 60%;
-  --text-meta: 36 10% 50%;
-  --link: 38 92% 58%;
-  --link-hover: 40 96% 62%;
+  --text-strong: var(--wpds-color-text-primary);
+  --text-body: var(--wpds-color-text-secondary);
+  --text-subtle: var(--wpds-color-text-muted);
+  --text-meta: var(--wpds-color-text-meta);
+  --link: var(--wpds-color-link);
+  --link-hover: var(--wpds-color-link-hover);
 
   --interactive-border-hover: 38 76% 62%;
   --interactive-border-active: 38 88% 58%;

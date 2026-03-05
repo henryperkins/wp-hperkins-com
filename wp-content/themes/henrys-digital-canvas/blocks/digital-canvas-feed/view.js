@@ -80,6 +80,15 @@
 		} );
 	}
 
+	function buildPostImageAlt( post, title ) {
+		const explicitAlt = ensureString( post && post.featuredImageAlt, '' );
+		if ( explicitAlt ) {
+			return explicitAlt;
+		}
+
+		return title + ' featured image';
+	}
+
 	async function fetchPosts( config ) {
 		const endpoint = normalizePostsEndpoint( config.postsEndpoint || config.blogEndpoint, config.blogCount );
 		const response = await fetch( endpoint, {
@@ -103,6 +112,9 @@
 			const link = slug ? '/blog/' + encodeURIComponent( slug ) + '/' : ensureString( post && post.url, '#' );
 			const title = stripHtml( post && ( post.title?.rendered || post.title ) ) || 'Untitled post';
 			const excerpt = stripHtml( post && post.excerpt );
+			const thumbnailUrl = ensureString( post && post.featuredImageUrl, '' );
+			const thumbnailSrcSet = ensureString( post && post.featuredImageSrcSet, '' );
+			const thumbnailAlt = thumbnailUrl ? buildPostImageAlt( post, title ) : '';
 
 			return {
 				id: post.id || link || title,
@@ -111,6 +123,9 @@
 				link: link,
 				dateLabel: formatDate( post.date ),
 				readingTime: ensureString( post && post.readingTime, '' ),
+				thumbnailUrl: thumbnailUrl,
+				thumbnailAlt: thumbnailAlt,
+				thumbnailSrcSet: thumbnailSrcSet,
 			};
 		} );
 	}
@@ -143,6 +158,17 @@
 		const name = ensureString( sourceRepo.name, ensureString( localRepo.name, 'Unnamed repository' ) );
 		const updatedAt = ensureString( sourceRepo.updatedAt, ensureString( sourceRepo.pushed_at, ensureString( localRepo.updatedAt, '' ) ) );
 		const description = ensureString( localRepo.description, '' ) || ensureString( sourceRepo.description, 'No description provided.' );
+		const sourceOrigin = ensureString( sourceRepo.origin, '' );
+		const fallbackOrigin = ensureString( localRepo.origin, '' );
+		const sourceUrl = ensureString( sourceRepo.html_url, ensureString( sourceRepo.url, '' ) );
+		const origin =
+			sourceOrigin ||
+			fallbackOrigin ||
+			( /github\.com/i.test( sourceUrl ) ? 'github' : 'curated' );
+		const access = ensureString(
+			localRepo.access,
+			ensureString( sourceRepo.access, sourceRepo.private ? 'private' : 'public' )
+		);
 
 		return {
 			id: sourceRepo.id || localRepo.id || name,
@@ -154,7 +180,8 @@
 			updatedAt: updatedAt,
 			updatedLabel: formatDate( updatedAt ),
 			featured: Boolean( localRepo.featured || sourceRepo.featured ),
-			access: ensureString( localRepo.access, ensureString( sourceRepo.access, 'public' ) ),
+			access: access,
+			origin: origin,
 		};
 	}
 
@@ -377,6 +404,10 @@
 			'div',
 			{ className: 'hdc-feed-card-grid' },
 			items.map( function ( item ) {
+				const hasThumbnail = type === 'posts' && !! ensureString( item.thumbnailUrl, '' );
+				const repoOrigin = ensureString( item.origin, 'github' );
+				const isGitHubRepo = repoOrigin === 'github';
+				const isPrivateRepo = ensureString( item.access, 'public' ) === 'private';
 				const meta = type === 'posts'
 					? createElement(
 						'span',
@@ -396,51 +427,101 @@
 							: null
 					)
 					: createElement(
-						'span',
-						{ className: 'hdc-feed-card-meta-row' },
-						createElement( 'span', { className: 'hdc-feed-card-meta-item' }, item.language ),
+						'div',
+						{ className: 'hdc-feed-card-repo-meta' },
 						createElement(
-							'span',
-							{ className: 'hdc-feed-card-meta-item' },
+							'div',
+							{ className: 'hdc-feed-card-repo-topline' },
 							createElement(
 								'span',
-								{ className: 'hdc-feed-card-meta-icon', 'aria-hidden': 'true' },
-								renderLucideIcon( createElement, 'star', { className: 'hdc-feed-card-meta-icon-svg', size: 12 } )
-							),
-							createElement( 'span', null, String( item.stars ) )
-						),
-						item.updatedLabel
-							? createElement(
-								'span',
-								{ className: 'hdc-feed-card-meta-item' },
+								{ className: 'hdc-feed-card-repo-origin' },
 								createElement(
 									'span',
-									{ className: 'hdc-feed-card-meta-icon', 'aria-hidden': 'true' },
-									renderLucideIcon( createElement, 'clock', { className: 'hdc-feed-card-meta-icon-svg', size: 12 } )
+									{ className: 'hdc-feed-card-repo-origin-icon', 'aria-hidden': 'true' },
+									renderLucideIcon(
+										createElement,
+										isGitHubRepo ? 'github' : 'folder-open',
+										{ className: 'hdc-feed-card-repo-origin-icon-svg', size: 14 }
+									)
 								),
-								createElement( 'span', null, item.updatedLabel )
-							)
-							: null
+								createElement(
+									'span',
+									{ className: 'hdc-feed-card-repo-language' },
+									ensureString( item.language, 'Unknown' )
+								)
+							),
+							isPrivateRepo
+								? createElement( 'span', { className: 'hdc-feed-pill hdc-feed-pill--private' }, 'Private' )
+								: null
+						),
+						createElement(
+							'span',
+							{ className: 'hdc-feed-card-meta-row' },
+							isGitHubRepo
+								? createElement(
+									'span',
+									{ className: 'hdc-feed-card-meta-item' },
+									createElement(
+										'span',
+										{ className: 'hdc-feed-card-meta-icon', 'aria-hidden': 'true' },
+										renderLucideIcon( createElement, 'star', { className: 'hdc-feed-card-meta-icon-svg', size: 12 } )
+									),
+									createElement( 'span', null, String( item.stars ) )
+								)
+								: createElement( 'span', { className: 'hdc-feed-pill hdc-feed-pill--case-study' }, 'Case study' ),
+							item.updatedLabel
+								? createElement(
+									'span',
+									{ className: 'hdc-feed-card-meta-item' },
+									createElement(
+										'span',
+										{ className: 'hdc-feed-card-meta-icon', 'aria-hidden': 'true' },
+										renderLucideIcon( createElement, 'clock', { className: 'hdc-feed-card-meta-icon-svg', size: 12 } )
+									),
+									createElement( 'span', null, item.updatedLabel )
+								)
+								: null
+						)
 					);
+				const description = item.excerpt || item.description;
 
 				return createElement(
 					'article',
-					{ className: 'hdc-feed-card', key: item.id },
+					{ className: 'hdc-feed-card' + ( hasThumbnail ? ' has-thumbnail' : '' ), key: item.id },
+					hasThumbnail
+						? createElement(
+							'div',
+							{ className: 'hdc-feed-card-thumb-wrap' },
+							createElement( 'img', {
+								className: 'hdc-feed-card-thumb',
+								src: item.thumbnailUrl,
+								srcSet: item.thumbnailSrcSet || undefined,
+								sizes: '(max-width: 1024px) 100vw, 340px',
+								alt: item.thumbnailAlt || ( item.title + ' featured image' ),
+								loading: 'lazy',
+								decoding: 'async',
+							} )
+						)
+						: null,
 					createElement(
-						'a',
-						{
-							className: 'hdc-feed-card-link',
-							href: item.link || item.url,
-							target: openInNewTab ? '_blank' : undefined,
-							rel: openInNewTab ? 'noopener noreferrer' : undefined,
-						},
-						type === 'posts' ? item.title : item.name
-					),
-					createElement( 'p', { className: 'hdc-feed-card-meta' }, meta ),
-					createElement(
-						'p',
-						{ className: 'hdc-feed-card-description' },
-						item.excerpt || item.description
+						'div',
+						{ className: 'hdc-feed-card-body' },
+						createElement(
+							'a',
+							{
+								className: 'hdc-feed-card-link',
+								href: item.link || item.url,
+								target: openInNewTab ? '_blank' : undefined,
+								rel: openInNewTab ? 'noopener noreferrer' : undefined,
+							},
+							type === 'posts' ? item.title : item.name
+						),
+						createElement( 'p', { className: 'hdc-feed-card-meta' }, meta ),
+						createElement(
+							'p',
+							{ className: 'hdc-feed-card-description' },
+							description
+						)
 					)
 				);
 			} )

@@ -1,0 +1,46 @@
+
+> henrys-digital-canvas-theme@0.1.0 smoke:full
+> ./scripts/full_smoke.sh
+
+Route smoke against https://wp.hperkins.com
+PASS	/                                             status=200 marker=hdc-digital-canvas-feed
+PASS	/work/                                        status=200 marker=hdc-work-app
+PASS	/work/lakefront-digital-portfolio/            status=200 marker=hdc-work-detail
+PASS	/resume/                                      status=200 marker=hdc-resume-overview
+PASS	/resume/ats/                                  status=200 marker=hdc-resume-ats
+PASS	/hobbies/                                     status=200 marker=hdc-hobbies-moments
+PASS	/blog/                                        status=200 marker=hdc-blog-index
+PASS	/blog/wordpress-ai-use-cases-developers-admins/ status=200 marker=hdc-blog-post
+PASS	/about/                                       status=200 marker=hdc-about-timeline
+PASS	/contact/                                     status=200 marker=hdc-contact-form
+PASS	/route-should-not-exist/                      status=404 marker=hdc-not-found
+
+Route smoke passed.
+API smoke against https://wp.hperkins.com
+PASS	/wp-json/henrys-digital-canvas/v1/resume                               status=200
+PASS	/wp-json/henrys-digital-canvas/v1/resume-ats                           status=200
+PASS	/wp-json/henrys-digital-canvas/v1/moments                              status=200
+PASS	/wp-json/henrys-digital-canvas/v1/blog?limit=3                         status=200
+PASS	/wp-json/henrys-digital-canvas/v1/blog/wordpress-ai-use-cases-developers-admins status=200
+PASS	/wp-json/henrys-digital-canvas/v1/work?limit=3                         status=200
+PASS	/wp-json/henrys-digital-canvas/v1/work/lakefront-digital-portfolio     status=200
+PASS	/wp-json/henrys-digital-canvas/v1/blog?limit=3                         fields=featuredImageUrl,featuredImageAlt,featuredImageSrcSet
+PASS	/wp-json/henrys-digital-canvas/v1/blog/wordpress-ai-use-cases-developers-admins fields=featuredImageUrl,featuredImageAlt,featuredImageSrcSet
+
+API smoke passed.
+Browser smoke against https://wp.hperkins.com
+
+Running 7 tests using 1 worker
+
+[1A[2K[1/7] scripts/playwright/browser-smoke.spec.cjs:20:2 › Henrys Digital Canvas browser smoke › route matrix renders expected blocks
+[1A[2K[2/7] scripts/playwright/browser-smoke.spec.cjs:28:2 › Henrys Digital Canvas browser smoke › work compare flow
+[1A[2K[3/7] scripts/playwright/browser-smoke.spec.cjs:44:2 › Henrys Digital Canvas browser smoke › hobbies filters update querystring
+[1A[2K[4/7] scripts/playwright/browser-smoke.spec.cjs:61:2 › Henrys Digital Canvas browser smoke › contact validation and success states
+[1A[2K[5/7] scripts/playwright/browser-smoke.spec.cjs:77:2 › Henrys Digital Canvas browser smoke › blog progress and scroll-to-top behavior
+[1A[2K[6/7] scripts/playwright/browser-smoke.spec.cjs:98:2 › Henrys Digital Canvas browser smoke › blog and home media surfaces follow blog media contract
+[1A[2K[7/7] scripts/playwright/browser-smoke.spec.cjs:158:2 › Henrys Digital Canvas browser smoke › not-found recovery, command palette, and mobile menu
+[1A[2K  7 passed (20.2s)
+
+Browser smoke passed.
+
+Full smoke suite passed.

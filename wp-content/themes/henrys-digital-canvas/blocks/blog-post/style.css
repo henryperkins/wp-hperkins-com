@@ -62,6 +62,21 @@
   margin-bottom: 1.25rem;
 }
 
+.hdc-blog-post__hero {
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-surface);
+  margin: 0 0 0.95rem;
+  overflow: hidden;
+}
+
+.hdc-blog-post__hero-image {
+  aspect-ratio: 16 / 9;
+  display: block;
+  height: auto;
+  object-fit: cover;
+  width: 100%;
+}
+
 .hdc-blog-post__tags {
   display: flex;
   flex-wrap: wrap;

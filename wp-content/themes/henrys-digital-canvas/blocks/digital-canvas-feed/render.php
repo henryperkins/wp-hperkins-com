@@ -14,7 +14,7 @@ $defaults = array(
 	'showBlog'       => true,
 	'showRepos'      => true,
 	'blogCount'      => 3,
-	'repoCount'      => 4,
+	'repoCount'      => 3,
 	'postsEndpoint'  => '',
 	'openInNewTab'   => false,
 );

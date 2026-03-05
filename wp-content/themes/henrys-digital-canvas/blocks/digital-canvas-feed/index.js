@@ -64,7 +64,7 @@
 							label: __( 'Repository count', 'henrys-digital-canvas' ),
 							value: attrs.repoCount,
 							onChange: function ( value ) {
-								setAttributes( { repoCount: value || 4 } );
+								setAttributes( { repoCount: value || 3 } );
 							},
 							min: 1,
 							max: 10,

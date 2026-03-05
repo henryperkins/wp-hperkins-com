@@ -95,6 +95,66 @@ test.describe('Henrys Digital Canvas browser smoke', () => {
 			.toBeLessThan(40);
 	});
 
+	test('blog and home media surfaces follow blog media contract', async ({ page }) => {
+		const listResponse = await page.request.get('/wp-json/henrys-digital-canvas/v1/blog?limit=3');
+		expect(listResponse.ok()).toBeTruthy();
+		const listPayload = await listResponse.json();
+		const posts = Array.isArray(listPayload && listPayload.posts) ? listPayload.posts : [];
+		const featuredPost = posts.find((post) => post && post.featured) || posts[0] || null;
+		const featuredPostHasImage =
+			featuredPost &&
+			typeof featuredPost.featuredImageUrl === 'string' &&
+			featuredPost.featuredImageUrl.trim().length > 0;
+		const hasAnyListThumbnail = posts.some(
+			(post) =>
+				post &&
+				typeof post.featuredImageUrl === 'string' &&
+				post.featuredImageUrl.trim().length > 0
+		);
+
+		await page.goto('/blog/', { waitUntil: 'networkidle' });
+		const blogFeaturedImage = page.locator('.hdc-blog-index__featured-image');
+		const blogRowThumbs = page.locator('.hdc-blog-index__card-thumb');
+
+		if (featuredPostHasImage) {
+			await expect(blogFeaturedImage).toHaveCount(1, { timeout: 10000 });
+		} else {
+			await expect(blogFeaturedImage).toHaveCount(0);
+		}
+
+		if (hasAnyListThumbnail) {
+			await expect.poll(async () => blogRowThumbs.count(), { timeout: 10000 }).toBeGreaterThan(0);
+		} else {
+			await expect(blogRowThumbs).toHaveCount(0);
+		}
+
+		const detailResponse = await page.request.get(`/wp-json/henrys-digital-canvas/v1/blog/${ BLOG_SLUG }`);
+		expect(detailResponse.ok()).toBeTruthy();
+		const detailPayload = await detailResponse.json();
+		const detailHasImage =
+			detailPayload &&
+			typeof detailPayload.featuredImageUrl === 'string' &&
+			detailPayload.featuredImageUrl.trim().length > 0;
+
+		await page.goto(`/blog/${ BLOG_SLUG }/`, { waitUntil: 'networkidle' });
+		const detailHeroImage = page.locator('.hdc-blog-post__hero-image');
+		if (detailHasImage) {
+			await expect(detailHeroImage).toHaveCount(1, { timeout: 10000 });
+		} else {
+			await expect(detailHeroImage).toHaveCount(0);
+		}
+
+		await page.goto('/', { waitUntil: 'networkidle' });
+		const recentWritingSection = page.locator('.hdc-feed-section').filter({ hasText: 'Recent Writing' }).first();
+		await expect(recentWritingSection).toHaveCount(1, { timeout: 10000 });
+		const homePostThumbs = recentWritingSection.locator('.hdc-feed-card-thumb');
+		if (hasAnyListThumbnail) {
+			await expect.poll(async () => homePostThumbs.count(), { timeout: 10000 }).toBeGreaterThan(0);
+		} else {
+			await expect(homePostThumbs).toHaveCount(0);
+		}
+	});
+
 	test('not-found recovery, command palette, and mobile menu', async ({ page, browser }) => {
 		await page.goto('/about/', { waitUntil: 'networkidle' });
 		await page.goto('/route-should-not-exist/', { waitUntil: 'networkidle' });

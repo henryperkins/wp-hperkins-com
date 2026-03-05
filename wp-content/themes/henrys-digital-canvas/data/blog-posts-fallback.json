@@ -12,7 +12,11 @@
     "featured": true,
     "readingTime": "8 min read",
     "content": "The system has three stages: ingestion, processing, and routing.",
-    "contentHtml": "<h2>The Problem</h2><p>Every content team hits manual tagging bottlenecks at scale.</p><h2>Architecture Overview</h2><p>The pipeline automates summarization, tagging, and routing with human review for low-confidence cases.</p>"
+    "contentHtml": "<h2>The Problem</h2><p>Every content team hits manual tagging bottlenecks at scale.</p><h2>Architecture Overview</h2><p>The pipeline automates summarization, tagging, and routing with human review for low-confidence cases.</p>",
+    "url": "/blog/building-ai-powered-content-pipeline/",
+    "featuredImageUrl": "/images/hero-piano-ide.png",
+    "featuredImageAlt": "Hands on a piano keyboard beside an IDE dashboard",
+    "featuredImageSrcSet": ""
   },
   {
     "slug": "design-systems-that-actually-work",
@@ -27,7 +31,11 @@
     "featured": false,
     "readingTime": "6 min read",
     "content": "Adoption is the hard part, not component APIs.",
-    "contentHtml": "<h2>Why Most Design Systems Fail</h2><p>Adoption and workflow fit determine whether systems survive.</p><h2>What Actually Works</h2><p>Start with tokens, then make the right thing the easy thing.</p>"
+    "contentHtml": "<h2>Why Most Design Systems Fail</h2><p>Adoption and workflow fit determine whether systems survive.</p><h2>What Actually Works</h2><p>Start with tokens, then make the right thing the easy thing.</p>",
+    "url": "/blog/design-systems-that-actually-work/",
+    "featuredImageUrl": "/images/amber-pattern.png",
+    "featuredImageAlt": "Abstract amber geometric pattern",
+    "featuredImageSrcSet": ""
   },
   {
     "slug": "music-and-code",
@@ -42,6 +50,10 @@
     "featured": false,
     "readingTime": "5 min read",
     "content": "Practice means isolating hard parts and improving deliberately.",
-    "contentHtml": "<h2>Practice vs. Performance</h2><p>Skill growth comes from focused repetition, not passive repetition.</p><h2>The Ensemble Effect</h2><p>Great software teams, like bands, require listening and timing.</p>"
+    "contentHtml": "<h2>Practice vs. Performance</h2><p>Skill growth comes from focused repetition, not passive repetition.</p><h2>The Ensemble Effect</h2><p>Great software teams, like bands, require listening and timing.</p>",
+    "url": "/blog/music-and-code/",
+    "featuredImageUrl": "",
+    "featuredImageAlt": "",
+    "featuredImageSrcSet": ""
   }
 ]
