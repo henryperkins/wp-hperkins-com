@@ -37,6 +37,9 @@ $config = array(
 	'showSignalsPanel' => (bool) $attrs['showSignalsPanel'],
 	'showActivitySparkline' => (bool) $attrs['showActivitySparkline'],
 	'sparklineWeeks'  => max( 4, min( 16, (int) $attrs['sparklineWeeks'] ) ),
+	'githubProxyUrl'  => '/api/github/repos',
+	'githubLanguageSummaryProxyUrl' => '/api/github/language-summary',
+	'languageSummaryMaxRepos' => 120,
 	'localReposUrl'   => esc_url_raw( get_theme_file_uri( 'blocks/work-showcase/data/repos.json' ) ),
 	'repoCaseStudyDetailsUrl' => esc_url_raw( get_theme_file_uri( 'blocks/work-showcase/data/repo-case-study-details.json' ) ),
 );

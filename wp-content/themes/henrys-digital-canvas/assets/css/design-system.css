@@ -28,7 +28,7 @@
 
   --border: 30 20% 82%;
   --input: 30 20% 82%;
-  --ring: 38 92% 50%;
+  --ring: 38 92% 40%;
   --focus-ring-width: 3px;
   --focus-ring-offset: 2px;
   --overlay-blur-soft: 8px;
@@ -273,7 +273,7 @@ body.is-dark-theme,
   --secondary: 20 8% 14%;
   --secondary-foreground: 36 20% 72%;
   --muted: 20 8% 12%;
-  --muted-foreground: 36 10% 50%;
+  --muted-foreground: 36 10% 52%;
   --accent: 38 92% 50%;
   --accent-foreground: 20 14% 4%;
   --destructive: 0 84% 60%;

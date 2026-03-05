@@ -1,6 +1,6 @@
 # Henry's Digital Canvas Migration Progress
 
-Last updated: 2026-03-03T10:07Z (UTC)
+Last updated: 2026-03-05T10:28Z (UTC)
 
 ## Phase Tracker
 
@@ -1139,6 +1139,73 @@ Deliver scheduled and manual smoke automation with clear pass/fail visibility an
 ### What Remains
 - No blocking items remain for Phase 8.
 - Phase 8 is complete.
+
+## 2026-03-05 Parity Remediation Checkpoint
+
+### Objective
+Close post-cutover parity drift discovered in the March 2026 static parity review (work signals, GitHub loading contract, contact semantics, home feed composition, token drift, and resume impact-strip presentation).
+
+### What Shipped
+- Work showcase parity updates:
+  - `blocks/work-showcase/view.js`
+  - `blocks/work-showcase/style.css`
+  - `blocks/work-showcase/render.php`
+  - `blocks/work-showcase/block.json`
+  - Added proxy-based GitHub pagination and rate-limit cooldown behavior.
+  - Added language-summary loading with source states (`live`, `fallback-ratelimit`, `fallback-offline`, `fallback-error`, `loading`).
+  - Added Language Distribution section (message, primary-language bar chart, language-bytes treemap visualization).
+- Contact delivery semantics hardening:
+  - `inc/rest-api.php`
+  - Contact submissions now return explicit failure on delivery errors (503) instead of false-positive success.
+  - Added 429 rate-limiting response contract for burst submissions.
+- Home feed composition parity update:
+  - `blocks/digital-canvas-feed/view.js`
+  - `blocks/digital-canvas-feed/style.css`
+  - `blocks/digital-canvas-feed/render.php`
+  - Migrated from list rendering to card-driven Featured Work + Recent Writing sections.
+  - Added repo source-state messaging for live/fallback states.
+- Token and resume alignment:
+  - `assets/css/design-system.css` (aligned `--ring` and dark `--muted-foreground` values to source tokens).
+  - `blocks/resume-overview/style.css` (impact-strip centering, density tuning, and metric typography hierarchy).
+
+### What Was Verified
+- JavaScript syntax checks:
+  - `node --check blocks/work-showcase/view.js`
+  - `node --check blocks/digital-canvas-feed/view.js`
+- PHP lint checks:
+  - `php -l inc/rest-api.php`
+  - `php -l blocks/work-showcase/render.php`
+  - `php -l blocks/digital-canvas-feed/render.php`
+- Route smoke:
+  - `npm run smoke:route`
+  - Result: all route checks passed.
+- API smoke:
+  - `npm run smoke:api`
+  - Result: all API contract checks passed.
+- Browser smoke:
+  - `npm run smoke:browser`
+  - Result: 6/6 Playwright tests passed.
+
+### Follow-up Validation (2026-03-05)
+- Restored live compatibility for frontend proxy URLs by adding legacy endpoint handlers:
+  - `GET /api/github/repos`
+  - `GET /api/github/language-summary`
+  - Implemented in `inc/rest-api.php` with:
+    - paginated GitHub passthrough behavior,
+    - response-shape sanitization for frontend contracts,
+    - rate-limit header passthrough (`x-github-ratelimit-*`, `retry-after`),
+    - short-lived caching to reduce upstream pressure.
+- Verified live production endpoint responses:
+  - `curl -i "https://wp.hperkins.com/api/github/repos?username=henryperkins&per_page=5&page=1"` → `HTTP/2 200`
+  - `curl -i "https://wp.hperkins.com/api/github/language-summary?username=henryperkins&max_repos=10"` → `HTTP/2 200`
+- Completed consolidated smoke rerun:
+  - `npm run smoke:full`
+  - Result: route smoke passed, API smoke passed, browser smoke passed (6/6).
+- Targeted runtime confirmation:
+  - `/work/` browser console probe reports zero errors, and language distribution UI renders with live-source messaging.
+
+### Remaining Validation
+- None for this parity remediation checkpoint.
 
 ## Migration Complete
 

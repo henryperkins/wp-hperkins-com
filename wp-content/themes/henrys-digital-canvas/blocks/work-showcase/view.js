@@ -26,6 +26,11 @@
 	const DEFAULT_SPARKLINE_WEEKS = 8;
 	const MIN_SPARKLINE_WEEKS = 4;
 	const MAX_SPARKLINE_WEEKS = 16;
+	const GITHUB_REPO_LIST_LIMIT = 100;
+	const GITHUB_REPO_MAX_PAGES = 20;
+	const GITHUB_LANGUAGE_SUMMARY_MAX_REPOS_DEFAULT = 120;
+	const GITHUB_LANGUAGE_SUMMARY_MAX_REPOS_LIMIT = 200;
+	const RATE_LIMIT_COOLDOWN_FALLBACK_MS = 60000;
 	const ROLE_ORDER = [ 'Systems', 'Product', 'Craft', 'Performance' ];
 	const ROLE_DESCRIPTION_MAP = {
 		Systems: 'Architecture, integrations, data movement, and operational foundations.',
@@ -61,6 +66,13 @@
 		'dashboard',
 		'app',
 	] );
+	const repoRateLimitCooldownByQueryKey = new Map();
+	const languageSummaryRateLimitCooldownByQueryKey = new Map();
+	const compactNumberFormatter = new Intl.NumberFormat( 'en-US', {
+		notation: 'compact',
+		maximumFractionDigits: 1,
+	} );
+	const wholeNumberFormatter = new Intl.NumberFormat( 'en-US' );
 
 	function h() {
 		return createElement.apply( undefined, arguments );
@@ -324,9 +336,121 @@
 				MIN_SPARKLINE_WEEKS,
 				MAX_SPARKLINE_WEEKS
 			),
+			githubProxyUrl: sanitizeString( parsed.githubProxyUrl, '/api/github/repos' ),
+			githubLanguageSummaryProxyUrl: sanitizeString(
+				parsed.githubLanguageSummaryProxyUrl,
+				'/api/github/language-summary'
+			),
+			languageSummaryMaxRepos: clamp(
+				Number.parseInt( parsed.languageSummaryMaxRepos, 10 ) || GITHUB_LANGUAGE_SUMMARY_MAX_REPOS_DEFAULT,
+				1,
+				GITHUB_LANGUAGE_SUMMARY_MAX_REPOS_LIMIT
+			),
 			localReposUrl: sanitizeString( parsed.localReposUrl, '' ),
 			repoCaseStudyDetailsUrl: sanitizeString( parsed.repoCaseStudyDetailsUrl, '' ),
 		};
+	}
+
+	function parseIntegerHeader( value ) {
+		if ( ! value ) {
+			return undefined;
+		}
+
+		const parsed = Number.parseInt( String( value ), 10 );
+		return Number.isFinite( parsed ) ? parsed : undefined;
+	}
+
+	function parseRetryAfterSeconds( value ) {
+		if ( ! value ) {
+			return undefined;
+		}
+
+		const seconds = Number.parseInt( String( value ), 10 );
+		if ( Number.isFinite( seconds ) ) {
+			return Math.max( 0, seconds );
+		}
+
+		const retryDateMs = Date.parse( String( value ) );
+		if ( Number.isFinite( retryDateMs ) ) {
+			return Math.max( 0, Math.ceil( ( retryDateMs - Date.now() ) / 1000 ) );
+		}
+
+		return undefined;
+	}
+
+	function parsePayloadMessage( payload ) {
+		if ( ! payload || typeof payload !== 'object' ) {
+			return '';
+		}
+
+		if ( typeof payload.error === 'string' ) {
+			return payload.error.trim();
+		}
+
+		if ( typeof payload.message === 'string' ) {
+			return payload.message.trim();
+		}
+
+		if ( payload.details && typeof payload.details === 'object' && typeof payload.details.message === 'string' ) {
+			return payload.details.message.trim();
+		}
+
+		return '';
+	}
+
+	function createGitHubProxyError( message, response, payload ) {
+		const error = new Error( message );
+		const status = response && Number.isFinite( response.status ) ? response.status : undefined;
+		const rateLimitRemaining = response ? parseIntegerHeader( response.headers.get( 'x-github-ratelimit-remaining' ) ) : undefined;
+		const rateLimitResetEpochSeconds = response ? parseIntegerHeader( response.headers.get( 'x-github-ratelimit-reset' ) ) : undefined;
+		const retryAfterSeconds = response ? parseRetryAfterSeconds( response.headers.get( 'retry-after' ) ) : undefined;
+		const payloadMessage = parsePayloadMessage( payload );
+
+		error.status = status;
+		error.rateLimitRemaining = rateLimitRemaining;
+		error.rateLimitResetEpochSeconds = rateLimitResetEpochSeconds;
+		error.retryAfterSeconds = retryAfterSeconds;
+		error.rateLimited =
+			status === 429 ||
+			( status === 403 &&
+				( rateLimitRemaining === 0 ||
+					retryAfterSeconds > 0 ||
+					/rate limit/i.test( message ) ||
+					/rate limit/i.test( payloadMessage ) ) );
+		return error;
+	}
+
+	function getRateLimitRetryAfterMs( error, fallbackMs ) {
+		if ( ! isRateLimitError( error ) ) {
+			return null;
+		}
+
+		const fallback = Number.isFinite( fallbackMs ) && fallbackMs > 0 ? Math.floor( fallbackMs ) : RATE_LIMIT_COOLDOWN_FALLBACK_MS;
+		if ( typeof error.retryAfterSeconds === 'number' && error.retryAfterSeconds > 0 ) {
+			return Math.max( 1000, error.retryAfterSeconds * 1000 );
+		}
+
+		if ( typeof error.rateLimitResetEpochSeconds === 'number' ) {
+			const retryAfterMs = Math.ceil( error.rateLimitResetEpochSeconds * 1000 - Date.now() );
+			if ( retryAfterMs > 0 ) {
+				return Math.max( 1000, retryAfterMs );
+			}
+		}
+
+		return fallback;
+	}
+
+	function getRemainingRateLimitCooldownMs( map, queryKey ) {
+		const cooldownUntil = map.get( queryKey ) || 0;
+		const remainingMs = cooldownUntil - Date.now();
+		return Math.max( 0, remainingMs );
+	}
+
+	function setRateLimitCooldown( map, queryKey, error ) {
+		const retryAfterMs = getRateLimitRetryAfterMs( error, RATE_LIMIT_COOLDOWN_FALLBACK_MS ) || RATE_LIMIT_COOLDOWN_FALLBACK_MS;
+		const nextCooldownUntil = Date.now() + retryAfterMs;
+		const previousCooldownUntil = map.get( queryKey ) || 0;
+		map.set( queryKey, Math.max( previousCooldownUntil, nextCooldownUntil ) );
 	}
 
 	async function fetchJson( url ) {
@@ -376,7 +500,28 @@
 	}
 
 	function isRateLimitError( error ) {
-		return !! ( error && error.rateLimited );
+		if ( ! error || typeof error !== 'object' ) {
+			return false;
+		}
+
+		if ( error.rateLimited ) {
+			return true;
+		}
+
+		if ( error.status === 429 ) {
+			return true;
+		}
+
+		if ( error.status === 403 ) {
+			if ( typeof error.rateLimitRemaining === 'number' && error.rateLimitRemaining <= 0 ) {
+				return true;
+			}
+			if ( /rate limit/i.test( String( error.message || '' ) ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	function isOfflineError( error ) {
@@ -489,51 +634,204 @@
 			.slice( 0, config.repoCount );
 	}
 
-	async function fetchGitHubRepos( config, localRepos ) {
-		const params = new URLSearchParams( {
-			sort: 'updated',
-			per_page: String( config.repoCount ),
+	function resolveRequestUrl( value ) {
+		const normalized = sanitizeString( value, '' );
+		if ( ! normalized ) {
+			return normalized;
+		}
+
+		if ( /^https?:\/\//i.test( normalized ) ) {
+			return normalized;
+		}
+
+		if ( normalized.charAt( 0 ) === '/' && typeof window !== 'undefined' && window.location && window.location.origin ) {
+			return new URL( normalized, window.location.origin ).toString();
+		}
+
+		return normalized;
+	}
+
+	function getRepoRateLimitCooldownQueryKey( owner ) {
+		return 'github-repos:' + owner;
+	}
+
+	function getLanguageSummaryRateLimitCooldownQueryKey( owner, maxRepos ) {
+		return 'github-language-summary:' + owner + ':' + String( maxRepos );
+	}
+
+	function normalizeLanguage( language ) {
+		const normalized = typeof language === 'string' ? language.trim() : '';
+		return normalized || 'Unknown';
+	}
+
+	function buildFallbackRepoLanguageCounts( repos ) {
+		const counts = new Map();
+		repos.forEach( function ( repo ) {
+			const language = normalizeLanguage( repo.language );
+			counts.set( language, ( counts.get( language ) || 0 ) + 1 );
 		} );
 
-		const endpoint =
-			'https://api.github.com/users/' +
-			encodeURIComponent( config.githubUsername ) +
-			'/repos?' +
-			params.toString();
+		return Array.from( counts.entries() )
+			.map( function ( entry ) {
+				return { language: entry[ 0 ], count: entry[ 1 ] };
+			} )
+			.sort( function ( a, b ) {
+				return b.count - a.count || a.language.localeCompare( b.language );
+			} );
+	}
 
-		const response = await fetch( endpoint, {
+	function buildFallbackLanguageSummary( repos, source, username ) {
+		return {
+			username: username || 'unknown',
+			analyzedRepoCount: repos.length,
+			repoLanguageCounts: buildFallbackRepoLanguageCounts( repos ),
+			languageByteTotals: [],
+			byteDataIncomplete: true,
+			failedLanguageRequestCount: 0,
+			source: source,
+		};
+	}
+
+	function isLanguageRepoCountArray( value ) {
+		return Array.isArray( value ) && value.every( function ( entry ) {
+			return (
+				entry &&
+				typeof entry === 'object' &&
+				typeof entry.language === 'string' &&
+				typeof entry.count === 'number'
+			);
+		} );
+	}
+
+	function isLanguageByteTotalArray( value ) {
+		return Array.isArray( value ) && value.every( function ( entry ) {
+			return (
+				entry &&
+				typeof entry === 'object' &&
+				typeof entry.language === 'string' &&
+				typeof entry.bytes === 'number'
+			);
+		} );
+	}
+
+	async function fetchGitHubReposProxyPage( config, perPage, page ) {
+		const requestUrl = new URL( resolveRequestUrl( config.githubProxyUrl ) );
+		requestUrl.searchParams.set( 'username', config.githubUsername );
+		requestUrl.searchParams.set( 'per_page', String( perPage ) );
+		requestUrl.searchParams.set( 'page', String( page ) );
+
+		const response = await fetch( requestUrl.toString(), {
 			headers: {
-				Accept: 'application/vnd.github+json',
+				Accept: 'application/json',
 			},
 		} );
 
+		let payload = null;
+		try {
+			payload = await response.json();
+		} catch ( error ) {
+			throw createGitHubProxyError( 'GitHub proxy returned invalid JSON', response, null );
+		}
+
 		if ( ! response.ok ) {
-			let payload = null;
-			try {
-				payload = await response.json();
-			} catch ( error ) {
-				payload = null;
-			}
-
-			const message = payload && payload.message ? String( payload.message ) : '';
-			const rateRemaining = response.headers.get( 'x-ratelimit-remaining' );
-			const rateLimited =
-				( response.status === 403 && rateRemaining === '0' ) || /rate limit/i.test( message );
-
-			const requestError = new Error(
-				'GitHub request failed with status ' + response.status + ( message ? ': ' + message : '' )
-			);
-			requestError.status = response.status;
-			requestError.rateLimited = rateLimited;
-			throw requestError;
+			const message = parsePayloadMessage( payload ) || 'GitHub proxy request failed';
+			throw createGitHubProxyError( message + ' (status ' + response.status + ')', response, payload );
 		}
 
-		const payload = await response.json();
 		if ( ! Array.isArray( payload ) ) {
-			throw new Error( 'GitHub response format is invalid.' );
+			throw createGitHubProxyError(
+				'GitHub proxy response was not an array of repositories',
+				response,
+				payload
+			);
 		}
 
-		return mapGitHubRepos( payload, localRepos, config );
+		return payload;
+	}
+
+	async function fetchGitHubRepos( config, localRepos ) {
+		const perPage = GITHUB_REPO_LIST_LIMIT;
+		const allRepos = [];
+
+		for ( let page = 1; page <= GITHUB_REPO_MAX_PAGES; page += 1 ) {
+			const pageRepos = await fetchGitHubReposProxyPage( config, perPage, page );
+			allRepos.push.apply( allRepos, pageRepos );
+
+			if ( pageRepos.length < perPage ) {
+				break;
+			}
+		}
+
+		return mapGitHubRepos( allRepos, localRepos, config );
+	}
+
+	async function fetchGitHubLanguageSummaryFromProxy( config ) {
+		const requestUrl = new URL( resolveRequestUrl( config.githubLanguageSummaryProxyUrl ) );
+		requestUrl.searchParams.set( 'username', config.githubUsername );
+		requestUrl.searchParams.set( 'max_repos', String( config.languageSummaryMaxRepos ) );
+
+		const response = await fetch( requestUrl.toString(), {
+			headers: {
+				Accept: 'application/json',
+			},
+		} );
+
+		let payload = null;
+		try {
+			payload = await response.json();
+		} catch ( error ) {
+			throw createGitHubProxyError( 'GitHub language summary proxy returned invalid JSON', response, null );
+		}
+
+		if ( ! response.ok ) {
+			const message = parsePayloadMessage( payload ) || 'GitHub language summary request failed';
+			throw createGitHubProxyError( message + ' (status ' + response.status + ')', response, payload );
+		}
+
+		if (
+			! payload ||
+			typeof payload !== 'object' ||
+			typeof payload.username !== 'string' ||
+			typeof payload.analyzedRepoCount !== 'number' ||
+			typeof payload.byteDataIncomplete !== 'boolean' ||
+			typeof payload.failedLanguageRequestCount !== 'number' ||
+			! isLanguageRepoCountArray( payload.repoLanguageCounts ) ||
+			! isLanguageByteTotalArray( payload.languageByteTotals )
+		) {
+			throw createGitHubProxyError(
+				'GitHub language summary response had an unexpected shape',
+				response,
+				payload
+			);
+		}
+
+		return payload;
+	}
+
+	async function loadLanguageSummary( config, repos ) {
+		const username = sanitizeString( config.githubUsername, 'unknown' );
+		const cooldownQueryKey = getLanguageSummaryRateLimitCooldownQueryKey(
+			username,
+			config.languageSummaryMaxRepos
+		);
+
+		if ( getRemainingRateLimitCooldownMs( languageSummaryRateLimitCooldownByQueryKey, cooldownQueryKey ) > 0 ) {
+			return buildFallbackLanguageSummary( repos, 'fallback-ratelimit', username );
+		}
+
+		try {
+			const summary = await fetchGitHubLanguageSummaryFromProxy( config );
+			return Object.assign( {}, summary, { source: 'live' } );
+		} catch ( error ) {
+			if ( isRateLimitError( error ) ) {
+				setRateLimitCooldown( languageSummaryRateLimitCooldownByQueryKey, cooldownQueryKey, error );
+				return buildFallbackLanguageSummary( repos, 'fallback-ratelimit', username );
+			}
+			if ( isOfflineError( error ) ) {
+				return buildFallbackLanguageSummary( repos, 'fallback-offline', username );
+			}
+			return buildFallbackLanguageSummary( repos, 'fallback-error', username );
+		}
 	}
 
 	async function loadWorkData( config ) {
@@ -562,17 +860,23 @@
 
 		let repos = localRepos.slice();
 		let source = 'fallback-error';
+		const repoCooldownQueryKey = getRepoRateLimitCooldownQueryKey( config.githubUsername );
 
-		try {
-			repos = await fetchGitHubRepos( config, localRepos );
-			source = 'live';
-		} catch ( error ) {
-			if ( isRateLimitError( error ) ) {
-				source = 'fallback-ratelimit';
-			} else if ( isOfflineError( error ) ) {
-				source = 'fallback-offline';
-			} else {
-				source = 'fallback-error';
+		if ( getRemainingRateLimitCooldownMs( repoRateLimitCooldownByQueryKey, repoCooldownQueryKey ) > 0 ) {
+			source = 'fallback-ratelimit';
+		} else {
+			try {
+				repos = await fetchGitHubRepos( config, localRepos );
+				source = 'live';
+			} catch ( error ) {
+				if ( isRateLimitError( error ) ) {
+					source = 'fallback-ratelimit';
+					setRateLimitCooldown( repoRateLimitCooldownByQueryKey, repoCooldownQueryKey, error );
+				} else if ( isOfflineError( error ) ) {
+					source = 'fallback-offline';
+				} else {
+					source = 'fallback-error';
+				}
 			}
 		}
 
@@ -589,11 +893,13 @@
 		repos = repos.map( function ( repo ) {
 			return withUpdatedAtTimestamp( normalizeRepo( repo ) );
 		} );
+		const languageSummary = await loadLanguageSummary( config, repos );
 
 		return {
 			repos: repos,
 			source: source,
 			detailsUnavailable: !! config.repoCaseStudyDetailsUrl && ! detailsResult.ok,
+			languageSummary: languageSummary,
 		};
 	}
 
@@ -616,6 +922,31 @@
 				? h( 'p', { className: 'hdc-work-section-description' }, props.description )
 				: null
 		);
+	}
+
+	function formatLanguageSourceMessage( source ) {
+		if ( source === 'loading' ) {
+			return 'Loading language distributions from GitHub.';
+		}
+		if ( source === 'live' ) {
+			return 'Language distributions are synced from GitHub.';
+		}
+		if ( source === 'fallback-ratelimit' ) {
+			return 'GitHub API rate limit reached. Language charts are temporarily unavailable.';
+		}
+		if ( source === 'fallback-offline' ) {
+			return 'Offline mode detected. Language charts are temporarily unavailable.';
+		}
+
+		return 'Live language-byte totals are unavailable right now.';
+	}
+
+	function formatCompactNumber( value ) {
+		return compactNumberFormatter.format( Number.isFinite( Number( value ) ) ? Number( value ) : 0 );
+	}
+
+	function formatWholeNumber( value ) {
+		return wholeNumberFormatter.format( Number.isFinite( Number( value ) ) ? Number( value ) : 0 );
 	}
 
 	function StatCard( props ) {
@@ -761,6 +1092,29 @@
 		const totalActivity = props.activityBuckets.reduce( function ( sum, bucket ) {
 			return sum + bucket.count;
 		}, 0 );
+		const barChartData = ( props.repoLanguageCounts || [] ).slice( 0, 12 );
+		const maxLanguageRepoCount = Math.max.apply(
+			undefined,
+			[ 1 ].concat(
+				barChartData.map( function ( entry ) {
+					return Number.isFinite( Number( entry.count ) ) ? Number( entry.count ) : 0;
+				} )
+			)
+		);
+		const treemapData = ( props.languageByteTotals || [] ).slice( 0, 18 );
+		const totalLanguageBytes = treemapData.reduce( function ( sum, entry ) {
+			const bytes = Number.isFinite( Number( entry.bytes ) ) ? Number( entry.bytes ) : 0;
+			return sum + Math.max( 0, bytes );
+		}, 0 );
+			const languageSummaryDescription = [
+				formatLanguageSourceMessage( props.languageSummarySource ),
+				'Analyzed repositories: ' + String( props.analyzedRepoCount ) + '.',
+				props.languageSummarySource === 'live' && props.byteDataIncomplete
+					? 'Some repositories could not provide language-byte totals.'
+					: '',
+			]
+				.filter( Boolean )
+				.join( ' ' );
 
 		return h(
 			'section',
@@ -846,9 +1200,110 @@
 							{ className: 'hdc-work-stat-meta' },
 							'Sparkline graph is hidden for this block instance.'
 						)
+					)
 				)
-			)
-		);
+				,
+				h(
+					'div',
+					{ className: 'hdc-work-language-distribution' },
+					h( SectionIntro, {
+						title: 'Language Distribution',
+						description: languageSummaryDescription,
+					} ),
+					h(
+						'div',
+						{ className: 'hdc-work-language-grid' },
+						h(
+							'article',
+							{ className: 'hdc-work-language-card' },
+							h( 'h4', { className: 'hdc-work-language-title' }, 'Primary Language by Repository' ),
+							h(
+								'p',
+								{ className: 'hdc-work-language-description' },
+								'Repository count by primary language.'
+							),
+							barChartData.length > 0
+								? h(
+									'div',
+									{ className: 'hdc-work-language-bars' },
+									barChartData.map( function ( entry ) {
+										const count = Number.isFinite( Number( entry.count ) ) ? Number( entry.count ) : 0;
+										const widthPercent = Math.max( 4, Math.round( ( count / maxLanguageRepoCount ) * 100 ) );
+										return h(
+											'div',
+											{ className: 'hdc-work-language-bar-row', key: 'repo-language-' + entry.language },
+											h( 'span', { className: 'hdc-work-language-bar-label' }, entry.language ),
+											h(
+												'span',
+												{ className: 'hdc-work-language-bar-track' },
+												h( 'span', {
+													className: 'hdc-work-language-bar-fill',
+													style: { width: widthPercent + '%' },
+												} )
+											),
+											h(
+												'span',
+												{ className: 'hdc-work-language-bar-value' },
+												formatWholeNumber( count )
+											)
+										);
+									} )
+								)
+								: h(
+									'p',
+									{ className: 'hdc-work-language-empty' },
+									'No repository language data available.'
+								)
+						),
+						h(
+							'article',
+							{ className: 'hdc-work-language-card' },
+							h( 'h4', { className: 'hdc-work-language-title' }, 'Language Share by Bytes' ),
+							h(
+								'p',
+								{ className: 'hdc-work-language-description' },
+								'Aggregated byte totals from repository language breakdowns.'
+							),
+							treemapData.length > 0
+								? h(
+									'div',
+									{ className: 'hdc-work-byte-treemap', role: 'list' },
+									treemapData.map( function ( entry ) {
+										const bytes = Number.isFinite( Number( entry.bytes ) ) ? Number( entry.bytes ) : 0;
+										const weight = totalLanguageBytes > 0 ? bytes / totalLanguageBytes : 0;
+										const flexGrow = Math.max( 1, Math.round( weight * 120 ) );
+										const flexBasis = Math.max( 90, Math.round( weight * 520 ) );
+
+										return h(
+											'div',
+											{
+												className: 'hdc-work-byte-tile',
+												key: 'language-byte-' + entry.language,
+												role: 'listitem',
+												title: entry.language + ': ' + formatWholeNumber( bytes ) + ' bytes',
+												style: {
+													flexGrow: flexGrow,
+													flexBasis: flexBasis + 'px',
+												},
+											},
+											h( 'span', { className: 'hdc-work-byte-language' }, entry.language ),
+											h(
+												'span',
+												{ className: 'hdc-work-byte-value' },
+												formatCompactNumber( bytes )
+											)
+										);
+									} )
+								)
+								: h(
+									'p',
+									{ className: 'hdc-work-language-empty' },
+									'Language byte totals are currently unavailable.'
+								)
+						)
+					)
+				)
+			);
 	}
 
 	function FeaturedCaseStudies( props ) {
@@ -1598,11 +2053,14 @@
 		const [ now, setNow ] = useState( function () {
 			return Date.now();
 		} );
-		const [ loading, setLoading ] = useState( true );
-		const [ error, setError ] = useState( '' );
-		const [ repos, setRepos ] = useState( [] );
-		const [ source, setSource ] = useState( 'fallback-error' );
-		const [ detailsUnavailable, setDetailsUnavailable ] = useState( false );
+			const [ loading, setLoading ] = useState( true );
+			const [ error, setError ] = useState( '' );
+			const [ repos, setRepos ] = useState( [] );
+			const [ source, setSource ] = useState( 'fallback-error' );
+			const [ languageSummary, setLanguageSummary ] = useState( function () {
+				return buildFallbackLanguageSummary( [], 'loading', 'unknown' );
+			} );
+			const [ detailsUnavailable, setDetailsUnavailable ] = useState( false );
 		const [ filter, setFilter ] = useState( 'All' );
 		const [ sort, setSort ] = useState( 'stars' );
 		const [ view, setView ] = useState( 'grid' );
@@ -1627,18 +2085,20 @@
 
 		useEffect(
 			function () {
-				let cancelled = false;
-				setLoading( true );
-				setError( '' );
+					let cancelled = false;
+					setLoading( true );
+					setError( '' );
+					setLanguageSummary( buildFallbackLanguageSummary( [], 'loading', config.githubUsername ) );
 
 				loadWorkData( config )
 					.then( function ( data ) {
 						if ( cancelled ) {
 							return;
 						}
-						setRepos( data.repos );
-						setSource( data.source );
-						setDetailsUnavailable( data.detailsUnavailable );
+							setRepos( data.repos );
+							setSource( data.source );
+							setLanguageSummary( data.languageSummary );
+							setDetailsUnavailable( data.detailsUnavailable );
 						setLoading( false );
 						if ( data.repos.length === 0 ) {
 							setError( 'No repositories are available to display.' );
@@ -1649,11 +2109,14 @@
 							return;
 						}
 						setLoading( false );
-						setRepos( [] );
-						setSource( 'fallback-error' );
-						setError( 'Unable to load repository data.' );
-						setDetailsUnavailable( true );
-					} );
+							setRepos( [] );
+							setSource( 'fallback-error' );
+							setLanguageSummary(
+								buildFallbackLanguageSummary( [], 'fallback-error', config.githubUsername )
+							);
+							setError( 'Unable to load repository data.' );
+							setDetailsUnavailable( true );
+						} );
 
 				return function () {
 					cancelled = true;
@@ -2088,16 +2551,21 @@
 						value: activeFilter,
 						view: view,
 					} ),
-					config.showSignalsPanel
-						? h( SignalsPanel, {
-							activeLanguageLabel: activeLanguageLabel,
-							activeLanguages: activeLanguages,
-							activityBuckets: activityBuckets,
-							recentRepoPreview: recentRepoPreview,
-							recentlyUpdatedCount: recentlyUpdatedRepos.length,
-							showActivitySparkline: config.showActivitySparkline,
-							sparklineWeeks: config.sparklineWeeks,
-						} )
+						config.showSignalsPanel
+							? h( SignalsPanel, {
+								activeLanguageLabel: activeLanguageLabel,
+								activeLanguages: activeLanguages,
+								analyzedRepoCount: languageSummary.analyzedRepoCount,
+								activityBuckets: activityBuckets,
+								byteDataIncomplete: languageSummary.byteDataIncomplete,
+								languageByteTotals: languageSummary.languageByteTotals,
+								languageSummarySource: languageSummary.source,
+								recentRepoPreview: recentRepoPreview,
+								recentlyUpdatedCount: recentlyUpdatedRepos.length,
+								repoLanguageCounts: languageSummary.repoLanguageCounts,
+								showActivitySparkline: config.showActivitySparkline,
+								sparklineWeeks: config.sparklineWeeks,
+							} )
 						: null,
 					filtered.length === 0
 						? h( EmptyState, {

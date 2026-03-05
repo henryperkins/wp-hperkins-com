@@ -111,6 +111,10 @@
   gap: 0.7rem;
 }
 
+.hdc-resume-overview__metrics {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .hdc-resume-overview__card {
   background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
@@ -122,15 +126,27 @@
 .hdc-resume-overview__metric-value {
   color: hsl(var(--foreground));
   display: block;
-  font-size: 1.1rem;
+  font-size: 1.32rem;
   font-weight: 700;
+  line-height: 1.12;
 }
 
 .hdc-resume-overview__metric-label {
   color: hsl(var(--text-meta));
   display: block;
-  font-size: 0.8rem;
-  margin-top: 0.2rem;
+  font-size: 0.74rem;
+  line-height: 1.3;
+  margin-top: 0.15rem;
+  text-align: center;
+}
+
+.hdc-resume-overview__metrics .hdc-resume-overview__card {
+  display: grid;
+  gap: 0.15rem;
+  justify-items: center;
+  align-content: center;
+  text-align: center;
+  padding: 0.72rem 0.62rem;
 }
 
 .hdc-resume-overview__text {
@@ -190,8 +206,13 @@
   text-decoration: underline;
 }
 
+@media (min-width: 640px) {
+  .hdc-resume-overview__metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 @media (min-width: 768px) {
-  .hdc-resume-overview__metrics,
   .hdc-resume-overview__skills {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

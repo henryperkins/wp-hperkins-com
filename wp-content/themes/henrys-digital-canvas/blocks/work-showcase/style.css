@@ -224,6 +224,116 @@
 	background: linear-gradient(180deg, hsl(var(--primary)) 0%, hsl(var(--primary-foreground) / 0.35) 100%);
 }
 
+.hdc-work-language-distribution {
+	display: grid;
+	gap: 0.75rem;
+	margin-top: 0.9rem;
+}
+
+.hdc-work-language-grid {
+	display: grid;
+	gap: 0.75rem;
+	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.hdc-work-language-card {
+	border: 1px solid hsl(var(--border));
+	border-radius: var(--radius-control);
+	background: hsl(var(--surface-1));
+	padding: 0.8rem;
+	display: grid;
+	gap: 0.5rem;
+}
+
+.hdc-work-language-title {
+	margin: 0;
+	font-size: 0.94rem;
+	font-weight: 700;
+	color: hsl(var(--text-strong));
+}
+
+.hdc-work-language-description,
+.hdc-work-language-empty {
+	margin: 0;
+	font-size: 0.82rem;
+	line-height: 1.45;
+	color: hsl(var(--text-body));
+}
+
+.hdc-work-language-bars {
+	display: grid;
+	gap: 0.5rem;
+}
+
+.hdc-work-language-bar-row {
+	display: grid;
+	grid-template-columns: minmax(90px, 1fr) minmax(110px, 2.6fr) auto;
+	align-items: center;
+	gap: 0.45rem;
+}
+
+.hdc-work-language-bar-label,
+.hdc-work-language-bar-value {
+	font-size: 0.78rem;
+	color: hsl(var(--text-meta));
+}
+
+.hdc-work-language-bar-label {
+	font-weight: 600;
+	color: hsl(var(--text-body));
+}
+
+.hdc-work-language-bar-value {
+	font-family: var(--font-mono);
+}
+
+.hdc-work-language-bar-track {
+	display: block;
+	border-radius: var(--radius-pill);
+	background: hsl(var(--surface-2));
+	height: 0.52rem;
+	overflow: hidden;
+}
+
+.hdc-work-language-bar-fill {
+	display: block;
+	height: 100%;
+	border-radius: var(--radius-pill);
+	background: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+}
+
+.hdc-work-byte-treemap {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.42rem;
+	align-items: stretch;
+}
+
+.hdc-work-byte-tile {
+	border: 1px solid hsl(var(--border));
+	border-radius: var(--radius-control);
+	background: linear-gradient(155deg, hsl(var(--surface-2)) 0%, hsl(var(--surface-1)) 100%);
+	padding: 0.5rem 0.55rem;
+	min-height: 2.9rem;
+	display: grid;
+	align-content: center;
+	gap: 0.12rem;
+}
+
+.hdc-work-byte-language {
+	font-size: 0.72rem;
+	font-weight: 700;
+	color: hsl(var(--text-body));
+	line-height: 1.2;
+}
+
+.hdc-work-byte-value {
+	font-size: 0.7rem;
+	color: hsl(var(--text-meta));
+	font-family: var(--font-mono);
+	line-height: 1.2;
+}
+
 .hdc-work-section {
 	display: grid;
 	gap: 0.8rem;

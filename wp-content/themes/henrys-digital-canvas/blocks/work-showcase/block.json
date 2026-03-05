@@ -58,6 +58,18 @@
 		"sparklineWeeks": {
 			"type": "number",
 			"default": 8
+		},
+		"githubProxyUrl": {
+			"type": "string",
+			"default": "/api/github/repos"
+		},
+		"githubLanguageSummaryProxyUrl": {
+			"type": "string",
+			"default": "/api/github/language-summary"
+		},
+		"languageSummaryMaxRepos": {
+			"type": "number",
+			"default": 120
 		}
 	},
 	"editorScript": "file:./index.js",
