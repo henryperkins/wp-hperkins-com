@@ -78,7 +78,9 @@
 						)
 					),
 					el( 'p', { className: 'hdc-site-shell-editor__title' }, attrs.siteTitle || __( 'Henry T. Perkins', 'henrys-digital-canvas' ) ),
-					el( 'p', { className: 'hdc-site-shell-editor__tagline' }, attrs.tagline || __( 'Customer Success | Developer Enablement | AI Workflows', 'henrys-digital-canvas' ) )
+					attrs.tagline
+						? el( 'p', { className: 'hdc-site-shell-editor__tagline' }, attrs.tagline )
+						: null
 				)
 			);
 		},

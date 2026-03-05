@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $defaults = array(
 	'siteTitle'           => 'Henry T. Perkins',
-	'tagline'             => 'Customer Success · Developer Enablement · AI Workflows',
+	'tagline'             => '',
 	'showCommandLauncher' => true,
 	'enableThemeToggle'   => true,
 );
@@ -81,7 +81,9 @@ $wrapper_attributes = get_block_wrapper_attributes(
 		<div class="hdc-site-shell__inner">
 			<a class="hdc-site-shell__brand focus-ring" href="<?php echo esc_url( home_url( '/' ) ); ?>">
 				<span class="hdc-site-shell__title"><?php echo esc_html( sanitize_text_field( $attrs['siteTitle'] ) ); ?></span>
-				<span class="hdc-site-shell__tagline"><?php echo esc_html( sanitize_text_field( $attrs['tagline'] ) ); ?></span>
+				<?php if ( '' !== trim( (string) $attrs['tagline'] ) ) : ?>
+					<span class="hdc-site-shell__tagline"><?php echo esc_html( sanitize_text_field( $attrs['tagline'] ) ); ?></span>
+				<?php endif; ?>
 			</a>
 
 			<nav class="hdc-site-shell__desktop-nav" aria-label="<?php esc_attr_e( 'Primary', 'henrys-digital-canvas' ); ?>">

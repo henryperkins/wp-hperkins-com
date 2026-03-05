@@ -172,6 +172,10 @@
 			return JSON.stringify( config );
 		}, [ config ] );
 
+		useEffect( function () {
+			document.title = 'Contact — Henry Perkins';
+		}, [] );
+
 		useEffect(
 			function () {
 				setFormData( { name: '', email: '', message: '' } );

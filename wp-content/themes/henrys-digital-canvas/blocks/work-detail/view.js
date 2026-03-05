@@ -306,7 +306,7 @@
 				}
 
 				if ( state.errorType === 'not-found' || ( ! state.errorType && ! state.data ) ) {
-					document.title = 'Project Not Found — Henry Perkins';
+					document.title = 'Project — Henry Perkins';
 				} else {
 					document.title = 'Temporarily Unavailable — Henry Perkins';
 				}

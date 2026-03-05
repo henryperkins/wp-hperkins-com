@@ -1,6 +1,6 @@
 # Henry's Digital Canvas Migration Progress
 
-Last updated: 2026-03-05T10:28Z (UTC)
+Last updated: 2026-03-05T17:36Z (UTC)
 
 ## Phase Tracker
 
@@ -1225,3 +1225,319 @@ All 8 phases of the Henry's Digital Canvas React-to-WordPress migration are comp
 - Use `RUN_LABEL=<context> npm run smoke:cadence` for auditable verification.
 - Review `npm run smoke:history` for operational trends.
 - Follow `CUTOVER_CHECKLIST.md` for incident response and rollback.
+
+## 2026-03-05 Component Feature Parity Re-Audit
+
+Last audited: 2026-03-05T16:45Z (UTC)
+Source reference: `~/henry-s-digital-canvas` (React + Vite + Tailwind)
+
+### Audit Method
+Line-by-line comparison of every source React page/component against its WordPress block counterpart, covering: content copy, section structure, data contracts, interaction model, state management, accessibility semantics, and visual treatment.
+
+### Component 1: Home Surface (`front-page.html` + `digital-canvas-feed`)
+Status: **Drift detected — 4 items**
+
+| # | Finding | Source | WordPress | Severity |
+|---|---------|--------|-----------|----------|
+| 1 | Hero eyebrow copy diverges | `"Customer Success · AI Workflows · Developer Enablement"` (`Home.tsx`:40) | `"Customer-facing technical consultant"` (`front-page.html`:8) | Low — cosmetic copy |
+| 2 | Hero title/description copy diverges | `title="Henry T. Perkins"`, `description="Technical consultant helping support and product teams..."` (`Home.tsx`:41-42) | `title="Henry Perkins — Customer-Facing Technical Consultant"`, `description="I help teams solve technical support challenges..."` (`front-page.html`:12,16) | Low — cosmetic copy |
+| 3 | Hero CTA button labels differ | `"View Work"`, `"Read Blog"` (with BookOpen icon), `"Contact"` (with Mail icon) (`Home.tsx`:46-59) | `"View work"`, `"Read writing"`, `"Contact"` (no icons) (`front-page.html`:22-31) | Low — cosmetic |
+| 4 | Resume Snapshot section is structurally simplified | Source renders 5-col grid: 3-col "Positioning" card (headline, subheadline, latest experience, target-role badges, two ActionLinks) + 2-col "Proof of Impact" card (4 impact metrics from `resume.impactStrip`) (`Home.tsx`:176-208) | WordPress renders plain `h2` + single paragraph + two buttons — no resume data, no impact metrics, no role badges (`front-page.html`:39-61) | Medium — content parity gap |
+
+### Component 2: Shared Shell (`site-shell`)
+Status: **Minor drift — 1 item**
+
+| # | Finding | Source | WordPress | Severity |
+|---|---------|--------|-----------|----------|
+| 1 | Brand element renders tagline in header bar | Source renders only `"Henry T. Perkins"` as clickable brand text (`AppHeader.tsx`:34) | WordPress renders brand text + tagline `"Customer Success · Developer Enablement · AI Workflows"` in the header bar (`render.php`:83-84) | Low — layout difference (tagline is a bonus) |
+
+All previously-documented shell parity items (command launcher placement, platform-aware shortcut hint, command search metadata, footer copy) remain resolved.
+
+### Component 3: About Timeline (`about-timeline`)
+Status: **Minor drift — 1 item**
+
+| # | Finding | Source | WordPress | Severity |
+|---|---------|--------|-----------|----------|
+| 1 | Intro paragraph wording differs slightly | First paragraph: `"I'm Henry T. Perkins, based in Lisle, Illinois and open to US remote opportunities. I help support, product, and implementation teams solve customer-facing technical problems."` (`About.tsx`:98) | First paragraph: `"I'm Henry T. Perkins, a customer-facing technical professional based in Lisle, Illinois and open to US remote opportunities..."` (`view.js`:20) | Low — cosmetic copy |
+
+Values, timeline entries, icon rendering, animation, and heading semantics remain at parity.
+
+### Component 4: Resume Overview (`resume-overview`)
+Status: **Drift detected — 1 item**
+
+| # | Finding | Source | WordPress | Severity |
+|---|---------|--------|-----------|----------|
+| 1 | Section headers lack icon rendering | Source uses `IconSectionHeader` with Lucide icons per section: `TrendingUp` (Impact), `Layers` (Capability), `Briefcase` (Experience), `FolderOpen` (Projects), `GraduationCap` (Education), `Sparkles` (Differentiator), `Wrench` (Skills), `Award` (Certifications) (`Resume.tsx`:61,89,109,142,185,201,209,230) | WordPress renders plain `h3` section titles with no icon rendering (`view.js`:203,223,230,256,287,317,359,385,399) | Low — visual polish |
+
+Education, Portfolio CTA, project links, and section order all remain at parity.
+
+### Component 5: Resume ATS (`resume-ats`)
+Status: **At parity** — no new discrepancies found. Back link, print action, section structure, and content shape match.
+
+### Component 6: Hobbies Moments (`hobbies-moments`)
+Status: **Drift detected — 5 items**
+
+| # | Finding | Source | WordPress | Severity |
+|---|---------|--------|-----------|----------|
+| 1 | Category filter label mismatch | Source uses `"Development"` as the category label (`Hobbies.tsx`:17) | WordPress uses `"Dev"` (`view.js`:14) | Low — cosmetic label |
+| 2 | "How this page works" instructional card is missing | Source renders a `SurfaceCard` with heading, explanation, and 3-step numbered list before filters (`Hobbies.tsx`:400-410) | WordPress omits this card entirely (`view.js`:343-351 goes straight to filters) | Medium — UX guidance gap |
+| 3 | Filter summary status bar is missing | Source renders a status bar below filters: `"Showing N moments in Category and Timeframe"` with conditional "Reset filters" button (`Hobbies.tsx`:439-451) | WordPress omits the summary bar entirely (`view.js`:352-401 renders filters then directly renders groups) | Medium — UX context gap |
+| 4 | Auto-expand first moment on filter change | Source sets `openId` to `null` when the currently-open moment is not in filtered results, leaving all cards collapsed (`Hobbies.tsx`:104-114) | WordPress auto-opens the first moment when the current `openId` doesn't match filtered items (`view.js`:306-315: `setOpenId( filteredMoments[0].id )`) | Medium — interaction model differs |
+| 5 | Empty filter state is simplified | Source uses `EmptyState` component with title, description, density, and optional reset action button (`Hobbies.tsx`:453-465) | WordPress renders a single `<p>` text string (`view.js`:402-403) | Low — visual polish |
+
+Count badges, key-takeaway callout, and expanded-panel accessibility semantics remain at parity.
+
+### Component 7: Blog Surfaces (`blog-index` + `blog-post`)
+Status: **Minor drift — 1 item**
+
+| # | Finding | Source | WordPress | Severity |
+|---|---------|--------|-----------|----------|
+| 1 | "Stay updated" newsletter CTA section missing | Source renders a `SurfaceCard` after the post list with "Stay updated" heading, description, "Follow on LinkedIn" CTA, and "Reach out" link (`Blog.tsx`:165-181) | WordPress `blog-index` has a `showNewsletterCta` config option but the feature requires explicit template opt-in and may not be rendered by default | Low — promotional section |
+
+Featured post, search/tag filters, empty state, blog detail title/progress/scroll-top/related-posts all remain at parity.
+
+### Component 8: Contact Form (`contact-form`)
+Status: **At parity** — no new discrepancies found. Header/social links stay visible on success, icon+label social links, icon-led submit button, validation semantics all match.
+
+### Component 9: Work Showcase (`work-showcase`)
+Status: **Drift detected — 1 item**
+
+| # | Finding | Source | WordPress | Severity |
+|---|---------|--------|-----------|----------|
+| 1 | Language summary max-repos default drift | Source changed `LANGUAGE_SUMMARY_MAX_REPOS` from `120` to `80` (`Work.tsx`:41) | WordPress still uses `GITHUB_LANGUAGE_SUMMARY_MAX_REPOS_DEFAULT = 120` (`view.js`:31) | Low — functional parameter drift; higher value in WP means more repos analyzed, which is non-breaking but diverges from source intent |
+
+Repo detail routing, compare toast behavior, language distribution, signals panel, and featured case studies all remain at parity.
+
+### Component 10: Work Detail (`work-detail`)
+Status: **At parity** — no new discrepancies found. Document title, source/fallback messaging, skeleton loading, list-first slug resolution all match.
+
+### Component 11: Not Found (`not-found`)
+Status: **At parity** — no new discrepancies found. Page title, CTA icons (inline SVGs), `history.back()` behavior, and entrance animation all match.
+
+### Component 12: Digital Canvas Feed (`digital-canvas-feed`)
+Status: **At parity for data plumbing** — feed routes to internal `/work/` and `/blog/` paths, uses contract endpoints, renders source-state messaging. Card structure uses card-grid layout per parity remediation.
+
+### Summary Table
+
+| Component | Status | New Issues | Severity |
+|-----------|--------|------------|----------|
+| Home Surface | Drift | 4 | 3 Low, 1 Medium |
+| Shared Shell | Minor drift | 1 | Low |
+| About Timeline | Minor drift | 1 | Low |
+| Resume Overview | Drift | 1 | Low |
+| Resume ATS | At parity | 0 | — |
+| Hobbies Moments | Drift | 5 | 2 Low, 3 Medium |
+| Blog Surfaces | Minor drift | 1 | Low |
+| Contact Form | At parity | 0 | — |
+| Work Showcase | Drift | 1 | Low |
+| Work Detail | At parity | 0 | — |
+| Not Found | At parity | 0 | — |
+| Digital Canvas Feed | At parity | 0 | — |
+
+**Total new discrepancies**: 14 (8 Low, 6 Medium, 0 High)
+**Components at full parity**: 5 of 12
+**Components with only low-severity cosmetic drift**: 4 of 12
+**Components requiring medium-severity remediation**: 3 of 12 (Home, Hobbies, Resume section icons)
+
+### Recommended Remediation Priority
+
+1. **Hobbies auto-expand behavior** (Medium) — change WordPress `setOpenId(filteredMoments[0].id)` to `setOpenId(null)` when current open moment is not in filtered results, matching source behavior.
+2. **Hobbies instructional card + filter summary** (Medium) — add "How this page works" card and filter status bar to match source UX guidance.
+3. **Home resume snapshot structure** (Medium) — wire resume contract data into front-page template to render impact metrics, role badges, and positioning card matching source layout.
+4. **Work showcase `maxRepos` default** (Low) — update `GITHUB_LANGUAGE_SUMMARY_MAX_REPOS_DEFAULT` from `120` to `80` to match source.
+5. **Cosmetic copy alignment** (Low) — update hero eyebrow/title/description, hobbies "Dev"→"Development" label, about intro paragraph to match latest source copy.
+6. **Resume section header icons** (Low) — add Lucide icon rendering to `resume-overview` section titles.
+
+## 2026-03-05 Parity Remediation (Post Re-Audit)
+
+### Objective
+Close all 14 discrepancies found in the 2026-03-05 re-audit.
+
+### What Shipped
+- **Hobbies Moments (`hobbies-moments/view.js`)**:
+  - Fixed auto-expand behavior: `setOpenId(null)` instead of `setOpenId(filteredMoments[0].id)` when open moment leaves filtered set.
+  - Changed category filter label `"Dev"` → `"Development"` (filter array, map, query map, badge map).
+  - Added `"How this page works"` instructional card with heading, description, and 3-step list.
+  - Added filter summary status bar: `"Showing N moments in Category and Timeframe"` with conditional "Reset filters" button.
+  - Upgraded empty state from single `<p>` to structured title + description + optional reset action.
+- **Home Surface (`templates/front-page.html` + `assets/js/hdc-resume-snapshot.js`)**:
+  - Updated hero eyebrow: `"Customer Success · AI Workflows · Developer Enablement"`.
+  - Updated hero title: `"Henry T. Perkins"`.
+  - Updated hero description to match source copy verbatim.
+  - Updated CTA labels: `"View Work"`, `"Read Blog"` (matching source casing).
+  - Replaced static resume snapshot with contract-driven section that fetches `/wp-json/henrys-digital-canvas/v1/resume` and renders: Positioning (headline, subheadline, latest experience, target-role badges) + Proof of Impact (4 metrics from `impactStrip`).
+  - Created and enqueued `assets/js/hdc-resume-snapshot.js` hydration script.
+- **Work Showcase (`work-showcase/view.js`)**:
+  - Updated `GITHUB_LANGUAGE_SUMMARY_MAX_REPOS_DEFAULT` from `120` to `80` to match source `LANGUAGE_SUMMARY_MAX_REPOS`.
+- **About Timeline (`about-timeline/view.js`)**:
+  - Updated intro paragraphs to match source copy (paragraph 1: location/intro sentence; paragraph 2: background/focus).
+- **Resume Overview (`resume-overview/view.js`)**:
+  - Added `sectionTitle()` helper with Lucide icon rendering for all 8 data-driven section headers.
+  - Icon mapping: Impact→`trending-up`, Capability→`layers`, Experience→`briefcase`, Education→`graduation-cap`, Projects→`folder-open`, Skills→`wrench`, Certifications→`award`, Differentiator→`sparkles`.
+- **Shared Utils (`assets/js/hdc-shared-utils.js`)**:
+  - Added 4 new Lucide icon definitions: `folder-open`, `sparkles`, `wrench`, `award`.
+- **Functions (`functions.php`)**:
+  - Enqueued `hdc-resume-snapshot` script globally.
+
+### What Was Verified
+- JavaScript syntax checks passed:
+  - `node --check blocks/hobbies-moments/view.js`
+  - `node --check blocks/resume-overview/view.js`
+  - `node --check blocks/work-showcase/view.js`
+  - `node --check blocks/about-timeline/view.js`
+  - `node --check assets/js/hdc-shared-utils.js`
+  - `node --check assets/js/hdc-resume-snapshot.js`
+- PHP lint passed:
+  - `php -l functions.php`
+- Full smoke suite passed:
+  - `npm run smoke:full`
+  - Route smoke: 11/11 passed
+  - API smoke: 7/7 passed
+  - Browser smoke: 6/6 passed (22.5s)
+
+### Remaining Discrepancies After Remediation
+- **Blog "Stay updated" newsletter CTA** (Low) — source renders a promotional card after post list; WP has config option but may not render by default. Non-blocking.
+- **Shared Shell tagline in header bar** (Low) — WP renders tagline in header brand; source does not. This is a WP bonus, not a regression. Non-blocking.
+
+### Updated Parity Status
+- **12 of 12 components at functional parity** (0 High, 0 Medium, 2 Low non-blocking cosmetic items remaining).
+
+## 2026-03-05 Component Feature Parity Re-Review (Second Pass)
+
+Last reviewed: 2026-03-05T17:22Z (UTC)
+Source reference: `~/henry-s-digital-canvas` (local React app runtime + source code review)
+
+### Objective
+Re-validate component feature parity after the post re-audit remediation pass and confirm whether any new drift remains.
+
+### Verification Method
+- Static file review of source React routes/components vs WordPress block counterparts.
+- Runtime browser probe (Playwright) against:
+  - Source: `http://127.0.0.1:8081`
+  - WordPress: `https://wp.hperkins.com`
+- Checked parity across: route document titles, block surface behavior, filter UX, and shell composition.
+
+### Findings
+
+#### 1) Cross-route document-title parity drift (Medium)
+
+| Route | Source title | WordPress title |
+| --- | --- | --- |
+| `/work` | `Work — Henry Perkins` | `Work – HPerkins.com` |
+| `/resume` | `Resume — Henry Perkins` | `Resume – HPerkins.com` |
+| `/hobbies` | `Hobbies — Henry Perkins` | `Hobbies – HPerkins.com` |
+| `/blog` | `Blog — Henry Perkins` | `Blog – HPerkins.com` |
+| `/contact` | `Contact — Henry Perkins` | `Contact – HPerkins.com` |
+| `/work/not-a-real-repo-12345` | `Project — Henry Perkins` | `Project Not Found — Henry Perkins` |
+
+Notes:
+- `/`, `/about`, and 404 route titles remain in parity.
+- Blog detail and work detail titles remain in parity.
+
+#### 2) Hobbies timeframe UX copy drift (Medium)
+
+| Area | Source | WordPress |
+| --- | --- | --- |
+| Timeframe filter labels | `Current`, `Recent`, `Planned` | `Now`, `Recently`, `Next` |
+| Timeframe section headings | `Current`, `Recent`, `Planned` | `Now`, `Recently`, `Next` |
+| Timeframe helper copy | Current/source descriptions | Legacy `now/recently/next` descriptions |
+| Context hint below filters | Includes `Select any moment card title to expand details.` | Missing |
+
+Notes:
+- Category labels, instructional card, filter summary, and reset behavior remain aligned.
+
+#### 3) Shared shell brand treatment (Low)
+- Source brand line renders only `Henry T. Perkins`.
+- WordPress header renders `Henry T. Perkins` plus tagline (`Customer Success · Developer Enablement · AI Workflows`).
+
+#### 4) Resume section-heading copy drift (Low)
+- Source uses section heading `Signature Work`.
+- WordPress `resume-overview` uses heading `Projects`.
+
+### Confirmed Resolved Since Prior Audit
+- Blog index newsletter CTA parity is now confirmed on live route (`Stay updated`, `Follow on LinkedIn`, `Reach out` all present).
+- Home hero and resume-snapshot parity updates remain intact.
+- Work showcase language-summary `maxRepos=80` parity remains intact.
+
+### Current Open Drift Summary
+- **Open issue clusters:** 4 total
+  - **Medium:** 2 (route title parity, hobbies timeframe language/copy)
+  - **Low:** 2 (shared-shell tagline, resume heading copy)
+- **High-severity parity regressions:** 0
+
+### Recommended Next Remediation Pass
+1. Add page-title management for block routes (`work`, `resume`, `hobbies`, `blog`, `contact`) and align missing-work title behavior to source.
+2. Update hobbies timeframe labels/headings/descriptions to source (`Current/Recent/Planned`) and restore the post-filter context hint line.
+3. Decide whether shared-shell tagline stays as intentional WP enhancement; if yes, mark as accepted variance.
+4. Rename resume `Projects` heading to `Signature Work` for exact copy parity.
+
+## 2026-03-05 Second-Pass Remediation (Title + Hobbies)
+
+### Objective
+Close the two remaining medium-severity drift clusters identified in the second-pass re-review.
+
+### What Shipped
+- Route title parity updates:
+  - `blocks/work-showcase/view.js` now sets `document.title = "Work — Henry Perkins"`.
+  - `blocks/resume-overview/view.js` now sets `document.title = "Resume — Henry Perkins"`.
+  - `blocks/hobbies-moments/view.js` now sets `document.title = "Hobbies — Henry Perkins"`.
+  - `blocks/blog-index/view.js` now sets `document.title = "Blog — Henry Perkins"`.
+  - `blocks/contact-form/view.js` now sets `document.title = "Contact — Henry Perkins"`.
+  - `blocks/work-detail/view.js` missing-project title now matches source fallback behavior (`Project — Henry Perkins`).
+- Hobbies timeframe parity updates (`blocks/hobbies-moments/view.js`):
+  - Timeframe labels aligned to source: `Current`, `Recent`, `Planned`.
+  - Query parsing supports both legacy and source aliases (`now/current`, `recently/recent`, `next/planned`).
+  - Section headings and helper descriptions aligned to source copy.
+  - Restored context hint: `Select any moment card title to expand details.`
+
+### What Was Verified
+- JavaScript syntax checks passed:
+  - `node --check blocks/work-showcase/view.js`
+  - `node --check blocks/resume-overview/view.js`
+  - `node --check blocks/hobbies-moments/view.js`
+  - `node --check blocks/blog-index/view.js`
+  - `node --check blocks/contact-form/view.js`
+  - `node --check blocks/work-detail/view.js`
+- Runtime parity probe (Playwright) confirms source and WordPress now match for:
+  - route titles on `/work`, `/resume`, `/hobbies`, `/blog`, `/contact`, and `/work/not-a-real-repo-12345`;
+  - hobbies timeframe labels and descriptions;
+  - hobbies context hint visibility.
+
+### Remaining Drift After This Pass
+- **Low only**:
+  - Shared shell tagline in header brand (intentional enhancement candidate).
+  - Resume section heading copy (`Projects` vs source `Signature Work`).
+
+### Updated Parity Status
+- **No medium or high drift remains**.
+- Open parity items are now **2 low-severity copy/presentation variances**.
+
+## 2026-03-05 Third-Pass Remediation (Low Drift Closure)
+
+### Objective
+Close the final two low-severity parity variances (shared-shell tagline and resume section heading copy).
+
+### What Shipped
+- Shared shell tagline parity updates:
+  - `blocks/site-shell/block.json`: default `tagline` set to empty string.
+  - `blocks/site-shell/render.php`: tagline now renders only when explicitly provided (no default header tagline output).
+  - `blocks/site-shell/index.js`: editor preview now shows tagline only when set.
+- Resume heading copy parity update:
+  - `blocks/resume-overview/view.js`: section heading changed from `Projects` to `Signature Work`.
+  - Added icon mapping key for `Signature Work` to preserve heading icon parity.
+
+### What Was Verified
+- Syntax validation:
+  - `node --check blocks/site-shell/index.js`
+  - `php -l blocks/site-shell/render.php`
+  - `node --check blocks/resume-overview/view.js`
+  - `node -e "JSON.parse(...blocks/site-shell/block.json...)"`
+- Runtime parity probe (Playwright) confirms source and WordPress now match for:
+  - shared-shell brand treatment (no tagline rendered in header brand line);
+  - resume section heading copy (`Signature Work` present, `Projects` heading absent).
+
+### Remaining Drift After This Pass
+- No known functional or cosmetic parity drift remains in the audited component scope.
+
+### Updated Parity Status
+- **All audited parity items resolved** (0 High, 0 Medium, 0 Low currently open).

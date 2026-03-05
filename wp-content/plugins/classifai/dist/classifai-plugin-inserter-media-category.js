@@ -1,1 +1,77 @@
-(()=>{"use strict";var e={n:t=>{var a=t&&t.__esModule?()=>t.default:()=>t;return e.d(a,{a}),a},d:(t,a)=>{for(var r in a)e.o(a,r)&&!e.o(t,r)&&Object.defineProperty(t,r,{enumerable:!0,get:a[r]})},o:(e,t)=>Object.prototype.hasOwnProperty.call(e,t)};const t=window.wp.apiFetch;var a=e.n(t);const r=window.wp.data,i=window.wp.i18n,n=window.wp.url,{classifaiDalleData:s}=window;(async()=>new Promise(e=>{const t=(0,r.subscribe)(()=>{((0,r.select)("core/editor")?.isInserterOpened()||(0,r.select)("core/edit-widgets")?.isInserterOpened?.())&&(t(),e())})}))().then(()=>(0,r.dispatch)("core/block-editor")?.registerInserterMediaCategory?.(d()));const o=(e,t=250)=>{let a;return(...r)=>(clearTimeout(a),new Promise(i=>{a=setTimeout(()=>{i(e.apply(void 0,r))},t)}))},c=async({search:e=""})=>e?await a()({path:(0,n.addQueryArgs)(s.endpoint,{prompt:e,format:"b64_json"}),method:"GET"}).then(t=>t.map(t=>({title:e,url:`data:image/png;base64,${t.url}`,previewUrl:`data:image/png;base64,${t.url}`,id:void 0,alt:e,caption:s.caption}))).catch(()=>[]):[],d=()=>({name:"classifai-generate-image",labels:{name:s.tabText,search_items:(0,i.__)("Enter a prompt","classifai")},mediaType:"image",fetch:o(c,2500),isExternalResource:!0})})();
+(() => {
+    'use strict';
+
+    const apiFetch = window.wp.apiFetch;
+    const { subscribe, select, dispatch } = window.wp.data;
+    const { __ } = window.wp.i18n;
+    const { addQueryArgs } = window.wp.url;
+    const { classifaiDalleData } = window;
+
+    const waitForInserterOpen = async () =>
+        new Promise((resolve) => {
+            const unsubscribe = subscribe(() => {
+                if (select('core/editor')?.isInserterOpened() || select('core/edit-widgets')?.isInserterOpened?.()) {
+                    unsubscribe();
+                    resolve();
+                }
+            });
+        });
+
+    const debounce = (fn, delay = 250) => {
+        let timer;
+
+        return (...args) => {
+            clearTimeout(timer);
+
+            return new Promise((resolve) => {
+                timer = setTimeout(() => {
+                    resolve(fn(...args));
+                }, delay);
+            });
+        };
+    };
+
+    const fetchGeneratedImages = async ({ search = '' }) => {
+        if (!search) {
+            return [];
+        }
+
+        try {
+            const response = await apiFetch({
+                path: addQueryArgs(classifaiDalleData.endpoint, {
+                    format: 'b64_json',
+                }),
+                method: 'POST',
+                data: {
+                    prompt: search,
+                },
+            });
+
+            return response.map((item) => ({
+                title: search,
+                url: `data:image/png;base64,${item.url}`,
+                previewUrl: `data:image/png;base64,${item.url}`,
+                id: undefined,
+                alt: search,
+                caption: classifaiDalleData.caption,
+            }));
+        } catch (error) {
+            return [];
+        }
+    };
+
+    const getInserterMediaCategory = () => ({
+        name: 'classifai-generate-image',
+        labels: {
+            name: classifaiDalleData.tabText,
+            search_items: __('Enter a prompt', 'classifai'),
+        },
+        mediaType: 'image',
+        fetch: debounce(fetchGeneratedImages, 2500),
+        isExternalResource: true,
+    });
+
+    waitForInserterOpen().then(() => {
+        dispatch('core/block-editor')?.registerInserterMediaCategory?.(getInserterMediaCategory());
+    });
+})();

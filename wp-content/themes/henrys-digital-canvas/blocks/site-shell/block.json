@@ -21,7 +21,7 @@
 		},
 		"tagline": {
 			"type": "string",
-			"default": "Customer Success \u00b7 Developer Enablement \u00b7 AI Workflows"
+			"default": ""
 		},
 		"showCommandLauncher": {
 			"type": "boolean",

@@ -141,6 +141,26 @@ class Images extends Provider
     }
 
     /**
+     * Get request timeout for Azure image API requests.
+     *
+     * @return int
+     */
+    public function get_request_timeout(): int
+    {
+        /**
+         * Filter the request timeout for Azure OpenAI image requests.
+         *
+         * @since 3.8.0
+         * @hook classifai_azure_openai_dalle_request_timeout
+         *
+         * @param int $timeout Request timeout in seconds.
+         *
+         * @return int Request timeout in seconds.
+         */
+        return (int) apply_filters('classifai_azure_openai_dalle_request_timeout', 90);
+    }
+
+    /**
      * Returns the image quality options.
      *
      * @return array
@@ -355,6 +375,24 @@ class Images extends Provider
             $new_settings[static::ID]['endpoint_url'] = $settings[static::ID]['endpoint_url'];
             $new_settings[static::ID]['api_key'] = $settings[static::ID]['api_key'];
             $new_settings[static::ID]['deployment'] = $settings[static::ID]['deployment'];
+
+            if (
+                ($new_settings['provider'] ?? '') === static::ID &&
+                (
+                    empty($new_settings[static::ID]['endpoint_url']) ||
+                    empty($new_settings[static::ID]['api_key']) ||
+                    empty($new_settings[static::ID]['deployment'])
+                )
+            ) {
+                $new_settings[static::ID]['authenticated'] = false;
+
+                add_settings_error(
+                    'api_key',
+                    'classifai-auth',
+                    esc_html__('Please provide Endpoint URL, API Key, and Deployment name for Azure OpenAI Images.', 'classifai'),
+                    'error'
+                );
+            }
         }
 
         if ($this->feature_instance instanceof ImageGeneration) {
@@ -410,6 +448,7 @@ class Images extends Provider
     {
         $endpoint = trailingslashit($url) . str_replace('{deployment-id}', $deployment, $this->image_generation_url);
         $endpoint = add_query_arg('api-version', $this->get_api_version(), $endpoint);
+        $timeout = $this->get_request_timeout();
 
         $request = safe_wp_remote_post(
             $endpoint,
@@ -421,11 +460,13 @@ class Images extends Provider
                 'body' => wp_json_encode(
                     [
                         'prompt' => 'A solid red square',
+                        'model' => $this->get_model(),
                         'n' => 1,
+                        'quality' => 'low',
                         'size' => '1024x1024',
                     ]
                 ),
-                'use_vip' => true,
+                'timeout' => $timeout, // phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
             ]
         );
 
@@ -537,6 +578,7 @@ class Images extends Provider
          * @return array Request body.
          */
         $body = apply_filters('classifai_azure_openai_dalle_request_body', $body);
+        $timeout = $this->get_request_timeout();
 
         $responses = [];
 
@@ -548,6 +590,7 @@ class Images extends Provider
                     'Content-Type' => 'application/json',
                 ],
                 'body' => wp_json_encode($body),
+                'timeout' => $timeout, // phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
             ]
         );
 
@@ -609,7 +652,7 @@ class Images extends Provider
         }
 
         return apply_filters(
-            'classifai_' . self::ID . '_debug_information',
+            'classifai_azure_openai_dalle_debug_information',
             $debug_info,
             $settings,
             $this->feature_instance

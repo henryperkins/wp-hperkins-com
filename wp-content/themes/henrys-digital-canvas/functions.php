@@ -66,6 +66,14 @@ function hdc_enqueue_frontend_styles() {
 		hdc_asset_version( '/assets/js/hdc-shared-utils.js' ),
 		true
 	);
+
+	wp_enqueue_script(
+		'hdc-resume-snapshot',
+		get_stylesheet_directory_uri() . '/assets/js/hdc-resume-snapshot.js',
+		array(),
+		hdc_asset_version( '/assets/js/hdc-resume-snapshot.js' ),
+		true
+	);
 }
 add_action( 'wp_enqueue_scripts', 'hdc_enqueue_frontend_styles' );
 
@@ -75,6 +83,10 @@ add_action( 'wp_enqueue_scripts', 'hdc_enqueue_frontend_styles' );
  * @return void
  */
 function hdc_enqueue_editor_styles() {
+	if ( ! is_admin() ) {
+		return;
+	}
+
 	wp_enqueue_style(
 		'hdc-google-fonts-editor',
 		'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500&family=JetBrains+Mono:wght@400;500&display=swap',
@@ -89,7 +101,7 @@ function hdc_enqueue_editor_styles() {
 		hdc_asset_version( '/assets/css/design-system.css' )
 	);
 }
-add_action( 'enqueue_block_editor_assets', 'hdc_enqueue_editor_styles' );
+add_action( 'enqueue_block_assets', 'hdc_enqueue_editor_styles' );
 
 require_once get_stylesheet_directory() . '/inc/data-contracts.php';
 require_once get_stylesheet_directory() . '/inc/rest-api.php';

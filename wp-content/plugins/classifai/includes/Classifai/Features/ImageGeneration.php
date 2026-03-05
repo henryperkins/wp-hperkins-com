@@ -96,7 +96,7 @@ class ImageGeneration extends Feature
 		$args = apply_filters(
 			'classifai_' . static::ID . '_rest_route_' . $route . '_args',
 			[
-				'methods' => WP_REST_Server::READABLE,
+				'methods' => WP_REST_Server::READABLE . ', ' . WP_REST_Server::CREATABLE,
 				'callback' => [$this, 'rest_endpoint_callback'],
 				'args' => [
 					'prompt' => [
@@ -302,146 +302,146 @@ class ImageGeneration extends Feature
 
 		<?php // Template for the Generate images tab content. Includes prompt input. ?>
 		<script type="text/html" id="tmpl-dalle-prompt">
-					<div class="prompt-view">
-						<p>
-							<?php
-							if ($number_of_images > 1) {
-								esc_html_e('Enter a prompt below to generate images.', 'classifai');
-							} else {
-								esc_html_e('Enter a prompt below to generate an image.', 'classifai');
-							}
-							?>
-						</p>
-						<p>
-							<?php
-							if ($number_of_images > 1) {
-								esc_html_e('Once images are generated, choose one or more of those to import into your Media Library and then choose one image to insert.', 'classifai');
-							} else {
-								esc_html_e('Once an image is generated, you can import it into your Media Library and then select to insert.', 'classifai');
-							}
-							?>
-						</p>
-						<textarea class="prompt" placeholder="<?php esc_attr_e('Enter prompt', 'classifai'); ?>" rows="4" maxlength="<?php echo absint($provider_instance->max_prompt_chars ?? 1000); ?>"></textarea>
-						<br>
-						<?php if ($per_image_settings): ?>
-								<input type="checkbox" id="view-additional-image-generation-settings" />
-								<label id="view-additional-image-generation-settings-label" for="view-additional-image-generation-settings">
-									<?php esc_html_e('Additional settings', 'classifai'); ?>
-								</label>
-						<?php endif; ?>
+							<div class="prompt-view">
+								<p>
+									<?php
+									if ($number_of_images > 1) {
+										esc_html_e('Enter a prompt below to generate images.', 'classifai');
+									} else {
+										esc_html_e('Enter a prompt below to generate an image.', 'classifai');
+									}
+									?>
+								</p>
+								<p>
+									<?php
+									if ($number_of_images > 1) {
+										esc_html_e('Once images are generated, choose one or more of those to import into your Media Library and then choose one image to insert.', 'classifai');
+									} else {
+										esc_html_e('Once an image is generated, you can import it into your Media Library and then select to insert.', 'classifai');
+									}
+									?>
+								</p>
+								<textarea class="prompt" placeholder="<?php esc_attr_e('Enter prompt', 'classifai'); ?>" rows="4" maxlength="<?php echo absint($provider_instance->max_prompt_chars ?? 1000); ?>"></textarea>
+								<br>
+								<?php if ($per_image_settings): ?>
+											<input type="checkbox" id="view-additional-image-generation-settings" />
+											<label id="view-additional-image-generation-settings-label" for="view-additional-image-generation-settings">
+												<?php esc_html_e('Additional settings', 'classifai'); ?>
+											</label>
+								<?php endif; ?>
 
-						<div class="additional-image-generation-settings hidden">
-							<?php
-							$quality_options = method_exists($provider_instance, 'get_image_quality_options') ? $provider_instance->get_image_quality_options() : [];
-							if (!empty($quality_options)):
-								?>
-									<label>
-										<span><?php esc_html_e('Quality:', 'classifai'); ?></span>
-										<select class="quality" name="quality">
-											<?php
-											$quality = $settings[$provider_id]['quality'];
-											foreach ($quality_options as $key => $value) {
-												echo '<option value="' . esc_attr($key) . '" ' . selected($quality, $key, false) . '>' . esc_html($value) . '</option>';
-											}
-											?>
-										</select>
-									</label>
-							<?php endif; ?>
+								<div class="additional-image-generation-settings hidden">
+									<?php
+									$quality_options = method_exists($provider_instance, 'get_image_quality_options') ? $provider_instance->get_image_quality_options() : [];
+									if (!empty($quality_options)):
+										?>
+												<label>
+													<span><?php esc_html_e('Quality:', 'classifai'); ?></span>
+													<select class="quality" name="quality">
+														<?php
+														$quality = $settings[$provider_id]['quality'];
+														foreach ($quality_options as $key => $value) {
+															echo '<option value="' . esc_attr($key) . '" ' . selected($quality, $key, false) . '>' . esc_html($value) . '</option>';
+														}
+														?>
+													</select>
+												</label>
+									<?php endif; ?>
 
-							<?php
-							$size_options = method_exists($provider_instance, 'get_image_size_options') ? $provider_instance->get_image_size_options() : [];
-							if (!empty($size_options)):
-								?>
-									<label>
-										<span><?php esc_html_e('Size:', 'classifai'); ?></span>
-										<select class="size" name="size">
-											<?php
-											$size = $settings[$provider_id]['image_size'];
-											foreach ($size_options as $key => $value) {
-												echo '<option value="' . esc_attr($key) . '" ' . selected($size, $key, false) . '>' . esc_html($value) . '</option>';
-											}
-											?>
-										</select>
-									</label>
-							<?php endif; ?>
+									<?php
+									$size_options = method_exists($provider_instance, 'get_image_size_options') ? $provider_instance->get_image_size_options() : [];
+									if (!empty($size_options)):
+										?>
+												<label>
+													<span><?php esc_html_e('Size:', 'classifai'); ?></span>
+													<select class="size" name="size">
+														<?php
+														$size = $settings[$provider_id]['image_size'];
+														foreach ($size_options as $key => $value) {
+															echo '<option value="' . esc_attr($key) . '" ' . selected($size, $key, false) . '>' . esc_html($value) . '</option>';
+														}
+														?>
+													</select>
+												</label>
+									<?php endif; ?>
 
-							<?php
-							$aspect_ratio_options = method_exists($provider_instance, 'get_image_aspect_ratio_options') ? $provider_instance->get_image_aspect_ratio_options() : [];
-							if (!empty($aspect_ratio_options)):
-								?>
-									<label>
-										<span><?php esc_html_e('Aspect ratio:', 'classifai'); ?></span>
-										<select class="aspect-ratio" name="aspect-ratio">
-											<?php
-											$aspect_ratio = $settings[$provider_id]['aspect_ratio'];
-											foreach ($aspect_ratio_options as $key => $value) {
-												echo '<option value="' . esc_attr($key) . '" ' . selected($aspect_ratio, $key, false) . '>' . esc_html($value) . '</option>';
-											}
-											?>
-										</select>
-									</label>
-							<?php endif; ?>
+									<?php
+									$aspect_ratio_options = method_exists($provider_instance, 'get_image_aspect_ratio_options') ? $provider_instance->get_image_aspect_ratio_options() : [];
+									if (!empty($aspect_ratio_options)):
+										?>
+												<label>
+													<span><?php esc_html_e('Aspect ratio:', 'classifai'); ?></span>
+													<select class="aspect-ratio" name="aspect-ratio">
+														<?php
+														$aspect_ratio = $settings[$provider_id]['aspect_ratio'];
+														foreach ($aspect_ratio_options as $key => $value) {
+															echo '<option value="' . esc_attr($key) . '" ' . selected($aspect_ratio, $key, false) . '>' . esc_html($value) . '</option>';
+														}
+														?>
+													</select>
+												</label>
+									<?php endif; ?>
 
-							<?php
-							$style_options = method_exists($provider_instance, 'get_image_style_options') ? $provider_instance->get_image_style_options() : [];
-							if (!empty($style_options)):
-								?>
-									<label>
-										<span><?php esc_html_e('Style:', 'classifai'); ?></span>
-										<select class="style" name="style">
-											<?php
-											$style = $settings[$provider_id]['style'];
-											foreach ($style_options as $key => $value) {
-												echo '<option value="' . esc_attr($key) . '" ' . selected($style, $key, false) . '>' . esc_html($value) . '</option>';
-											}
-											?>
-										</select>
-									</label>
-							<?php endif; ?>
-						</div>
-						<button type="button" class="button button-secondary button-large button-generate">
-							<?php
-							if ($number_of_images > 1) {
-								esc_html_e('Generate images', 'classifai');
-							} else {
-								esc_html_e('Generate image', 'classifai');
-							}
-							?>
-						</button>
-						<span class="error"></span>
-					</div>
-					<div class="generated-images">
-						<h2 class="prompt-text hidden">
-							<?php
-							if ($number_of_images > 1) {
-								esc_html_e('Images generated from prompt:', 'classifai');
-							} else {
-								esc_html_e('Image generated from prompt:', 'classifai');
-							}
-							?>
-							<span></span>
-						</h2>
-						<span class="spinner"></span>
-						<ul></ul>
-						<p>
-							<?php render_disable_feature_link('feature_image_generation'); ?>
-						</p>
-					</div>
-				</script>
+									<?php
+									$style_options = method_exists($provider_instance, 'get_image_style_options') ? $provider_instance->get_image_style_options() : [];
+									if (!empty($style_options)):
+										?>
+												<label>
+													<span><?php esc_html_e('Style:', 'classifai'); ?></span>
+													<select class="style" name="style">
+														<?php
+														$style = $settings[$provider_id]['style'];
+														foreach ($style_options as $key => $value) {
+															echo '<option value="' . esc_attr($key) . '" ' . selected($style, $key, false) . '>' . esc_html($value) . '</option>';
+														}
+														?>
+													</select>
+												</label>
+									<?php endif; ?>
+								</div>
+								<button type="button" class="button button-secondary button-large button-generate">
+									<?php
+									if ($number_of_images > 1) {
+										esc_html_e('Generate images', 'classifai');
+									} else {
+										esc_html_e('Generate image', 'classifai');
+									}
+									?>
+								</button>
+								<span class="error"></span>
+							</div>
+							<div class="generated-images">
+								<h2 class="prompt-text hidden">
+									<?php
+									if ($number_of_images > 1) {
+										esc_html_e('Images generated from prompt:', 'classifai');
+									} else {
+										esc_html_e('Image generated from prompt:', 'classifai');
+									}
+									?>
+									<span></span>
+								</h2>
+								<span class="spinner"></span>
+								<ul></ul>
+								<p>
+									<?php render_disable_feature_link('feature_image_generation'); ?>
+								</p>
+							</div>
+						</script>
 
 		<?php
 		// Template for a single generated image.
 		/* phpcs:disable WordPressVIPMinimum.Security.Mustache.OutputNotation,PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage */
 		?>
 		<script type="text/html" id="tmpl-dalle-image">
-					<div class="generated-image">
-						<img src="data:image/png;base64,{{{ data.url }}}" />
-						<button type="button" class="components-button button-secondary button-import"><?php esc_html_e('Import into Media Library', 'classifai'); ?></button>
-						<button type="button" class="components-button is-tertiary button-import-insert"><?php esc_html_e('Import and Insert', 'classifai'); ?></button>
-						<span class="spinner"></span>
-						<span class="error"></span>
-					</div>
-				</script>
+							<div class="generated-image">
+								<img src="data:image/png;base64,{{{ data.url }}}" />
+								<button type="button" class="components-button button-secondary button-import"><?php esc_html_e('Import into Media Library', 'classifai'); ?></button>
+								<button type="button" class="components-button is-tertiary button-import-insert"><?php esc_html_e('Import and Insert', 'classifai'); ?></button>
+								<span class="spinner"></span>
+								<span class="error"></span>
+							</div>
+						</script>
 		<?php
 		/* phpcs:enable WordPressVIPMinimum.Security.Mustache.OutputNotation */
 	}

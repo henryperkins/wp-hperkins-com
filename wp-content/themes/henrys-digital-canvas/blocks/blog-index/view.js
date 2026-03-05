@@ -182,6 +182,10 @@
 			return JSON.stringify( config );
 		}, [ config ] );
 
+		useEffect( function () {
+			document.title = 'Blog — Henry Perkins';
+		}, [] );
+
 		useEffect(
 			function () {
 				let cancelled = false;

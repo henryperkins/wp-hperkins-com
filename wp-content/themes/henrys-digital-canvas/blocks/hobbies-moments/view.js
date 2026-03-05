@@ -11,55 +11,59 @@
 	const createRoot = element.createRoot;
 	const legacyRender = element.render;
 
-	const CATEGORY_FILTERS = [ 'All', 'Dev', 'Music', 'Learning' ];
-	const TIMEFRAME_FILTERS = [ 'All', 'Now', 'Recently', 'Next' ];
+	const CATEGORY_FILTERS = [ 'All', 'Development', 'Music', 'Learning' ];
+	const TIMEFRAME_FILTERS = [ 'All', 'Current', 'Recent', 'Planned' ];
 	const TIMEFRAME_ORDER = [ 'now', 'recently', 'next' ];
 
 	const CATEGORY_MAP = {
 		All: '',
-		Dev: 'dev',
+		Development: 'dev',
 		Music: 'music',
 		Learning: 'learning',
 	};
 
 	const TIMEFRAME_MAP = {
 		All: '',
-		Now: 'now',
-		Recently: 'recently',
-		Next: 'next',
+		Current: 'now',
+		Recent: 'recently',
+		Planned: 'next',
 	};
 
 	const CATEGORY_QUERY_MAP = {
 		all: 'All',
-		dev: 'Dev',
+		dev: 'Development',
+		development: 'Development',
 		music: 'Music',
 		learning: 'Learning',
 	};
 
 	const TIMEFRAME_QUERY_MAP = {
 		all: 'All',
-		now: 'Now',
-		recently: 'Recently',
-		next: 'Next',
+		now: 'Current',
+		current: 'Current',
+		recently: 'Recent',
+		recent: 'Recent',
+		next: 'Planned',
+		planned: 'Planned',
 	};
 
 	const TIMEFRAME_META = {
 		now: {
-			label: 'Now',
-			description: 'What I am into outside work right now.',
+			label: 'Current',
+			description: 'What I am actively practicing right now.',
 		},
 		recently: {
-			label: 'Recently',
-			description: 'Recent rabbit holes, experiments, and creative routines.',
+			label: 'Recent',
+			description: 'Experiments and rabbit holes from the recent past.',
 		},
 		next: {
-			label: 'Next',
-			description: 'What I want to try, practice, and explore next.',
+			label: 'Planned',
+			description: 'What I plan to explore next.',
 		},
 	};
 
 	const CATEGORY_BADGE = {
-		dev: 'Dev',
+		dev: 'Development',
 		music: 'Music',
 		learning: 'Learning',
 	};
@@ -218,6 +222,10 @@
 			return JSON.stringify( config );
 		}, [ config ] );
 
+		useEffect( function () {
+			document.title = 'Hobbies — Henry Perkins';
+		}, [] );
+
 		useEffect(
 			function () {
 				let cancelled = false;
@@ -308,7 +316,7 @@
 				} );
 
 				if ( ! exists ) {
-					setOpenId( filteredMoments[0].id );
+					setOpenId( null );
 				}
 			},
 			[ filteredMoments, openId ]
@@ -340,6 +348,11 @@
 			return h( 'p', { className: 'hdc-hobbies-moments__error' }, state.error );
 		}
 
+		var hasActiveFilters = activeCategory !== 'All' || activeTimeframe !== 'All';
+		var selectedCategoryLabel = activeCategory === 'All' ? 'All categories' : activeCategory;
+		var selectedTimeframeLabel = activeTimeframe === 'All' ? 'All timeframes' : activeTimeframe;
+		var visibleMomentCountLabel = String( filteredMoments.length ) + ( filteredMoments.length === 1 ? ' moment' : ' moments' );
+
 		return h(
 			'div',
 			{},
@@ -348,6 +361,19 @@
 				{ className: 'hdc-hobbies-moments__hero' },
 				h( 'h2', { className: 'hdc-hobbies-moments__title' }, config.heading || 'Hobbies' ),
 				h( 'p', { className: 'hdc-hobbies-moments__desc' }, config.description )
+			),
+			h(
+				'div',
+				{ className: 'hdc-hobbies-moments__how-it-works' },
+				h( 'h3', { className: 'hdc-hobbies-moments__how-title' }, 'How this page works' ),
+				h( 'p', { className: 'hdc-hobbies-moments__how-text' }, 'This is a timeline of hobby moments across development, music, and learning.' ),
+				h(
+					'ol',
+					{ className: 'hdc-hobbies-moments__how-steps' },
+					h( 'li', {}, 'Choose a category and timeframe.' ),
+					h( 'li', {}, 'Open any moment card to view its full details.' ),
+					h( 'li', {}, 'Reset filters anytime to return to the full timeline.' )
+				)
 			),
 			h(
 				'div',
@@ -399,73 +425,130 @@
 					)
 				)
 			),
-			grouped.length === 0
-				? h( 'p', { className: 'hdc-hobbies-moments__empty' }, 'No moments found for the selected filters.' )
-				: grouped.map( function ( group ) {
-					const meta = TIMEFRAME_META[ group.timeframe ] || { label: group.timeframe, description: '' };
-					const countLabel = group.items.length === 1 ? '1 moment' : String( group.items.length ) + ' moments';
-					return h(
-						'section',
-						{ className: 'hdc-hobbies-moments__group', key: 'group-' + group.timeframe },
-						h(
-							'div',
-							{ className: 'hdc-hobbies-moments__group-head' },
-							h( 'h3', { className: 'hdc-hobbies-moments__group-title' }, meta.label ),
-							h( 'span', { className: 'hdc-hobbies-moments__group-count' }, countLabel )
-						),
-						h( 'p', { className: 'hdc-hobbies-moments__group-desc' }, meta.description ),
-						h(
-							'div',
-							{ className: 'hdc-hobbies-moments__grid' },
-							group.items.map( function ( moment ) {
-								const isOpen = openId === moment.id;
-								const panelId = 'hdc-hobby-panel-' + String( moment.id );
-								const triggerId = 'hdc-hobby-trigger-' + String( moment.id );
-								return h(
-									'article',
-									{ className: 'hdc-hobbies-moments__card', key: moment.id },
-									h(
-										'div',
-										{ className: 'hdc-hobbies-moments__meta' },
-										h( 'span', { className: 'hdc-hobbies-moments__badge' }, CATEGORY_BADGE[ moment.category ] || 'General' ),
-										h( 'span', { className: 'hdc-hobbies-moments__badge' }, ( TIMEFRAME_META[ moment.timeframe ] || {} ).label || 'Moment' )
-									),
-									h(
-										'button',
-										{
-											type: 'button',
-											className: 'hdc-hobbies-moments__trigger',
-											id: triggerId,
-											'aria-expanded': isOpen ? 'true' : 'false',
-											'aria-controls': panelId,
-											onClick: function () {
-												setOpenId( isOpen ? null : moment.id );
-											},
-										},
-										h( 'span', {}, ensureString( moment.title, 'Moment' ) ),
-										h( 'span', {}, isOpen ? 'Hide' : 'Read' )
-									),
-									h( 'p', { className: 'hdc-hobbies-moments__summary' }, ensureString( moment.takeaway, '' ) ),
-									isOpen
-										? h(
-											'div',
-											{
-												className: 'hdc-hobbies-moments__expanded',
-												id: panelId,
-												role: 'region',
-												'aria-labelledby': triggerId,
-											},
-											h( 'p', { className: 'hdc-hobbies-moments__story' }, ensureString( moment.story, '' ) ),
-											momentMediaNode( moment ) ? h( 'div', { className: 'hdc-hobbies-moments__media' }, momentMediaNode( moment ) ) : null,
-											h( 'p', { className: 'hdc-hobbies-moments__takeaway-label' }, 'Key takeaway' ),
-											h( 'p', { className: 'hdc-hobbies-moments__takeaway' }, ensureString( moment.takeaway, '' ) )
-										)
-										: null
-								);
-							} )
+				h(
+					'div',
+					{ className: 'hdc-hobbies-moments__filter-summary' },
+					h(
+						'p',
+						{ className: 'hdc-hobbies-moments__filter-summary-text', role: 'status', 'aria-live': 'polite' },
+						'Showing ',
+						h( 'strong', {}, visibleMomentCountLabel ),
+						' in ',
+						h( 'strong', {}, selectedCategoryLabel ),
+						' and ',
+						h( 'strong', {}, selectedTimeframeLabel ),
+						'.'
+					),
+					hasActiveFilters
+						? h(
+							'button',
+							{
+								type: 'button',
+								className: 'hdc-hobbies-moments__reset-btn',
+								onClick: function () {
+									setActiveCategory( 'All' );
+									setActiveTimeframe( 'All' );
+								},
+							},
+							'Reset filters'
 						)
-					);
-				} )
+						: null
+				),
+				grouped.length === 0
+					? h(
+						'div',
+						{ className: 'hdc-hobbies-moments__empty' },
+						h( 'h3', { className: 'hdc-hobbies-moments__empty-title' }, 'No moments found' ),
+						h( 'p', { className: 'hdc-hobbies-moments__empty-desc' }, 'No moments match this filter. Try another category or timeframe.' ),
+						hasActiveFilters
+							? h(
+								'button',
+								{
+									type: 'button',
+									className: 'hdc-hobbies-moments__reset-btn',
+									onClick: function () {
+										setActiveCategory( 'All' );
+										setActiveTimeframe( 'All' );
+									},
+								},
+								'Reset filters'
+							)
+							: null
+					)
+				: h(
+					'div',
+					{ className: 'hdc-hobbies-moments__groups' },
+					h(
+						'p',
+						{ className: 'hdc-hobbies-moments__groups-hint' },
+						'Select any moment card title to expand details.'
+					),
+					grouped.map( function ( group ) {
+						const meta = TIMEFRAME_META[ group.timeframe ] || { label: group.timeframe, description: '' };
+						const countLabel = group.items.length === 1 ? '1 moment' : String( group.items.length ) + ' moments';
+						return h(
+							'section',
+							{ className: 'hdc-hobbies-moments__group', key: 'group-' + group.timeframe },
+							h(
+								'div',
+								{ className: 'hdc-hobbies-moments__group-head' },
+								h( 'h3', { className: 'hdc-hobbies-moments__group-title' }, meta.label ),
+								h( 'span', { className: 'hdc-hobbies-moments__group-count' }, countLabel )
+							),
+							h( 'p', { className: 'hdc-hobbies-moments__group-desc' }, meta.description ),
+							h(
+								'div',
+								{ className: 'hdc-hobbies-moments__grid' },
+								group.items.map( function ( moment ) {
+									const isOpen = openId === moment.id;
+									const panelId = 'hdc-hobby-panel-' + String( moment.id );
+									const triggerId = 'hdc-hobby-trigger-' + String( moment.id );
+									return h(
+										'article',
+										{ className: 'hdc-hobbies-moments__card', key: moment.id },
+										h(
+											'div',
+											{ className: 'hdc-hobbies-moments__meta' },
+											h( 'span', { className: 'hdc-hobbies-moments__badge' }, CATEGORY_BADGE[ moment.category ] || 'General' ),
+											h( 'span', { className: 'hdc-hobbies-moments__badge' }, ( TIMEFRAME_META[ moment.timeframe ] || {} ).label || 'Moment' )
+										),
+										h(
+											'button',
+											{
+												type: 'button',
+												className: 'hdc-hobbies-moments__trigger',
+												id: triggerId,
+												'aria-expanded': isOpen ? 'true' : 'false',
+												'aria-controls': panelId,
+												onClick: function () {
+													setOpenId( isOpen ? null : moment.id );
+												},
+											},
+											h( 'span', {}, ensureString( moment.title, 'Moment' ) ),
+											h( 'span', {}, isOpen ? 'Hide' : 'Read' )
+										),
+										h( 'p', { className: 'hdc-hobbies-moments__summary' }, ensureString( moment.takeaway, '' ) ),
+										isOpen
+											? h(
+												'div',
+												{
+													className: 'hdc-hobbies-moments__expanded',
+													id: panelId,
+													role: 'region',
+													'aria-labelledby': triggerId,
+												},
+												h( 'p', { className: 'hdc-hobbies-moments__story' }, ensureString( moment.story, '' ) ),
+												momentMediaNode( moment ) ? h( 'div', { className: 'hdc-hobbies-moments__media' }, momentMediaNode( moment ) ) : null,
+												h( 'p', { className: 'hdc-hobbies-moments__takeaway-label' }, 'Key takeaway' ),
+												h( 'p', { className: 'hdc-hobbies-moments__takeaway' }, ensureString( moment.takeaway, '' ) )
+											)
+											: null
+									);
+								} )
+							)
+						);
+					} )
+				)
 		);
 	}
 

@@ -12,6 +12,32 @@
 	const legacyRender = element.render;
 
 	const utils = window.hdcSharedUtils || {};
+	const renderLucideIcon =
+		typeof utils.renderLucideIcon === 'function'
+			? utils.renderLucideIcon
+			: function () {
+				return null;
+			};
+
+	const SECTION_ICONS = {
+		'Impact at a Glance': 'trending-up',
+		'Capability Map': 'layers',
+		'Experience': 'briefcase',
+		'Education': 'graduation-cap',
+		'Signature Work': 'folder-open',
+		'Projects': 'folder-open',
+		'Skills': 'wrench',
+		'Certifications': 'award',
+		'What Makes This Profile Different': 'sparkles',
+	};
+
+	function sectionTitle( title ) {
+		var iconName = SECTION_ICONS[ title ] || '';
+		var icon = iconName
+			? h( 'span', { className: 'hdc-resume-overview__section-icon', 'aria-hidden': 'true' }, renderLucideIcon( h, iconName, { className: 'hdc-resume-overview__section-icon-svg', size: 18 } ) || null )
+			: null;
+		return h( 'h3', { className: 'hdc-resume-overview__section-title' }, icon, ' ', title );
+	}
 
 	function ensureArray( value ) {
 		return Array.isArray( value ) ? value : [];
@@ -81,6 +107,10 @@
 		const signature = useMemo( function () {
 			return JSON.stringify( config );
 		}, [ config ] );
+
+		useEffect( function () {
+			document.title = 'Resume — Henry Perkins';
+		}, [] );
 
 		useEffect(
 			function () {
@@ -200,7 +230,7 @@
 				? h(
 					'section',
 					{ className: 'hdc-resume-overview__section' },
-					h( 'h3', { className: 'hdc-resume-overview__section-title' }, 'Impact at a Glance' ),
+					sectionTitle( 'Impact at a Glance' ),
 					h(
 						'div',
 						{ className: 'hdc-resume-overview__metrics' },
@@ -227,7 +257,7 @@
 				? h(
 					'section',
 					{ className: 'hdc-resume-overview__section' },
-					h( 'h3', { className: 'hdc-resume-overview__section-title' }, 'Capability Map' ),
+					sectionTitle( 'Capability Map' ),
 					h(
 						'div',
 						{ className: 'hdc-resume-overview__capability' },
@@ -253,7 +283,7 @@
 				? h(
 					'section',
 					{ className: 'hdc-resume-overview__section' },
-					h( 'h3', { className: 'hdc-resume-overview__section-title' }, 'Experience' ),
+					sectionTitle( 'Experience' ),
 					h(
 						'div',
 						{ className: 'hdc-resume-overview__timeline' },
@@ -284,7 +314,7 @@
 				? h(
 					'section',
 					{ className: 'hdc-resume-overview__section' },
-					h( 'h3', { className: 'hdc-resume-overview__section-title' }, 'Education' ),
+					sectionTitle( 'Education' ),
 					h(
 						'div',
 						{ className: 'hdc-resume-overview__timeline' },
@@ -314,7 +344,7 @@
 				? h(
 					'section',
 					{ className: 'hdc-resume-overview__section' },
-					h( 'h3', { className: 'hdc-resume-overview__section-title' }, 'Projects' ),
+					sectionTitle( 'Signature Work' ),
 					h(
 						'div',
 						{ className: 'hdc-resume-overview__timeline' },
@@ -356,7 +386,7 @@
 				? h(
 					'section',
 					{ className: 'hdc-resume-overview__section' },
-					h( 'h3', { className: 'hdc-resume-overview__section-title' }, 'Skills' ),
+					sectionTitle( 'Skills' ),
 					h(
 						'div',
 						{ className: 'hdc-resume-overview__skills' },
@@ -382,7 +412,7 @@
 				? h(
 					'section',
 					{ className: 'hdc-resume-overview__section' },
-					h( 'h3', { className: 'hdc-resume-overview__section-title' }, 'Certifications' ),
+					sectionTitle( 'Certifications' ),
 					h(
 						'ul',
 						{ className: 'hdc-resume-overview__list' },
@@ -396,7 +426,7 @@
 				? h(
 					'section',
 					{ className: 'hdc-resume-overview__section' },
-					h( 'h3', { className: 'hdc-resume-overview__section-title' }, 'What Makes This Profile Different' ),
+					sectionTitle( 'What Makes This Profile Different' ),
 					h( 'p', { className: 'hdc-resume-overview__text' }, ensureString( data.differentiator, '' ) )
 				)
 				: null

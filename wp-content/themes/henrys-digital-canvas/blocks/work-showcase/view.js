@@ -28,7 +28,7 @@
 	const MAX_SPARKLINE_WEEKS = 16;
 	const GITHUB_REPO_LIST_LIMIT = 100;
 	const GITHUB_REPO_MAX_PAGES = 20;
-	const GITHUB_LANGUAGE_SUMMARY_MAX_REPOS_DEFAULT = 120;
+	const GITHUB_LANGUAGE_SUMMARY_MAX_REPOS_DEFAULT = 80;
 	const GITHUB_LANGUAGE_SUMMARY_MAX_REPOS_LIMIT = 200;
 	const RATE_LIMIT_COOLDOWN_FALLBACK_MS = 60000;
 	const ROLE_ORDER = [ 'Systems', 'Product', 'Craft', 'Performance' ];
@@ -2069,6 +2069,10 @@
 		const [ isCompareOpen, setIsCompareOpen ] = useState( false );
 		const [ compareSelection, setCompareSelection ] = useState( [] );
 		const [ compareToast, setCompareToast ] = useState( '' );
+
+		useEffect( function () {
+			document.title = 'Work — Henry Perkins';
+		}, [] );
 
 		useEffect( function () {
 			function handleVisibility() {

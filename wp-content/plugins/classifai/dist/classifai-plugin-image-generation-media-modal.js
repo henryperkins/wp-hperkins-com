@@ -1,1 +1,444 @@
-(()=>{"use strict";(()=>{const e=Backbone.Model.extend({defaults:{url:""}}),t=wp.media.View.extend({el:".error",initialize:function(e){this.$el.text(""),this.render(e.error)},render:function(e){return this.$el.text(e),this}}),i=Backbone.Collection.extend({model:e,url:wpApiSettings.root+classifaiDalleData.endpoint,makeRequest:function(e,i,n,a,r){const o={format:"b64_json",prompt:e};i&&(o.quality=i),n&&(o.size=n),a&&(o.style=a),r&&(o.aspect_ratio=r),this.fetch({type:"get",beforeSend:function(e){e.setRequestHeader("X-WP-Nonce",wpApiSettings.nonce)},data:o,reset:!0,error:function(e,i){new t({error:i.responseJSON.message})}})}}),n=window.wp.mediaUtils,a=window.wp.url,r=wp.media.View.extend({tagName:"li",template:wp.template("dalle-image"),events:{"click .button-import":"import","click .button-import-insert":"importMediaLibrary","click .button-media-library":"loadMediaLibrary"},initialize:function(e){this.data=this.model.toJSON(),this.prompt=e.prompt,this.fileName=this.createSafeFilename(this.prompt)},render:function(){return this.$el.html(this.template(this.data)),this},createSafeFilename:function(e,t=80){if(!e)return"generated-image";const i=(0,a.cleanForSlug)(e);if(i.length<=t)return i;const n=i.substring(0,t),r=n.lastIndexOf("-");return r>.5*t?n.substring(0,r):n},import:async function(){var e;const t=this;this.enableLoadingState();const i=await this.convertImageToBlob(this.data.url);if(i)return await(0,n.uploadMedia)({filesList:[new File([i],this.fileName+".png")],onFileChange:function([e]){e&&e.id&&(t.file=e,t.$(".button-import").removeClass("button-import").addClass("button-media-library").text(classifaiDalleData.buttonText),t.$(".button-import-insert").remove(),t.disableLoadingState())},onError:function(e){t.disableLoadingState(),t.$(".error").text(e)},additionalData:{post:null!==(e=wp.media.model.settings.post.id)&&void 0!==e?e:0,caption:classifaiDalleData.caption,alt_text:this.prompt}});this.$(".error").text(classifaiDalleData.errorText)},importMediaLibrary:async function(){await this.import(),await this.loadMediaLibrary()},loadMediaLibrary:async function(){this.enableLoadingState();const e=wp.media.model.Attachment;this.attachment=await e.get(this.file.id).fetch();const t={file:this.attachment,uploading:!0,date:new Date,filename:this.fileName+".png",menuOrder:0,loaded:0,percent:0,uploadedTo:wp.media.model.settings.post.id},i=wp.media.model.Attachment.create(t);wp.Uploader.queue.add(i),_.each(["file","loaded","size","percent"],function(e){i.unset(e)}),i.set(_.extend(this.attachment,{uploading:!1})),wp.media.model.Attachment.get(this.file.id,i),wp.Uploader.queue.reset(),this.disableLoadingState(),jQuery("#menu-item-browse").click()},enableLoadingState:function(){const e=this.$el.parent("ul").find("button"),t=this.$(".spinner");e.prop("disabled",!0),t.addClass("active")},disableLoadingState:function(){const e=this.$el.parent("ul").find("button"),t=this.$(".spinner");e.prop("disabled",!1),t.removeClass("active")},convertImageToBlob:async function(e){const t=new Image;t.src=`data:image/png;base64,${e}`,t.crossOrigin="anonymous",await this.loadImage(t);const i=document.createElement("canvas");i.width=t.width,i.height=t.height;const n=i.getContext("2d");if(n)return n.drawImage(t,0,0),await new Promise(e=>{i.toBlob(t=>{t&&e(t)},"image/jpeg")})},loadImage:function(e){return new Promise(t=>e.onload=t)}}),o=wp.media.View.extend({el:".generated-images",initialize:function(e){this.collection=new i,this.prompt=e.prompt,this.quality=e.quality,this.size=e.size,this.style=e.style,this.aspectRatio=e.aspectRatio,this.listenTo(this.collection,"reset",this.renderAll),this.listenTo(this.collection,"error",this.error),this.collection.makeRequest(this.prompt,this.quality,this.size,this.style,this.aspectRatio),this.render()},render:function(){return this.$el.prev().find("button").prop("disabled",!0),this.$el.prev().find(".error").text(""),this.$("ul").empty(),this.$(".spinner").addClass("active"),this.$(".prompt-text").addClass("hidden"),this},renderImage:function(e){const t=new r({model:e,prompt:this.prompt});this.$("ul").append(t.render().el)},renderAll:function(){this.collection.length<1?(this.error(),this.$el.prev().find(".error").text(classifaiDalleData.errorText)):(this.$(".prompt-text").removeClass("hidden"),this.$(".prompt-text span").text(this.prompt),this.$(".spinner").removeClass("active"),this.collection.each(this.renderImage,this),this.$el.prev().find("button").prop("disabled",!1))},error:function(){this.$(".spinner").removeClass("active"),this.$el.prev().find("button").prop("disabled",!1)}}),s=wp.media.View.extend({template:wp.template("dalle-prompt"),events:{"click .button-generate":"promptRequest","keyup .prompt":"promptRequest"},render:function(){return this.$el.html(this.template()),this},promptRequest:function(e){let t="";const i=e.target.parentElement;13===e.which?t=e.target.value.trim():"BUTTON"===e.target.nodeName&&(t=i.querySelector(".prompt").value.trim());const n=i?.querySelector(".quality")?.value.trim()||"",a=i?.querySelector(".size")?.value.trim()||"",r=i?.querySelector(".style")?.value.trim()||"",s=i?.querySelector(".aspect-ratio")?.value.trim()||"";t&&new o({prompt:t,quality:n,size:a,style:r,aspectRatio:s})}}),l=wp.media.view.MediaFrame.Select,d=wp.media.view.MediaFrame.Post;wp.media.view.MediaFrame.Select=l.extend({bindHandlers:function(){l.prototype.bindHandlers.apply(this,arguments),this.on("content:render:generate",this.generateContent,this)},browseRouter:function(e){l.prototype.browseRouter.apply(this,arguments),e.set({generate:{text:classifaiDalleData.tabText,priority:30}})},generateContent:function(){this.content.set((new s).render())}}),wp.media.view.MediaFrame.Post=d.extend({bindHandlers:function(){d.prototype.bindHandlers.apply(this,arguments),this.on("content:render:generate",this.generateContent,this)},browseRouter:function(e){d.prototype.browseRouter.apply(this,arguments),e.set({generate:{text:classifaiDalleData.tabText,priority:30}})},generateContent:function(){this.content.set((new s).render())}})})(),(()=>{const e=window.wp.components,t=window.wp.i18n,i=window.wp.blockEditor,n=window.ReactJSXRuntime,a=["core/image","core/gallery","core/media-text","core/cover"];wp.hooks.addFilter("editor.MediaUpload","classifai/image-generation-link",function(r){return function(o){const{render:s,...l}=o;let d;try{d=(0,i.useBlockProps)()}catch(e){return(0,n.jsx)(r,{...o})}const{"data-type":p}=d;if(!a.includes(p))return(0,n.jsx)(r,{...o});let c=1;return p&&"core/gallery"===p&&(c=1/0),(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(r,{...l,mode:"generate",render:({open:i})=>(0,n.jsx)(e.Button,{variant:"secondary",onClick:i,children:(0,t._nx)("Generate image","Generate images",c,"Image or gallery upload","classifai")})}),(0,n.jsx)(r,{...o})]})}})})()})();
+(() => {
+    'use strict';
+
+    (() => {
+        const GeneratedImageModel = Backbone.Model.extend({
+            defaults: {
+                url: '',
+            },
+        });
+
+        const getApiErrorMessage = (xhr) => {
+            if (xhr?.responseJSON?.message) {
+                return xhr.responseJSON.message;
+            }
+
+            if (xhr?.responseJSON?.data?.message) {
+                return xhr.responseJSON.data.message;
+            }
+
+            if (xhr?.responseText) {
+                try {
+                    const parsed = JSON.parse(xhr.responseText);
+
+                    if (parsed?.message) {
+                        return parsed.message;
+                    }
+
+                    if (parsed?.data?.message) {
+                        return parsed.data.message;
+                    }
+                } catch (error) {
+                    // Ignore parse errors and fall back below.
+                }
+            }
+
+            return xhr?.statusText || classifaiDalleData.errorText;
+        };
+
+        const ErrorView = wp.media.View.extend({
+            el: '.error',
+            initialize(options) {
+                this.$el.text('');
+                this.render(options.error);
+            },
+            render(error) {
+                this.$el.text(error);
+                return this;
+            },
+        });
+
+        const GeneratedImages = Backbone.Collection.extend({
+            model: GeneratedImageModel,
+            url: wpApiSettings.root + classifaiDalleData.endpoint,
+            makeRequest(prompt, quality, size, style, aspectRatio) {
+                const requestData = {
+                    format: 'b64_json',
+                    prompt,
+                };
+
+                if (quality) {
+                    requestData.quality = quality;
+                }
+
+                if (size) {
+                    requestData.size = size;
+                }
+
+                if (style) {
+                    requestData.style = style;
+                }
+
+                if (aspectRatio) {
+                    requestData.aspect_ratio = aspectRatio;
+                }
+
+                this.fetch({
+                    type: 'post',
+                    beforeSend(request) {
+                        request.setRequestHeader('X-WP-Nonce', wpApiSettings.nonce);
+                    },
+                    data: requestData,
+                    reset: true,
+                    error(collection, xhr) {
+                        new ErrorView({
+                            error: getApiErrorMessage(xhr),
+                        });
+                    },
+                });
+            },
+        });
+
+        const { uploadMedia } = window.wp.mediaUtils;
+        const { cleanForSlug } = window.wp.url;
+
+        const GeneratedImageView = wp.media.View.extend({
+            tagName: 'li',
+            template: wp.template('dalle-image'),
+            events: {
+                'click .button-import': 'import',
+                'click .button-import-insert': 'importMediaLibrary',
+                'click .button-media-library': 'loadMediaLibrary',
+            },
+            initialize(options) {
+                this.data = this.model.toJSON();
+                this.prompt = options.prompt;
+                this.fileName = this.createSafeFilename(this.prompt);
+            },
+            render() {
+                this.$el.html(this.template(this.data));
+                return this;
+            },
+            createSafeFilename(prompt, maxLength = 80) {
+                if (!prompt) {
+                    return 'generated-image';
+                }
+
+                const safeFileName = cleanForSlug(prompt);
+
+                if (safeFileName.length <= maxLength) {
+                    return safeFileName;
+                }
+
+                const truncated = safeFileName.substring(0, maxLength);
+                const lastDash = truncated.lastIndexOf('-');
+
+                if (lastDash > maxLength * 0.5) {
+                    return truncated.substring(0, lastDash);
+                }
+
+                return truncated;
+            },
+            async import() {
+                this.enableLoadingState();
+
+                const blob = await this.convertImageToBlob(this.data.url);
+
+                if (blob) {
+                    await uploadMedia({
+                        filesList: [new File([blob], `${this.fileName}.png`)],
+                        onFileChange: ([file]) => {
+                            if (file && file.id) {
+                                this.file = file;
+                                this.$('.button-import')
+                                    .removeClass('button-import')
+                                    .addClass('button-media-library')
+                                    .text(classifaiDalleData.buttonText);
+
+                                this.$('.button-import-insert').remove();
+                                this.disableLoadingState();
+                            }
+                        },
+                        onError: (error) => {
+                            this.disableLoadingState();
+                            this.$('.error').text(error);
+                        },
+                        additionalData: {
+                            post: wp.media.model.settings.post.id ?? 0,
+                            caption: classifaiDalleData.caption,
+                            alt_text: this.prompt,
+                        },
+                    });
+
+                    return;
+                }
+
+                this.$('.error').text(classifaiDalleData.errorText);
+            },
+            async importMediaLibrary() {
+                await this.import();
+                await this.loadMediaLibrary();
+            },
+            async loadMediaLibrary() {
+                this.enableLoadingState();
+
+                const Attachment = wp.media.model.Attachment;
+                this.attachment = await Attachment.get(this.file.id).fetch();
+
+                const attr = {
+                    file: this.attachment,
+                    uploading: true,
+                    date: new Date(),
+                    filename: `${this.fileName}.png`,
+                    menuOrder: 0,
+                    loaded: 0,
+                    percent: 0,
+                    uploadedTo: wp.media.model.settings.post.id,
+                };
+
+                const attachment = wp.media.model.Attachment.create(attr);
+                wp.Uploader.queue.add(attachment);
+
+                _.each(['file', 'loaded', 'size', 'percent'], (key) => {
+                    attachment.unset(key);
+                });
+
+                attachment.set(
+                    _.extend(this.attachment, {
+                        uploading: false,
+                    }),
+                );
+
+                wp.media.model.Attachment.get(this.file.id, attachment);
+                wp.Uploader.queue.reset();
+
+                this.disableLoadingState();
+                jQuery('#menu-item-browse').click();
+            },
+            enableLoadingState() {
+                const buttons = this.$el.parent('ul').find('button');
+                const spinner = this.$('.spinner');
+
+                buttons.prop('disabled', true);
+                spinner.addClass('active');
+            },
+            disableLoadingState() {
+                const buttons = this.$el.parent('ul').find('button');
+                const spinner = this.$('.spinner');
+
+                buttons.prop('disabled', false);
+                spinner.removeClass('active');
+            },
+            async convertImageToBlob(base64Image) {
+                const image = new Image();
+                image.src = `data:image/png;base64,${base64Image}`;
+                image.crossOrigin = 'anonymous';
+
+                await this.loadImage(image);
+
+                const canvas = document.createElement('canvas');
+                canvas.width = image.width;
+                canvas.height = image.height;
+
+                const context = canvas.getContext('2d');
+
+                if (!context) {
+                    return null;
+                }
+
+                context.drawImage(image, 0, 0);
+
+                return await new Promise((resolve) => {
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            resolve(blob);
+                        }
+                    }, 'image/jpeg');
+                });
+            },
+            loadImage(image) {
+                return new Promise((resolve) => {
+                    image.onload = resolve;
+                });
+            },
+        });
+
+        const GeneratedImagesView = wp.media.View.extend({
+            el: '.generated-images',
+            initialize(options) {
+                this.collection = new GeneratedImages();
+                this.prompt = options.prompt;
+                this.quality = options.quality;
+                this.size = options.size;
+                this.style = options.style;
+                this.aspectRatio = options.aspectRatio;
+
+                this.listenTo(this.collection, 'reset', this.renderAll);
+                this.listenTo(this.collection, 'error', (collection, xhr) => {
+                    this.error(getApiErrorMessage(xhr));
+                });
+
+                this.collection.makeRequest(this.prompt, this.quality, this.size, this.style, this.aspectRatio);
+                this.render();
+            },
+            render() {
+                this.$el.prev().find('button').prop('disabled', true);
+                this.$el.prev().find('.error').text('');
+                this.$('ul').empty();
+                this.$('.spinner').addClass('active');
+                this.$('.prompt-text').addClass('hidden');
+                return this;
+            },
+            renderImage(model) {
+                const imageView = new GeneratedImageView({
+                    model,
+                    prompt: this.prompt,
+                });
+
+                this.$('ul').append(imageView.render().el);
+            },
+            renderAll() {
+                if (this.collection.length < 1) {
+                    this.error(classifaiDalleData.errorText);
+                    return;
+                }
+
+                this.$('.prompt-text').removeClass('hidden');
+                this.$('.prompt-text span').text(this.prompt);
+                this.$('.spinner').removeClass('active');
+                this.collection.each(this.renderImage, this);
+                this.$el.prev().find('button').prop('disabled', false);
+            },
+            error(message = '') {
+                this.$('.spinner').removeClass('active');
+                this.$el.prev().find('button').prop('disabled', false);
+
+                if (message) {
+                    this.$el.prev().find('.error').text(message);
+                }
+            },
+        });
+
+        const PromptView = wp.media.View.extend({
+            template: wp.template('dalle-prompt'),
+            events: {
+                'click .button-generate': 'promptRequest',
+                'keyup .prompt': 'promptRequest',
+            },
+            render() {
+                this.$el.html(this.template());
+                return this;
+            },
+            promptRequest(event) {
+                let prompt = '';
+                const parent = event.target.parentElement;
+
+                if (event.which === 13) {
+                    prompt = event.target.value.trim();
+                } else if (event.target.nodeName === 'BUTTON') {
+                    prompt = parent.querySelector('.prompt').value.trim();
+                }
+
+                const quality = parent?.querySelector('.quality')?.value.trim() || '';
+                const size = parent?.querySelector('.size')?.value.trim() || '';
+                const style = parent?.querySelector('.style')?.value.trim() || '';
+                const aspectRatio = parent?.querySelector('.aspect-ratio')?.value.trim() || '';
+
+                if (!prompt) {
+                    return;
+                }
+
+                new GeneratedImagesView({
+                    prompt,
+                    quality,
+                    size,
+                    style,
+                    aspectRatio,
+                });
+            },
+        });
+
+        const SelectFrame = wp.media.view.MediaFrame.Select;
+        const PostFrame = wp.media.view.MediaFrame.Post;
+
+        wp.media.view.MediaFrame.Select = SelectFrame.extend({
+            bindHandlers() {
+                SelectFrame.prototype.bindHandlers.apply(this, arguments);
+                this.on('content:render:generate', this.generateContent, this);
+            },
+            browseRouter(routerView) {
+                SelectFrame.prototype.browseRouter.apply(this, arguments);
+
+                routerView.set({
+                    generate: {
+                        text: classifaiDalleData.tabText,
+                        priority: 30,
+                    },
+                });
+            },
+            generateContent() {
+                this.content.set(new PromptView().render());
+            },
+        });
+
+        wp.media.view.MediaFrame.Post = PostFrame.extend({
+            bindHandlers() {
+                PostFrame.prototype.bindHandlers.apply(this, arguments);
+                this.on('content:render:generate', this.generateContent, this);
+            },
+            browseRouter(routerView) {
+                PostFrame.prototype.browseRouter.apply(this, arguments);
+
+                routerView.set({
+                    generate: {
+                        text: classifaiDalleData.tabText,
+                        priority: 30,
+                    },
+                });
+            },
+            generateContent() {
+                this.content.set(new PromptView().render());
+            },
+        });
+    })();
+
+    (() => {
+        const { Button } = window.wp.components;
+        const { _nx } = window.wp.i18n;
+        const { useBlockProps } = window.wp.blockEditor;
+        const { jsx, jsxs, Fragment } = window.ReactJSXRuntime;
+
+        const supportedBlocks = ['core/image', 'core/gallery', 'core/media-text', 'core/cover'];
+
+        wp.hooks.addFilter('editor.MediaUpload', 'classifai/image-generation-link', (MediaUpload) => {
+            return function WrappedMediaUpload(props) {
+                const { render, ...mediaUploadProps } = props;
+                let blockProps;
+
+                try {
+                    blockProps = useBlockProps();
+                } catch (error) {
+                    return jsx(MediaUpload, { ...props });
+                }
+
+                const { 'data-type': blockType } = blockProps;
+
+                if (!supportedBlocks.includes(blockType)) {
+                    return jsx(MediaUpload, { ...props });
+                }
+
+                let imageCount = 1;
+
+                if (blockType && blockType === 'core/gallery') {
+                    imageCount = Infinity;
+                }
+
+                return jsxs(Fragment, {
+                    children: [
+                        jsx(MediaUpload, {
+                            ...mediaUploadProps,
+                            mode: 'generate',
+                            render: ({ open }) =>
+                                jsx(Button, {
+                                    variant: 'secondary',
+                                    onClick: open,
+                                    children: _nx('Generate image', 'Generate images', imageCount, 'Image or gallery upload', 'classifai'),
+                                }),
+                        }),
+                        jsx(MediaUpload, { ...props }),
+                    ],
+                });
+            };
+        });
+    })();
+})();

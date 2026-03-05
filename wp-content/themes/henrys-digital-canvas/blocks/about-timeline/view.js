@@ -17,8 +17,8 @@
 			};
 
 	const INTRO_PARAGRAPHS = [
-		"I'm Henry T. Perkins, a customer-facing technical professional based in Lisle, Illinois and open to US remote opportunities. My background spans SaaS support, developer community enablement, web consulting, and operations leadership.",
-		'I focus on practical outcomes: solving complex customer issues, documenting repeatable solutions, integrating APIs, and turning feedback into clear action for product and engineering teams.',
+		"I'm Henry T. Perkins, based in Lisle, Illinois and open to US remote opportunities. I help support, product, and implementation teams solve customer-facing technical problems.",
+		'My background spans SaaS support, developer community enablement, web consulting, and operations leadership. I focus on practical outcomes: resolving complex issues, documenting repeatable solutions, integrating APIs, and turning feedback into clear action.',
 		'Today, through Lakefront Digital, I build and support WordPress, WooCommerce, Cloudflare, and AI-assisted solutions for small businesses and nonprofits. I have also volunteered in WordPress community events and continue to prioritize mentorship-oriented, people-first technical work.',
 	];
 
