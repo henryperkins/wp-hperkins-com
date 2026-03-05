@@ -34,6 +34,16 @@
 			parsed = {};
 		}
 
+		let inlineFallback = null;
+		try {
+			const raw = section.getAttribute( 'data-fallback-payload' );
+			if ( raw ) {
+				inlineFallback = JSON.parse( raw );
+			}
+		} catch ( parseError ) {
+			inlineFallback = null;
+		}
+
 		return {
 			heading: ensureString( parsed.heading, 'Blog' ),
 			description: ensureString( parsed.description, '' ),
@@ -43,6 +53,7 @@
 			blogBaseUrl: ensureString( parsed.blogBaseUrl, '/blog/' ),
 			contactUrl: ensureString( parsed.contactUrl, '/contact/' ),
 			linkedinUrl: ensureString( parsed.linkedinUrl, 'https://linkedin.com/in/henryperkins' ),
+			inlineFallback: inlineFallback,
 		};
 	}
 
@@ -197,6 +208,18 @@
 						}
 						return;
 					} catch ( endpointError ) {
+						if ( config.inlineFallback ) {
+							var resolvedInline = resolveBlogPayload( config.inlineFallback );
+							if ( ! cancelled ) {
+								setState( {
+									loading: false,
+									error: '',
+									source: resolvedInline.source || 'local',
+									posts: normalizePosts( resolvedInline.posts ),
+								} );
+							}
+							return;
+						}
 						try {
 							const fallback = await fetchJson( config.fallbackUrl );
 							const resolvedFallback = resolveBlogPayload( fallback );

@@ -32,6 +32,16 @@
 			parsed = {};
 		}
 
+		let inlineFallback = null;
+		try {
+			const raw = section.getAttribute( 'data-fallback-payload' );
+			if ( raw ) {
+				inlineFallback = JSON.parse( raw );
+			}
+		} catch ( parseError ) {
+			inlineFallback = null;
+		}
+
 		return {
 			heading: ensureString( parsed.heading, 'ATS One-Page Resume' ),
 			showPrintButton: !! parsed.showPrintButton,
@@ -39,6 +49,7 @@
 			endpoint: ensureString( parsed.endpoint, '' ),
 			fallbackUrl: ensureString( parsed.fallbackUrl, '' ),
 			resumeUrl: ensureString( parsed.resumeUrl, '/resume/' ),
+			inlineFallback: inlineFallback,
 		};
 	}
 
@@ -101,6 +112,16 @@
 						}
 						return;
 					} catch ( primaryError ) {
+						if ( config.inlineFallback ) {
+							if ( ! cancelled ) {
+								setState( {
+									loading: false,
+									error: '',
+									data: config.inlineFallback,
+								} );
+							}
+							return;
+						}
 						try {
 							const fallbackPayload = await fetchJson( config.fallbackUrl );
 							if ( ! cancelled ) {

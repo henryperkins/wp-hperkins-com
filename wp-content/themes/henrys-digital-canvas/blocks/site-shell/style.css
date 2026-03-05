@@ -68,9 +68,10 @@
 
 .hdc-site-shell__nav-link,
 .hdc-site-shell__mobile-link {
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-control);
   color: hsl(var(--text-subtle));
   display: inline-flex;
+  font-family: var(--font-sans);
   font-size: 0.9rem;
   font-weight: 600;
   line-height: 1;
@@ -104,11 +105,12 @@
   color: hsl(var(--text-body));
   cursor: pointer;
   display: inline-flex;
-  font-size: 0.82rem;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
   gap: 0.4rem;
   line-height: 1;
-  min-height: 2.15rem;
-  padding: 0.45rem 0.65rem;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.75rem;
 }
 
 .hdc-site-shell__command-trigger kbd {

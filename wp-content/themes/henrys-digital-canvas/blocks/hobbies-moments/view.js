@@ -85,11 +85,22 @@
 			parsed = {};
 		}
 
+		let inlineFallback = null;
+		try {
+			const raw = section.getAttribute( 'data-fallback-payload' );
+			if ( raw ) {
+				inlineFallback = JSON.parse( raw );
+			}
+		} catch ( parseError ) {
+			inlineFallback = null;
+		}
+
 		return {
 			heading: ensureString( parsed.heading, 'Hobbies' ),
 			description: ensureString( parsed.description, '' ),
 			endpoint: ensureString( parsed.endpoint, '' ),
 			fallbackUrl: ensureString( parsed.fallbackUrl, '' ),
+			inlineFallback: inlineFallback,
 		};
 	}
 
@@ -229,6 +240,16 @@
 						}
 						return;
 					} catch ( endpointError ) {
+						if ( config.inlineFallback ) {
+							if ( ! cancelled ) {
+								setState( {
+									loading: false,
+									error: '',
+									items: normalizeMomentsPayload( config.inlineFallback ),
+								} );
+							}
+							return;
+						}
 						try {
 							const fallback = await fetchJson( config.fallbackUrl );
 							if ( ! cancelled ) {

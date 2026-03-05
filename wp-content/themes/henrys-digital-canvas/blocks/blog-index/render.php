@@ -28,13 +28,22 @@ $config = array(
 	'linkedinUrl'       => 'https://linkedin.com/in/henryperkins',
 );
 
+$inline_fallback_path = get_theme_file_path( 'data/blog-posts-fallback.json' );
+$inline_fallback_json = '';
+if ( file_exists( $inline_fallback_path ) && is_readable( $inline_fallback_path ) ) {
+	$inline_fallback_contents = file_get_contents( $inline_fallback_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+	if ( false !== $inline_fallback_contents ) {
+		$inline_fallback_json = (string) $inline_fallback_contents;
+	}
+}
+
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
 		'class' => 'hdc-blog-index',
 	)
 );
 ?>
-<section <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> data-config="<?php echo esc_attr( wp_json_encode( $config ) ); ?>">
+<section <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> data-config="<?php echo esc_attr( wp_json_encode( $config ) ); ?>"<?php if ( '' !== $inline_fallback_json ) : ?> data-fallback-payload="<?php echo esc_attr( $inline_fallback_json ); ?>"<?php endif; ?>>
 	<div class="hdc-blog-index__shell" data-hdc-blog-index-root>
 		<p class="hdc-blog-index__status"><?php esc_html_e( 'Loading posts…', 'henrys-digital-canvas' ); ?></p>
 	</div>

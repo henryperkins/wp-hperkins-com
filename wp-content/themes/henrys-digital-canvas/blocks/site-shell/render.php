@@ -66,7 +66,7 @@ $config = array(
 	'themeStorageKey'     => 'hdc-theme',
 	'pagesEndpoint'       => esc_url_raw( rest_url( 'wp/v2/pages?per_page=100&_fields=slug,title.rendered,link' ) ),
 	'postsEndpoint'       => esc_url_raw( add_query_arg( 'limit', 100, rest_url( 'henrys-digital-canvas/v1/blog' ) ) ),
-	'reposUrl'            => esc_url_raw( get_theme_file_uri( 'blocks/work-showcase/data/repos.json' ) ),
+	'reposUrl'            => esc_url_raw( add_query_arg( 'limit', 100, rest_url( 'henrys-digital-canvas/v1/work' ) ) ),
 	'allowedThemes'       => $allowed_themes,
 );
 

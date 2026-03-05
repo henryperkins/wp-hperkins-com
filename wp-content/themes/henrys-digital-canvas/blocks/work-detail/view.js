@@ -241,12 +241,43 @@
 		};
 	}
 
+	function classifyFetchError( error ) {
+		var status = error && error.status;
+		if ( status === 404 ) {
+			return 'not-found';
+		}
+		if ( status === 429 ) {
+			return 'rate-limit';
+		}
+		if ( status >= 500 ) {
+			return 'server-error';
+		}
+		if ( error && error.message && /fetch|network|abort|timeout/i.test( error.message ) ) {
+			return 'offline';
+		}
+		return 'error';
+	}
+
+	function getErrorMessage( classification ) {
+		if ( classification === 'not-found' ) {
+			return 'Project not found';
+		}
+		if ( classification === 'rate-limit' ) {
+			return 'GitHub API rate limit reached. Showing cached data if available.';
+		}
+		if ( classification === 'offline' ) {
+			return 'You appear to be offline. Showing cached data if available.';
+		}
+		return 'Unable to load project details right now. Please try again later.';
+	}
+
 	function WorkDetailApp( props ) {
 		const config = props.config;
 		const [ repoSlug, setRepoSlug ] = useState( inferRepoSlug( config.repo ) );
 		const [ state, setState ] = useState( {
 			loading: true,
 			error: '',
+			errorType: '',
 			data: null,
 			source: 'unknown',
 			detailsUnavailable: false,
@@ -274,9 +305,13 @@
 					return;
 				}
 
-				document.title = 'Project Not Found — Henry Perkins';
+				if ( state.errorType === 'not-found' || ( ! state.errorType && ! state.data ) ) {
+					document.title = 'Project Not Found — Henry Perkins';
+				} else {
+					document.title = 'Temporarily Unavailable — Henry Perkins';
+				}
 			},
-			[ state.loading, state.data ]
+			[ state.loading, state.data, state.errorType ]
 		);
 
 		useEffect(
@@ -285,6 +320,7 @@
 					setState( {
 						loading: false,
 						error: config.showWhenMissingRepo ? 'Project not found' : '',
+						errorType: config.showWhenMissingRepo ? 'not-found' : '',
 						data: null,
 						source: 'unknown',
 						detailsUnavailable: false,
@@ -298,6 +334,7 @@
 					setState( {
 						loading: true,
 						error: '',
+						errorType: '',
 						data: null,
 						source: 'unknown',
 						detailsUnavailable: false,
@@ -306,6 +343,8 @@
 					try {
 						let listSource = 'unknown';
 						let listedRepos = [];
+						let listFetchError = null;
+						let detailFetchError = null;
 
 						try {
 							const listPayload = await fetchJson( config.workEndpoint );
@@ -315,6 +354,7 @@
 								.map( normalizeRepository )
 								.filter( Boolean );
 						} catch ( listError ) {
+							listFetchError = listError;
 							listedRepos = [];
 						}
 
@@ -329,6 +369,7 @@
 								setState( {
 									loading: false,
 									error: 'Project not found',
+									errorType: 'not-found',
 									data: null,
 									source: listSource || 'unknown',
 									detailsUnavailable: false,
@@ -354,24 +395,44 @@
 								const payload = await fetchJson( config.endpointBase + encodeURIComponent( repoSlug ) );
 								normalized = normalizeRepository( payload );
 							} catch ( detailError ) {
+								detailFetchError = detailError;
 								normalized = null;
 							}
 						}
 
 						if ( ! cancelled ) {
-							setState( {
-								loading: false,
-								error: normalized ? '' : 'Project not found',
-								data: normalized,
-								source: listSource || ( normalized ? 'detail' : 'unknown' ),
-								detailsUnavailable: detailsUnavailable,
-							} );
+							if ( normalized ) {
+								setState( {
+									loading: false,
+									error: '',
+									errorType: '',
+									data: normalized,
+									source: listSource || 'detail',
+									detailsUnavailable: detailsUnavailable,
+								} );
+							} else {
+								var classification = detailFetchError
+									? classifyFetchError( detailFetchError )
+									: listFetchError
+										? classifyFetchError( listFetchError )
+										: 'not-found';
+								setState( {
+									loading: false,
+									error: getErrorMessage( classification ),
+									errorType: classification,
+									data: null,
+									source: listSource || 'unknown',
+									detailsUnavailable: false,
+								} );
+							}
 						}
 					} catch ( error ) {
 						if ( ! cancelled ) {
+							var outerType = classifyFetchError( error );
 							setState( {
 								loading: false,
-								error: 'Project not found',
+								error: getErrorMessage( outerType ),
+								errorType: outerType,
 								data: null,
 								source: 'unknown',
 								detailsUnavailable: false,
@@ -405,11 +466,16 @@
 		}
 
 			if ( state.error || ! state.data ) {
+				var isNotFound = state.errorType === 'not-found' || ( ! state.errorType && ! state.data );
+				var errorTitle = isNotFound ? 'Project not found' : 'Temporarily unavailable';
+				var errorDescription = isNotFound
+					? 'The project you are looking for could not be found. It may be private, or the link might be broken.'
+					: state.error || 'Unable to load project details right now. Please try again later.';
 				return h(
 					'div',
 					{ className: 'hdc-work-detail__error-wrap' },
-					h( 'h2', { className: 'hdc-work-detail__error-title' }, 'Project not found' ),
-					h( 'p', { className: 'hdc-work-detail__error' }, 'The project you are looking for could not be found. It may be private, or the link might be broken.' ),
+					h( 'h2', { className: 'hdc-work-detail__error-title' }, errorTitle ),
+					h( 'p', { className: 'hdc-work-detail__error' }, errorDescription ),
 					h(
 						'a',
 						{ className: 'hdc-work-detail__back-link', href: config.workIndexUrl },

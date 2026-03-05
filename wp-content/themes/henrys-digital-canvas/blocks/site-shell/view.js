@@ -418,7 +418,7 @@
 					} ),
 				fetchJson( config.reposUrl )
 					.then( function ( payload ) {
-						const repos = Array.isArray( payload ) ? payload : [];
+						const repos = payload && Array.isArray( payload.repos ) ? payload.repos : Array.isArray( payload ) ? payload : [];
 						return repos.map( function ( repo ) {
 							const repoName = decodeHtml( repo?.name || '' );
 							if ( ! repoName ) {

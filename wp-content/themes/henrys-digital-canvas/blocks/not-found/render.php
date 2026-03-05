@@ -20,6 +20,12 @@ $attrs = wp_parse_args( $attributes, $defaults );
 $request_uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : '/';
 $path        = wp_parse_url( $request_uri, PHP_URL_PATH );
 $path        = is_string( $path ) && '' !== $path ? $path : '/';
+if ( '/' !== $path ) {
+	$path = rtrim( $path, '/' );
+	if ( '' === $path ) {
+		$path = '/';
+	}
+}
 
 $config = array(
 	'backLabel' => sanitize_text_field( $attrs['backLabel'] ),
