@@ -338,6 +338,6 @@
 
   .hdc-contact-form__lead {
     position: sticky;
-    top: calc(var(--wp-admin--admin-bar--height, 0px) + 2rem);
+    top: calc(var(--layout-header-end) + 2rem);
   }
 }

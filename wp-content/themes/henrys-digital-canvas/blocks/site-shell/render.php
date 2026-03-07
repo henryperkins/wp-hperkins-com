@@ -50,6 +50,9 @@ $nav_items = array(
 );
 
 $allowed_themes = array( 'light', 'dark', 'system' );
+$mobile_menu_id = wp_unique_id( 'hdc-mobile-menu-' );
+$mobile_menu_title_id = $mobile_menu_id . '-title';
+$mobile_menu_description_id = $mobile_menu_id . '-description';
 
 $config = array(
 	'navItems'            => array_map(
@@ -119,31 +122,75 @@ $wrapper_attributes = get_block_wrapper_attributes(
 					</div>
 				<?php endif; ?>
 
-				<button type="button" class="hdc-site-shell__menu-trigger focus-ring" data-hdc-menu-trigger aria-controls="hdc-mobile-menu" aria-expanded="false">
-					<span><?php esc_html_e( 'Menu', 'henrys-digital-canvas' ); ?></span>
+				<button
+					type="button"
+					class="hdc-site-shell__menu-trigger focus-ring"
+					data-hdc-menu-trigger
+					aria-controls="<?php echo esc_attr( $mobile_menu_id ); ?>"
+					aria-expanded="false"
+					aria-haspopup="dialog"
+					aria-label="<?php esc_attr_e( 'Open menu', 'henrys-digital-canvas' ); ?>"
+				>
+					<span class="hdc-site-shell__menu-trigger-icon" data-hdc-menu-icon aria-hidden="true">☰</span>
+					<span class="hdc-site-shell__menu-trigger-text" data-hdc-menu-label><?php esc_html_e( 'Menu', 'henrys-digital-canvas' ); ?></span>
 				</button>
 			</div>
 		</div>
 
-		<div id="hdc-mobile-menu" class="hdc-site-shell__mobile" data-hdc-mobile-menu hidden>
-			<ul class="hdc-site-shell__mobile-list">
-				<?php foreach ( $nav_items as $item ) : ?>
-					<li>
-						<a class="hdc-site-shell__mobile-link focus-ring" data-hdc-nav-link href="<?php echo esc_url( $item['url'] ); ?>">
-							<?php echo esc_html( $item['label'] ); ?>
-						</a>
-					</li>
-				<?php endforeach; ?>
-			</ul>
-			<?php if ( ! empty( $attrs['showCommandLauncher'] ) ) : ?>
-				<div class="hdc-site-shell__mobile-utility">
-					<button type="button" class="hdc-site-shell__command-trigger hdc-site-shell__command-trigger--mobile focus-ring" data-hdc-command-trigger>
-						<span><?php esc_html_e( 'Search', 'henrys-digital-canvas' ); ?></span>
-						<kbd data-hdc-shortcut-hint><?php esc_html_e( 'Ctrl+K', 'henrys-digital-canvas' ); ?></kbd>
-					</button>
+		<div class="hdc-site-shell__mobile-backdrop" data-hdc-mobile-backdrop hidden></div>
+		<section
+			id="<?php echo esc_attr( $mobile_menu_id ); ?>"
+			class="hdc-site-shell__mobile"
+			data-hdc-mobile-menu
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="<?php echo esc_attr( $mobile_menu_title_id ); ?>"
+			aria-describedby="<?php echo esc_attr( $mobile_menu_description_id ); ?>"
+			tabindex="-1"
+			hidden
+		>
+			<div class="hdc-site-shell__mobile-shell">
+				<h2 id="<?php echo esc_attr( $mobile_menu_title_id ); ?>" class="screen-reader-text">
+					<?php esc_html_e( 'Mobile navigation', 'henrys-digital-canvas' ); ?>
+				</h2>
+				<p id="<?php echo esc_attr( $mobile_menu_description_id ); ?>" class="screen-reader-text">
+					<?php esc_html_e( 'Navigate the site, open the command palette, or jump to key proof points.', 'henrys-digital-canvas' ); ?>
+				</p>
+
+				<div class="hdc-site-shell__mobile-section hdc-site-shell__mobile-section--lead">
+					<?php if ( ! empty( $attrs['showCommandLauncher'] ) ) : ?>
+						<button type="button" class="hdc-site-shell__command-trigger hdc-site-shell__command-trigger--mobile focus-ring" data-hdc-command-trigger>
+							<span><?php esc_html_e( 'Search pages', 'henrys-digital-canvas' ); ?></span>
+							<kbd data-hdc-shortcut-hint><?php esc_html_e( 'Ctrl+K', 'henrys-digital-canvas' ); ?></kbd>
+						</button>
+					<?php endif; ?>
+
+					<p class="hdc-site-shell__mobile-copy">
+						<?php esc_html_e( 'Jump to case studies, blog posts, and resume pages without scrolling through the full site.', 'henrys-digital-canvas' ); ?>
+					</p>
 				</div>
-			<?php endif; ?>
-		</div>
+
+				<nav class="hdc-site-shell__mobile-nav" aria-label="<?php esc_attr_e( 'Mobile', 'henrys-digital-canvas' ); ?>">
+					<ul class="hdc-site-shell__mobile-list">
+						<?php foreach ( $nav_items as $item ) : ?>
+							<li>
+								<a class="hdc-site-shell__mobile-link focus-ring" data-hdc-nav-link href="<?php echo esc_url( $item['url'] ); ?>">
+									<?php echo esc_html( $item['label'] ); ?>
+								</a>
+							</li>
+						<?php endforeach; ?>
+					</ul>
+				</nav>
+
+				<div class="hdc-site-shell__mobile-card">
+					<p class="hdc-site-shell__mobile-card-eyebrow"><?php esc_html_e( 'Quick path', 'henrys-digital-canvas' ); ?></p>
+					<h3 class="hdc-site-shell__mobile-card-title"><?php esc_html_e( 'Start with the strongest proof points.', 'henrys-digital-canvas' ); ?></h3>
+					<p class="hdc-site-shell__mobile-card-copy">
+						<?php esc_html_e( 'Work covers shipped outcomes, Blog covers current thinking, and Resume gives the condensed version.', 'henrys-digital-canvas' ); ?>
+					</p>
+				</div>
+			</div>
+		</section>
 	</header>
 
 	<?php if ( ! empty( $attrs['showCommandLauncher'] ) ) : ?>

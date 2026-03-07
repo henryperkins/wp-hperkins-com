@@ -550,34 +550,48 @@
 			{},
 			h(
 				'section',
-				{ className: 'hdc-home-page__hero' },
-				h( 'p', { className: 'hdc-home-page__hero-eyebrow' }, ensureString( config.hero.eyebrow, '' ) ),
-				h( 'h1', { className: 'hdc-home-page__hero-title' }, ensureString( config.hero.title, 'Henry T. Perkins' ) ),
-				h( 'p', { className: 'hdc-home-page__hero-description' }, ensureString( config.hero.description, '' ) ),
+				{ className: 'hdc-home-page__hero noise' },
 				h(
 					'div',
-					{ className: 'hdc-home-page__hero-actions' },
+					{ className: 'hero-backdrop', 'aria-hidden': 'true' },
+					h( 'div', { className: 'hero-backdrop-overlay' } )
+				),
+				h( 'div', { className: 'hdc-home-page__hero-gradient hero-gradient-layer', 'aria-hidden': 'true' } ),
+				h(
+					'div',
+					{ className: 'hdc-home-page__hero-shell' },
 					h(
-						'a',
-						{
-							className: 'hdc-home-page__button',
-							href: ensureString( config.hero.primaryCtaHref, '/contact/' ),
-						},
-						ensureString( config.hero.primaryCtaLabel, 'Work with me' )
-					),
-					h(
-						'a',
-						{
-							className: 'hdc-home-page__button hdc-home-page__button--secondary',
-							href: ensureString( config.hero.secondaryCtaHref, '/work/' ),
-						},
-						ensureString( config.hero.secondaryCtaLabel, 'View case studies' )
+						'div',
+						{ className: 'hdc-home-page__hero-content' },
+						h( 'p', { className: 'hdc-home-page__hero-eyebrow' }, ensureString( config.hero.eyebrow, '' ) ),
+						h( 'h1', { className: 'hdc-home-page__hero-title' }, ensureString( config.hero.title, 'Henry T. Perkins' ) ),
+						h( 'p', { className: 'hdc-home-page__hero-description' }, ensureString( config.hero.description, '' ) ),
+						h(
+							'div',
+							{ className: 'hdc-home-page__hero-actions' },
+							h(
+								'a',
+								{
+									className: 'hdc-home-page__button hdc-home-page__button--hero focus-ring',
+									href: ensureString( config.hero.primaryCtaHref, '/contact/' ),
+								},
+								ensureString( config.hero.primaryCtaLabel, 'Work with me' )
+							),
+							h(
+								'a',
+								{
+									className: 'hdc-home-page__button hdc-home-page__button--secondary hdc-home-page__button--hero-secondary focus-ring',
+									href: ensureString( config.hero.secondaryCtaHref, '/work/' ),
+								},
+								ensureString( config.hero.secondaryCtaLabel, 'View case studies' )
+							)
+						)
 					)
 				)
 			),
 			h(
 				'section',
-				{ className: 'hdc-home-page__section' },
+				{ className: 'hdc-home-page__section', id: 'selected-work' },
 				h(
 					'div',
 					{ className: 'hdc-home-page__section-header' },
@@ -585,7 +599,7 @@
 					h(
 						'a',
 						{
-							className: 'hdc-home-page__section-link',
+							className: 'hdc-home-page__section-link focus-ring',
 							href: ensureString( config.selectedWork.actionHref, '/work/' ),
 						},
 						ensureString( config.selectedWork.actionLabel, 'View all work' )
@@ -606,7 +620,7 @@
 							return h(
 								'div',
 								{
-									className: 'hdc-home-page__work-card hdc-home-page__work-card--skeleton',
+									className: 'hdc-home-page__work-card hdc-home-page__work-card--skeleton ember-surface',
 									key: 'work-skeleton-' + String( index ),
 								}
 							);
@@ -620,7 +634,7 @@
 								return h(
 									'a',
 									{
-										className: 'hdc-home-page__work-card',
+										className: 'hdc-home-page__work-card ember-surface focus-ring',
 										href: repo.url,
 										key: repo.id || repo.name,
 									},
@@ -669,7 +683,7 @@
 			),
 			h(
 				'section',
-				{ className: 'hdc-home-page__section' },
+				{ className: 'hdc-home-page__section', id: 'resume-snapshot' },
 				h(
 					'div',
 					{ className: 'hdc-home-page__section-header' },
@@ -677,7 +691,7 @@
 					h(
 						'a',
 						{
-							className: 'hdc-home-page__section-link',
+							className: 'hdc-home-page__section-link focus-ring',
 							href: ensureString( config.resumeSnapshot.actionHref, '/resume/' ),
 						},
 						ensureString( config.resumeSnapshot.actionLabel, 'Interactive resume' )
@@ -688,7 +702,7 @@
 					{ className: 'hdc-home-page__resume-grid' },
 					h(
 						'div',
-						{ className: 'hdc-home-page__resume-card' },
+						{ className: 'hdc-home-page__resume-card ember-surface' },
 						h( 'p', { className: 'hdc-home-page__eyebrow' }, ensureString( config.resumeSnapshot.positioningEyebrow, 'Positioning' ) ),
 						resumeState.loading
 							? h( 'p', { className: 'hdc-home-page__copy' }, 'Loading resume data…' )
@@ -727,7 +741,7 @@
 											return h(
 												'a',
 												{
-													className: 'hdc-home-page__text-link',
+													className: 'hdc-home-page__text-link focus-ring',
 													href: ensureString( normalizedLink.href, '/resume/' ),
 													key: ensureString( normalizedLink.href, 'resume-link-' + String( index ) ),
 												},
@@ -740,7 +754,7 @@
 					),
 					h(
 						'div',
-						{ className: 'hdc-home-page__resume-card hdc-home-page__resume-card--accent' },
+						{ className: 'hdc-home-page__resume-card hdc-home-page__resume-card--accent ember-surface ember-surface-strong' },
 						h( 'p', { className: 'hdc-home-page__eyebrow' }, ensureString( config.resumeSnapshot.bestFitEyebrow, 'Best fit' ) ),
 						h( 'h3', { className: 'hdc-home-page__card-title' }, ensureString( config.resumeSnapshot.bestFitTitle, 'Where I plug in fastest' ) ),
 						h(
@@ -755,7 +769,7 @@
 			),
 			h(
 				'section',
-				{ className: 'hdc-home-page__section hdc-feed-section' },
+				{ className: 'hdc-home-page__section hdc-feed-section', id: 'recent-writing' },
 				h(
 					'div',
 					{ className: 'hdc-home-page__section-header' },
@@ -763,7 +777,7 @@
 					h(
 						'a',
 						{
-							className: 'hdc-home-page__section-link',
+							className: 'hdc-home-page__section-link focus-ring',
 							href: ensureString( config.recentWriting.actionHref, '/blog/' ),
 						},
 						ensureString( config.recentWriting.actionLabel, 'All posts' )
@@ -779,7 +793,7 @@
 								return h(
 									'a',
 									{
-										className: 'hdc-home-page__post-card',
+										className: 'hdc-home-page__post-card focus-ring',
 										href: post.link,
 										key: post.id,
 									},
@@ -815,31 +829,39 @@
 			),
 			h(
 				'section',
-				{ className: 'hdc-home-page__section' },
+				{ className: 'hdc-home-page__section', id: 'contact-cta' },
 				h(
 					'div',
-					{ className: 'hdc-home-page__cta-card' },
-					h( 'p', { className: 'hdc-home-page__eyebrow' }, ensureString( config.contactCta.eyebrow, 'Need a technical partner?' ) ),
-					h( 'h2', { className: 'hdc-home-page__section-title' }, ensureString( config.contactCta.title, '' ) ),
-					h( 'p', { className: 'hdc-home-page__copy' }, ensureString( config.contactCta.description, '' ) ),
+					{ className: 'hdc-home-page__cta-card ember-surface ember-surface-strong' },
 					h(
 						'div',
-						{ className: 'hdc-home-page__cta-actions' },
+						{ className: 'hdc-home-page__cta-layout' },
 						h(
-							'a',
-							{
-								className: 'hdc-home-page__button',
-								href: ensureString( config.contactCta.primaryCtaHref, '/contact/' ),
-							},
-							ensureString( config.contactCta.primaryCtaLabel, 'Work with me' )
+							'div',
+							{ className: 'hdc-home-page__cta-body' },
+							h( 'p', { className: 'hdc-home-page__eyebrow' }, ensureString( config.contactCta.eyebrow, 'Need a technical partner?' ) ),
+							h( 'h2', { className: 'hdc-home-page__section-title' }, ensureString( config.contactCta.title, '' ) ),
+							h( 'p', { className: 'hdc-home-page__copy' }, ensureString( config.contactCta.description, '' ) )
 						),
 						h(
-							'a',
-							{
-								className: 'hdc-home-page__button hdc-home-page__button--secondary',
-								href: ensureString( config.contactCta.secondaryCtaHref, '/resume/' ),
-							},
-							ensureString( config.contactCta.secondaryCtaLabel, 'View resume' )
+							'div',
+							{ className: 'hdc-home-page__cta-actions' },
+							h(
+								'a',
+								{
+									className: 'hdc-home-page__button focus-ring',
+									href: ensureString( config.contactCta.primaryCtaHref, '/contact/' ),
+								},
+								ensureString( config.contactCta.primaryCtaLabel, 'Work with me' )
+							),
+							h(
+								'a',
+								{
+									className: 'hdc-home-page__button hdc-home-page__button--secondary focus-ring',
+									href: ensureString( config.contactCta.secondaryCtaHref, '/resume/' ),
+								},
+								ensureString( config.contactCta.secondaryCtaLabel, 'View resume' )
+							)
 						)
 					)
 				)

@@ -168,6 +168,20 @@
 		return params;
 	}
 
+	function getActivityBucketLabel( index, total ) {
+		const weeksAgo = total - index - 1;
+
+		if ( weeksAgo === 0 ) {
+			return 'This week';
+		}
+
+		if ( weeksAgo === 1 ) {
+			return '1 week ago';
+		}
+
+		return weeksAgo + ' weeks ago';
+	}
+
 	function readInitialWorkState() {
 		if ( typeof window === 'undefined' || ! window.location ) {
 			return {

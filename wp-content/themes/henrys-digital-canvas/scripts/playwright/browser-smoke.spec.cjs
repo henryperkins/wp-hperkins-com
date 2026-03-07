@@ -184,8 +184,17 @@ test.describe('Henrys Digital Canvas browser smoke', () => {
 		const mobilePage = await mobileContext.newPage();
 
 		await mobilePage.goto('/', { waitUntil: 'networkidle' });
-		await mobilePage.getByRole('button', { name: 'Menu' }).click();
+		const menuButton = mobilePage.locator('[data-hdc-menu-trigger]');
+		await expect(menuButton).toHaveAttribute('aria-label', /open menu/i);
+		await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
+		await menuButton.click();
 		await expect(mobilePage.locator('[data-hdc-mobile-menu]:not([hidden])')).toHaveCount(1, {
+			timeout: 8000,
+		});
+		await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
+		await expect(menuButton).toHaveAttribute('aria-label', /close menu/i);
+		await mobilePage.keyboard.press('Escape');
+		await expect(mobilePage.locator('[data-hdc-mobile-menu]:not([hidden])')).toHaveCount(0, {
 			timeout: 8000,
 		});
 

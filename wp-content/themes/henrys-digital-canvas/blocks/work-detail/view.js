@@ -969,37 +969,40 @@
 					? h( 'span', { className: 'hdc-work-detail__badge hdc-work-detail__badge--role' }, data.role )
 					: null,
 				data.access === 'private' ? h( 'span', { className: 'hdc-work-detail__badge' }, 'Private' ) : null,
-				data.origin === 'github'
-					? h(
-						'span',
-						{ className: 'hdc-work-detail__small-meta hdc-work-detail__small-meta--icon' },
-						h(
+					data.origin === 'github'
+						? h(
 							'span',
-							{ className: 'hdc-work-detail__small-meta-icon', 'aria-hidden': 'true' },
-							renderLucideIcon( h, 'star', { className: 'hdc-work-detail__small-meta-icon-svg', size: 12 } )
-						),
+							{ className: 'hdc-work-detail__small-meta hdc-work-detail__small-meta--icon' },
+							h( 'span', { className: 'screen-reader-text' }, 'Stars: ' ),
+							h(
+								'span',
+								{ className: 'hdc-work-detail__small-meta-icon', 'aria-hidden': 'true' },
+								renderLucideIcon( h, 'star', { className: 'hdc-work-detail__small-meta-icon-svg', size: 12 } )
+							),
 						h( 'span', null, String( data.stars ) )
 					)
 					: null,
-				data.origin === 'github'
-					? h(
-						'span',
-						{ className: 'hdc-work-detail__small-meta hdc-work-detail__small-meta--icon' },
-						h(
+					data.origin === 'github'
+						? h(
 							'span',
-							{ className: 'hdc-work-detail__small-meta-icon', 'aria-hidden': 'true' },
-							renderLucideIcon( h, 'git-fork', { className: 'hdc-work-detail__small-meta-icon-svg', size: 12 } )
-						),
+							{ className: 'hdc-work-detail__small-meta hdc-work-detail__small-meta--icon' },
+							h( 'span', { className: 'screen-reader-text' }, 'Forks: ' ),
+							h(
+								'span',
+								{ className: 'hdc-work-detail__small-meta-icon', 'aria-hidden': 'true' },
+								renderLucideIcon( h, 'git-fork', { className: 'hdc-work-detail__small-meta-icon-svg', size: 12 } )
+							),
 						h( 'span', null, String( data.forks ) )
 					)
 					: null,
-				h(
-					'span',
-					{ className: 'hdc-work-detail__small-meta hdc-work-detail__small-meta--icon' },
 					h(
 						'span',
-						{ className: 'hdc-work-detail__small-meta-icon', 'aria-hidden': 'true' },
-						renderLucideIcon( h, 'clock', { className: 'hdc-work-detail__small-meta-icon-svg', size: 12 } )
+						{ className: 'hdc-work-detail__small-meta hdc-work-detail__small-meta--icon' },
+						h( 'span', { className: 'screen-reader-text' }, 'Updated: ' ),
+						h(
+							'span',
+							{ className: 'hdc-work-detail__small-meta-icon', 'aria-hidden': 'true' },
+							renderLucideIcon( h, 'clock', { className: 'hdc-work-detail__small-meta-icon-svg', size: 12 } )
 					),
 					h( 'time', { dateTime: data.updatedAt }, formatDateLabel( data.updatedAt ) )
 				)

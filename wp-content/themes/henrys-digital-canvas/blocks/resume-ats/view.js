@@ -32,23 +32,25 @@
 		return trimmed || fallback;
 	}
 
-	function parseConfig( section ) {
-		let parsed = {};
-		try {
-			parsed = JSON.parse( section.getAttribute( 'data-config' ) || '{}' );
-		} catch ( error ) {
-			parsed = {};
+	function parseJsonAttribute( section, attributeName ) {
+		const raw = section.getAttribute( attributeName );
+		if ( ! raw ) {
+			return null;
 		}
 
-		let inlineFallback = null;
 		try {
-			const raw = section.getAttribute( 'data-fallback-payload' );
-			if ( raw ) {
-				inlineFallback = JSON.parse( raw );
-			}
-		} catch ( parseError ) {
-			inlineFallback = null;
+			return JSON.parse( raw );
+		} catch ( error ) {
+			return null;
 		}
+	}
+
+	function parseConfig( section ) {
+		const parsed = parseJsonAttribute( section, 'data-config' ) || {};
+		const inlineData = resolveInlineData(
+			parseJsonAttribute( section, 'data-inline-payload' ) ||
+				parseJsonAttribute( section, 'data-fallback-payload' )
+		);
 
 		return {
 			heading: ensureString( parsed.heading, 'ATS one-page resume' ),
@@ -57,7 +59,7 @@
 			endpoint: ensureString( parsed.endpoint, '' ),
 			fallbackUrl: ensureString( parsed.fallbackUrl, '' ),
 			resumeUrl: ensureString( parsed.resumeUrl, '/resume/' ),
-			inlineFallback: inlineFallback,
+			inlineData: inlineData,
 		};
 	}
 
@@ -84,6 +86,19 @@
 			return payload.data;
 		}
 		return payload;
+	}
+
+	function resolveInlineData( payload ) {
+		const data = resolveContractData( payload );
+		return data && typeof data === 'object' ? data : null;
+	}
+
+	function createState( data ) {
+		return {
+			loading: ! data,
+			error: '',
+			data: data || null,
+		};
 	}
 
 	function SectionJumpNav( props ) {
@@ -124,10 +139,8 @@
 
 	function ResumeAtsApp( props ) {
 		const config = props.config;
-		const [ state, setState ] = useState( {
-			loading: true,
-			error: '',
-			data: null,
+		const [ state, setState ] = useState( function () {
+			return createState( config.inlineData );
 		} );
 
 		const signature = useMemo( function () {
@@ -140,45 +153,27 @@
 
 		useEffect(
 			function () {
+				if ( config.inlineData ) {
+					setState( createState( config.inlineData ) );
+					return undefined;
+				}
+
 				let cancelled = false;
 
 				async function load() {
-					setState( {
-						loading: true,
-						error: '',
-						data: null,
-					} );
+					setState( createState( null ) );
 
 					try {
 						const primaryPayload = await fetchJson( config.endpoint );
 						if ( ! cancelled ) {
-							setState( {
-								loading: false,
-								error: '',
-								data: resolveContractData( primaryPayload ),
-							} );
+							setState( createState( resolveContractData( primaryPayload ) ) );
 						}
 						return;
 					} catch ( primaryError ) {
-						if ( config.inlineFallback ) {
-							if ( ! cancelled ) {
-								setState( {
-									loading: false,
-									error: '',
-									data: config.inlineFallback,
-								} );
-							}
-							return;
-						}
-
 						try {
 							const fallbackPayload = await fetchJson( config.fallbackUrl );
 							if ( ! cancelled ) {
-								setState( {
-									loading: false,
-									error: '',
-									data: fallbackPayload,
-								} );
+								setState( createState( fallbackPayload ) );
 							}
 						} catch ( fallbackError ) {
 							if ( ! cancelled ) {
@@ -257,7 +252,7 @@
 							{ className: 'hdc-resume-ats__control-icon', 'aria-hidden': 'true' },
 							renderLucideIcon( h, 'arrow-left', { className: 'hdc-resume-ats__control-icon-svg', size: 14 } )
 						),
-						'Interactive resume'
+						'Interactive Resume'
 					)
 					: null,
 				config.showPrintButton
@@ -380,7 +375,7 @@
 							h( 'h2', { className: 'hdc-resume-ats__section-title text-document-section-label' }, 'Projects' ),
 							h(
 								'div',
-								{ className: 'hdc-resume-ats__entries' },
+								{ className: 'hdc-resume-ats__entries hdc-resume-ats__entries--compact' },
 								projects.map( function ( project, index ) {
 									return h(
 										'div',

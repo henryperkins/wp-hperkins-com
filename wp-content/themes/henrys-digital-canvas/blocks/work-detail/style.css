@@ -55,7 +55,7 @@
 }
 
 .hdc-work-detail__section {
-  scroll-margin-top: 7rem;
+  scroll-margin-top: calc(7rem + var(--layout-admin-bar-offset));
 }
 
 .hdc-work-detail__section + .hdc-work-detail__section {

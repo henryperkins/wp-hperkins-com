@@ -34,19 +34,24 @@
 	function sectionTitle( title ) {
 		const iconName = SECTION_ICONS[ title ] || '';
 		return h(
-			'h2',
-			{ className: 'hdc-resume-overview__section-title' },
+			'div',
+			{ className: 'hdc-resume-overview__section-heading' },
 			iconName
 				? h(
 					'span',
-					{ className: 'hdc-resume-overview__section-icon', 'aria-hidden': 'true' },
-					renderLucideIcon( h, iconName, {
-						className: 'hdc-resume-overview__section-icon-svg',
-						size: 18,
-					} )
+					{ className: 'hdc-resume-overview__section-icon-badge', 'aria-hidden': 'true' },
+					h(
+						'span',
+						{ className: 'hdc-resume-overview__section-icon' },
+						renderLucideIcon( h, iconName, {
+							className: 'hdc-resume-overview__section-icon-svg',
+							size: 14,
+						} )
+					)
 				  )
 				: null,
-			title
+			h( 'h2', { className: 'hdc-resume-overview__section-title' }, title ),
+			h( 'span', { className: 'hdc-resume-overview__section-heading-rule', 'aria-hidden': 'true' } )
 		);
 	}
 
@@ -63,13 +68,21 @@
 		return trimmed || fallback;
 	}
 
-	function parseConfig( section ) {
-		let parsed = {};
-		try {
-			parsed = JSON.parse( section.getAttribute( 'data-config' ) || '{}' );
-		} catch ( error ) {
-			parsed = {};
+	function parseJsonAttribute( section, attributeName ) {
+		const raw = section.getAttribute( attributeName );
+		if ( ! raw ) {
+			return null;
 		}
+
+		try {
+			return JSON.parse( raw );
+		} catch ( error ) {
+			return null;
+		}
+	}
+
+	function parseConfig( section ) {
+		const parsed = parseJsonAttribute( section, 'data-config' ) || {};
 
 		return {
 			heading: ensureString( parsed.heading, 'Resume' ),
@@ -79,6 +92,7 @@
 			fallbackUrl: ensureString( parsed.fallbackUrl, '' ),
 			atsUrl: ensureString( parsed.atsUrl, '/resume/ats/' ),
 			portfolioUrl: ensureString( parsed.portfolioUrl, 'https://hperkins.com' ),
+			inlinePayload: resolveInlineData( parseJsonAttribute( section, 'data-inline-payload' ) ),
 		};
 	}
 
@@ -105,6 +119,19 @@
 			return payload.data;
 		}
 		return payload;
+	}
+
+	function resolveInlineData( payload ) {
+		const data = resolveContractData( payload );
+		return data && typeof data === 'object' ? data : null;
+	}
+
+	function createState( data ) {
+		return {
+			loading: ! data,
+			error: '',
+			data: data || null,
+		};
 	}
 
 	function renderInlineSeparated( values ) {
@@ -144,7 +171,7 @@
 			{ className: 'hdc-resume-overview__jump-nav' },
 			h(
 				'div',
-				{ className: 'hdc-resume-overview__card' },
+				{ className: 'hdc-resume-overview__card hdc-resume-overview__jump-nav-panel' },
 				h( 'p', { className: 'hdc-resume-overview__card-label' }, 'Jump to resume sections' ),
 				props.description ? h( 'p', { className: 'hdc-resume-overview__text' }, props.description ) : null,
 				h(
@@ -172,10 +199,8 @@
 
 	function ResumeOverviewApp( props ) {
 		const config = props.config;
-		const [ state, setState ] = useState( {
-			loading: true,
-			error: '',
-			data: null,
+		const [ state, setState ] = useState( function () {
+			return createState( config.inlinePayload );
 		} );
 
 		const signature = useMemo( function () {
@@ -188,35 +213,28 @@
 
 		useEffect(
 			function () {
+				if ( config.inlinePayload ) {
+					setState( createState( config.inlinePayload ) );
+					return undefined;
+				}
+
 				let cancelled = false;
 
 				async function load() {
-					setState( {
-						loading: true,
-						error: '',
-						data: null,
-					} );
+					setState( createState( null ) );
 
 					try {
 						const contractPayload = await fetchJson( config.endpoint );
 						const contractData = resolveContractData( contractPayload );
 						if ( ! cancelled ) {
-							setState( {
-								loading: false,
-								error: '',
-								data: contractData,
-							} );
+							setState( createState( contractData ) );
 						}
 						return;
 					} catch ( primaryError ) {
 						try {
 							const fallbackPayload = await fetchJson( config.fallbackUrl );
 							if ( ! cancelled ) {
-								setState( {
-									loading: false,
-									error: '',
-									data: fallbackPayload,
-								} );
+								setState( createState( fallbackPayload ) );
 							}
 						} catch ( fallbackError ) {
 							if ( ! cancelled ) {
@@ -367,7 +385,7 @@
 									const label = ensureString( metric && metric.label, '' );
 									return h(
 										'article',
-										{ className: 'hdc-resume-overview__card', key: value + '-' + String( index ) },
+										{ className: 'hdc-resume-overview__card hdc-resume-overview__card--soft', key: value + '-' + String( index ) },
 										h( 'span', { className: 'hdc-resume-overview__metric-value' }, value ),
 										h( 'span', { className: 'hdc-resume-overview__metric-label' }, label )
 									);
@@ -378,7 +396,7 @@
 					h(
 						'section',
 						{
-							className: 'hdc-resume-overview__section hdc-resume-overview__panel hdc-resume-overview__panel--strong',
+							className: 'hdc-resume-overview__section hdc-resume-overview__panel hdc-resume-overview__panel--strong ember-surface ember-surface-strong',
 							id: 'resume-summary',
 						},
 						h( 'h2', { className: 'hdc-resume-overview__section-title' }, 'Professional Summary' ),
@@ -396,7 +414,10 @@
 									const items = ensureArray( column && column.items );
 									return h(
 										'article',
-										{ className: 'hdc-resume-overview__card', key: ensureString( column && column.category, 'capability-' + String( index ) ) },
+										{
+											className: 'hdc-resume-overview__card hdc-resume-overview__card--soft',
+											key: ensureString( column && column.category, 'capability-' + String( index ) ),
+										},
 										h( 'h3', { className: 'hdc-resume-overview__entry-title' }, ensureString( column && column.category, 'Capability' ) ),
 										h(
 											'ul',
@@ -422,7 +443,10 @@
 									const highlights = ensureArray( entry && entry.highlights );
 									return h(
 										'article',
-										{ className: 'hdc-resume-overview__card', key: ensureString( entry && entry.id, 'experience-' + String( index ) ) },
+										{
+											className: 'hdc-resume-overview__timeline-item',
+											key: ensureString( entry && entry.id, 'experience-' + String( index ) ),
+										},
 										h( 'h3', { className: 'hdc-resume-overview__entry-title' }, ensureString( entry && entry.title, 'Role' ) ),
 										h(
 											'p',
@@ -457,30 +481,38 @@
 									const tech = ensureArray( project && project.tech );
 									return h(
 										'article',
-										{ className: 'hdc-resume-overview__card', key: ensureString( project && project.name, 'project-' + String( index ) ) },
-										h( 'h3', { className: 'hdc-resume-overview__entry-title' }, ensureString( project && project.name, 'Project' ) ),
+										{
+											className: 'hdc-resume-overview__card hdc-resume-overview__card--ember ember-surface',
+											key: ensureString( project && project.name, 'project-' + String( index ) ),
+										},
+										h(
+											'div',
+											{ className: 'hdc-resume-overview__project-header' },
+											h( 'h3', { className: 'hdc-resume-overview__entry-title' }, ensureString( project && project.name, 'Project' ) ),
+											ensureString( project && project.link, '' )
+												? h(
+													'a',
+													{
+														className: 'hdc-resume-overview__project-link group',
+														'aria-label': 'View ' + ensureString( project && project.name, 'project' ) + ' project',
+														href: ensureString( project && project.link, '' ),
+														target: '_blank',
+														rel: 'noopener noreferrer',
+													},
+													h( 'span', null, 'View' ),
+													h(
+														'span',
+														{ className: 'hdc-resume-overview__project-link-icon', 'aria-hidden': 'true' },
+														renderLucideIcon( h, 'external-link', {
+															className: 'hdc-resume-overview__project-link-icon-svg icon-link-hover',
+															size: 12,
+														} )
+													)
+												)
+												: null
+										),
 										h( 'p', { className: 'hdc-resume-overview__text' }, ensureString( project && project.description, '' ) ),
 										h( 'p', { className: 'hdc-resume-overview__text' }, 'Impact: ' + ensureString( project && project.impact, '' ) ),
-										ensureString( project && project.link, '' )
-											? h(
-												'a',
-												{
-													className: 'hdc-resume-overview__project-link group',
-													href: ensureString( project && project.link, '' ),
-													target: '_blank',
-													rel: 'noopener noreferrer',
-												},
-												h( 'span', null, 'View' ),
-												h(
-													'span',
-													{ className: 'hdc-resume-overview__project-link-icon', 'aria-hidden': 'true' },
-													renderLucideIcon( h, 'external-link', {
-														className: 'hdc-resume-overview__project-link-icon-svg icon-link-hover',
-														size: 12,
-													} )
-												)
-											)
-											: null,
 										tech.length
 											? h(
 												'div',
@@ -507,7 +539,7 @@
 									return h(
 										'article',
 										{
-											className: 'hdc-resume-overview__card',
+											className: 'hdc-resume-overview__timeline-item',
 											key: ensureString( entry && entry.id, 'education-' + String( index ) ),
 										},
 										h(
@@ -537,7 +569,7 @@
 						? h(
 							'section',
 							{
-								className: 'hdc-resume-overview__section hdc-resume-overview__panel',
+								className: 'hdc-resume-overview__section hdc-resume-overview__panel hdc-resume-overview__panel--ember ember-surface',
 								id: 'resume-differentiator',
 							},
 							sectionTitle( 'What Makes This Profile Different' ),
@@ -556,7 +588,10 @@
 									const items = ensureArray( category && category.items );
 									return h(
 										'article',
-										{ className: 'hdc-resume-overview__card', key: ensureString( category && category.category, 'skills-' + String( index ) ) },
+										{
+											className: 'hdc-resume-overview__card hdc-resume-overview__card--soft',
+											key: ensureString( category && category.category, 'skills-' + String( index ) ),
+										},
 										h( 'h3', { className: 'hdc-resume-overview__entry-title' }, ensureString( category && category.category, 'Skills' ) ),
 										h(
 											'div',
@@ -576,11 +611,15 @@
 							{ className: 'hdc-resume-overview__section', id: 'resume-certifications' },
 							sectionTitle( 'Certifications' ),
 							h(
-								'ul',
-								{ className: 'hdc-resume-overview__list' },
-								certifications.map( function ( item, index ) {
-									return h( 'li', { key: String( item ) + '-' + String( index ) }, String( item ) );
-								} )
+								'div',
+								{ className: 'hdc-resume-overview__panel hdc-resume-overview__panel--soft' },
+								h(
+									'ul',
+									{ className: 'hdc-resume-overview__list' },
+									certifications.map( function ( item, index ) {
+										return h( 'li', { key: String( item ) + '-' + String( index ) }, String( item ) );
+									} )
+								)
 							)
 						)
 						: null

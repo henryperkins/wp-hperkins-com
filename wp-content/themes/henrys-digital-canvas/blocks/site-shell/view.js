@@ -108,35 +108,164 @@
 	function setupMobileMenu( root ) {
 		const menuTrigger = root.querySelector( '[data-hdc-menu-trigger]' );
 		const mobileMenu = root.querySelector( '[data-hdc-mobile-menu]' );
+		const backdrop = root.querySelector( '[data-hdc-mobile-backdrop]' );
+		const triggerIcon = root.querySelector( '[data-hdc-menu-icon]' );
+		const triggerLabel = root.querySelector( '[data-hdc-menu-label]' );
+		const themeMenu = root.querySelector( '[data-hdc-theme-menu]' );
+		const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+		let lastFocusedElement = null;
 
 		if ( ! menuTrigger || ! mobileMenu ) {
 			return;
 		}
 
-		function closeMenu() {
+		function isMenuOpen() {
+			return ! mobileMenu.hidden;
+		}
+
+		function getFocusableElements() {
+			return Array.prototype.slice.call( mobileMenu.querySelectorAll( FOCUSABLE_SELECTOR ) ).filter( function ( element ) {
+				return element.getClientRects().length > 0 && ! element.hasAttribute( 'hidden' ) && ! element.closest( '[hidden]' );
+			} );
+		}
+
+		function updateTriggerState( open ) {
+			menuTrigger.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
+			menuTrigger.setAttribute( 'aria-label', open ? 'Close menu' : 'Open menu' );
+			if ( triggerIcon ) {
+				triggerIcon.textContent = open ? 'x' : '☰';
+			}
+			if ( triggerLabel ) {
+				triggerLabel.textContent = open ? 'Close' : 'Menu';
+			}
+			root.classList.toggle( 'is-mobile-open', open );
+			document.body.classList.toggle( 'hdc-mobile-menu-open', open );
+		}
+
+		function closeThemeMenu() {
+			if ( themeMenu ) {
+				themeMenu.hidden = true;
+				root.classList.remove( 'is-theme-open' );
+			}
+		}
+
+		function closeMenu( options ) {
+			const settings = options || {};
+			if ( mobileMenu.hidden ) {
+				updateTriggerState( false );
+				return;
+			}
+
 			mobileMenu.hidden = true;
-			menuTrigger.setAttribute( 'aria-expanded', 'false' );
-			root.classList.remove( 'is-mobile-open' );
+			if ( backdrop ) {
+				backdrop.hidden = true;
+			}
+			updateTriggerState( false );
+
+			if ( settings.returnFocus !== false && lastFocusedElement && typeof lastFocusedElement.focus === 'function' ) {
+				lastFocusedElement.focus();
+			}
+
+			lastFocusedElement = null;
+		}
+
+		function openMenu() {
+			lastFocusedElement = document.activeElement && typeof document.activeElement.focus === 'function' ? document.activeElement : menuTrigger;
+			closeThemeMenu();
+			mobileMenu.hidden = false;
+			if ( backdrop ) {
+				backdrop.hidden = false;
+			}
+			updateTriggerState( true );
+
+			window.requestAnimationFrame( function () {
+				const firstFocusable = getFocusableElements()[ 0 ];
+				if ( firstFocusable ) {
+					firstFocusable.focus();
+				} else {
+					mobileMenu.focus();
+				}
+			} );
 		}
 
 		function toggleMenu() {
-			const open = mobileMenu.hidden;
-			mobileMenu.hidden = ! open;
-			menuTrigger.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
-			root.classList.toggle( 'is-mobile-open', open );
+			if ( isMenuOpen() ) {
+				closeMenu();
+			} else {
+				openMenu();
+			}
 		}
 
 		menuTrigger.addEventListener( 'click', toggleMenu );
 
+		if ( backdrop ) {
+			backdrop.addEventListener( 'click', function () {
+				closeMenu();
+			} );
+		}
+
 		root.querySelectorAll( '.hdc-site-shell__mobile-link' ).forEach( function ( link ) {
-			link.addEventListener( 'click', closeMenu );
+			link.addEventListener( 'click', function () {
+				closeMenu( { returnFocus: false } );
+			} );
+		} );
+
+		root.querySelectorAll( '.hdc-site-shell__command-trigger--mobile' ).forEach( function ( trigger ) {
+			trigger.addEventListener( 'click', function () {
+				closeMenu( { returnFocus: false } );
+			} );
+		} );
+
+		root.addEventListener( 'hdc:command-open', function () {
+			closeMenu( { returnFocus: false } );
+		} );
+
+		document.addEventListener( 'keydown', function ( event ) {
+			if ( ! isMenuOpen() ) {
+				return;
+			}
+
+			if ( event.key === 'Escape' ) {
+				event.preventDefault();
+				closeMenu();
+				return;
+			}
+
+			if ( event.key !== 'Tab' ) {
+				return;
+			}
+
+			const focusableElements = getFocusableElements();
+			if ( focusableElements.length === 0 ) {
+				event.preventDefault();
+				mobileMenu.focus();
+				return;
+			}
+
+			const firstElement = focusableElements[ 0 ];
+			const lastElement = focusableElements[ focusableElements.length - 1 ];
+			const activeElement = document.activeElement;
+
+			if ( event.shiftKey && activeElement === firstElement ) {
+				event.preventDefault();
+				lastElement.focus();
+			} else if ( ! event.shiftKey && activeElement === lastElement ) {
+				event.preventDefault();
+				firstElement.focus();
+			}
 		} );
 
 		window.addEventListener( 'resize', function () {
 			if ( window.innerWidth >= 900 ) {
-				closeMenu();
+				closeMenu( { returnFocus: false } );
 			}
 		} );
+
+		window.addEventListener( 'popstate', function () {
+			closeMenu( { returnFocus: false } );
+		} );
+
+		updateTriggerState( false );
 	}
 
 	function getSystemTheme() {
@@ -336,6 +465,7 @@
 		}
 
 		function openDialog() {
+			root.dispatchEvent( new CustomEvent( 'hdc:command-open' ) );
 			dialog.hidden = false;
 			document.body.classList.add( 'hdc-command-open' );
 			state.opened = true;

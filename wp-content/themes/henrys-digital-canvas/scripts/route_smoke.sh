@@ -7,8 +7,8 @@ routes=(
   "/|200|hdc-home-page"
   "/work/|200|hdc-work-app"
   "/work/lakefront-digital-portfolio/|200|hdc-work-detail"
-  "/resume/|200|hdc-resume-overview"
-  "/resume/ats/|200|hdc-resume-ats"
+  "/resume/|200|hdc-resume-overview|Loading resume"
+  "/resume/ats/|200|hdc-resume-ats|Loading ATS resume"
   "/hobbies/|200|hdc-hobbies-moments"
   "/blog/|200|hdc-blog-index"
   "/blog/wordpress-ai-use-cases-developers-admins/|200|hdc-blog-post"
@@ -21,7 +21,7 @@ failures=0
 printf "Route smoke against %s\n" "$BASE_URL"
 
 for entry in "${routes[@]}"; do
-  IFS='|' read -r path expected marker <<<"$entry"
+  IFS='|' read -r path expected marker forbidden <<<"$entry"
   tmp="$(mktemp)"
   status="$(curl -sS -L -o "$tmp" -w '%{http_code}' "${BASE_URL}${path}")"
 
@@ -30,10 +30,15 @@ for entry in "${routes[@]}"; do
     marker_ok="yes"
   fi
 
-  if [[ "$status" == "$expected" && "$marker_ok" == "yes" ]]; then
+  forbidden_ok="yes"
+  if [[ -n "${forbidden:-}" ]] && rg -q "$forbidden" "$tmp"; then
+    forbidden_ok="no"
+  fi
+
+  if [[ "$status" == "$expected" && "$marker_ok" == "yes" && "$forbidden_ok" == "yes" ]]; then
     printf "PASS\t%-45s status=%s marker=%s\n" "$path" "$status" "$marker"
   else
-    printf "FAIL\t%-45s status=%s expected=%s marker=%s marker_found=%s\n" "$path" "$status" "$expected" "$marker" "$marker_ok"
+    printf "FAIL\t%-45s status=%s expected=%s marker=%s marker_found=%s forbidden=%s forbidden_clear=%s\n" "$path" "$status" "$expected" "$marker" "$marker_ok" "${forbidden:-none}" "$forbidden_ok"
     failures=$((failures + 1))
   fi
 

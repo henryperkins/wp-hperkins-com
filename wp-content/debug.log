@@ -134,3 +134,39 @@
 [05-Mar-2026 16:26:14 UTC] PHP Deprecated:  ActionScheduler_Schedule::next(): Implicitly marking parameter $after as nullable is deprecated, the explicit nullable type must be used instead in /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/plugins/classifai/vendor/woocommerce/action-scheduler/classes/schedules/ActionScheduler_Schedule.php on line 11
 [05-Mar-2026 16:26:14 UTC] PHP Deprecated:  ActionScheduler_ActionFactory::get_stored_action(): Implicitly marking parameter $schedule as nullable is deprecated, the explicit nullable type must be used instead in /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/plugins/classifai/vendor/woocommerce/action-scheduler/classes/ActionScheduler_ActionFactory.php on line 21
 [05-Mar-2026 16:26:14 UTC] PHP Deprecated:  ActionScheduler_Action::__construct(): Implicitly marking parameter $schedule as nullable is deprecated, the explicit nullable type must be used instead in /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/plugins/classifai/vendor/woocommerce/action-scheduler/classes/actions/ActionScheduler_Action.php on line 26
+[07-Mar-2026 18:47:37 UTC] PHP Fatal error:  Uncaught Error: Call to undefined method WordPress\AiClient\Providers\DTO\ProviderMetadata::getAuthenticationMethod() in /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/plugins/gutenberg/lib/experimental/connectors/default-connectors.php:154
+Stack trace:
+#0 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/plugins/gutenberg/lib/experimental/connectors/default-connectors.php(306): _gutenberg_get_connector_settings()
+#1 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-includes/class-wp-hook.php(341): _gutenberg_register_default_connector_settings()
+#2 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-includes/class-wp-hook.php(365): WP_Hook->apply_filters()
+#3 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-includes/plugin.php(522): WP_Hook->do_action()
+#4 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-settings.php(774): do_action()
+#5 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-config.php(114): require_once('...')
+#6 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-load.php(50): require_once('...')
+#7 Command line code(5): require('...')
+#8 {main}
+  thrown in /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/plugins/gutenberg/lib/experimental/connectors/default-connectors.php on line 154
+[07-Mar-2026 18:48:05 UTC] PHP Fatal error:  Uncaught Error: Call to undefined method WordPress\AiClient\Providers\DTO\ProviderMetadata::getAuthenticationMethod() in /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/plugins/gutenberg/lib/experimental/connectors/default-connectors.php:154
+Stack trace:
+#0 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/plugins/gutenberg/lib/experimental/connectors/default-connectors.php(306): _gutenberg_get_connector_settings()
+#1 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-includes/class-wp-hook.php(341): _gutenberg_register_default_connector_settings()
+#2 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-includes/class-wp-hook.php(365): WP_Hook->apply_filters()
+#3 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-includes/plugin.php(522): WP_Hook->do_action()
+#4 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-settings.php(774): do_action()
+#5 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-config.php(114): require_once('...')
+#6 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-load.php(50): require_once('...')
+#7 Command line code(4): require('...')
+#8 {main}
+  thrown in /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/plugins/gutenberg/lib/experimental/connectors/default-connectors.php on line 154
+[07-Mar-2026 18:48:37 UTC] PHP Fatal error:  Uncaught Error: Call to undefined method WordPress\AiClient\Providers\DTO\ProviderMetadata::getAuthenticationMethod() in /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/plugins/gutenberg/lib/experimental/connectors/default-connectors.php:154
+Stack trace:
+#0 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/plugins/gutenberg/lib/experimental/connectors/default-connectors.php(306): _gutenberg_get_connector_settings()
+#1 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-includes/class-wp-hook.php(341): _gutenberg_register_default_connector_settings()
+#2 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-includes/class-wp-hook.php(365): WP_Hook->apply_filters()
+#3 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-includes/plugin.php(522): WP_Hook->do_action()
+#4 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-settings.php(774): do_action()
+#5 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-config.php(114): require_once('...')
+#6 /home/hperkins-wp/htdocs/wp.hperkins.com/wp-load.php(50): require_once('...')
+#7 Command line code(4): require('...')
+#8 {main}
+  thrown in /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/plugins/gutenberg/lib/experimental/connectors/default-connectors.php on line 154

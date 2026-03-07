@@ -17,7 +17,7 @@
 	"attributes": {
 		"heading": {
 			"type": "string",
-			"default": "ATS One-Page Resume"
+			"default": "ATS one-page resume"
 		},
 		"showPrintButton": {
 			"type": "boolean",

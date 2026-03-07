@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $defaults = array(
-	'heading'         => 'ATS One-Page Resume',
+	'heading'         => 'ATS one-page resume',
 	'showPrintButton' => true,
 	'showBackLink'    => true,
 );
@@ -43,6 +43,8 @@ $wrapper_attributes = get_block_wrapper_attributes(
 ?>
 <section <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> data-config="<?php echo esc_attr( wp_json_encode( $config ) ); ?>"<?php if ( '' !== $inline_fallback_json ) : ?> data-fallback-payload="<?php echo esc_attr( $inline_fallback_json ); ?>"<?php endif; ?>>
 	<div class="hdc-resume-ats__shell" data-hdc-resume-ats-root>
-		<p class="hdc-resume-ats__status"><?php esc_html_e( 'Loading ATS resume…', 'henrys-digital-canvas' ); ?></p>
+		<?php if ( '' === $inline_fallback_json ) : ?>
+			<p class="hdc-resume-ats__status"><?php esc_html_e( 'Loading ATS resume…', 'henrys-digital-canvas' ); ?></p>
+		<?php endif; ?>
 	</div>
 </section>

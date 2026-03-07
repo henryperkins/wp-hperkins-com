@@ -196,6 +196,94 @@
 		return title + ' featured image';
 	}
 
+	function slugifyHeading( value ) {
+		return String( value || '' )
+			.trim()
+			.toLowerCase()
+			.replace( /[^a-z0-9]+/g, '-' )
+			.replace( /^-+|-+$/g, '' );
+	}
+
+	function buildHeadingId( label, seen ) {
+		const base = slugifyHeading( label ) || 'section';
+		const count = seen.get( base ) || 0;
+		seen.set( base, count + 1 );
+		return count === 0 ? 'blog-' + base : 'blog-' + base + '-' + String( count + 1 );
+	}
+
+	function getMarkdownHeadings( content ) {
+		const seen = new Map();
+		const headings = [];
+
+		String( content || '' )
+			.split( '\n' )
+			.forEach( function ( line ) {
+				if ( line.startsWith( '## ' ) ) {
+					const label = line.replace( '## ', '' ).trim();
+					headings.push( {
+						id: buildHeadingId( label, seen ),
+						label: label,
+						level: 2,
+					} );
+					return;
+				}
+
+				if ( line.startsWith( '### ' ) ) {
+					const label = line.replace( '### ', '' ).trim();
+					headings.push( {
+						id: buildHeadingId( label, seen ),
+						label: label,
+						level: 3,
+					} );
+				}
+			} );
+
+		return headings;
+	}
+
+	function enhanceHtmlContent( contentHtml ) {
+		const html = ensureString( contentHtml, '' );
+		if ( ! html || typeof DOMParser === 'undefined' ) {
+			return {
+				contentHtml: html,
+				sectionItems: [],
+			};
+		}
+
+		const seen = new Map();
+		const parsedDocument = new DOMParser().parseFromString( html, 'text/html' );
+		const sectionItems = [];
+
+		parsedDocument.querySelectorAll( 'h2, h3' ).forEach( function ( heading ) {
+			const label = ensureString( heading.textContent, '' );
+			if ( ! label ) {
+				return;
+			}
+
+			const existingId = ensureString( heading.getAttribute( 'id' ), '' );
+			const id = existingId || buildHeadingId( label, seen );
+			if ( ! existingId ) {
+				heading.setAttribute( 'id', id );
+			}
+
+			heading.classList.add( 'hdc-blog-post__heading-anchor' );
+			if ( heading.tagName === 'H3' ) {
+				heading.classList.add( 'hdc-blog-post__subheading' );
+				return;
+			}
+
+			sectionItems.push( {
+				href: '#' + id,
+				label: label,
+			} );
+		} );
+
+		return {
+			contentHtml: parsedDocument.body.innerHTML,
+			sectionItems: sectionItems,
+		};
+	}
+
 	function renderInline( text, keyPrefix ) {
 		const parts = String( text || '' ).split( /(\*\*[^*]+\*\*|`[^`]+`)/g );
 		return parts.filter( Boolean ).map( function ( part, index ) {
@@ -211,7 +299,7 @@
 		} );
 	}
 
-	function renderMarkdownBlock( content, keyPrefix ) {
+	function renderMarkdownBlock( content, keyPrefix, headingQueue ) {
 		const lines = String( content || '' ).split( '\n' );
 		const elements = [];
 		let i = 0;
@@ -220,13 +308,37 @@
 			const line = lines[i];
 
 			if ( line.startsWith( '## ' ) ) {
-				elements.push( h( 'h2', { key: keyPrefix + '-h2-' + String( i ) }, line.replace( '## ', '' ) ) );
+				const label = line.replace( '## ', '' ).trim();
+				const heading = headingQueue.shift();
+				elements.push(
+					h(
+						'h2',
+						{
+							key: keyPrefix + '-h2-' + String( i ),
+							id: heading ? heading.id : undefined,
+							className: 'hdc-blog-post__heading-anchor',
+						},
+						label
+					)
+				);
 				i++;
 				continue;
 			}
 
 			if ( line.startsWith( '### ' ) ) {
-				elements.push( h( 'h3', { key: keyPrefix + '-h3-' + String( i ) }, line.replace( '### ', '' ) ) );
+				const label = line.replace( '### ', '' ).trim();
+				const heading = headingQueue.shift();
+				elements.push(
+					h(
+						'h3',
+						{
+							key: keyPrefix + '-h3-' + String( i ),
+							id: heading ? heading.id : undefined,
+							className: 'hdc-blog-post__heading-anchor hdc-blog-post__subheading',
+						},
+						label
+					)
+				);
 				i++;
 				continue;
 			}
@@ -270,8 +382,9 @@
 		return elements;
 	}
 
-	function renderContentWithCode( content ) {
+	function renderContentWithCode( content, headings ) {
 		const blocks = String( content || '' ).split( /(```[\s\S]*?```)/g );
+		const headingQueue = ensureArray( headings ).slice();
 		return blocks.filter( Boolean ).map( function ( block, index ) {
 			if ( block.startsWith( '```' ) && block.endsWith( '```' ) ) {
 				const lines = block.split( '\n' );
@@ -286,8 +399,48 @@
 				);
 			}
 
-			return h( 'div', { key: 'text-' + String( index ) }, renderMarkdownBlock( block, 'block-' + String( index ) ) );
+			return h(
+				'div',
+				{ key: 'text-' + String( index ) },
+				renderMarkdownBlock( block, 'block-' + String( index ), headingQueue )
+			);
 		} );
+	}
+
+	function SectionJumpNav( props ) {
+		if ( ! props.items.length ) {
+			return null;
+		}
+
+		return h(
+			'section',
+			{ className: 'hdc-blog-post__jump-nav' },
+			h(
+				'div',
+				{ className: 'hdc-blog-post__jump-nav-panel' },
+				h( 'p', { className: 'hdc-blog-post__jump-nav-label' }, 'Jump to article sections' ),
+				props.description ? h( 'p', { className: 'hdc-blog-post__jump-nav-description' }, props.description ) : null,
+				h(
+					'nav',
+					{ className: 'hdc-blog-post__jump-nav-nav', 'aria-label': 'Jump to article sections' },
+					h(
+						'ul',
+						{ className: 'hdc-blog-post__jump-nav-list' },
+						props.items.map( function ( item ) {
+							return h(
+								'li',
+								{ className: 'hdc-blog-post__jump-nav-item', key: item.href },
+								h(
+									'a',
+									{ className: 'hdc-blog-post__jump-nav-link', href: item.href },
+									item.label
+								)
+							);
+						} )
+					)
+				)
+			)
+		);
 	}
 
 	function BlogPostApp( props ) {
@@ -470,6 +623,39 @@
 			},
 			[ state.posts, state.post ]
 		);
+		const markdownHeadings = useMemo(
+			function () {
+				return state.post && ! state.post.contentHtml ? getMarkdownHeadings( state.post.content ) : [];
+			},
+			[ state.post ]
+		);
+		const htmlArticleContent = useMemo(
+			function () {
+				return enhanceHtmlContent( state.post && state.post.contentHtml );
+			},
+			[ state.post ]
+		);
+		const articleSectionItems = useMemo(
+			function () {
+				if ( state.post && state.post.contentHtml ) {
+					return htmlArticleContent.sectionItems;
+				}
+
+				return markdownHeadings
+					.filter( function ( heading ) {
+						return heading.level === 2;
+					} )
+					.map( function ( heading ) {
+						return {
+							href: '#' + heading.id,
+							label: heading.label,
+						};
+					} );
+			},
+			[ htmlArticleContent.sectionItems, markdownHeadings, state.post ]
+		);
+		const hasArticleSectionItems = articleSectionItems.length > 0;
+		const progressValue = Math.round( progress );
 
 		const prefersReducedMotion =
 			window.matchMedia &&
@@ -506,65 +692,77 @@
 		const contentNode = post.contentHtml
 			? h( 'div', {
 				className: 'hdc-blog-post__content prose-custom',
-				dangerouslySetInnerHTML: { __html: post.contentHtml },
+				dangerouslySetInnerHTML: { __html: htmlArticleContent.contentHtml },
 			} )
-			: h( 'div', { className: 'hdc-blog-post__content prose-custom' }, renderContentWithCode( post.content ) );
+			: h(
+				'div',
+				{ className: 'hdc-blog-post__content prose-custom' },
+				renderContentWithCode( post.content, markdownHeadings )
+			);
 
-		return h(
-			'div',
-			{},
-			config.showProgress
-				? h(
-					'div',
-					{ className: 'hdc-blog-post__progress-track', 'aria-hidden': 'true' },
-					h( 'div', {
-						className: 'hdc-blog-post__progress-fill',
-						style: { width: String( progress ) + '%' },
-					} )
-				)
-				: null,
-			h(
-				'article',
-				{ className: 'hdc-blog-post__article' },
-				h(
-					'a',
-					{
-						className: 'hdc-blog-post__back-link',
-						href: config.blogIndexUrl,
-					},
-					h(
-						'span',
-						{ className: 'hdc-blog-post__back-link-icon', 'aria-hidden': 'true' },
-						renderLucideIcon( h, 'arrow-left', { className: 'hdc-blog-post__back-link-icon-svg', size: 14 } )
-					),
-					h( 'span', null, 'Back to Blog' )
-				),
-				h(
-					'header',
-					{ className: 'hdc-blog-post__header' },
-					post.featuredImageUrl
-						? h(
-							'div',
-							{ className: 'hdc-blog-post__hero' },
-							h( 'img', {
-								className: 'hdc-blog-post__hero-image',
-								src: post.featuredImageUrl,
-								srcSet: post.featuredImageSrcSet || undefined,
-								sizes: '(max-width: 980px) 100vw, 860px',
-								alt: buildImageAlt( post ),
-								loading: 'eager',
-								decoding: 'async',
-							} )
-						)
-						: null,
-					h(
+			return h(
+				'div',
+				{},
+				config.showProgress
+					? h(
 						'div',
-						{ className: 'hdc-blog-post__tags' },
-						post.tags.map( function ( tag ) {
-							return h( 'span', { className: 'hdc-blog-post__tag', key: post.slug + '-tag-' + tag }, tag );
+						{
+							className: 'hdc-blog-post__progress-track',
+							'aria-label': 'Reading progress',
+							'aria-valuemax': 100,
+							'aria-valuemin': 0,
+							'aria-valuenow': progressValue,
+							role: 'progressbar',
+						},
+						h( 'div', {
+							className: 'hdc-blog-post__progress-fill',
+							style: { width: String( progress ) + '%' },
+							'aria-hidden': 'true',
 						} )
+					)
+					: null,
+				h(
+					'article',
+					{ className: 'hdc-blog-post__article' },
+					h(
+						'a',
+						{
+							className: 'hdc-blog-post__back-link',
+							href: config.blogIndexUrl,
+						},
+						h(
+							'span',
+							{ className: 'hdc-blog-post__back-link-icon', 'aria-hidden': 'true' },
+							renderLucideIcon( h, 'arrow-left', { className: 'hdc-blog-post__back-link-icon-svg', size: 14 } )
+						),
+						h( 'span', null, 'Back to Blog' )
 					),
-					h( 'h1', { className: 'hdc-blog-post__title' }, post.title ),
+					h(
+						'header',
+						{ className: 'hdc-blog-post__header' },
+						post.featuredImageUrl
+							? h(
+								'div',
+								{ className: 'hdc-blog-post__hero' },
+								h( 'img', {
+									className: 'hdc-blog-post__hero-image',
+									src: post.featuredImageUrl,
+									srcSet: post.featuredImageSrcSet || undefined,
+									sizes: '(min-width: 1536px) 1280px, (min-width: 1024px) 90vw, 100vw',
+									alt: buildImageAlt( post ),
+									loading: 'eager',
+									decoding: 'async',
+								} )
+							)
+							: null,
+						h(
+							'div',
+							{ className: 'hdc-blog-post__tags' },
+							post.tags.map( function ( tag ) {
+								return h( 'span', { className: 'hdc-blog-post__tag', key: post.slug + '-tag-' + tag }, tag );
+							} )
+						),
+						h( 'h1', { className: 'hdc-blog-post__title' }, post.title ),
 						h(
 							'p',
 							{ className: 'hdc-blog-post__meta' },
@@ -582,52 +780,74 @@
 								)
 								: null
 						)
-						),
-				contentNode,
-				relatedPosts.length
-					? h(
-						'section',
-						{ className: 'hdc-blog-post__related' },
-						h( 'h3', { className: 'hdc-blog-post__related-title' }, 'Related Posts' ),
+					),
+					h(
+						'div',
+						{ className: 'hdc-blog-post__layout' },
+						hasArticleSectionItems
+							? h(
+								'aside',
+								{ className: 'hdc-blog-post__aside' },
+								h( SectionJumpNav, {
+									description: 'Skip directly to the main ideas in this article.',
+									items: articleSectionItems,
+								} )
+							)
+							: null,
 						h(
 							'div',
-							{ className: 'hdc-blog-post__related-list' },
-							relatedPosts.map( function ( related ) {
-								return h(
-									'a',
-									{
-										className: 'hdc-blog-post__related-card',
-										href: config.blogIndexUrl.replace( /\/+$/, '' ) + '/' + encodeURIComponent( related.slug ) + '/',
-										key: related.slug,
-									},
-									h( 'h4', { className: 'hdc-blog-post__related-card-title' }, related.title ),
-									h( 'p', { className: 'hdc-blog-post__related-card-excerpt' }, related.excerpt )
-								);
-							} )
+							{ className: 'hdc-blog-post__content-shell' },
+							contentNode,
+							relatedPosts.length
+								? h(
+									'section',
+									{ className: 'hdc-blog-post__related' },
+									h( 'h3', { className: 'hdc-blog-post__related-title' }, 'Related Posts' ),
+									h(
+										'div',
+										{ className: 'hdc-blog-post__related-list' },
+										relatedPosts.map( function ( related ) {
+											return h(
+												'a',
+												{
+													className: 'hdc-blog-post__related-card',
+													href: config.blogIndexUrl.replace( /\/+$/, '' ) + '/' + encodeURIComponent( related.slug ) + '/',
+													key: related.slug,
+												},
+												h( 'h4', { className: 'hdc-blog-post__related-card-title' }, related.title ),
+												h( 'p', { className: 'hdc-blog-post__related-card-excerpt' }, related.excerpt )
+											);
+										} )
+									)
+								)
+								: null
 						)
 					)
-					: null
-			),
-			config.showScrollTop && progress > 20
-				? h(
-					'button',
-					{
-						type: 'button',
-						className: 'hdc-blog-post__scroll-top',
-						onClick: function () {
-							window.scrollTo( {
-								top: 0,
-								behavior: prefersReducedMotion ? 'auto' : 'smooth',
-							} );
-						},
-						'aria-label': 'Scroll to top',
-					},
-					h(
-						'span',
-						{ className: 'hdc-blog-post__scroll-top-icon', 'aria-hidden': 'true' },
-						renderLucideIcon( h, 'chevron-up', { className: 'hdc-blog-post__scroll-top-icon-svg', size: 18 } )
+				),
+				config.showScrollTop && progressValue > 20
+					? h(
+						'div',
+						{ className: 'hdc-blog-post__scroll-top-wrap' },
+						h(
+							'button',
+							{
+								type: 'button',
+								className: 'hdc-blog-post__scroll-top',
+								onClick: function () {
+									window.scrollTo( {
+										top: 0,
+										behavior: prefersReducedMotion ? 'auto' : 'smooth',
+									} );
+								},
+								'aria-label': 'Scroll to top',
+							},
+							h(
+								'span',
+								{ className: 'hdc-blog-post__scroll-top-icon', 'aria-hidden': 'true' },
+								renderLucideIcon( h, 'chevron-up', { className: 'hdc-blog-post__scroll-top-icon-svg', size: 18 } )
+							)
+						)
 					)
-				)
 					: null
 			);
 	}
