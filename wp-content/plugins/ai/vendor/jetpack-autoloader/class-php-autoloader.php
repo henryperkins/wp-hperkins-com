@@ -82,6 +82,21 @@ class PHP_Autoloader {
 			return false;
 		}
 
+		static $prefer_core_ai_client = null;
+		if ( null === $prefer_core_ai_client ) {
+			$prefer_core_ai_client = defined( 'ABSPATH' ) && defined( 'WPINC' ) && file_exists( ABSPATH . WPINC . '/php-ai-client/autoload.php' );
+		}
+
+		// On WordPress 7.0+, defer the bundled AI client namespaces to core's autoloader.
+		if ( $prefer_core_ai_client ) {
+			if ( 0 === strncmp( $class_name, 'WordPress\\AiClient\\', 19 ) ) {
+				return false;
+			}
+			if ( 0 === strncmp( $class_name, 'WordPress\\AiClientDependencies\\', 31 ) ) {
+				return false;
+			}
+		}
+
 		$file = $jetpack_autoloader_loader->find_class_file( $class_name );
 		if ( ! isset( $file ) ) {
 			return false;
