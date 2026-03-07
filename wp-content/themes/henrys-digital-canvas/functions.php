@@ -113,6 +113,7 @@ require_once get_stylesheet_directory() . '/inc/rest-api.php';
  */
 function hdc_register_theme_blocks() {
 	$block_directories = array(
+		get_stylesheet_directory() . '/blocks/home-page',
 		get_stylesheet_directory() . '/blocks/digital-canvas-feed',
 		get_stylesheet_directory() . '/blocks/work-showcase',
 		get_stylesheet_directory() . '/blocks/site-shell',
@@ -221,6 +222,90 @@ function hdc_add_work_repo_body_class( $classes ) {
 	return $classes;
 }
 add_filter( 'body_class', 'hdc_add_work_repo_body_class' );
+
+/**
+ * Resolve the OSOT-aligned document title for the current route.
+ *
+ * @return string
+ */
+function hdc_get_route_document_title() {
+	if ( is_admin() || is_feed() ) {
+		return '';
+	}
+
+	if ( is_404() ) {
+		return 'Page Not Found — Henry Perkins';
+	}
+
+	$repo = sanitize_text_field( (string) get_query_var( 'hdc_work_repo' ) );
+	if ( '' !== $repo ) {
+		$repo_data = hdc_get_work_repository_by_name_data_contract( $repo );
+		if ( is_array( $repo_data ) && ! empty( $repo_data['name'] ) ) {
+			return wp_strip_all_tags( (string) $repo_data['name'] ) . ' — Henry Perkins';
+		}
+
+		return 'Project — Henry Perkins';
+	}
+
+	$blog_slug = sanitize_title( (string) get_query_var( 'hdc_blog_slug' ) );
+	if ( '' !== $blog_slug ) {
+		$blog_post = hdc_get_blog_post_by_slug_data_contract( $blog_slug );
+		if ( is_array( $blog_post ) && ! empty( $blog_post['title'] ) ) {
+			return wp_strip_all_tags( (string) $blog_post['title'] ) . ' — Henry Perkins';
+		}
+
+		return 'Post Not Found — Henry Perkins';
+	}
+
+	if ( is_front_page() ) {
+		$home_contract = hdc_get_home_content_data_contract();
+		return wp_strip_all_tags( (string) ( $home_contract['pageTitle'] ?? 'Henry Perkins — Technical Portfolio' ) );
+	}
+
+	if ( is_page( 'about' ) ) {
+		$about_contract = hdc_get_about_content_data_contract();
+		return wp_strip_all_tags( (string) ( $about_contract['pageTitle'] ?? 'About — Henry Perkins' ) );
+	}
+
+	if ( is_page( 'contact' ) ) {
+		$contact_contract = hdc_get_contact_content_data_contract();
+		return wp_strip_all_tags( (string) ( $contact_contract['pageTitle'] ?? 'Contact — Henry Perkins' ) );
+	}
+
+	if ( is_page( 'work' ) ) {
+		return 'Work — Henry Perkins';
+	}
+
+	if ( is_page( 'resume' ) ) {
+		return 'Resume — Henry Perkins';
+	}
+
+	if ( is_page( 'ats' ) || is_page( 'resume-ats' ) ) {
+		return 'ATS Resume — Henry Perkins';
+	}
+
+	if ( is_page( 'hobbies' ) ) {
+		return 'Hobbies — Henry Perkins';
+	}
+
+	if ( is_page( 'blog' ) ) {
+		return 'Blog — Henry Perkins';
+	}
+
+	return '';
+}
+
+/**
+ * Override the browser document title to match the React OSOT routes.
+ *
+ * @param string $pre_title Existing short-circuit title.
+ * @return string
+ */
+function hdc_override_document_title( $pre_title ) {
+	$route_title = hdc_get_route_document_title();
+	return '' !== $route_title ? $route_title : $pre_title;
+}
+add_filter( 'pre_get_document_title', 'hdc_override_document_title', 20 );
 
 /**
  * Output fallback favicon links when no Site Icon is configured.

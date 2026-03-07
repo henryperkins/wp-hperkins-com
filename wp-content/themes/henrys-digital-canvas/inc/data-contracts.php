@@ -38,6 +38,150 @@ function hdc_read_theme_json_file( $relative_path, $fallback = array() ) {
 }
 
 /**
+ * Resolve the first non-empty constant or environment value.
+ *
+ * @param array<int,string> $candidates Ordered constant/env names.
+ * @return string
+ */
+function hdc_get_first_available_config_value( $candidates ) {
+	if ( ! is_array( $candidates ) ) {
+		return '';
+	}
+
+	foreach ( $candidates as $candidate ) {
+		$candidate = trim( (string) $candidate );
+		if ( '' === $candidate ) {
+			continue;
+		}
+
+		if ( defined( $candidate ) ) {
+			$value = constant( $candidate );
+			if ( is_string( $value ) && '' !== trim( $value ) ) {
+				return trim( $value );
+			}
+		}
+
+		$value = getenv( $candidate );
+		if ( is_string( $value ) && '' !== trim( $value ) ) {
+			return trim( $value );
+		}
+	}
+
+	return '';
+}
+
+/**
+ * Detect local or test execution contexts.
+ *
+ * @return bool
+ */
+function hdc_is_local_or_test_environment() {
+	if ( function_exists( 'wp_get_environment_type' ) ) {
+		$environment_type = wp_get_environment_type();
+		if ( in_array( $environment_type, array( 'local', 'development', 'testing' ), true ) ) {
+			return true;
+		}
+	}
+
+	$host = strtolower( trim( (string) ( $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? '' ) ) );
+
+	return in_array(
+		$host,
+		array( 'localhost', '127.0.0.1', '0.0.0.0', '::1', '[::1]', 'example.com' ),
+		true
+	);
+}
+
+/**
+ * Resolve the configured Turnstile site key with local/test fallback.
+ *
+ * @return string
+ */
+function hdc_get_turnstile_site_key() {
+	$site_key = hdc_get_first_available_config_value(
+		array(
+			'HDC_TURNSTILE_SITE_KEY',
+			'TURNSTILE_SITE_KEY',
+			'VITE_TURNSTILE_SITE_KEY',
+		)
+	);
+
+	if ( '' !== $site_key ) {
+		return $site_key;
+	}
+
+	if ( hdc_is_local_or_test_environment() ) {
+		return '1x00000000000000000000AA';
+	}
+
+	return '';
+}
+
+/**
+ * Resolve the configured Turnstile secret key with local/test fallback.
+ *
+ * @return string
+ */
+function hdc_get_turnstile_secret_key() {
+	$secret_key = hdc_get_first_available_config_value(
+		array(
+			'HDC_TURNSTILE_SECRET_KEY',
+			'TURNSTILE_SECRET_KEY',
+		)
+	);
+
+	if ( '' !== $secret_key ) {
+		return $secret_key;
+	}
+
+	if ( hdc_is_local_or_test_environment() ) {
+		return '1x0000000000000000000000000000000AA';
+	}
+
+	return '';
+}
+
+/**
+ * Read About page contract data.
+ *
+ * @return array
+ */
+function hdc_get_about_content_data_contract() {
+	$data = hdc_read_theme_json_file( '/data/about-content.json', array() );
+	return is_array( $data ) ? $data : array();
+}
+
+/**
+ * Read shared social links contract data.
+ *
+ * @return array<int,array>
+ */
+function hdc_get_social_links_data_contract() {
+	$data = hdc_read_theme_json_file( '/data/social-links.json', array() );
+	return is_array( $data ) ? array_values( $data ) : array();
+}
+
+/**
+ * Read Contact page contract data.
+ *
+ * @return array
+ */
+function hdc_get_contact_content_data_contract() {
+	$data = hdc_read_theme_json_file( '/data/contact-content.json', array() );
+	return is_array( $data ) ? $data : array();
+}
+
+/**
+ * Read Home page contract data.
+ *
+ * @return array
+ */
+function hdc_get_home_content_data_contract() {
+	$data = hdc_read_theme_json_file( '/data/home-content.json', array() );
+	return is_array( $data ) ? $data : array();
+}
+
+/**
  * Estimate reading time from rendered HTML.
  *
  * @param string $html Rendered post HTML.

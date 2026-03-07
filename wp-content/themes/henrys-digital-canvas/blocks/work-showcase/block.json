@@ -21,7 +21,7 @@
 		},
 		"description": {
 			"type": "string",
-			"default": "A mix of public GitHub repositories and private case studies with compare and filter controls."
+			"default": "Selected repositories and client case studies focused on problem framing, implementation decisions, and shipped outcomes."
 		},
 		"githubUsername": {
 			"type": "string",
@@ -66,6 +66,10 @@
 		"githubLanguageSummaryProxyUrl": {
 			"type": "string",
 			"default": "/api/github/language-summary"
+		},
+		"githubRepoProofsProxyUrl": {
+			"type": "string",
+			"default": "/api/github/repo-proofs"
 		},
 		"languageSummaryMaxRepos": {
 			"type": "number",

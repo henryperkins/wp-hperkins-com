@@ -3,7 +3,7 @@ const { test, expect } = require('@playwright/test');
 const BLOG_SLUG = process.env.BLOG_SLUG || 'wordpress-ai-use-cases-developers-admins';
 
 const ROUTES = [
-	{ path: '/', selector: '.hdc-digital-canvas-feed', status: 200 },
+	{ path: '/', selector: '.hdc-home-page', status: 200 },
 	{ path: '/work/', selector: '.hdc-work-app', status: 200 },
 	{ path: '/work/lakefront-digital-portfolio/', selector: '.hdc-work-detail', status: 200 },
 	{ path: '/resume/', selector: '.hdc-resume-overview', status: 200 },
@@ -61,17 +61,24 @@ test.describe('Henrys Digital Canvas browser smoke', () => {
 	test('contact validation and success states', async ({ page }) => {
 		await page.goto('/contact/', { waitUntil: 'networkidle' });
 
-		await page.locator('.hdc-contact-form__submit').click();
-		await expect
-			.poll(async () => page.locator('.hdc-contact-form__hint--error').count(), { timeout: 5000 })
-			.toBeGreaterThan(0);
+		const submitButton = page.locator('.hdc-contact-form__submit');
+		const verificationShell = page.locator('.hdc-contact-form__verification-shell');
+		await expect(verificationShell).toHaveCount(1, { timeout: 10000 });
+		if (await submitButton.isDisabled()) {
+			await expect(page.locator('#contact-verification-error')).toContainText(/verification/i);
+			await expect(submitButton).toBeDisabled();
+		} else {
+			await submitButton.click();
+			await expect
+				.poll(async () => page.locator('.hdc-contact-form__hint--error').count(), { timeout: 5000 })
+				.toBeGreaterThan(0);
 
-		await page.fill('.hdc-contact-form input[name="name"]', 'Phase 6 Bot');
-		await page.fill('.hdc-contact-form input[name="email"]', 'phase6-bot@example.com');
-		await page.fill('.hdc-contact-form textarea[name="message"]', 'Phase 6 browser smoke validation message.');
-		await page.locator('.hdc-contact-form__submit').click();
-
-		await expect(page.locator('.hdc-contact-form__success-wrap')).toHaveCount(1, { timeout: 15000 });
+			await page.fill('.hdc-contact-form input[name="name"]', 'Phase 6 Bot');
+			await page.fill('.hdc-contact-form input[name="email"]', 'phase6-bot@example.com');
+			await page.fill('.hdc-contact-form textarea[name="message"]', 'Phase 6 browser smoke validation message.');
+			await submitButton.click();
+			await expect(page.locator('#contact-verification-error')).toContainText(/verification/i, { timeout: 10000 });
+		}
 	});
 
 	test('blog progress and scroll-to-top behavior', async ({ page }) => {

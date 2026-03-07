@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $defaults = array(
 	'heading'         => 'Work',
-	'description'     => 'A mix of public GitHub repositories and private case studies with compare and filter controls.',
+	'description'     => 'Selected repositories and client case studies focused on problem framing, implementation decisions, and shipped outcomes.',
 	'githubUsername'  => 'henryperkins',
 	'repoCount'       => 100,
 	'compareLimit'    => 2,
@@ -39,6 +39,7 @@ $config = array(
 	'sparklineWeeks'  => max( 4, min( 16, (int) $attrs['sparklineWeeks'] ) ),
 	'githubProxyUrl'  => '/api/github/repos',
 	'githubLanguageSummaryProxyUrl' => '/api/github/language-summary',
+	'githubRepoProofsProxyUrl' => '/api/github/repo-proofs',
 	'languageSummaryMaxRepos' => 120,
 	'localReposUrl'   => esc_url_raw( get_theme_file_uri( 'blocks/work-showcase/data/repos.json' ) ),
 	'repoCaseStudyDetailsUrl' => esc_url_raw( get_theme_file_uri( 'blocks/work-showcase/data/repo-case-study-details.json' ) ),

@@ -1,0 +1,17 @@
+[
+  {
+    "href": "https://github.com/henryperkins",
+    "icon": "github",
+    "label": "GitHub"
+  },
+  {
+    "href": "https://linkedin.com/in/henryperkins",
+    "icon": "linkedin",
+    "label": "LinkedIn"
+  },
+  {
+    "href": "mailto:henry@lakefrontdigital.io",
+    "icon": "mail",
+    "label": "Email"
+  }
+]

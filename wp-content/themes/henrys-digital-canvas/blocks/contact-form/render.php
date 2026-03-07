@@ -9,39 +9,38 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$defaults = array(
-	'heading'         => 'Contact',
-	'description'     => 'Open to US remote opportunities and consulting engagements. Reach out if you want help with customer-facing technical workflows, web delivery, or AI integrations.',
+$contact_content = hdc_get_contact_content_data_contract();
+$social_links    = hdc_get_social_links_data_contract();
+$form_content    = isset( $contact_content['form'] ) && is_array( $contact_content['form'] ) ? $contact_content['form'] : array();
+$defaults        = array(
+	'heading'         => (string) ( $contact_content['heading'] ?? 'Contact' ),
+	'description'     => (string) ( $contact_content['description'] ?? 'Open to US remote roles and consulting conversations.' ),
 	'showSocialLinks' => true,
-	'submitLabel'     => 'Send Message',
-	'submittingLabel' => 'Sending…',
+	'submitLabel'     => (string) ( $form_content['submitLabel'] ?? 'Send Message' ),
+	'submittingLabel' => (string) ( $form_content['submittingLabel'] ?? 'Sending…' ),
 );
 
 $attrs = wp_parse_args( $attributes, $defaults );
 
 $config = array(
+	'pageTitle'       => sanitize_text_field( (string) ( $contact_content['pageTitle'] ?? 'Contact — Henry Perkins' ) ),
 	'heading'         => sanitize_text_field( $attrs['heading'] ),
 	'description'     => sanitize_text_field( $attrs['description'] ),
+	'guidance'        => isset( $contact_content['guidance'] ) && is_array( $contact_content['guidance'] ) ? $contact_content['guidance'] : array(),
+	'form'            => $form_content,
 	'showSocialLinks' => (bool) $attrs['showSocialLinks'],
 	'submitLabel'     => sanitize_text_field( $attrs['submitLabel'] ),
 	'submittingLabel' => sanitize_text_field( $attrs['submittingLabel'] ),
 	'endpoint'        => esc_url_raw( home_url( '/api/contact' ) ),
 	'restEndpoint'    => esc_url_raw( rest_url( 'henrys-digital-canvas/v1/contact' ) ),
-	'successTitle'    => __( 'Message sent!', 'henrys-digital-canvas' ),
-	'successMessage'  => __( 'Thanks for reaching out. I\'ll get back to you soon.', 'henrys-digital-canvas' ),
-	'socialLinks'     => array(
-		array(
-			'label' => 'GitHub',
-			'href'  => 'https://github.com/henryperkins',
-		),
-		array(
-			'label' => 'LinkedIn',
-			'href'  => 'https://linkedin.com/in/henryperkins',
-		),
-		array(
-			'label' => 'Email',
-			'href'  => 'mailto:henry@lakefrontdigital.io',
-		),
+	'socialLinks'     => is_array( $social_links ) ? array_values( $social_links ) : array(),
+	'turnstile'       => array(
+		'action'    => 'contact',
+		'siteKey'   => hdc_get_turnstile_site_key(),
+		'label'     => sanitize_text_field( (string) ( $form_content['labels']['verification'] ?? 'Verification' ) ),
+		'hint'      => sanitize_text_field( (string) ( $form_content['hints']['verification'] ?? 'Complete the verification check before sending.' ) ),
+		'requiredError' => sanitize_text_field( (string) ( $form_content['turnstileRequiredError'] ?? 'Please complete the verification check and try again.' ) ),
+		'unavailableError' => sanitize_text_field( (string) ( $form_content['turnstileUnavailableError'] ?? 'Verification is unavailable right now. Please try again later.' ) ),
 	),
 );
 

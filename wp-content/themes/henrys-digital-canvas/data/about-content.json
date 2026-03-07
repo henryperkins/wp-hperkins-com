@@ -1,0 +1,103 @@
+{
+  "pageTitle": "About — Henry Perkins",
+  "heading": "About Henry Perkins",
+  "sectionLabels": {
+    "values": "What I Value",
+    "timeline": "Career Path"
+  },
+  "intro": [
+    "I have worked on technical projects that stay close to real customer needs: an AI meeting transcript summarizer, a support-focused FAQ chatbot prototype, WordPress and WooCommerce client builds, and documentation systems that make troubleshooting easier to hand off.",
+    "What ties those projects together is the same throughline in my support, community, and consulting background: I like taking messy information and turning it into clear workflows, calmer operations, and practical tools that non-specialists can actually use.",
+    "I am especially interested in scaling up my AI and WordPress skills because they fit the work I already do best. AI helps me prototype better summaries, triage, and self-service experiences; WordPress remains one of the fastest ways to ship useful business outcomes. Growing in both areas is part of how I am working toward stable, living-wage technical work rooted in customer empathy and execution."
+  ],
+  "valueCards": [
+    {
+      "title": "Customer Empathy",
+      "description": "I treat every support request like a human conversation first, then solve the technical root cause."
+    },
+    {
+      "title": "Clarity",
+      "description": "Clear notes, reproducible debugging steps, and clean handoffs keep projects moving without surprises."
+    },
+    {
+      "title": "Execution",
+      "description": "I prioritize practical delivery so teams can see progress quickly and build confidence with each release."
+    }
+  ],
+  "timeline": [
+    {
+      "id": "writing-coach-editor",
+      "periodLabel": "2007-2008",
+      "title": "Writing Coach / Editor",
+      "detail": "Youth Communication Chicago and Journalism & Mass Communications studies",
+      "icon": "calendar"
+    },
+    {
+      "id": "customer-service-representative",
+      "periodLabel": "2009-2012",
+      "title": "Customer Service Representative",
+      "detail": "Micro Center; supported customers in a fast-paced technology retail environment",
+      "icon": "briefcase"
+    },
+    {
+      "id": "community-manager",
+      "periodLabel": "2012",
+      "periodDateTime": "2012",
+      "title": "Community Manager",
+      "detail": "Built and grew the PageLines developer community and App Store ecosystem",
+      "icon": "users"
+    },
+    {
+      "id": "happiness-engineer",
+      "periodLabel": "2012",
+      "periodDateTime": "2012",
+      "title": "Happiness Engineer",
+      "detail": "Supported WordPress.com users globally at Automattic",
+      "icon": "heart"
+    },
+    {
+      "id": "associate-degree-completed",
+      "periodLabel": "2013",
+      "periodDateTime": "2013",
+      "title": "Associate Degree Completed",
+      "detail": "Business Administration & Management, College of DuPage",
+      "icon": "graduation-cap"
+    },
+    {
+      "id": "freelance-artist-consultant",
+      "periodLabel": "2015-2017",
+      "title": "Freelance Artist / Consultant",
+      "detail": "Clinique; focused on customer education and service",
+      "icon": "briefcase"
+    },
+    {
+      "id": "starbucks-manager",
+      "periodLabel": "2018-2019",
+      "title": "Starbucks Manager",
+      "detail": "Sodexo; managed staffing, food safety, and service standards",
+      "icon": "briefcase"
+    },
+    {
+      "id": "shift-supervisor",
+      "periodLabel": "2019-2022",
+      "title": "Shift Supervisor",
+      "detail": "Starbucks; led high-volume operations and team coaching",
+      "icon": "briefcase"
+    },
+    {
+      "id": "lakefront-digital-founder",
+      "periodLabel": "2022-Present",
+      "title": "Founder, Lakefront Digital",
+      "detail": "Delivering end-to-end web and IT consulting engagements",
+      "icon": "code"
+    },
+    {
+      "id": "bs-in-progress",
+      "periodLabel": "Expected May 2026",
+      "periodDateTime": "2026-05",
+      "title": "B.S. in Progress",
+      "detail": "Organizational Leadership, Arizona State University",
+      "icon": "graduation-cap"
+    }
+  ]
+}

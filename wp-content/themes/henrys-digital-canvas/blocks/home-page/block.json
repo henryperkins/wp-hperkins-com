@@ -1,0 +1,16 @@
+{
+  "apiVersion": 3,
+  "name": "henrys-digital-canvas/home-page",
+  "title": "Home Page",
+  "category": "widgets",
+  "icon": "admin-home",
+  "description": "Route-owned homepage block aligned with the React OSOT.",
+  "supports": {
+    "html": false
+  },
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php",
+  "style": "file:./style.css",
+  "editorStyle": "file:./style.css",
+  "viewScript": "file:./view.js"
+}

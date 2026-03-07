@@ -1,0 +1,62 @@
+{
+  "pageTitle": "Henry Perkins — Technical Portfolio",
+  "hero": {
+    "eyebrow": "Technical consultant for customer-facing teams",
+    "title": "Henry T. Perkins",
+    "description": "I help support and product teams ship clearer customer experiences through API integrations, documentation, and AI-assisted workflows.",
+    "primaryCtaLabel": "Work with me",
+    "primaryCtaHref": "/contact/",
+    "secondaryCtaLabel": "View case studies",
+    "secondaryCtaHref": "/work/"
+  },
+  "selectedWork": {
+    "title": "Selected Work",
+    "actionLabel": "View all work",
+    "actionHref": "/work/",
+    "loadingLabel": "Syncing selected work...",
+    "sourceLiveLabel": "Selected work blends live GitHub builds with private client case studies.",
+    "sourceFallbackLabel": "Selected work blends private client case studies with a cached GitHub snapshot."
+  },
+  "resumeSnapshot": {
+    "title": "Resume Snapshot",
+    "actionLabel": "Interactive resume",
+    "actionHref": "/resume/",
+    "positioningEyebrow": "Positioning",
+    "bestFitEyebrow": "Best fit",
+    "bestFitTitle": "Where I plug in fastest",
+    "focusAreas": [
+      "Escalation triage, onboarding, and customer enablement",
+      "API integrations, debugging, and technical documentation",
+      "AI workflow prototypes with safe handoff and support guardrails"
+    ],
+    "actionLinks": [
+      {
+        "label": "Interactive resume",
+        "href": "/resume/"
+      },
+      {
+        "label": "ATS one-page",
+        "href": "/resume/ats/"
+      }
+    ]
+  },
+  "recentWriting": {
+    "title": "Recent Writing",
+    "actionLabel": "All posts",
+    "actionHref": "/blog/"
+  },
+  "contactCta": {
+    "eyebrow": "Need a technical partner?",
+    "title": "Bring me in where support, product, and implementation overlap.",
+    "description": "I work best on customer-facing systems that need clearer workflows, stronger documentation, and a steadier path from issue to outcome.",
+    "primaryCtaLabel": "Work with me",
+    "primaryCtaHref": "/contact/",
+    "secondaryCtaLabel": "View resume",
+    "secondaryCtaHref": "/resume/"
+  },
+  "repoTitles": {
+    "meeting-transcript-summarizer": "Meeting summary workflow for client calls",
+    "ai-faq-chatbot-prototype": "AI FAQ assistant for support teams",
+    "client-ecommerce-implementation": "E-commerce build with conversion-focused UX"
+  }
+}

@@ -29,6 +29,7 @@ $config = array(
 	'workEndpoint'        => esc_url_raw( add_query_arg( 'limit', 100, rest_url( 'henrys-digital-canvas/v1/work' ) ) ),
 	'workIndexUrl'        => esc_url_raw( home_url( '/work/' ) ),
 	'contactUrl'          => esc_url_raw( home_url( '/contact/' ) ),
+	'repoProofsEndpoint'  => esc_url_raw( home_url( '/api/github/repo-proofs' ) ),
 );
 
 $wrapper_attributes = get_block_wrapper_attributes(

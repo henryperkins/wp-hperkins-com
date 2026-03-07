@@ -793,15 +793,256 @@
 	line-height: 1.35;
 }
 
+.hdc-work-shell {
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	padding: 0;
+	box-shadow: none;
+}
+
+.hdc-work-app {
+	display: block;
+}
+
+.hdc-work-page-hero {
+	margin-inline: calc(50% - 50vw);
+	border-bottom: 1px solid hsl(var(--border));
+}
+
+.hdc-work-page-hero__inner {
+	padding-block: 4rem 3rem;
+}
+
+.hdc-work-page-hero__eyebrow {
+	margin: 0 0 0.75rem;
+	text-transform: uppercase;
+	color: hsl(var(--text-meta));
+}
+
+.hdc-work-page-hero__title {
+	margin: 0;
+	max-width: 16rem;
+}
+
+.hdc-work-page-hero__description {
+	margin: 1rem 0 0;
+	max-width: 48rem;
+}
+
+.hdc-work-page-hero__meta {
+	margin-top: 1rem;
+}
+
+.hdc-work-page-body {
+	padding-block: 3rem;
+}
+
+.hdc-work-filters {
+	margin-bottom: 2.5rem;
+	border-radius: var(--radius-surface);
+	background: hsl(var(--surface-1));
+	padding: 1rem;
+	box-shadow: var(--shadow-surface-1);
+}
+
+.hdc-work-filter-language {
+	display: grid;
+	gap: 0.65rem;
+	margin-bottom: 1rem;
+}
+
+.hdc-work-chip-rail {
+	display: flex;
+	gap: 0.45rem;
+	overflow-x: auto;
+	padding-bottom: 0.2rem;
+	scrollbar-width: none;
+}
+
+.hdc-work-chip-rail::-webkit-scrollbar {
+	display: none;
+}
+
+.hdc-work-chip {
+	background: hsl(var(--secondary));
+	border: 1px solid hsl(var(--border));
+	border-radius: var(--radius-pill);
+	color: hsl(var(--text-body));
+	cursor: pointer;
+	font-size: 0.8rem;
+	font-weight: 600;
+	line-height: 1;
+	min-height: 2rem;
+	padding: 0.45rem 0.66rem;
+	white-space: nowrap;
+}
+
+.hdc-work-chip.is-active {
+	background: hsl(var(--primary));
+	border-color: hsl(var(--primary));
+	color: hsl(var(--primary-foreground));
+}
+
+.hdc-work-filter-row {
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.hdc-work-signals,
+.hdc-work-featured-card,
+.hdc-work-role-card,
+.hdc-work-repo-card,
+.hdc-work-pending,
+.hdc-work-empty-state,
+.hdc-work-compare-card,
+.hdc-work-timeline-shell {
+	border-radius: var(--radius-surface);
+	box-shadow: var(--shadow-surface-1);
+}
+
+.hdc-work-role-card,
+.hdc-work-repo-card {
+	padding: 1rem;
+}
+
+.hdc-work-role-header {
+	align-items: flex-start;
+}
+
+.hdc-work-role-badges {
+	margin-top: 1rem;
+}
+
+.hdc-work-role-preview {
+	display: grid;
+	gap: 0.45rem;
+	margin-top: 1rem;
+}
+
+.hdc-work-repo-card {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	min-height: 100%;
+}
+
+.hdc-work-repo-head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 0.75rem;
+}
+
+.hdc-work-repo-head-main {
+	display: grid;
+	gap: 0.45rem;
+	min-width: 0;
+	flex: 1;
+}
+
+.hdc-work-repo-origin-row {
+	align-items: center;
+}
+
+.hdc-work-repo-origin-icon {
+	align-items: center;
+	color: hsl(var(--text-meta));
+	display: inline-flex;
+	justify-content: center;
+}
+
+.hdc-work-repo-origin-icon-svg {
+	display: block;
+	width: 0.875rem;
+	height: 0.875rem;
+}
+
+.hdc-work-repo-description {
+	margin: 0;
+}
+
+.hdc-work-repo-footer {
+	align-items: center;
+	border-top: 1px solid hsl(var(--border));
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	justify-content: space-between;
+	margin-top: auto;
+	padding-top: 0.75rem;
+}
+
+.hdc-work-repo-meta {
+	border-top: 0;
+	margin: 0;
+	padding-top: 0;
+}
+
+.hdc-work-repo-meta-label {
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: hsl(var(--text-meta));
+}
+
+.hdc-work-repo-detail-link {
+	color: hsl(var(--link));
+	font-size: 0.82rem;
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+}
+
+.hdc-work-repo-detail-link:hover,
+.hdc-work-repo-detail-link:focus-visible {
+	color: hsl(var(--link-hover));
+	text-decoration: underline;
+}
+
+.hdc-work-library-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-bottom: 1.5rem;
+	flex-wrap: wrap;
+}
+
+.hdc-work-library-actions {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.hdc-work-pagination-controls {
+	display: inline-flex;
+	gap: 0.5rem;
+}
+
+.hdc-work-timeline-shell {
+	background: hsl(var(--surface-1));
+	padding: 1rem;
+}
+
 @media (max-width: 720px) {
 	.hdc-work-shell {
-		padding: 1rem;
+		padding: 0;
 	}
 
 	.hdc-work-featured-grid,
 	.hdc-work-role-grid,
 	.hdc-work-repo-grid {
 		grid-template-columns: 1fr;
+	}
+
+	.hdc-work-page-hero__inner {
+		padding-block: 3rem 2.5rem;
+	}
+
+	.hdc-work-page-body {
+		padding-block: 2rem;
 	}
 
 	.hdc-work-sheet {

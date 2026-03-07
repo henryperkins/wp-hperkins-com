@@ -1,0 +1,365 @@
+.hdc-home-page {
+  display: block;
+}
+
+.hdc-home-page__shell {
+  margin: 0 auto;
+  max-width: 1180px;
+  padding: clamp(1.25rem, 2.5vw, 2rem) 1rem;
+}
+
+.hdc-home-page__status,
+.hdc-home-page__source,
+.hdc-home-page__copy,
+.hdc-home-page__empty {
+  color: hsl(var(--text-body));
+  line-height: 1.7;
+  margin: 0;
+}
+
+.hdc-home-page__hero,
+.hdc-home-page__resume-card,
+.hdc-home-page__cta-card,
+.hdc-home-page__work-card,
+.hdc-home-page__post-card {
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-surface);
+  box-shadow: var(--shadow-surface-1);
+}
+
+.hdc-home-page__hero {
+  background:
+    radial-gradient(circle at top right, hsl(var(--primary) / 0.24), transparent 38%),
+    linear-gradient(145deg, hsl(var(--foreground)) 0%, hsl(var(--surface-3)) 100%);
+  color: hsl(var(--primary-foreground));
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  padding: clamp(1.6rem, 4vw, 3rem);
+}
+
+.hdc-home-page__hero-eyebrow,
+.hdc-home-page__eyebrow {
+  color: hsl(var(--text-meta));
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.hdc-home-page__hero-eyebrow {
+  color: hsl(var(--primary-foreground) / 0.72);
+}
+
+.hdc-home-page__hero-title,
+.hdc-home-page__section-title,
+.hdc-home-page__card-title,
+.hdc-home-page-editor__title {
+  color: hsl(var(--foreground));
+  font-family: "Playfair Display", Georgia, serif;
+  line-height: 1.12;
+  margin: 0;
+}
+
+.hdc-home-page__hero-title {
+  color: hsl(var(--primary-foreground));
+  font-size: clamp(2.4rem, 6vw, 4.6rem);
+  max-width: 9ch;
+}
+
+.hdc-home-page__hero-description {
+  color: hsl(var(--primary-foreground) / 0.86);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin: 0;
+  max-width: 60ch;
+}
+
+.hdc-home-page__hero-actions,
+.hdc-home-page__cta-actions,
+.hdc-home-page__inline-links,
+.hdc-home-page__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.hdc-home-page__button,
+.hdc-home-page__section-link,
+.hdc-home-page__text-link {
+  text-decoration: none;
+}
+
+.hdc-home-page__button {
+  align-items: center;
+  background: hsl(var(--primary));
+  border: 1px solid hsl(var(--primary));
+  border-radius: var(--radius-control);
+  color: hsl(var(--primary-foreground));
+  display: inline-flex;
+  font-size: 0.95rem;
+  font-weight: 700;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0.8rem 1.15rem;
+}
+
+.hdc-home-page__button--secondary {
+  background: transparent;
+  border-color: hsl(var(--primary-foreground) / 0.32);
+  color: hsl(var(--primary-foreground));
+}
+
+.hdc-home-page__section {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.hdc-home-page__section-header {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.hdc-home-page__section-title {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+}
+
+.hdc-home-page__section-link,
+.hdc-home-page__text-link,
+.hdc-home-page__card-cta {
+  color: hsl(var(--link));
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.hdc-home-page__source {
+  font-size: 0.9rem;
+}
+
+.hdc-home-page__work-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.hdc-home-page__work-card,
+.hdc-home-page__post-card,
+.hdc-home-page__resume-card,
+.hdc-home-page__cta-card {
+  background: linear-gradient(155deg, hsl(var(--card)) 0%, hsl(var(--surface-1)) 100%);
+}
+
+.hdc-home-page__work-card {
+  color: inherit;
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+}
+
+.hdc-home-page__work-card--skeleton {
+  min-height: 13rem;
+  opacity: 0.7;
+}
+
+.hdc-home-page__work-meta,
+.hdc-home-page__card-footer,
+.hdc-home-page__post-meta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+.hdc-home-page__work-origin,
+.hdc-home-page__card-date {
+  align-items: center;
+  color: hsl(var(--text-meta));
+  display: inline-flex;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+}
+
+.hdc-home-page__work-origin-icon,
+.hdc-home-page__card-date-icon {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+}
+
+.hdc-home-page__work-origin-icon-svg,
+.hdc-home-page__card-date-icon-svg {
+  display: block;
+}
+
+.hdc-home-page__badge {
+  align-items: center;
+  background: hsl(var(--surface-2));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-pill);
+  color: hsl(var(--text-meta));
+  display: inline-flex;
+  font-size: 0.72rem;
+  font-weight: 700;
+  min-height: 1.75rem;
+  padding: 0.25rem 0.55rem;
+}
+
+.hdc-home-page__card-title {
+  font-size: 1.3rem;
+}
+
+.hdc-home-page__card-title--row {
+  font-size: 1.1rem;
+}
+
+.hdc-home-page__card-copy {
+  color: hsl(var(--text-body));
+  line-height: 1.6;
+  margin: 0;
+}
+
+.hdc-home-page__card-copy--clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.hdc-home-page__resume-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.hdc-home-page__resume-card {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1rem;
+}
+
+.hdc-home-page__resume-card--accent {
+  background: linear-gradient(155deg, hsl(var(--surface-2)) 0%, hsl(var(--surface-1)) 100%);
+}
+
+.hdc-home-page__resume-stack {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.hdc-home-page__resume-latest {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.hdc-home-page__resume-latest-title {
+  color: hsl(var(--link));
+  font-weight: 700;
+  margin: 0;
+}
+
+.hdc-home-page__resume-latest-meta {
+  color: hsl(var(--text-meta));
+  margin: 0;
+}
+
+.hdc-home-page__list {
+  display: grid;
+  gap: 0.75rem;
+  list-style: disc;
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.hdc-home-page__list li {
+  color: hsl(var(--text-body));
+  line-height: 1.6;
+}
+
+.hdc-feed-section {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.hdc-home-page__post-stack {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.hdc-home-page__post-card {
+  color: inherit;
+  display: grid;
+  gap: 0.85rem;
+  padding: 0.9rem;
+}
+
+.hdc-home-page__post-thumb-wrap {
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius-control) - 0.1rem);
+  overflow: hidden;
+}
+
+.hdc-feed-card-thumb {
+  aspect-ratio: 16 / 9;
+  display: block;
+  height: auto;
+  object-fit: cover;
+  width: 100%;
+}
+
+.hdc-home-page__post-body {
+  display: grid;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.hdc-home-page__post-meta {
+  color: hsl(var(--text-meta));
+  font-size: 0.82rem;
+  justify-content: flex-start;
+}
+
+.hdc-home-page__cta-card {
+  display: grid;
+  gap: 0.9rem;
+  overflow: hidden;
+  padding: clamp(1.2rem, 3vw, 1.8rem);
+}
+
+.hdc-home-page-editor {
+  border: 1px dashed hsl(var(--border));
+  border-radius: var(--radius-surface);
+  padding: 0.8rem;
+}
+
+.hdc-home-page-editor__description {
+  color: hsl(var(--text-meta));
+  margin: 0.45rem 0 0;
+}
+
+@media (min-width: 720px) {
+  .hdc-home-page__work-grid,
+  .hdc-home-page__resume-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hdc-home-page__post-card {
+    grid-template-columns: minmax(0, 112px) minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 960px) {
+  .hdc-home-page__work-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .hdc-home-page__resume-grid {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  }
+}

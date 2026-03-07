@@ -1,0 +1,52 @@
+{
+  "pageTitle": "Contact — Henry Perkins",
+  "heading": "Contact",
+  "description": "Open to US remote roles and consulting conversations. Reach out if you want to talk through support operations, implementation workflows, or AI-assisted delivery.",
+  "guidance": {
+    "eyebrow": "Start here",
+    "title": "What to send",
+    "description": "A short note is enough. If it helps, this is usually the most useful context.",
+    "focusAreasHeading": "Good fit",
+    "focusAreas": [
+      "Support and success workflows ready for technical cleanup.",
+      "Implementation work that would benefit from a pragmatic delivery partner.",
+      "AI-assisted documentation, triage, or internal enablement systems."
+    ],
+    "briefingHeading": "Helpful context",
+    "briefingItems": [
+      "The outcome you want to move toward.",
+      "Which systems, teams, or APIs are involved.",
+      "Any timing details that would be helpful to know."
+    ],
+    "timingNote": "If timing matters, mention the date or deadline and I'll reply directly by email."
+  },
+  "form": {
+    "eyebrow": "Direct outreach",
+    "title": "Send a message",
+    "description": "Share a little context, the systems involved, and what you're aiming for. I'll reply directly.",
+    "labels": {
+      "company": "Company",
+      "email": "Email",
+      "message": "Message",
+      "name": "Name",
+      "verification": "Verification"
+    },
+    "placeholders": {
+      "email": "your@email.com",
+      "message": "What's on your mind?",
+      "name": "Your name"
+    },
+    "hints": {
+      "email": "I reply to this address directly.",
+      "message": "Include context, timeline, and goals if possible.",
+      "name": "Use your full name for a faster follow-up.",
+      "verification": "Complete the verification check before sending."
+    },
+    "submitLabel": "Send Message",
+    "submittingLabel": "Sending…",
+    "successTitle": "Message sent!",
+    "successMessage": "Thanks for reaching out. I'll get back to you soon.",
+    "turnstileRequiredError": "Please complete the verification check and try again.",
+    "turnstileUnavailableError": "Verification is unavailable right now. Please try again later."
+  }
+}

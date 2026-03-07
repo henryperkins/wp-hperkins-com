@@ -4,7 +4,7 @@ set -euo pipefail
 BASE_URL="${BASE_URL:-https://wp.hperkins.com}"
 
 routes=(
-  "/|200|hdc-digital-canvas-feed"
+  "/|200|hdc-home-page"
   "/work/|200|hdc-work-app"
   "/work/lakefront-digital-portfolio/|200|hdc-work-detail"
   "/resume/|200|hdc-resume-overview"
