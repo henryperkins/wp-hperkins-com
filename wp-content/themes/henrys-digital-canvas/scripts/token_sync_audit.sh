@@ -47,82 +47,97 @@ def extract_vars(text, pattern, name):
     return {k: v.strip() for k, v in re.findall(r"--([a-z0-9-]+)\s*:\s*([^;]+);", block)}
 
 
+def merge_mode(light_vars, dark_overrides):
+    return {
+        "light": light_vars,
+        "dark": {**light_vars, **dark_overrides},
+    }
+
+
+def normalize(value):
+    if value is None:
+        return None
+    return re.sub(r"\s+", " ", value).strip()
+
+
+VAR_PATTERN = re.compile(r"var\(--([a-z0-9-]+)\)")
+
+
+def resolve_expression(value, variables, stack=()):
+    if value is None:
+        return None
+
+    def replace(match):
+        token = match.group(1)
+        if token in stack or token not in variables:
+            return match.group(0)
+        return resolve_expression(variables[token], variables, stack + (token,))
+
+    current = value
+    for _ in range(len(variables) + 5):
+        updated = VAR_PATTERN.sub(replace, current)
+        if updated == current:
+            break
+        current = updated
+
+    return normalize(current)
+
+
 source_css = read(source_css_path)
 design_css = read(design_css_path)
 theme_json = json.loads(read(theme_json_path))
 dark_json = json.loads(read(dark_json_path))
 
-source_light = extract_vars(
-    source_css,
-    r"@layer base\s*\{\s*:root\s*\{(.*?)\n\s*\.dark\s*\{",
-    "source light",
+source_modes = merge_mode(
+    extract_vars(
+        source_css,
+        r"@layer base\s*\{\s*:root\s*\{(.*?)\n\s*\.dark\s*\{",
+        "source light",
+    ),
+    extract_vars(
+        source_css,
+        r"\.dark\s*\{(.*?)\n\s*color-scheme:\s*dark;",
+        "source dark",
+    ),
 )
-source_dark = extract_vars(
-    source_css,
-    r"\.dark\s*\{(.*?)\n\s*color-scheme:\s*dark;",
-    "source dark",
-)
-design_light = extract_vars(
-    design_css,
-    r":root,\s*\n\.editor-styles-wrapper\s*\{(.*?)\n\s*color-scheme:\s*light;",
-    "design-system light",
-)
-design_dark = extract_vars(
-    design_css,
-    r":root\[data-theme=\"dark\"\],.*?\.editor-styles-wrapper\.is-dark-theme\s*\{(.*?)\n\s*color-scheme:\s*dark;",
-    "design-system dark",
+design_modes = merge_mode(
+    extract_vars(
+        design_css,
+        r":root,\s*\n\.editor-styles-wrapper\s*\{(.*?)\n\s*color-scheme:\s*light;",
+        "design-system light",
+    ),
+    extract_vars(
+        design_css,
+        r":root\[data-theme=\"dark\"\],.*?\.editor-styles-wrapper\.is-dark-theme\s*\{(.*?)\n\s*color-scheme:\s*dark;",
+        "design-system dark",
+    ),
 )
 
 mismatches = []
+check_count = 0
 
 
-def expect(label, actual, expected):
-    if actual != expected:
-        mismatches.append((label, actual, expected))
+def expect_resolved(label, actual, expected, actual_vars, expected_vars):
+    global check_count
+    check_count += 1
+    resolved_actual = resolve_expression(actual, actual_vars)
+    resolved_expected = resolve_expression(expected, expected_vars)
+    if resolved_actual != resolved_expected:
+        mismatches.append((label, resolved_actual, resolved_expected))
 
 
-core_tokens = [
-    "background",
-    "foreground",
-    "primary",
-    "primary-foreground",
-    "secondary",
-    "secondary-foreground",
-    "muted",
-    "muted-foreground",
-    "accent",
-    "accent-foreground",
-    "card",
-    "card-foreground",
-    "border",
-    "link",
-    "link-hover",
-    "text-strong",
-    "text-body",
-    "text-subtle",
-    "text-meta",
-    "success",
-    "warning",
-    "info",
-    "destructive",
-]
+design_tokens = sorted(source_modes["light"].keys())
 
-for token in core_tokens:
-    expect(
-        f"design-system light --{token}",
-        design_light.get(token),
-        source_light.get(token),
-    )
-    expect(
-        f"design-system dark --{token}",
-        design_dark.get(token),
-        source_dark.get(token),
-    )
+for mode in ("light", "dark"):
+    for token in design_tokens:
+        expect_resolved(
+            f"design-system {mode} --{token}",
+            design_modes[mode].get(token),
+            source_modes[mode].get(token),
+            design_modes[mode],
+            source_modes[mode],
+        )
 
-light_palette = {
-    item["slug"]: item["color"]
-    for item in theme_json["settings"]["color"]["palette"]
-}
 palette_slugs = [
     "background",
     "foreground",
@@ -140,94 +155,146 @@ palette_slugs = [
     "destructive",
 ]
 
+light_palette = {
+    item["slug"]: item["color"]
+    for item in theme_json["settings"]["color"]["palette"]
+}
+
 for slug in palette_slugs:
-    expect(
+    expect_resolved(
         f"theme.json light palette {slug}",
         light_palette.get(slug),
-        f"hsl({source_light.get(slug)})",
+        f"hsl(var(--{slug}))",
+        design_modes["light"],
+        source_modes["light"],
     )
 
 light_gradients = {
     item["slug"]: item["gradient"]
     for item in theme_json["settings"]["color"]["gradients"]
 }
-expect(
-    "theme.json light gradient surface-hero",
-    light_gradients.get("surface-hero"),
-    source_light.get("gradient-surface-hero"),
-)
-expect(
-    "theme.json light gradient surface-card",
-    light_gradients.get("surface-card"),
-    source_light.get("gradient-surface-card"),
-)
-expect(
-    "theme.json light gradient surface-emphasis",
-    light_gradients.get("surface-emphasis"),
-    source_light.get("gradient-surface-emphasis"),
-)
+for slug, token in (
+    ("surface-hero", "gradient-surface-hero"),
+    ("surface-card", "gradient-surface-card"),
+    ("surface-emphasis", "gradient-surface-emphasis"),
+):
+    expect_resolved(
+        f"theme.json light gradient {slug}",
+        light_gradients.get(slug),
+        f"var(--{token})",
+        design_modes["light"],
+        source_modes["light"],
+    )
+
+for label, actual, expected in (
+    (
+        "theme.json light styles.color.background",
+        theme_json["styles"]["color"]["background"],
+        "hsl(var(--background))",
+    ),
+    (
+        "theme.json light styles.color.text",
+        theme_json["styles"]["color"]["text"],
+        "hsl(var(--foreground))",
+    ),
+    (
+        "theme.json light styles.elements.link.color.text",
+        theme_json["styles"]["elements"]["link"]["color"]["text"],
+        "hsl(var(--link))",
+    ),
+    (
+        "theme.json light styles.elements.link:hover.color.text",
+        theme_json["styles"]["elements"]["link"][":hover"]["color"]["text"],
+        "hsl(var(--link-hover))",
+    ),
+    (
+        "theme.json light styles.elements.button.color.background",
+        theme_json["styles"]["elements"]["button"]["color"]["background"],
+        "hsl(var(--primary))",
+    ),
+    (
+        "theme.json light styles.elements.button.color.text",
+        theme_json["styles"]["elements"]["button"]["color"]["text"],
+        "hsl(var(--primary-foreground))",
+    ),
+):
+    expect_resolved(
+        label,
+        actual,
+        expected,
+        design_modes["light"],
+        source_modes["light"],
+    )
 
 dark_settings_palette = {
     item["slug"]: item["color"]
     for item in dark_json.get("settings", {}).get("color", {}).get("palette", [])
 }
 for slug in palette_slugs:
-    expect(
+    expect_resolved(
         f"ember-dark palette {slug}",
         dark_settings_palette.get(slug),
-        f"hsl({source_dark.get(slug)})",
+        f"hsl(var(--{slug}))",
+        design_modes["dark"],
+        source_modes["dark"],
     )
 
 dark_gradients = {
     item["slug"]: item["gradient"]
     for item in dark_json.get("settings", {}).get("color", {}).get("gradients", [])
 }
-expect(
-    "ember-dark gradient surface-hero",
-    dark_gradients.get("surface-hero"),
-    source_dark.get("gradient-surface-hero"),
-)
-expect(
-    "ember-dark gradient surface-card",
-    dark_gradients.get("surface-card"),
-    source_dark.get("gradient-surface-card"),
-)
-expect(
-    "ember-dark gradient surface-emphasis",
-    dark_gradients.get("surface-emphasis"),
-    source_dark.get("gradient-surface-emphasis"),
-)
+for slug, token in (
+    ("surface-hero", "gradient-surface-hero"),
+    ("surface-card", "gradient-surface-card"),
+    ("surface-emphasis", "gradient-surface-emphasis"),
+):
+    expect_resolved(
+        f"ember-dark gradient {slug}",
+        dark_gradients.get(slug),
+        f"var(--{token})",
+        design_modes["dark"],
+        source_modes["dark"],
+    )
 
-expect(
-    "ember-dark styles.color.background",
-    dark_json["styles"]["color"]["background"],
-    f"hsl({source_dark['background']})",
-)
-expect(
-    "ember-dark styles.color.text",
-    dark_json["styles"]["color"]["text"],
-    f"hsl({source_dark['foreground']})",
-)
-expect(
-    "ember-dark styles.elements.link.color.text",
-    dark_json["styles"]["elements"]["link"]["color"]["text"],
-    f"hsl({source_dark['link']})",
-)
-expect(
-    "ember-dark styles.elements.link:hover.color.text",
-    dark_json["styles"]["elements"]["link"][":hover"]["color"]["text"],
-    f"hsl({source_dark['link-hover']})",
-)
-expect(
-    "ember-dark styles.elements.button.color.background",
-    dark_json["styles"]["elements"]["button"]["color"]["background"],
-    f"hsl({source_dark['primary']})",
-)
-expect(
-    "ember-dark styles.elements.button.color.text",
-    dark_json["styles"]["elements"]["button"]["color"]["text"],
-    f"hsl({source_dark['primary-foreground']})",
-)
+for label, actual, expected in (
+    (
+        "ember-dark styles.color.background",
+        dark_json["styles"]["color"]["background"],
+        "hsl(var(--background))",
+    ),
+    (
+        "ember-dark styles.color.text",
+        dark_json["styles"]["color"]["text"],
+        "hsl(var(--foreground))",
+    ),
+    (
+        "ember-dark styles.elements.link.color.text",
+        dark_json["styles"]["elements"]["link"]["color"]["text"],
+        "hsl(var(--link))",
+    ),
+    (
+        "ember-dark styles.elements.link:hover.color.text",
+        dark_json["styles"]["elements"]["link"][":hover"]["color"]["text"],
+        "hsl(var(--link-hover))",
+    ),
+    (
+        "ember-dark styles.elements.button.color.background",
+        dark_json["styles"]["elements"]["button"]["color"]["background"],
+        "hsl(var(--primary))",
+    ),
+    (
+        "ember-dark styles.elements.button.color.text",
+        dark_json["styles"]["elements"]["button"]["color"]["text"],
+        "hsl(var(--primary-foreground))",
+    ),
+):
+    expect_resolved(
+        label,
+        actual,
+        expected,
+        design_modes["dark"],
+        source_modes["dark"],
+    )
 
 status = "PASS" if not mismatches else "FAIL"
 
@@ -239,7 +306,7 @@ lines = [
     f"- Design system CSS: `{design_css_path}`",
     f"- Theme JSON: `{theme_json_path}`",
     f"- Dark variation JSON: `{dark_json_path}`",
-    f"- Checks: `{len(core_tokens) * 2 + len(palette_slugs) * 2 + 3 + 3 + 6}`",
+    f"- Checks: `{check_count}`",
     f"- Mismatches: `{len(mismatches)}`",
     "",
 ]

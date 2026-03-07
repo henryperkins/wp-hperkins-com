@@ -11,7 +11,7 @@ return array(
 		'path'    => $vendorDir . '/wordpress/php-ai-client/src/polyfills.php'
 	),
 	'901a0fcb8c5137115199739c3d628fd4' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/helpers.php'
 	),
 );

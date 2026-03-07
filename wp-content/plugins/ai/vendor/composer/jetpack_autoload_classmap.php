@@ -563,243 +563,287 @@ return array(
 		'path'    => $vendorDir . '/wordpress/mcp-adapter/includes/Transport/Infrastructure/SessionManager.php'
 	),
 	'WordPress\\AI\\Abilities\\Excerpt_Generation\\Excerpt_Generation' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Abilities/Excerpt_Generation/Excerpt_Generation.php'
 	),
 	'WordPress\\AI\\Abilities\\Image\\Alt_Text_Generation' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Abilities/Image/Alt_Text_Generation.php'
 	),
 	'WordPress\\AI\\Abilities\\Image\\Generate_Image' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Abilities/Image/Generate_Image.php'
 	),
 	'WordPress\\AI\\Abilities\\Image\\Generate_Image_Prompt' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Abilities/Image/Generate_Image_Prompt.php'
 	),
 	'WordPress\\AI\\Abilities\\Image\\Import_Base64_Image' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Abilities/Image/Import_Base64_Image.php'
 	),
+	'WordPress\\AI\\Abilities\\Review_Notes\\Review_Notes' => array(
+		'version' => '0.4.1.0',
+		'path'    => $baseDir . '/includes/Abilities/Review_Notes/Review_Notes.php'
+	),
 	'WordPress\\AI\\Abilities\\Summarization\\Summarization' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Abilities/Summarization/Summarization.php'
 	),
 	'WordPress\\AI\\Abilities\\Title_Generation\\Title_Generation' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Abilities/Title_Generation/Title_Generation.php'
 	),
 	'WordPress\\AI\\Abilities\\Utilities\\Posts' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Abilities/Utilities/Posts.php'
 	),
 	'WordPress\\AI\\Abstracts\\Abstract_Ability' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Abstracts/Abstract_Ability.php'
 	),
 	'WordPress\\AI\\Abstracts\\Abstract_Experiment' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Abstracts/Abstract_Experiment.php'
 	),
 	'WordPress\\AI\\Asset_Loader' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Asset_Loader.php'
 	),
 	'WordPress\\AI\\Contracts\\Experiment' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Contracts/Experiment.php'
 	),
 	'WordPress\\AI\\Exception\\Invalid_Experiment_Exception' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Exception/Invalid_Experiment_Exception.php'
 	),
 	'WordPress\\AI\\Exception\\Invalid_Experiment_Metadata_Exception' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Exception/Invalid_Experiment_Metadata_Exception.php'
 	),
+	'WordPress\\AI\\Experiment_Category' => array(
+		'version' => '0.4.1.0',
+		'path'    => $baseDir . '/includes/Experiment_Category.php'
+	),
 	'WordPress\\AI\\Experiment_Loader' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Experiment_Loader.php'
 	),
 	'WordPress\\AI\\Experiment_Registry' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Experiment_Registry.php'
 	),
 	'WordPress\\AI\\Experiments\\Abilities_Explorer\\Abilities_Explorer' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Experiments/Abilities_Explorer/Abilities_Explorer.php'
 	),
 	'WordPress\\AI\\Experiments\\Abilities_Explorer\\Ability_Handler' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Experiments/Abilities_Explorer/Ability_Handler.php'
 	),
 	'WordPress\\AI\\Experiments\\Abilities_Explorer\\Ability_Table' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Experiments/Abilities_Explorer/Ability_Table.php'
 	),
 	'WordPress\\AI\\Experiments\\Abilities_Explorer\\Admin_Page' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Experiments/Abilities_Explorer/Admin_Page.php'
 	),
 	'WordPress\\AI\\Experiments\\Alt_Text_Generation\\Alt_Text_Generation' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Experiments/Alt_Text_Generation/Alt_Text_Generation.php'
 	),
 	'WordPress\\AI\\Experiments\\Example_Experiment\\Example_Experiment' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Experiments/Example_Experiment/Example_Experiment.php'
 	),
 	'WordPress\\AI\\Experiments\\Excerpt_Generation\\Excerpt_Generation' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Experiments/Excerpt_Generation/Excerpt_Generation.php'
 	),
 	'WordPress\\AI\\Experiments\\Image_Generation\\Image_Generation' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Experiments/Image_Generation/Image_Generation.php'
 	),
+	'WordPress\\AI\\Experiments\\Review_Notes\\Review_Notes' => array(
+		'version' => '0.4.1.0',
+		'path'    => $baseDir . '/includes/Experiments/Review_Notes/Review_Notes.php'
+	),
 	'WordPress\\AI\\Experiments\\Summarization\\Summarization' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Experiments/Summarization/Summarization.php'
 	),
 	'WordPress\\AI\\Experiments\\Title_Generation\\Title_Generation' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Experiments/Title_Generation/Title_Generation.php'
 	),
 	'WordPress\\AI\\Services\\AI_Service' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Services/AI_Service.php'
 	),
 	'WordPress\\AI\\Settings\\Settings_Page' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Settings/Settings_Page.php'
 	),
 	'WordPress\\AI\\Settings\\Settings_Registration' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/includes/Settings/Settings_Registration.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Experiments\\Abilities_Explorer\\Abilities_ExplorerTest' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Experiments/Abilities_Explorer/Abilities_ExplorerTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Experiments\\Abilities_Explorer\\Ability_HandlerTest' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Experiments/Abilities_Explorer/Ability_HandlerTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Experiments\\Abilities_Explorer\\Admin_PageTest' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Experiments/Abilities_Explorer/Admin_PageTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Experiments\\Alt_Text_Generation\\Alt_Text_GenerationTest' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Experiments/Alt_Text_Generation/Alt_Text_GenerationTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Experiments\\Example_Experiment\\Example_ExperimentTest' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Experiments/Example_Experiment/Example_ExperimentTest.php'
 	),
+	'WordPress\\AI\\Tests\\Integration\\Experiments\\Excerpt_Generation\\Excerpt_GenerationTest' => array(
+		'version' => '0.4.1.0',
+		'path'    => $baseDir . '/tests/Integration/Includes/Experiments/Excerpt_Generation/Excerpt_GenerationTest.php'
+	),
 	'WordPress\\AI\\Tests\\Integration\\Experiments\\Image_Generation\\Image_GenerationTest' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Experiments/Image_Generation/Image_GenerationTest.php'
 	),
+	'WordPress\\AI\\Tests\\Integration\\Experiments\\Review_Notes\\Review_NotesTest' => array(
+		'version' => '0.4.1.0',
+		'path'    => $baseDir . '/tests/Integration/Includes/Experiments/Review_Notes/Review_NotesTest.php'
+	),
 	'WordPress\\AI\\Tests\\Integration\\Experiments\\Summarization\\SummarizationTest' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Experiments/Summarization/SummarizationTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Experiments\\Title_Generation\\Title_GenerationTest' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Experiments/Title_Generation/Title_GenerationTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Abilities\\Alt_Text_GenerationTest' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Abilities/Alt_Text_GenerationTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Abilities\\Excerpt_GenerationTest' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Abilities/Excerpt_GenerationTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Abilities\\Image_GenerationTest' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Abilities/Image_GenerationTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Abilities\\Image_ImportTest' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Abilities/Image_ImportTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Abilities\\Image_Prompt_GenerationTest' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Abilities/Image_Prompt_GenerationTest.php'
 	),
+	'WordPress\\AI\\Tests\\Integration\\Includes\\Abilities\\Review_NotesTest' => array(
+		'version' => '0.4.1.0',
+		'path'    => $baseDir . '/tests/Integration/Includes/Abilities/Review_NotesTest.php'
+	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Abilities\\SummarizationTest' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Abilities/SummarizationTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Abilities\\Test_Alt_Text_Generation_Experiment' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Abilities/Alt_Text_GenerationTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Abilities\\Test_Excerpt_Generation_Experiment' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Abilities/Excerpt_GenerationTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Abilities\\Test_Image_Generation_Experiment' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Abilities/Image_GenerationTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Abilities\\Test_Image_Import_Experiment' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Abilities/Image_ImportTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Abilities\\Test_Image_Prompt_Generation_Experiment' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Abilities/Image_Prompt_GenerationTest.php'
 	),
+	'WordPress\\AI\\Tests\\Integration\\Includes\\Abilities\\Test_Review_Notes_Experiment' => array(
+		'version' => '0.4.1.0',
+		'path'    => $baseDir . '/tests/Integration/Includes/Abilities/Review_NotesTest.php'
+	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Abilities\\Test_Summarization_Experiment' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Abilities/SummarizationTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Abilities\\Test_Title_Generation_Experiment' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Abilities/Title_GenerationTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Abilities\\Title_GenerationTest' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Abilities/Title_GenerationTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Abstracts\\Abstract_AbilityTest' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Abstracts/Abstract_AbilityTest.php'
 	),
+	'WordPress\\AI\\Tests\\Integration\\Includes\\Abstracts\\Abstract_ExperimentTest' => array(
+		'version' => '0.4.1.0',
+		'path'    => $baseDir . '/tests/Integration/Includes/Abstracts/Abstract_ExperimentTest.php'
+	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Abstracts\\Test_Ability' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Abstracts/Abstract_AbilityTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Abstracts\\Test_Ability_Experiment' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Abstracts/Abstract_AbilityTest.php'
 	),
+	'WordPress\\AI\\Tests\\Integration\\Includes\\Abstracts\\Test_Categorized_Experiment' => array(
+		'version' => '0.4.1.0',
+		'path'    => $baseDir . '/tests/Integration/Includes/Abstracts/Abstract_ExperimentTest.php'
+	),
+	'WordPress\\AI\\Tests\\Integration\\Includes\\Abstracts\\Test_Empty_Category_Experiment' => array(
+		'version' => '0.4.1.0',
+		'path'    => $baseDir . '/tests/Integration/Includes/Abstracts/Abstract_ExperimentTest.php'
+	),
+	'WordPress\\AI\\Tests\\Integration\\Includes\\Abstracts\\Test_Uncategorized_Experiment' => array(
+		'version' => '0.4.1.0',
+		'path'    => $baseDir . '/tests/Integration/Includes/Abstracts/Abstract_ExperimentTest.php'
+	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Experiment_LoaderTest' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Experiment_LoaderTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Experiment_Registry_Test' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Experiment_RegistryTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\HelpersTest' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/HelpersTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Mock_Experiment' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Experiment_LoaderTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Services\\AI_Service_Test' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Services/AI_ServiceTest.php'
 	),
 	'WordPress\\AI\\Tests\\Integration\\Includes\\Test_Experiment' => array(
-		'version' => '0.3.1.0',
+		'version' => '0.4.1.0',
 		'path'    => $baseDir . '/tests/Integration/Includes/Experiment_RegistryTest.php'
 	),
 	'WordPress\\AI_Client\\AI_Client' => array(

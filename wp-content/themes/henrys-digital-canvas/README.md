@@ -174,6 +174,7 @@ The block is dynamic (`render.php`) and mounts a React frontend view (`view.js`)
   - `./scripts/full_smoke.sh`
   - `./scripts/stylebook_audit.sh` (fails if merged global styles still contain parent-token leakage)
   - `./scripts/token_sync_audit.sh ~/henry-s-digital-canvas/src/index.css` (fails if child theme tokens drift from source `index.css`)
+  - `./scripts/utility_sync_audit.sh ~/henry-s-digital-canvas/src/index.css` (fails if shared utility/keyframe exports drift from source `index.css`)
   - `./scripts/smoke_cadence.sh`
   - `./scripts/smoke_history_tail.sh <count>`
   - `./scripts/smoke_cron.sh` (cron-compatible wrapper with log rotation)

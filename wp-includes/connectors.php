@@ -161,19 +161,11 @@ function _wp_connectors_get_connector_settings(): array {
 		$provider_class_name = $registry->getProviderClassName( $connector_id );
 		$provider_metadata   = $provider_class_name::metadata();
 
-		$credentials_url = method_exists( $provider_metadata, 'getCredentialsUrl' ) ? $provider_metadata->getCredentialsUrl() : null;
-		$auth_method     = method_exists( $provider_metadata, 'getAuthenticationMethod' ) ? $provider_metadata->getAuthenticationMethod() : null;
-		$is_api_key      = null !== $auth_method && $auth_method->isApiKey();
-
-		if ( ! method_exists( $provider_metadata, 'getAuthenticationMethod' ) ) {
-			/*
-			 * Legacy provider metadata does not expose authentication methods.
-			 * Treat a credentials URL as API-key authentication for compatibility.
-			 */
-			$is_api_key = ! empty( $credentials_url );
-		}
+		$auth_method = $provider_metadata->getAuthenticationMethod();
+		$is_api_key  = null !== $auth_method && $auth_method->isApiKey();
 
 		if ( $is_api_key ) {
+			$credentials_url = $provider_metadata->getCredentialsUrl();
 			$authentication  = array(
 				'method'          => 'api_key',
 				'credentials_url' => $credentials_url ? $credentials_url : null,
@@ -183,7 +175,7 @@ function _wp_connectors_get_connector_settings(): array {
 		}
 
 		$name        = $provider_metadata->getName();
-		$description = method_exists( $provider_metadata, 'getDescription' ) ? $provider_metadata->getDescription() : null;
+		$description = $provider_metadata->getDescription();
 
 		if ( isset( $connectors[ $connector_id ] ) ) {
 			// Override fields with non-empty registry values.

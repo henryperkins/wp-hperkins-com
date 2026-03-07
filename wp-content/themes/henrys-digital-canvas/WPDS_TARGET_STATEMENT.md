@@ -24,6 +24,7 @@ Define what "WPDS remediation" means for this WordPress child theme so parity wo
 | --- | --- | --- |
 | Surface backgrounds | `--background`, `--card`, `--popover`, `--secondary`, `--muted` | `--wpds-color-surface-canvas`, `--wpds-color-surface-card`, `--wpds-color-surface-popover`, `--wpds-color-surface-subtle`, `--wpds-color-surface-muted` |
 | Content foregrounds | `--foreground`, `--text-strong`, `--text-body`, `--text-subtle`, `--text-meta` | `--wpds-color-text-primary`, `--wpds-color-text-secondary`, `--wpds-color-text-muted`, `--wpds-color-text-meta` |
+| Muted foreground alias | `--muted-foreground` | `--wpds-color-text-muted-foreground` |
 | Interactive fills and strokes | `--primary`, `--accent`, `--link`, `--link-hover`, `--border`, `--input` | `--wpds-color-accent`, `--wpds-color-accent-strong`, `--wpds-color-link`, `--wpds-color-link-hover`, `--wpds-color-border-subtle` |
 | Focus ring | `--ring`, `--focus-ring-width`, `--focus-ring-offset` | `--wpds-color-focus-ring`, `--wpds-focus-ring-width`, `--wpds-focus-ring-offset` |
 | Border radius | `--radius`, `--radius-control`, `--radius-surface`, `--radius-emphasis`, `--radius-pill`, `--radius-floating` | `--wpds-radius-base`, `--wpds-radius-control`, `--wpds-radius-surface`, `--wpds-radius-emphasis`, `--wpds-radius-pill`, `--wpds-radius-floating` |
