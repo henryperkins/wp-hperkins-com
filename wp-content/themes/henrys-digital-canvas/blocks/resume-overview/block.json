@@ -21,7 +21,7 @@
 		},
 		"intro": {
 			"type": "string",
-			"default": "Customer-facing technical consultant profile, impact highlights, and experience timeline."
+			"default": ""
 		},
 		"showAtsLink": {
 			"type": "boolean",

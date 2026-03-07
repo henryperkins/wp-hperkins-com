@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $defaults = array(
 	'heading'     => 'Resume',
-	'intro'       => 'Customer-facing technical consultant profile, impact highlights, and experience timeline.',
+	'intro'       => '',
 	'showAtsLink' => true,
 );
 

@@ -11,6 +11,14 @@
 	const createRoot = element.createRoot;
 	const legacyRender = element.render;
 
+	const utils = window.hdcSharedUtils || {};
+	const renderLucideIcon =
+		typeof utils.renderLucideIcon === 'function'
+			? utils.renderLucideIcon
+			: function () {
+				return null;
+			};
+
 	function ensureArray( value ) {
 		return Array.isArray( value ) ? value : [];
 	}
@@ -43,7 +51,7 @@
 		}
 
 		return {
-			heading: ensureString( parsed.heading, 'ATS One-Page Resume' ),
+			heading: ensureString( parsed.heading, 'ATS one-page resume' ),
 			showPrintButton: !! parsed.showPrintButton,
 			showBackLink: !! parsed.showBackLink,
 			endpoint: ensureString( parsed.endpoint, '' ),
@@ -78,6 +86,42 @@
 		return payload;
 	}
 
+	function SectionJumpNav( props ) {
+		if ( ! props.items.length ) {
+			return null;
+		}
+
+		return h(
+			'section',
+			{ className: 'hdc-resume-ats__jump-nav' },
+			h(
+				'div',
+				{ className: 'hdc-resume-ats__jump-nav-panel' },
+				h( 'p', { className: 'hdc-resume-ats__jump-nav-label' }, 'Jump to ATS sections' ),
+				props.description ? h( 'p', { className: 'hdc-resume-ats__jump-nav-description' }, props.description ) : null,
+				h(
+					'nav',
+					{ className: 'hdc-resume-ats__jump-nav-nav', 'aria-label': 'Jump to ATS sections' },
+					h(
+						'ul',
+						{ className: 'hdc-resume-ats__jump-nav-list' },
+						props.items.map( function ( item ) {
+							return h(
+								'li',
+								{ className: 'hdc-resume-ats__jump-nav-item', key: item.href },
+								h(
+									'a',
+									{ className: 'hdc-resume-ats__jump-nav-link', href: item.href },
+									item.label
+								)
+							);
+						} )
+					)
+				)
+			)
+		);
+	}
+
 	function ResumeAtsApp( props ) {
 		const config = props.config;
 		const [ state, setState ] = useState( {
@@ -89,6 +133,10 @@
 		const signature = useMemo( function () {
 			return JSON.stringify( config );
 		}, [ config ] );
+
+		useEffect( function () {
+			document.title = 'ATS Resume — Henry Perkins';
+		}, [] );
 
 		useEffect(
 			function () {
@@ -122,6 +170,7 @@
 							}
 							return;
 						}
+
 						try {
 							const fallbackPayload = await fetchJson( config.fallbackUrl );
 							if ( ! cancelled ) {
@@ -172,6 +221,27 @@
 		const skills = ensureArray( data.skills );
 		const certifications = ensureArray( data.certifications );
 
+		const sectionLinks = [];
+		sectionLinks.push( { href: '#ats-summary', label: 'Summary' } );
+		if ( impact.length ) {
+			sectionLinks.push( { href: '#ats-impact', label: 'Impact' } );
+		}
+		if ( experience.length ) {
+			sectionLinks.push( { href: '#ats-experience', label: 'Experience' } );
+		}
+		if ( projects.length ) {
+			sectionLinks.push( { href: '#ats-projects', label: 'Projects' } );
+		}
+		if ( education.length ) {
+			sectionLinks.push( { href: '#ats-education', label: 'Education' } );
+		}
+		if ( skills.length ) {
+			sectionLinks.push( { href: '#ats-skills', label: 'Skills' } );
+		}
+		if ( certifications.length ) {
+			sectionLinks.push( { href: '#ats-certifications', label: 'Certifications' } );
+		}
+
 		return h(
 			'div',
 			{},
@@ -179,141 +249,188 @@
 				'div',
 				{ className: 'hdc-resume-ats__controls' },
 				config.showBackLink
-					? h( 'a', { className: 'hdc-resume-ats__link', href: config.resumeUrl }, 'Interactive resume' )
+					? h(
+						'a',
+						{ className: 'hdc-resume-ats__control', href: config.resumeUrl },
+						h(
+							'span',
+							{ className: 'hdc-resume-ats__control-icon', 'aria-hidden': 'true' },
+							renderLucideIcon( h, 'arrow-left', { className: 'hdc-resume-ats__control-icon-svg', size: 14 } )
+						),
+						'Interactive resume'
+					)
 					: null,
 				config.showPrintButton
 					? h(
 						'button',
 						{
 							type: 'button',
-							className: 'hdc-resume-ats__button',
+							className: 'hdc-resume-ats__control',
 							onClick: function () {
 								window.print();
 							},
 						},
+						h(
+							'span',
+							{ className: 'hdc-resume-ats__control-icon', 'aria-hidden': 'true' },
+							renderLucideIcon( h, 'printer', { className: 'hdc-resume-ats__control-icon-svg', size: 14 } )
+						),
 						'Print / Save PDF'
 					)
 					: null
 			),
 			h(
-				'article',
-				{ className: 'hdc-resume-ats__article' },
-				h( 'p', { className: 'hdc-resume-ats__heading' }, config.heading ),
-				h( 'h2', { className: 'hdc-resume-ats__name' }, ensureString( data.name, 'Henry T. Perkins' ) ),
-				h( 'p', { className: 'hdc-resume-ats__headline' }, ensureString( data.headline, '' ) ),
+				'div',
+				{ className: 'hdc-resume-ats__layout' },
 				h(
-					'p',
-					{ className: 'hdc-resume-ats__contact' },
-					ensureString( data.location, '' ) +
-						' | ' +
-						ensureString( data.email, '' ) +
-						' | ' +
-						ensureString( data.linkedin, '' ) +
-						' | ' +
-						ensureString( data.github, '' ) +
-						' | ' +
-						ensureString( data.portfolio, '' )
+					'aside',
+					{ className: 'hdc-resume-ats__aside' },
+					h( SectionJumpNav, {
+						description: 'Use this version for the shortest scan. Jump straight to the section you need before exporting or printing.',
+						items: sectionLinks,
+					} )
 				),
 				h(
-					'section',
-					{ className: 'hdc-resume-ats__section' },
-					h( 'h3', { className: 'hdc-resume-ats__section-title' }, 'Professional Summary' ),
-					h( 'p', { className: 'hdc-resume-ats__text' }, ensureString( data.summary, '' ) )
-				),
-				impact.length
-					? h(
-						'section',
-						{ className: 'hdc-resume-ats__section' },
-						h( 'h3', { className: 'hdc-resume-ats__section-title' }, 'Selected Impact' ),
+					'article',
+					{ className: 'hdc-resume-ats__article' },
+					h(
+						'header',
+						{ className: 'hdc-resume-ats__header' },
 						h(
-							'ul',
-							{ className: 'hdc-resume-ats__list' },
-							impact.map( function ( item, index ) {
-								return h( 'li', { key: String( item ) + '-' + String( index ) }, String( item ) );
-							} )
+							'div',
+							{ className: 'hdc-resume-ats__label' },
+							h(
+								'span',
+								{ className: 'hdc-resume-ats__label-icon', 'aria-hidden': 'true' },
+								renderLucideIcon( h, 'file-text', { className: 'hdc-resume-ats__label-icon-svg', size: 16 } )
+							),
+							h( 'p', { className: 'hdc-resume-ats__label-text' }, config.heading )
+						),
+						h( 'h1', { className: 'hdc-resume-ats__name text-document-title' }, ensureString( data.name, 'Henry T. Perkins' ) ),
+						h( 'p', { className: 'hdc-resume-ats__headline text-document-headline' }, ensureString( data.headline, '' ) ),
+						h(
+							'p',
+							{ className: 'hdc-resume-ats__contact text-document-body' },
+							ensureString( data.location, '' ) +
+								' | ' +
+								ensureString( data.email, '' ) +
+								' | ' +
+								ensureString( data.linkedin, '' ) +
+								' | ' +
+								ensureString( data.github, '' ) +
+								' | ' +
+								ensureString( data.portfolio, '' )
 						)
-					)
-					: null,
-				experience.length
-					? h(
+					),
+					h(
 						'section',
-						{ className: 'hdc-resume-ats__section' },
-						h( 'h3', { className: 'hdc-resume-ats__section-title' }, 'Experience' ),
-						experience.map( function ( entry, index ) {
-							const bullets = ensureArray( entry && entry.bullets );
-							return h(
+						{ className: 'hdc-resume-ats__section', id: 'ats-summary' },
+						h( 'h2', { className: 'hdc-resume-ats__section-title text-document-section-label' }, 'Professional Summary' ),
+						h( 'p', { className: 'hdc-resume-ats__text text-document-body' }, ensureString( data.summary, '' ) )
+					),
+					impact.length
+						? h(
+							'section',
+							{ className: 'hdc-resume-ats__section', id: 'ats-impact' },
+							h( 'h2', { className: 'hdc-resume-ats__section-title text-document-section-label' }, 'Selected Impact' ),
+							h(
+								'ul',
+								{ className: 'hdc-resume-ats__list' },
+								impact.map( function ( item, index ) {
+									return h( 'li', { key: String( item ) + '-' + String( index ), className: 'text-document-body' }, String( item ) );
+								} )
+							)
+						)
+						: null,
+					experience.length
+						? h(
+							'section',
+							{ className: 'hdc-resume-ats__section', id: 'ats-experience' },
+							h( 'h2', { className: 'hdc-resume-ats__section-title text-document-section-label' }, 'Experience' ),
+							h(
 								'div',
-								{ className: 'hdc-resume-ats__entry', key: ensureString( entry && entry.id, 'experience-' + String( index ) ) },
-								h( 'h4', { className: 'hdc-resume-ats__entry-title' }, ensureString( entry && entry.title, 'Role' ) ),
-								h(
-									'p',
-									{ className: 'hdc-resume-ats__entry-meta' },
-									ensureString( entry && entry.company, '' ) + ' | ' + ensureString( entry && entry.location, '' ) + ' | ' + ensureString( entry && entry.period, '' )
-								),
-								h(
-									'ul',
-									{ className: 'hdc-resume-ats__list' },
-									bullets.map( function ( bullet, bulletIndex ) {
-										return h( 'li', { key: String( bullet ) + '-' + String( bulletIndex ) }, String( bullet ) );
-									} )
-								)
-							);
-						} )
-					)
-					: null,
-				projects.length
-					? h(
-						'section',
-						{ className: 'hdc-resume-ats__section' },
-						h( 'h3', { className: 'hdc-resume-ats__section-title' }, 'Projects' ),
-						projects.map( function ( project, index ) {
-							return h(
+								{ className: 'hdc-resume-ats__entries' },
+								experience.map( function ( entry, index ) {
+									const bullets = ensureArray( entry && entry.bullets );
+									return h(
+										'div',
+										{ className: 'hdc-resume-ats__entry', key: ensureString( entry && entry.id, 'experience-' + String( index ) ) },
+										h( 'h3', { className: 'hdc-resume-ats__entry-title text-document-heading' }, ensureString( entry && entry.title, 'Role' ) ),
+										h(
+											'p',
+											{ className: 'hdc-resume-ats__entry-meta text-document-body' },
+											ensureString( entry && entry.company, '' ) + ' | ' + ensureString( entry && entry.location, '' ) + ' | ' + ensureString( entry && entry.period, '' )
+										),
+										h(
+											'ul',
+											{ className: 'hdc-resume-ats__list' },
+											bullets.map( function ( bullet, bulletIndex ) {
+												return h( 'li', { key: String( bullet ) + '-' + String( bulletIndex ), className: 'text-document-body' }, String( bullet ) );
+											} )
+										)
+									);
+								} )
+							)
+						)
+						: null,
+					projects.length
+						? h(
+							'section',
+							{ className: 'hdc-resume-ats__section', id: 'ats-projects' },
+							h( 'h2', { className: 'hdc-resume-ats__section-title text-document-section-label' }, 'Projects' ),
+							h(
 								'div',
-								{ className: 'hdc-resume-ats__entry', key: ensureString( project && project.name, 'project-' + String( index ) ) },
-								h( 'h4', { className: 'hdc-resume-ats__entry-title' }, ensureString( project && project.name, 'Project' ) ),
-								h( 'p', { className: 'hdc-resume-ats__text' }, ensureString( project && project.description, '' ) ),
-								h( 'p', { className: 'hdc-resume-ats__text' }, ensureString( project && project.impact, '' ) ),
-								h( 'p', { className: 'hdc-resume-ats__text' }, 'Tech: ' + ensureString( project && project.tech, '' ) )
-							);
-						} )
-					)
-					: null,
-				education.length
-					? h(
-						'section',
-						{ className: 'hdc-resume-ats__section' },
-						h( 'h3', { className: 'hdc-resume-ats__section-title' }, 'Education' ),
-						h(
-							'ul',
-							{ className: 'hdc-resume-ats__list' },
-							education.map( function ( item, index ) {
-								return h( 'li', { key: String( item ) + '-' + String( index ) }, String( item ) );
-							} )
+								{ className: 'hdc-resume-ats__entries' },
+								projects.map( function ( project, index ) {
+									return h(
+										'div',
+										{ className: 'hdc-resume-ats__entry', key: ensureString( project && project.name, 'project-' + String( index ) ) },
+										h( 'h3', { className: 'hdc-resume-ats__entry-title text-document-heading' }, ensureString( project && project.name, 'Project' ) ),
+										h( 'p', { className: 'hdc-resume-ats__text text-document-body' }, ensureString( project && project.description, '' ) ),
+										h( 'p', { className: 'hdc-resume-ats__text text-document-body' }, ensureString( project && project.impact, '' ) ),
+										h( 'p', { className: 'hdc-resume-ats__text text-document-body' }, 'Tech: ' + ensureString( project && project.tech, '' ) )
+									);
+								} )
+							)
 						)
-					)
-					: null,
-				skills.length
-					? h(
-						'section',
-						{ className: 'hdc-resume-ats__section' },
-						h( 'h3', { className: 'hdc-resume-ats__section-title' }, 'Skills' ),
-						h( 'p', { className: 'hdc-resume-ats__text' }, skills.join( ' | ' ) )
-					)
-					: null,
-				certifications.length
-					? h(
-						'section',
-						{ className: 'hdc-resume-ats__section' },
-						h( 'h3', { className: 'hdc-resume-ats__section-title' }, 'Certifications' ),
-						h(
-							'ul',
-							{ className: 'hdc-resume-ats__list' },
-							certifications.map( function ( item, index ) {
-								return h( 'li', { key: String( item ) + '-' + String( index ) }, String( item ) );
-							} )
+						: null,
+					education.length
+						? h(
+							'section',
+							{ className: 'hdc-resume-ats__section', id: 'ats-education' },
+							h( 'h2', { className: 'hdc-resume-ats__section-title text-document-section-label' }, 'Education' ),
+							h(
+								'ul',
+								{ className: 'hdc-resume-ats__list' },
+								education.map( function ( item, index ) {
+									return h( 'li', { key: String( item ) + '-' + String( index ), className: 'text-document-body' }, String( item ) );
+								} )
+							)
 						)
-					)
-					: null
+						: null,
+					skills.length
+						? h(
+							'section',
+							{ className: 'hdc-resume-ats__section', id: 'ats-skills' },
+							h( 'h2', { className: 'hdc-resume-ats__section-title text-document-section-label' }, 'Skills' ),
+							h( 'p', { className: 'hdc-resume-ats__text text-document-body' }, skills.join( ' | ' ) )
+						)
+						: null,
+					certifications.length
+						? h(
+							'section',
+							{ className: 'hdc-resume-ats__section', id: 'ats-certifications' },
+							h( 'h2', { className: 'hdc-resume-ats__section-title text-document-section-label' }, 'Certifications' ),
+							h(
+								'ul',
+								{ className: 'hdc-resume-ats__list' },
+								certifications.map( function ( item, index ) {
+									return h( 'li', { key: String( item ) + '-' + String( index ), className: 'text-document-body' }, String( item ) );
+								} )
+							)
+						)
+						: null
+				)
 			)
 		);
 	}

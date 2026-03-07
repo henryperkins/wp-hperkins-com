@@ -65,10 +65,10 @@
 							status: 'info',
 							isDismissible: false,
 						},
-						__( 'Frontend fetches /wp-json/henrys-digital-canvas/v1/resume-ats and renders a print-ready one-page layout.', 'henrys-digital-canvas' )
+						__( 'Frontend fetches /wp-json/henrys-digital-canvas/v1/resume-ats and renders the OSOT ATS layout with jump links.', 'henrys-digital-canvas' )
 					),
 					el( 'h3', { className: 'hdc-resume-ats-editor__title' }, attrs.heading || __( 'ATS One-Page Resume', 'henrys-digital-canvas' ) ),
-					el( 'p', { className: 'hdc-resume-ats-editor__meta' }, __( 'Save and preview on the frontend to test print and validation behavior.', 'henrys-digital-canvas' ) )
+					el( 'p', { className: 'hdc-resume-ats-editor__meta' }, __( 'Save and preview on the frontend to test jump links, print, and export behavior.', 'henrys-digital-canvas' ) )
 				)
 			);
 		},

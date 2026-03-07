@@ -760,6 +760,41 @@ pre {
   color: hsl(var(--text-subtle));
 }
 
+.text-document-title {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.text-document-headline {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  color: hsl(var(--foreground));
+}
+
+.text-document-heading {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.text-document-body {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: hsl(var(--text-body));
+}
+
+.text-document-section-label {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+  color: hsl(var(--foreground));
+}
+
 .text-card-title {
   font-size: 1.25rem;
   line-height: 1.75rem;
@@ -829,6 +864,19 @@ pre {
 .text-shadow-hero-body { text-shadow: var(--text-shadow-hero-body); }
 .text-shadow-inverse-strong { text-shadow: var(--text-shadow-inverse-strong); }
 .text-shadow-avatar { text-shadow: var(--text-shadow-avatar-monogram); }
+
+.icon-link-hover {
+  transition-duration: var(--motion-duration-hover);
+  transition-property: transform;
+  transition-timing-function: var(--motion-ease-standard);
+}
+
+.group:hover .icon-link-hover,
+.group:focus-visible .icon-link-hover,
+.group:focus-within .icon-link-hover {
+  transform: translate(0.125rem, -0.125rem);
+}
+
 .avatar-monogram-surface { background: var(--gradient-avatar-monogram); }
 .hero-gradient-layer { background: var(--gradient-hero); }
 

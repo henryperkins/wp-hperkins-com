@@ -41,7 +41,7 @@
 							},
 						} ),
 						el( TextControl, {
-							label: __( 'Intro text', 'henrys-digital-canvas' ),
+							label: __( 'Optional intro override', 'henrys-digital-canvas' ),
 							value: attrs.intro,
 							onChange: function ( intro ) {
 								setAttributes( { intro: intro } );
@@ -65,10 +65,10 @@
 							status: 'info',
 							isDismissible: false,
 						},
-						__( 'Frontend fetches /wp-json/henrys-digital-canvas/v1/resume and renders the full resume layout.', 'henrys-digital-canvas' )
+						__( 'Frontend fetches /wp-json/henrys-digital-canvas/v1/resume and renders the OSOT resume layout with section jump links.', 'henrys-digital-canvas' )
 					),
 					el( 'h3', { className: 'hdc-resume-overview-editor__title' }, attrs.heading || __( 'Resume', 'henrys-digital-canvas' ) ),
-					el( 'p', { className: 'hdc-resume-overview-editor__intro' }, attrs.intro || __( 'Customer-facing technical consultant profile and impact highlights.', 'henrys-digital-canvas' ) )
+					el( 'p', { className: 'hdc-resume-overview-editor__intro' }, attrs.intro || __( 'Frontend renders the OSOT resume structure, not a custom summary block.', 'henrys-digital-canvas' ) )
 				)
 			);
 		},
