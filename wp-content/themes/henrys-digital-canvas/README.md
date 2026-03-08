@@ -35,11 +35,14 @@
 - `blocks/not-found/`: 404 block (`henrys-digital-canvas/not-found`) with path echo and recovery actions
 - `parts/header.html`: child theme header template part that mounts `site-shell`
 - `parts/footer.html`: child theme footer template part aligned with migrated visual shell
-- `templates/index.html`: block template entrypoint (inherits parent template parts)
-- `templates/page-*.html`: slug templates for migrated routes (`about`, `work`, `resume`, `resume-ats`, `ats`, `hobbies`, `contact`)
+- `templates/front-page.html`: wrapper template that renders the Home page's block content via `post-content`
+- `templates/index.html`: generic block template entrypoint that renders `post-content`
+- `templates/page-*.html`: wrapper templates for migrated static routes (`about`, `blog`, `work`, `resume`, `resume-ats`, `ats`, `hobbies`, `contact`) so page records, not templates, own the block composition
 - `templates/404.html`: dedicated 404 template using the `not-found` block
 - `page-work-detail.php`: dynamic route template for `/work/{repo}`
 - `page-blog-detail.php`: dynamic route template for `/blog/{slug}`
+- `scripts/sync_page_sources.sh`: repeatable WP-CLI migration that syncs static page `post_content`, unsets the native posts-page override, and removes stale Site Editor template overrides
+- `PAGE_TO_BLOCK_MIGRATION_CHECKLIST.md`: route-owner map and repeatable checklist for syncing React page changes into WordPress blocks
 - `styles/ember-dark.json`: dark style variation for Site Editor
 - `functions.php`: enqueues parent stylesheet, fonts, and migrated design system CSS in frontend + editor
 
@@ -147,6 +150,9 @@ The block is dynamic (`render.php`) and mounts a React frontend view (`view.js`)
 ## Usage notes
 
 - The theme is a child of `twentytwentyfive`.
+- Static route block composition belongs in the WordPress page records (`post_content`) for `home`, `work`, `resume`, `resume/ats`, `hobbies`, `blog`, `about`, and `contact`.
+- Wrapper templates should only mount header/footer and `post-content`; rerun `npm run sync:pages` after changing which custom block powers one of those routes.
+- `/blog/` is intentionally page-backed rather than using the native posts-page setting, so `page_for_posts` should remain unset.
 - For image-backed cinematic surfaces, the assets live in `assets/images/`.
 - Data contracts (Phase 3) are available at:
   - `GET /wp-json/henrys-digital-canvas/v1/resume`
@@ -168,6 +174,7 @@ The block is dynamic (`render.php`) and mounts a React frontend view (`view.js`)
 
 - Cutover runbook: `CUTOVER_CHECKLIST.md`
 - Repeatable smoke scripts:
+  - `npm run sync:pages`
   - `./scripts/route_smoke.sh`
   - `./scripts/api_smoke.sh`
   - `./scripts/browser_smoke.sh`
