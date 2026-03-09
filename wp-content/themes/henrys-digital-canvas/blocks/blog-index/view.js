@@ -343,7 +343,7 @@
 			return h(
 				'div',
 				{ className: 'hdc-blog-index__empty-wrap' },
-				h( 'h2', { className: 'hdc-blog-index__title' }, config.heading || 'Blog' ),
+				h( 'h1', { className: 'hdc-blog-index__title' }, config.heading || 'Blog' ),
 				h( 'p', { className: 'hdc-blog-index__empty' }, 'No posts published yet.' )
 			);
 		}
@@ -355,7 +355,7 @@
 				'header',
 				{ className: 'hdc-blog-index__intro' },
 				h( 'p', { className: 'hdc-blog-index__eyebrow' }, 'Insights' ),
-				h( 'h2', { className: 'hdc-blog-index__title' }, config.heading || 'Blog' ),
+				h( 'h1', { className: 'hdc-blog-index__title' }, config.heading || 'Blog' ),
 				config.description ? h( 'p', { className: 'hdc-blog-index__description' }, config.description ) : null,
 				state.source && state.source !== 'unknown'
 					? h( 'p', { className: 'hdc-blog-index__source' }, 'Source: ' + state.source )

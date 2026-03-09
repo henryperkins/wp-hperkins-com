@@ -1,11 +1,12 @@
 const { test, expect } = require('@playwright/test');
 
 const BLOG_SLUG = process.env.BLOG_SLUG || 'wordpress-ai-use-cases-developers-admins';
+const WORK_DETAIL_REPO = process.env.WORK_DETAIL_REPO || 'henry-s-digital-canvas';
 
 const ROUTES = [
 	{ path: '/', selector: '.hdc-home-page', status: 200 },
 	{ path: '/work/', selector: '.hdc-work-app', status: 200 },
-	{ path: '/work/lakefront-digital-portfolio/', selector: '.hdc-work-detail', status: 200 },
+	{ path: `/work/${ WORK_DETAIL_REPO }/`, selector: '.hdc-work-detail', status: 200 },
 	{ path: '/resume/', selector: '.hdc-resume-overview', status: 200 },
 	{ path: '/resume/ats/', selector: '.hdc-resume-ats', status: 200 },
 	{ path: '/hobbies/', selector: '.hdc-hobbies-moments', status: 200 },

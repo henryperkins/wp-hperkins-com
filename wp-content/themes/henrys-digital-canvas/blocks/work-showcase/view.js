@@ -7,6 +7,7 @@
 	const Fragment = wp.element.Fragment;
 	const useEffect = wp.element.useEffect;
 	const useMemo = wp.element.useMemo;
+	const useRef = wp.element.useRef;
 	const useState = wp.element.useState;
 	const createRoot = wp.element.createRoot;
 	const render = wp.element.render;
@@ -32,7 +33,7 @@
 	const GITHUB_REPO_LIST_LIMIT = 100;
 	const GITHUB_REPO_MAX_PAGES = 20;
 	const GITHUB_LANGUAGE_SUMMARY_MAX_REPOS_DEFAULT = 80;
-	const GITHUB_LANGUAGE_SUMMARY_MAX_REPOS_LIMIT = 200;
+	const GITHUB_LANGUAGE_SUMMARY_MAX_REPOS_LIMIT = 80;
 	const RATE_LIMIT_COOLDOWN_FALLBACK_MS = 60000;
 	const ROLE_ORDER = [ 'Systems', 'Product', 'Craft', 'Performance' ];
 	const ROLE_DESCRIPTION_MAP = {
@@ -828,6 +829,21 @@
 		} );
 	}
 
+	function isValidGitHubLanguageSummaryPayload( payload ) {
+		return (
+			payload &&
+			typeof payload === 'object' &&
+			typeof payload.username === 'string' &&
+			typeof payload.analyzedRepoCount === 'number' &&
+			typeof payload.byteDataIncomplete === 'boolean' &&
+			typeof payload.failedLanguageRequestCount === 'number' &&
+			( typeof payload.stale === 'undefined' || typeof payload.stale === 'boolean' ) &&
+			! Array.isArray( payload ) &&
+			isLanguageRepoCountArray( payload.repoLanguageCounts ) &&
+			isLanguageByteTotalArray( payload.languageByteTotals )
+		);
+	}
+
 	async function fetchGitHubReposProxyPage( config, perPage, page ) {
 		const requestUrl = new URL( resolveRequestUrl( config.githubProxyUrl ) );
 		requestUrl.searchParams.set( 'username', config.githubUsername );
@@ -897,26 +913,17 @@
 			throw createGitHubProxyError( 'GitHub language summary proxy returned invalid JSON', response, null );
 		}
 
-		if ( ! response.ok ) {
-			const message = parsePayloadMessage( payload ) || 'GitHub language summary request failed';
-			throw createGitHubProxyError( message + ' (status ' + response.status + ')', response, payload );
-		}
-
-		if (
-			! payload ||
-			typeof payload !== 'object' ||
-			typeof payload.username !== 'string' ||
-			typeof payload.analyzedRepoCount !== 'number' ||
-			typeof payload.byteDataIncomplete !== 'boolean' ||
-			typeof payload.failedLanguageRequestCount !== 'number' ||
-			! isLanguageRepoCountArray( payload.repoLanguageCounts ) ||
-			! isLanguageByteTotalArray( payload.languageByteTotals )
-		) {
+		if ( ! isValidGitHubLanguageSummaryPayload( payload ) ) {
 			throw createGitHubProxyError(
 				'GitHub language summary response had an unexpected shape',
 				response,
 				payload
 			);
+		}
+
+		if ( ! response.ok && payload.stale !== true ) {
+			const message = parsePayloadMessage( payload ) || 'GitHub language summary request failed';
+			throw createGitHubProxyError( message + ' (status ' + response.status + ')', response, payload );
 		}
 
 		return payload;
@@ -935,7 +942,9 @@
 
 		try {
 			const summary = await fetchGitHubLanguageSummaryFromProxy( config );
-			return Object.assign( {}, summary, { source: 'live' } );
+			return Object.assign( {}, summary, {
+				source: summary.stale ? 'stale' : 'live',
+			} );
 		} catch ( error ) {
 			if ( isRateLimitError( error ) ) {
 				setRateLimitCooldown( languageSummaryRateLimitCooldownByQueryKey, cooldownQueryKey, error );
@@ -1168,6 +1177,9 @@
 		}
 		if ( source === 'live' ) {
 			return 'Language distributions are synced from GitHub.';
+		}
+		if ( source === 'stale' ) {
+			return 'Showing cached GitHub language totals while live sync recovers.';
 		}
 		if ( source === 'fallback-ratelimit' ) {
 			return 'GitHub API rate limit reached. Language charts are temporarily unavailable.';
@@ -2387,6 +2399,7 @@
 		const [ page, setPage ] = useState( initialState.page );
 		const [ showPendingRepos, setShowPendingRepos ] = useState( false );
 		const [ isCompareOpen, setIsCompareOpen ] = useState( false );
+		const compareSheetTriggerRef = useRef( null );
 		const [ compareSelection, setCompareSelection ] = useState( [] );
 		const [ compareToast, setCompareToast ] = useState( '' );
 
@@ -2455,15 +2468,65 @@
 					return undefined;
 				}
 
-				function handleEscape( event ) {
+				// Save the element that triggered the sheet so focus can be restored.
+				compareSheetTriggerRef.current = document.activeElement;
+
+				// Lock background scroll.
+				var prevOverflow = document.body.style.overflow;
+				document.body.style.overflow = 'hidden';
+
+				// Move focus into the sheet after render.
+				requestAnimationFrame( function () {
+					var overlay = document.querySelector( '.hdc-work-sheet-overlay' );
+					if ( overlay ) {
+						var firstFocusable = overlay.querySelector( 'button, [href], input, [tabindex]:not([tabindex="-1"])' );
+						if ( firstFocusable ) {
+							firstFocusable.focus();
+						}
+					}
+				} );
+
+				var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+				function handleKeydown( event ) {
 					if ( event.key === 'Escape' ) {
 						setIsCompareOpen( false );
+						return;
+					}
+
+					// Focus trap: keep Tab cycling within the compare sheet overlay.
+					if ( event.key === 'Tab' ) {
+						var overlay = document.querySelector( '.hdc-work-sheet-overlay' );
+						if ( ! overlay ) {
+							return;
+						}
+						var focusable = Array.prototype.slice.call( overlay.querySelectorAll( FOCUSABLE ) ).filter( function ( el ) {
+							return el.getClientRects().length > 0;
+						} );
+						if ( focusable.length === 0 ) {
+							event.preventDefault();
+							return;
+						}
+						var first = focusable[ 0 ];
+						var last = focusable[ focusable.length - 1 ];
+						if ( event.shiftKey && document.activeElement === first ) {
+							event.preventDefault();
+							last.focus();
+						} else if ( ! event.shiftKey && document.activeElement === last ) {
+							event.preventDefault();
+							first.focus();
+						}
 					}
 				}
 
-				document.addEventListener( 'keydown', handleEscape );
+				document.addEventListener( 'keydown', handleKeydown );
 				return function () {
-					document.removeEventListener( 'keydown', handleEscape );
+					document.removeEventListener( 'keydown', handleKeydown );
+					document.body.style.overflow = prevOverflow;
+					// Restore focus to the element that opened the sheet.
+					if ( compareSheetTriggerRef.current && typeof compareSheetTriggerRef.current.focus === 'function' ) {
+						compareSheetTriggerRef.current.focus();
+					}
 				};
 			},
 			[ isCompareOpen ]

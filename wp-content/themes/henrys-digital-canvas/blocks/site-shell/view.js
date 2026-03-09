@@ -80,6 +80,23 @@
 		return Array.isArray( payload ) ? payload : [];
 	}
 
+	function getBlogPostUrl( post ) {
+		const slug = post && typeof post.slug === 'string' ? post.slug.trim() : '';
+		if ( slug ) {
+			return '/blog/' + encodeURIComponent( slug ) + '/';
+		}
+
+		if ( post && typeof post.url === 'string' && post.url.trim() ) {
+			return post.url;
+		}
+
+		if ( post && typeof post.link === 'string' && post.link.trim() ) {
+			return post.link;
+		}
+
+		return '/blog/';
+	}
+
 	function applyActiveNavigation( root ) {
 		const currentPath = normalizePathname( window.location.pathname );
 		const links = root.querySelectorAll( '[data-hdc-nav-link]' );
@@ -306,7 +323,11 @@
 		}
 
 		function updateThemeUI( resolvedTheme ) {
-			trigger.textContent = 'Theme: ' + ( selectedTheme.charAt( 0 ).toUpperCase() + selectedTheme.slice( 1 ) );
+			const selectedThemeLabel = selectedTheme.charAt( 0 ).toUpperCase() + selectedTheme.slice( 1 );
+			trigger.textContent = 'Theme';
+			trigger.setAttribute( 'aria-label', 'Theme: ' + selectedThemeLabel );
+			trigger.setAttribute( 'title', 'Theme: ' + selectedThemeLabel );
+			trigger.setAttribute( 'data-current-theme', selectedTheme );
 			options.forEach( function ( option ) {
 				const optionValue = option.getAttribute( 'data-hdc-theme-option' );
 				const active = optionValue === selectedTheme;
@@ -532,12 +553,7 @@
 
 							return {
 								label: decodeHtml( post?.title?.rendered || post?.title || '' ),
-								url:
-									typeof post?.url === 'string'
-										? post.url
-										: typeof post?.link === 'string'
-											? post.link
-											: '/',
+								url: getBlogPostUrl( post ),
 								meta: meta,
 								search: [ meta, tagSummary ].join( ' ' ),
 							};
@@ -643,6 +659,29 @@
 
 			if ( event.key === 'Escape' && state.opened ) {
 				closeDialog();
+				return;
+			}
+
+			// Focus trap: keep Tab cycling within the command palette dialog.
+			if ( event.key === 'Tab' && state.opened ) {
+				const DIALOG_FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+				var panel = dialog.querySelector( '[role="dialog"]' ) || dialog;
+				var focusable = Array.prototype.slice.call( panel.querySelectorAll( DIALOG_FOCUSABLE ) ).filter( function ( el ) {
+					return el.getClientRects().length > 0 && ! el.hasAttribute( 'hidden' ) && ! el.closest( '[hidden]' );
+				} );
+				if ( focusable.length === 0 ) {
+					event.preventDefault();
+					return;
+				}
+				var first = focusable[ 0 ];
+				var last = focusable[ focusable.length - 1 ];
+				if ( event.shiftKey && document.activeElement === first ) {
+					event.preventDefault();
+					last.focus();
+				} else if ( ! event.shiftKey && document.activeElement === last ) {
+					event.preventDefault();
+					first.focus();
+				}
 			}
 		} );
 

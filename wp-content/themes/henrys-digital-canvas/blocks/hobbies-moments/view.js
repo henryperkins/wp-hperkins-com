@@ -359,7 +359,7 @@
 			h(
 				'header',
 				{ className: 'hdc-hobbies-moments__hero' },
-				h( 'h2', { className: 'hdc-hobbies-moments__title' }, config.heading || 'Hobbies' ),
+				h( 'h1', { className: 'hdc-hobbies-moments__title' }, config.heading || 'Hobbies' ),
 				h( 'p', { className: 'hdc-hobbies-moments__desc' }, config.description )
 			),
 			h(

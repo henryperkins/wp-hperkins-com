@@ -1,6 +1,6 @@
 # Henry's Digital Canvas Migration Progress
 
-Last updated: 2026-03-05T21:11Z (UTC)
+Last updated: 2026-03-08T21:30Z (UTC)
 
 ## Current Status Override (2026-03-05 UTC)
 
@@ -26,6 +26,13 @@ This section is the current source of truth and supersedes older checkpoint lang
 
 - Architecture note: [`WPDS_TARGET_STATEMENT.md`](WPDS_TARGET_STATEMENT.md)
 - Current warning: this child theme is not yet WPDS-foundation-complete.
+
+### Static Page Ownership Note (2026-03-08 UTC)
+
+- Static route block composition now lives in page `post_content` for `home`, `work`, `resume`, `resume/ats`, `hobbies`, `blog`, `about`, and `contact`.
+- `templates/front-page.html` plus the `templates/page-*.html` wrappers now render `post-content` instead of hardcoding route blocks, so the pages remain the editable source of truth.
+- `/blog/` is intentionally page-backed; `page_for_posts` is unset so the `blog` page and its `henrys-digital-canvas/blog-index` block own the route.
+- `scripts/sync_page_sources.sh` is the repeatable migration entrypoint for restoring page content, route options, and removing stale `wp_template` overrides.
 
 ## Phase Tracker
 

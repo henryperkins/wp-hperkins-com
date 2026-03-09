@@ -161,14 +161,84 @@ function hdc_register_query_vars( $vars ) {
 add_filter( 'query_vars', 'hdc_register_query_vars' );
 
 /**
+ * Resolve the current dynamic detail route and cache the backing entity.
+ *
+ * @return array{
+ *     type:string,
+ *     blogSlug:string,
+ *     workRepo:string,
+ *     exists:bool,
+ *     entity:?array
+ * }
+ */
+function hdc_get_resolved_detail_route() {
+	static $resolved_route = null;
+
+	if ( null !== $resolved_route ) {
+		return $resolved_route;
+	}
+
+	$resolved_route = array(
+		'type'     => '',
+		'blogSlug' => '',
+		'workRepo' => '',
+		'exists'   => false,
+		'entity'   => null,
+	);
+
+	$work_repo = sanitize_text_field( (string) get_query_var( 'hdc_work_repo' ) );
+	if ( '' !== $work_repo ) {
+		$work_entity                = hdc_get_work_repository_by_name_data_contract( $work_repo );
+		$resolved_route['type']     = 'work';
+		$resolved_route['workRepo'] = $work_repo;
+		$resolved_route['exists']   = is_array( $work_entity ) && ! empty( $work_entity['name'] );
+		$resolved_route['entity']   = $resolved_route['exists'] ? $work_entity : null;
+		return $resolved_route;
+	}
+
+	$blog_slug = sanitize_title( (string) get_query_var( 'hdc_blog_slug' ) );
+	if ( '' !== $blog_slug ) {
+		$blog_entity                = hdc_get_blog_post_by_slug_data_contract( $blog_slug );
+		$resolved_route['type']     = 'blog';
+		$resolved_route['blogSlug'] = $blog_slug;
+		$resolved_route['exists']   = is_array( $blog_entity ) && ! empty( $blog_entity['slug'] );
+		$resolved_route['entity']   = $resolved_route['exists'] ? $blog_entity : null;
+	}
+
+	return $resolved_route;
+}
+
+/**
+ * Mark unresolved dynamic detail routes as 404 before template selection.
+ *
+ * @return void
+ */
+function hdc_maybe_set_detail_route_404() {
+	$route = hdc_get_resolved_detail_route();
+	if ( '' === $route['type'] || $route['exists'] ) {
+		return;
+	}
+
+	global $wp_query;
+
+	if ( $wp_query instanceof WP_Query ) {
+		$wp_query->set_404();
+	}
+
+	status_header( 404 );
+	nocache_headers();
+}
+add_action( 'template_redirect', 'hdc_maybe_set_detail_route_404' );
+
+/**
  * Render dedicated Work detail template when the dynamic route is matched.
  *
  * @param string $template Template path.
  * @return string
  */
 function hdc_maybe_use_work_detail_template( $template ) {
-	$repo = sanitize_text_field( (string) get_query_var( 'hdc_work_repo' ) );
-	if ( '' === $repo ) {
+	$route = hdc_get_resolved_detail_route();
+	if ( 'work' !== $route['type'] || ! $route['exists'] ) {
 		return $template;
 	}
 
@@ -188,8 +258,8 @@ add_filter( 'template_include', 'hdc_maybe_use_work_detail_template' );
  * @return string
  */
 function hdc_maybe_use_blog_detail_template( $template ) {
-	$slug = sanitize_title( (string) get_query_var( 'hdc_blog_slug' ) );
-	if ( '' === $slug ) {
+	$route = hdc_get_resolved_detail_route();
+	if ( 'blog' !== $route['type'] || ! $route['exists'] ) {
 		return $template;
 	}
 
@@ -237,24 +307,17 @@ function hdc_get_route_document_title() {
 		return 'Page Not Found — Henry Perkins';
 	}
 
-	$repo = sanitize_text_field( (string) get_query_var( 'hdc_work_repo' ) );
-	if ( '' !== $repo ) {
-		$repo_data = hdc_get_work_repository_by_name_data_contract( $repo );
-		if ( is_array( $repo_data ) && ! empty( $repo_data['name'] ) ) {
-			return wp_strip_all_tags( (string) $repo_data['name'] ) . ' — Henry Perkins';
+	$route = hdc_get_resolved_detail_route();
+	if ( 'work' === $route['type'] && $route['exists'] && is_array( $route['entity'] ) ) {
+		if ( ! empty( $route['entity']['name'] ) ) {
+			return wp_strip_all_tags( (string) $route['entity']['name'] ) . ' — Henry Perkins';
 		}
-
-		return 'Project — Henry Perkins';
 	}
 
-	$blog_slug = sanitize_title( (string) get_query_var( 'hdc_blog_slug' ) );
-	if ( '' !== $blog_slug ) {
-		$blog_post = hdc_get_blog_post_by_slug_data_contract( $blog_slug );
-		if ( is_array( $blog_post ) && ! empty( $blog_post['title'] ) ) {
-			return wp_strip_all_tags( (string) $blog_post['title'] ) . ' — Henry Perkins';
+	if ( 'blog' === $route['type'] && $route['exists'] && is_array( $route['entity'] ) ) {
+		if ( ! empty( $route['entity']['title'] ) ) {
+			return wp_strip_all_tags( (string) $route['entity']['title'] ) . ' — Henry Perkins';
 		}
-
-		return 'Post Not Found — Henry Perkins';
 	}
 
 	if ( is_front_page() ) {

@@ -47,13 +47,6 @@
 								setAttributes( { description: description } );
 							},
 						} ),
-						el( TextControl, {
-							label: __( 'GitHub username', 'henrys-digital-canvas' ),
-							value: attrs.githubUsername,
-							onChange: function ( githubUsername ) {
-								setAttributes( { githubUsername: githubUsername } );
-							},
-						} ),
 						el( RangeControl, {
 							label: __( 'Repository count', 'henrys-digital-canvas' ),
 							value: attrs.repoCount,
@@ -71,6 +64,19 @@
 							},
 							min: 2,
 							max: 6,
+						} ),
+						el( RangeControl, {
+							label: __( 'Language summary repository budget', 'henrys-digital-canvas' ),
+							value: attrs.languageSummaryMaxRepos || 80,
+							onChange: function ( languageSummaryMaxRepos ) {
+								setAttributes( { languageSummaryMaxRepos: languageSummaryMaxRepos || 80 } );
+							},
+							min: 1,
+							max: 80,
+							help: __(
+								'Caps how many repositories are sampled for GitHub language-byte totals.',
+								'henrys-digital-canvas'
+							),
 						} ),
 						el( ToggleControl, {
 							label: __( 'Include forked repositories', 'henrys-digital-canvas' ),

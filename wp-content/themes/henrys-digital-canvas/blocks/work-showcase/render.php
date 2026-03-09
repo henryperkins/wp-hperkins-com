@@ -10,17 +10,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $defaults = array(
-	'heading'         => 'Work',
-	'description'     => 'Selected repositories and client case studies focused on problem framing, implementation decisions, and shipped outcomes.',
-	'githubUsername'  => 'henryperkins',
-	'repoCount'       => 100,
-	'compareLimit'    => 2,
-	'includeForks'    => false,
-	'includeArchived' => false,
-	'openInNewTab'    => true,
-	'showSignalsPanel' => true,
+	'heading'                => 'Work',
+	'description'            => 'Selected repositories and client case studies focused on problem framing, implementation decisions, and shipped outcomes.',
+	'githubUsername'         => hdc_get_configured_github_owner(),
+	'repoCount'              => 100,
+	'compareLimit'           => 2,
+	'includeForks'           => false,
+	'includeArchived'        => false,
+	'openInNewTab'           => true,
+	'showSignalsPanel'       => true,
 	'showActivitySparkline' => true,
-	'sparklineWeeks'  => 8,
+	'sparklineWeeks'        => 8,
+	'languageSummaryMaxRepos' => 80,
 );
 
 $attrs = wp_parse_args( $attributes, $defaults );
@@ -28,7 +29,7 @@ $attrs = wp_parse_args( $attributes, $defaults );
 $config = array(
 	'heading'         => sanitize_text_field( $attrs['heading'] ),
 	'description'     => sanitize_text_field( $attrs['description'] ),
-	'githubUsername'  => preg_replace( '/[^a-z0-9-]/i', '', (string) $attrs['githubUsername'] ),
+	'githubUsername'  => hdc_get_configured_github_owner(),
 	'repoCount'       => max( 1, min( 100, (int) $attrs['repoCount'] ) ),
 	'compareLimit'    => max( 2, min( 6, (int) $attrs['compareLimit'] ) ),
 	'includeForks'    => (bool) $attrs['includeForks'],
@@ -40,7 +41,7 @@ $config = array(
 	'githubProxyUrl'  => '/api/github/repos',
 	'githubLanguageSummaryProxyUrl' => '/api/github/language-summary',
 	'githubRepoProofsProxyUrl' => '/api/github/repo-proofs',
-	'languageSummaryMaxRepos' => 120,
+	'languageSummaryMaxRepos' => max( 1, min( 80, (int) $attrs['languageSummaryMaxRepos'] ) ),
 	'localReposUrl'   => esc_url_raw( get_theme_file_uri( 'blocks/work-showcase/data/repos.json' ) ),
 	'repoCaseStudyDetailsUrl' => esc_url_raw( get_theme_file_uri( 'blocks/work-showcase/data/repo-case-study-details.json' ) ),
 );

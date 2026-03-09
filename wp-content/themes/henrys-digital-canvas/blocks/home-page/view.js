@@ -538,12 +538,29 @@
 		const featuredRepos = reposState.items.filter( function ( repo ) {
 			return repo.featured;
 		} ).slice( 0, config.repoCount );
-		const visibleRepos = featuredRepos.length > 0 ? featuredRepos : reposState.items.slice( 0, config.repoCount );
 		const sourceLabel = reposState.source === 'live'
 			? ensureString( config.selectedWork.sourceLiveLabel, 'Selected work blends live GitHub builds with private client case studies.' )
 			: ensureString( config.selectedWork.sourceFallbackLabel, 'Selected work blends private client case studies with a cached GitHub snapshot.' );
+		const selectedWorkEmptyTitle = ensureString( config.selectedWork.emptyTitle, 'Selected work is updating' );
+		const selectedWorkEmptyDescription = reposState.source === 'live'
+			? ensureString(
+				config.selectedWork.emptyDescriptionLive,
+				'Featured work is being refreshed for the homepage. Use View all work to browse the full project library.'
+			)
+			: ensureString(
+				config.selectedWork.emptyDescriptionFallback,
+				'Featured work is not available in this snapshot. Use View all work to browse the full project library.'
+			);
+		const recentWritingEmptyTitle = ensureString( config.recentWriting.emptyTitle, 'Recent writing is updating' );
+		const recentWritingEmptyDescription = ensureString(
+			config.recentWriting.emptyDescription,
+			'Recent posts are not available in the homepage feed right now. Use All posts to check the full writing index.'
+		);
+		const resumeSnapshotLabel = ensureString( config.resumeSnapshot.label, '' );
+		const resumeSnapshotItems = ensureArray( config.resumeSnapshot.items ).filter( function ( item ) {
+			return typeof item === 'string' && item.trim();
+		} );
 		const resume = resumeState.data;
-		const latestExperience = resume && Array.isArray( resume.experience ) && resume.experience.length > 0 ? resume.experience[0] : null;
 
 		return h(
 			'div',
@@ -626,11 +643,11 @@
 							);
 						} )
 					)
-					: visibleRepos.length
+					: featuredRepos.length
 						? h(
 							'div',
 							{ className: 'hdc-home-page__work-grid' },
-							visibleRepos.map( function ( repo ) {
+							featuredRepos.map( function ( repo ) {
 								return h(
 									'a',
 									{
@@ -679,7 +696,12 @@
 								);
 							} )
 						)
-						: h( 'p', { className: 'hdc-home-page__empty' }, reposState.error || 'Selected work is temporarily unavailable.' )
+						: h(
+							'div',
+							{ className: 'hdc-home-page__empty-state ember-surface' },
+							h( 'h3', { className: 'hdc-home-page__empty-title' }, selectedWorkEmptyTitle ),
+							h( 'p', { className: 'hdc-home-page__empty' }, selectedWorkEmptyDescription )
+						)
 			),
 			h(
 				'section',
@@ -711,16 +733,14 @@
 								{ className: 'hdc-home-page__resume-stack' },
 								resume && resume.headline ? h( 'h3', { className: 'hdc-home-page__card-title' }, resume.headline ) : null,
 								resume && resume.subheadline ? h( 'p', { className: 'hdc-home-page__card-copy' }, resume.subheadline ) : null,
-								latestExperience
+								resumeSnapshotLabel || resumeSnapshotItems.length
 									? h(
 										'div',
-										{ className: 'hdc-home-page__resume-latest' },
-										h( 'p', { className: 'hdc-home-page__resume-latest-title' }, ensureString( latestExperience.title, '' ) ),
-										h(
-											'p',
-											{ className: 'hdc-home-page__resume-latest-meta' },
-											ensureString( latestExperience.company, '' ) + ' · ' + ensureString( latestExperience.period, '' )
-										)
+										{ className: 'hdc-home-page__resume-snapshot' },
+										resumeSnapshotLabel ? h( 'p', { className: 'hdc-home-page__resume-snapshot-label' }, resumeSnapshotLabel ) : null,
+										resumeSnapshotItems.length
+											? h( 'p', { className: 'hdc-home-page__resume-snapshot-items' }, resumeSnapshotItems.join( ' · ' ) )
+											: null
 									)
 									: null,
 								resume && Array.isArray( resume.targetRoles ) && resume.targetRoles.length
@@ -825,7 +845,12 @@
 								);
 							} )
 						)
-						: h( 'p', { className: 'hdc-home-page__empty' }, postsState.error || 'Recent writing is temporarily unavailable.' )
+						: h(
+							'div',
+							{ className: 'hdc-home-page__empty-state ember-surface' },
+							h( 'h3', { className: 'hdc-home-page__empty-title' }, recentWritingEmptyTitle ),
+							h( 'p', { className: 'hdc-home-page__empty' }, recentWritingEmptyDescription )
+						)
 			),
 			h(
 				'section',

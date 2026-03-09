@@ -44,10 +44,95 @@ final class HDC_AI_Media_Modal {
 	 * Constructor.
 	 */
 	private function __construct() {
+		add_action( 'admin_init', array( $this, 'maybe_redirect_generate_image_page' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'dequeue_conflicting_assets' ), 100 );
 		add_action( 'print_media_templates', array( $this, 'render_media_templates' ) );
 		add_action( 'admin_notices', array( $this, 'render_dependency_notice' ) );
+	}
+
+	/**
+	 * Redirects the upstream AI Generate Image page to the working HDC modal flow.
+	 *
+	 * The AI experiment currently registers a Media submenu page at
+	 * `upload.php?page=generate-image`, but in this install it renders only the
+	 * page heading with no interactive controls. Route that URL back to the
+	 * Media Library and auto-open the HDC modal instead.
+	 *
+	 * @return void
+	 */
+	public function maybe_redirect_generate_image_page(): void {
+		if ( ! is_admin() || wp_doing_ajax() || ! current_user_can( 'upload_files' ) ) {
+			return;
+		}
+
+		global $pagenow;
+
+		if ( 'upload.php' !== $pagenow ) {
+			return;
+		}
+
+		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+
+		if ( 'generate-image' !== $page ) {
+			return;
+		}
+
+		wp_safe_redirect(
+			add_query_arg(
+				'hdc-ai-generate',
+				'1',
+				admin_url( 'upload.php' )
+			)
+		);
+		exit;
+	}
+
+	/**
+	 * Determines whether the AI Experiments image generation backend is installed.
+	 *
+	 * @return bool
+	 */
+	private function has_ai_image_generation_experiment(): bool {
+		return class_exists( '\WordPress\AI\Experiments\Image_Generation\Image_Generation' );
+	}
+
+	/**
+	 * Determines whether the AI Experiments alt text backend is installed.
+	 *
+	 * @return bool
+	 */
+	private function has_ai_alt_text_experiment(): bool {
+		return class_exists( '\WordPress\AI\Experiments\Alt_Text_Generation\Alt_Text_Generation' );
+	}
+
+	/**
+	 * Determines whether a given AI experiment is enabled.
+	 *
+	 * @param string $experiment_class Fully-qualified experiment class name.
+	 * @param string $option_name      Fallback option name used if the class cannot be instantiated.
+	 * @return bool
+	 */
+	private function is_ai_experiment_enabled( string $experiment_class, string $option_name ): bool {
+		$global_enabled = (bool) get_option( 'ai_experiments_enabled', false );
+
+		if ( ! $global_enabled ) {
+			return false;
+		}
+
+		if ( class_exists( $experiment_class ) ) {
+			try {
+				$experiment = new $experiment_class();
+
+				if ( method_exists( $experiment, 'is_enabled' ) ) {
+					return (bool) $experiment->is_enabled();
+				}
+			} catch ( \Throwable $error ) {
+				// Fall back to the registered option when the experiment instance is unavailable.
+			}
+		}
+
+		return (bool) get_option( $option_name, false );
 	}
 
 	/**
@@ -56,10 +141,30 @@ final class HDC_AI_Media_Modal {
 	 * @return bool
 	 */
 	private function has_ai_abilities(): bool {
-		return class_exists( '\WordPress\AI_Client\AI_Client' )
-			&& function_exists( 'wp_register_ability' )
-			&& (bool) get_option( 'ai_experiments_enabled', false )
-			&& (bool) get_option( 'ai_experiment_image-generation_enabled', false );
+		if ( ! function_exists( 'wp_register_ability' ) || ! $this->has_ai_image_generation_experiment() ) {
+			return false;
+		}
+
+		return $this->is_ai_experiment_enabled(
+			'\WordPress\AI\Experiments\Image_Generation\Image_Generation',
+			'ai_experiment_image-generation_enabled'
+		);
+	}
+
+	/**
+	 * Determines whether AI-generated alt text is available.
+	 *
+	 * @return bool
+	 */
+	private function has_ai_alt_text_generation(): bool {
+		if ( ! function_exists( 'wp_register_ability' ) || ! $this->has_ai_alt_text_experiment() ) {
+			return false;
+		}
+
+		return $this->is_ai_experiment_enabled(
+			'\WordPress\AI\Experiments\Alt_Text_Generation\Alt_Text_Generation',
+			'ai_experiment_alt-text-generation_enabled'
+		);
 	}
 
 	/**
@@ -91,7 +196,71 @@ final class HDC_AI_Media_Modal {
 	 * @return bool
 	 */
 	private function is_available(): bool {
-		return $this->has_ai_abilities() || $this->has_classifai_generation();
+		$status = $this->get_backend_status();
+
+		return $status['available'];
+	}
+
+	/**
+	 * Returns the current backend availability for the media modal integration.
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function get_backend_status(): array {
+		$ai_enabled        = $this->has_ai_abilities();
+		$classifai_enabled = $this->has_classifai_generation();
+
+		return array(
+			'ai_present'           => $this->has_ai_image_generation_experiment(),
+			'ai_enabled'           => $ai_enabled,
+			'ai_alt_text_enabled'  => $this->has_ai_alt_text_generation(),
+			'classifai_present'    => class_exists( '\Classifai\Features\ImageGeneration' ),
+			'classifai_enabled'    => $classifai_enabled,
+			'available'            => $ai_enabled || $classifai_enabled,
+			'experiments_url'      => admin_url( 'options-general.php?page=ai-experiments' ),
+			'abilities_url'        => admin_url( 'admin.php?page=abilities-explorer' ),
+			'classifai_url'        => admin_url( 'tools.php?page=classifai' ),
+		);
+	}
+
+	/**
+	 * Returns the admin notice explaining how to enable a supported backend.
+	 *
+	 * @param array<string, mixed> $status Backend availability state.
+	 * @return string
+	 */
+	private function get_dependency_notice_message( array $status ): string {
+		if ( $status['ai_present'] && ! $status['ai_enabled'] && $status['classifai_present'] && ! $status['classifai_enabled'] ) {
+			return sprintf(
+				/* translators: 1: AI Experiments settings URL, 2: ClassifAI settings URL. */
+				__( 'HDC AI Media Modal is installed, but no supported image generation backend is configured. Enable the Image Generation experiment in <a href="%1$s">AI Experiments settings</a> or configure <a href="%2$s">ClassifAI image generation</a>.', 'hdc-ai-media-modal' ),
+				esc_url( $status['experiments_url'] ),
+				esc_url( $status['classifai_url'] )
+			);
+		}
+
+		if ( $status['ai_present'] && ! $status['ai_enabled'] ) {
+			return sprintf(
+				/* translators: %s: AI Experiments settings URL. */
+				__( 'HDC AI Media Modal is installed, but the AI Experiments image generation backend is not enabled. Enable the global AI Experiments toggle and the Image Generation experiment in <a href="%s">AI Experiments settings</a>.', 'hdc-ai-media-modal' ),
+				esc_url( $status['experiments_url'] )
+			);
+		}
+
+		if ( $status['classifai_present'] && ! $status['classifai_enabled'] ) {
+			return sprintf(
+				/* translators: %s: ClassifAI settings URL. */
+				__( 'HDC AI Media Modal is installed, but ClassifAI image generation is not configured. Connect and enable an image generation provider in <a href="%s">ClassifAI settings</a>.', 'hdc-ai-media-modal' ),
+				esc_url( $status['classifai_url'] )
+			);
+		}
+
+		return sprintf(
+			/* translators: 1: AI Experiments settings URL, 2: ClassifAI settings URL. */
+			__( 'HDC AI Media Modal is installed, but no supported image generation backend is available. Enable AI Experiments image generation in <a href="%1$s">AI Experiments settings</a> or configure <a href="%2$s">ClassifAI image generation</a>.', 'hdc-ai-media-modal' ),
+			esc_url( $status['experiments_url'] ),
+			esc_url( $status['classifai_url'] )
+		);
 	}
 
 	/**
@@ -140,6 +309,7 @@ final class HDC_AI_Media_Modal {
 	 */
 	public function enqueue_assets( string $hook_suffix ): void {
 		$screen = get_current_screen();
+		$status = $this->get_backend_status();
 
 		if ( ! $this->is_supported_screen( $screen ) ) {
 			return;
@@ -160,7 +330,7 @@ final class HDC_AI_Media_Modal {
 		wp_enqueue_script(
 			self::HANDLE,
 			plugins_url( 'assets/js/admin-media-modal.js', __FILE__ ),
-			array( 'media-views', 'wp-api-fetch', 'wp-i18n', 'wp-url' ),
+			array( 'media-views', 'wp-api-fetch', 'wp-i18n', 'wp-media-utils', 'wp-url' ),
 			file_exists( $script_path ) ? (string) filemtime( $script_path ) : '1.0.0',
 			true
 		);
@@ -169,16 +339,19 @@ final class HDC_AI_Media_Modal {
 			self::HANDLE,
 			'hdcAiMediaModalData',
 			array(
-				'enabled'                  => $this->is_available(),
-				'aiImageAbilityEnabled'    => $this->has_ai_abilities(),
-				'classifaiGenerationEnabled' => $this->has_classifai_generation(),
+				'enabled'                    => $status['available'],
+				'aiImageAbilityEnabled'      => $status['ai_enabled'],
+				'classifaiGenerationEnabled' => $status['classifai_enabled'],
 				'classifaiEndpoint'        => '/classifai/v1/generate-image',
-				'altTextEnabled'           => (bool) get_option( 'ai_experiment_alt-text-generation_enabled', false ),
+				'altTextEnabled'           => $status['ai_alt_text_enabled'],
 				'tabId'                    => 'hdc-ai-generate',
 				'isUploadScreen'           => 'upload.php' === $hook_suffix,
-				'experimentsUrl'           => admin_url( 'options-general.php?page=ai-experiments' ),
-				'abilitiesUrl'             => admin_url( 'admin.php?page=abilities-explorer' ),
-				'dependencyMessage'        => __( 'Either AI Experiments image generation or ClassifAI image generation must be enabled before this media modal tab can be used.', 'hdc-ai-media-modal' ),
+				'autoOpen'                 => isset( $_GET['hdc-ai-generate'] ),
+				'uploadUrl'                => admin_url( 'upload.php' ),
+				'experimentsUrl'           => $status['experiments_url'],
+				'abilitiesUrl'             => $status['abilities_url'],
+				'classifaiUrl'             => $status['classifai_url'],
+				'dependencyMessage'        => __( 'AI Experiments image generation or ClassifAI image generation must be enabled before this media modal tab can be used.', 'hdc-ai-media-modal' ),
 				'fallbackWarning'          => __( '[HDC AI Media Modal] wp.abilities.executeAbility is unavailable. Falling back to REST.', 'hdc-ai-media-modal' ),
 			)
 		);
@@ -280,7 +453,9 @@ final class HDC_AI_Media_Modal {
 	 * @return void
 	 */
 	public function render_dependency_notice(): void {
-		if ( $this->is_available() || ! current_user_can( 'manage_options' ) ) {
+		$status = $this->get_backend_status();
+
+		if ( $status['available'] || ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
 
@@ -292,13 +467,7 @@ final class HDC_AI_Media_Modal {
 
 		printf(
 			'<div class="notice notice-warning"><p>%s</p></div>',
-			wp_kses_post(
-				sprintf(
-					/* translators: %s: AI Experiments settings URL. */
-					__( 'HDC AI Media Modal is installed, but the AI image generation experiment is not enabled. Enable the global AI experiments toggle and the Image Generation experiment in <a href="%s">AI Experiments settings</a>.', 'hdc-ai-media-modal' ),
-					esc_url( admin_url( 'options-general.php?page=ai-experiments' ) )
-				)
-			)
+			wp_kses_post( $this->get_dependency_notice_message( $status ) )
 		);
 	}
 }

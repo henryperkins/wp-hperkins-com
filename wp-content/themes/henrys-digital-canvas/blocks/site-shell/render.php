@@ -17,6 +17,7 @@ $defaults = array(
 );
 
 $attrs = wp_parse_args( $attributes, $defaults );
+$logo_mark_url = esc_url( get_theme_file_uri( 'assets/images/logo-mark.png' ) );
 
 $nav_items = array(
 	array(
@@ -83,10 +84,22 @@ $wrapper_attributes = get_block_wrapper_attributes(
 	<header class="hdc-site-shell__header glass" data-hdc-shell-header>
 		<div class="hdc-site-shell__inner">
 			<a class="hdc-site-shell__brand focus-ring" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-				<span class="hdc-site-shell__title"><?php echo esc_html( sanitize_text_field( $attrs['siteTitle'] ) ); ?></span>
-				<?php if ( '' !== trim( (string) $attrs['tagline'] ) ) : ?>
-					<span class="hdc-site-shell__tagline"><?php echo esc_html( sanitize_text_field( $attrs['tagline'] ) ); ?></span>
-				<?php endif; ?>
+				<span class="hdc-site-shell__brand-mark" aria-hidden="true">
+					<img
+						class="hdc-site-shell__brand-image"
+						src="<?php echo $logo_mark_url; ?>"
+						alt=""
+						width="44"
+						height="44"
+						decoding="async"
+					/>
+				</span>
+				<span class="hdc-site-shell__brand-copy">
+					<span class="hdc-site-shell__title"><?php echo esc_html( sanitize_text_field( $attrs['siteTitle'] ) ); ?></span>
+					<?php if ( '' !== trim( (string) $attrs['tagline'] ) ) : ?>
+						<span class="hdc-site-shell__tagline"><?php echo esc_html( sanitize_text_field( $attrs['tagline'] ) ); ?></span>
+					<?php endif; ?>
+				</span>
 			</a>
 
 			<nav class="hdc-site-shell__desktop-nav" aria-label="<?php esc_attr_e( 'Primary', 'henrys-digital-canvas' ); ?>">
@@ -103,8 +116,13 @@ $wrapper_attributes = get_block_wrapper_attributes(
 
 			<div class="hdc-site-shell__actions">
 				<?php if ( ! empty( $attrs['showCommandLauncher'] ) ) : ?>
-					<button type="button" class="hdc-site-shell__command-trigger hdc-site-shell__command-trigger--desktop focus-ring" data-hdc-command-trigger>
-						<span><?php esc_html_e( 'Search', 'henrys-digital-canvas' ); ?></span>
+					<button type="button" class="hdc-site-shell__command-trigger hdc-site-shell__command-trigger--desktop focus-ring" data-hdc-command-trigger aria-label="<?php esc_attr_e( 'Open command palette', 'henrys-digital-canvas' ); ?>">
+						<span class="hdc-site-shell__action-icon" aria-hidden="true">
+							<svg class="hdc-site-shell__action-icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+								<circle cx="11" cy="11" r="8"></circle>
+								<path d="m21 21-4.35-4.35"></path>
+							</svg>
+						</span>
 						<kbd data-hdc-shortcut-hint><?php esc_html_e( 'Ctrl+K', 'henrys-digital-canvas' ); ?></kbd>
 					</button>
 				<?php endif; ?>
@@ -159,7 +177,13 @@ $wrapper_attributes = get_block_wrapper_attributes(
 
 				<div class="hdc-site-shell__mobile-section hdc-site-shell__mobile-section--lead">
 					<?php if ( ! empty( $attrs['showCommandLauncher'] ) ) : ?>
-						<button type="button" class="hdc-site-shell__command-trigger hdc-site-shell__command-trigger--mobile focus-ring" data-hdc-command-trigger>
+						<button type="button" class="hdc-site-shell__command-trigger hdc-site-shell__command-trigger--mobile focus-ring" data-hdc-command-trigger aria-label="<?php esc_attr_e( 'Open command palette', 'henrys-digital-canvas' ); ?>">
+							<span class="hdc-site-shell__action-icon" aria-hidden="true">
+								<svg class="hdc-site-shell__action-icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+									<circle cx="11" cy="11" r="8"></circle>
+									<path d="m21 21-4.35-4.35"></path>
+								</svg>
+							</span>
 							<span><?php esc_html_e( 'Search pages', 'henrys-digital-canvas' ); ?></span>
 							<kbd data-hdc-shortcut-hint><?php esc_html_e( 'Ctrl+K', 'henrys-digital-canvas' ); ?></kbd>
 						</button>

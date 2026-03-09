@@ -15,13 +15,22 @@
     "actionHref": "/work/",
     "loadingLabel": "Syncing selected work...",
     "sourceLiveLabel": "Selected work blends live GitHub builds with private client case studies.",
-    "sourceFallbackLabel": "Selected work blends private client case studies with a cached GitHub snapshot."
+    "sourceFallbackLabel": "Selected work blends private client case studies with a cached GitHub snapshot.",
+    "emptyTitle": "Selected work is updating",
+    "emptyDescriptionLive": "Featured work is being refreshed for the homepage. Use View all work to browse the full project library.",
+    "emptyDescriptionFallback": "Featured work is not available in this snapshot. Use View all work to browse the full project library."
   },
   "resumeSnapshot": {
     "title": "Resume Snapshot",
     "actionLabel": "Interactive resume",
     "actionHref": "/resume/",
     "positioningEyebrow": "Positioning",
+    "label": "Public projects",
+    "items": [
+      "AI Prompt Pro",
+      "Henry's Digital Canvas",
+      "wp-hperkins-com"
+    ],
     "bestFitEyebrow": "Best fit",
     "bestFitTitle": "Where I plug in fastest",
     "focusAreas": [
@@ -43,7 +52,9 @@
   "recentWriting": {
     "title": "Recent Writing",
     "actionLabel": "All posts",
-    "actionHref": "/blog/"
+    "actionHref": "/blog/",
+    "emptyTitle": "Recent writing is updating",
+    "emptyDescription": "Recent posts are not available in the homepage feed right now. Use All posts to check the full writing index."
   },
   "contactCta": {
     "eyebrow": "Need a technical partner?",
@@ -55,8 +66,8 @@
     "secondaryCtaHref": "/resume/"
   },
   "repoTitles": {
-    "meeting-transcript-summarizer": "Meeting summary workflow for client calls",
-    "ai-faq-chatbot-prototype": "AI FAQ assistant for support teams",
-    "client-ecommerce-implementation": "E-commerce build with conversion-focused UX"
+    "tarot": "AI tarot reading app",
+    "ai-cli-web-funnel": "CLI addon catalog and install flow",
+    "dj-judas": "Performer site, booking, and storefront"
   }
 }

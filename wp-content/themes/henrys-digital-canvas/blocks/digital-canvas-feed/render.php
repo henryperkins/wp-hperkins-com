@@ -15,6 +15,7 @@ $defaults = array(
 	'showRepos'      => true,
 	'blogCount'      => 3,
 	'repoCount'      => 3,
+	'githubUsername'  => 'henryperkins',
 	'postsEndpoint'  => '',
 	'openInNewTab'   => false,
 );
@@ -27,7 +28,7 @@ $config = array(
 	'showRepos'      => (bool) $attrs['showRepos'],
 	'blogCount'      => max( 1, min( 10, (int) $attrs['blogCount'] ) ),
 	'repoCount'      => max( 1, min( 10, (int) $attrs['repoCount'] ) ),
-	'githubUsername' => preg_replace( '/[^a-z0-9-]/i', '', (string) $attrs['githubUsername'] ),
+	'githubUsername' => hdc_get_configured_github_owner(),
 	'githubProxyUrl' => '/api/github/repos',
 	'postsEndpoint'  => esc_url_raw( (string) $attrs['postsEndpoint'] ),
 	'blogEndpoint'   => esc_url_raw( add_query_arg( 'limit', max( 1, min( 10, (int) $attrs['blogCount'] ) ), rest_url( 'henrys-digital-canvas/v1/blog' ) ) ),

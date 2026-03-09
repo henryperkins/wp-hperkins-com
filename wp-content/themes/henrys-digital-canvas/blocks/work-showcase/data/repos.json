@@ -1,88 +1,433 @@
 [
   {
-    "name": "meeting-transcript-summarizer",
-    "description": "Workflow that converts transcript files into concise client-ready summaries for easier post-meeting follow-up.",
-    "language": "Python",
-    "stars": 0,
-    "forks": 0,
-    "updatedAt": "2026-02-21",
-    "topics": [
-      "python",
-      "automation",
-      "openai",
-      "summarization"
-    ],
-    "featured": true,
-    "origin": "curated",
-    "access": "private"
-  },
-  {
-    "name": "ai-faq-chatbot-prototype",
-    "description": "Client-facing FAQ assistant prototype designed for support-style conversations with custom knowledge grounding.",
+    "name": "tarot",
+    "description": "Tarot card reading AI app with interactive spreads and AI-powered interpretations.",
     "language": "JavaScript",
     "stars": 0,
     "forks": 0,
-    "updatedAt": "2026-02-18",
+    "updatedAt": "2026-03-05",
+    "url": "https://github.com/henryperkins/tarot",
     "topics": [
       "javascript",
-      "openai",
-      "support",
-      "chatbot"
+      "ai",
+      "tarot",
+      "web"
     ],
     "featured": true,
     "origin": "curated",
-    "access": "private"
+    "access": "public"
   },
   {
-    "name": "client-ecommerce-implementation",
-    "description": "Responsive e-commerce implementation with payment integration, conversion-focused UX, and production hardening.",
-    "language": "PHP",
-    "stars": 0,
+    "name": "ai-cli-web-funnel",
+    "description": "Monorepo for searchable addon discovery, installation, and runtime verification across CLI ecosystems.",
+    "language": "TypeScript",
+    "stars": 4,
     "forks": 0,
-    "updatedAt": "2026-02-15",
+    "updatedAt": "2026-03-01",
+    "url": "https://github.com/henryperkins/ai-cli-web-funnel",
     "topics": [
-      "wordpress",
-      "woocommerce",
-      "stripe",
-      "cloudflare"
+      "typescript",
+      "ai",
+      "cli",
+      "web"
     ],
     "featured": true,
     "origin": "curated",
-    "access": "private"
+    "access": "public"
   },
   {
-    "name": "lakefront-digital-portfolio",
-    "description": "Portfolio and consulting website for showcasing delivery approach, services, and selected project outcomes.",
+    "name": "dj-judas",
+    "description": "Performer website and booking storefront built with React, Cloudflare Workers, and a Medusa commerce backend.",
     "language": "TypeScript",
     "stars": 0,
     "forks": 0,
-    "updatedAt": "2026-02-28",
+    "updatedAt": "2026-03-05",
+    "url": "https://github.com/henryperkins/dj-judas",
+    "topics": [
+      "typescript",
+      "ai",
+      "music",
+      "dj"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "public"
+  },
+  {
+    "name": "image-studio",
+    "description": "TypeScript media studio for Azure OpenAI image generation and editing, GPT-5 vision analysis, Sora video creation, and local asset workflows.",
+    "language": "TypeScript",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2026-02-19",
+    "url": "https://github.com/henryperkins/image-studio",
+    "topics": [
+      "typescript",
+      "azure-openai",
+      "sora",
+      "vision",
+      "media"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "public"
+  },
+  {
+    "name": "web-fetch",
+    "description": "Web content fetching and extraction utility built with TypeScript.",
+    "language": "TypeScript",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2026-01-23",
+    "url": "https://github.com/henryperkins/web-fetch",
+    "topics": [
+      "typescript",
+      "web",
+      "fetch",
+      "scraping"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "public"
+  },
+  {
+    "name": "ai-prompt-pro",
+    "description": "Prompt builder, library, and agent-service workspace for designing, refining, and sharing AI prompts.",
+    "language": "TypeScript",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2026-03-06",
+    "url": "https://github.com/henryperkins/ai-prompt-pro",
+    "topics": [
+      "typescript",
+      "ai",
+      "prompts",
+      "tools"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "public"
+  },
+  {
+    "name": "wp-hperkins-com",
+    "description": "WordPress child theme and AI-plugin workspace powering hperkins.com, with custom blocks, REST contracts, and smoke checks.",
+    "language": "PHP",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2026-03-07",
+    "url": "https://github.com/henryperkins/wp-hperkins-com",
+    "topics": [
+      "wordpress",
+      "php",
+      "portfolio",
+      "cms"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "public"
+  },
+  {
+    "name": "henry-s-digital-canvas",
+    "description": "React + TypeScript portfolio SPA deployed to Cloudflare Workers — showcases work, resume, blog, and AI project case studies.",
+    "language": "TypeScript",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2026-03-08",
     "url": "https://hperkins.com",
     "topics": [
       "react",
       "typescript",
       "tailwindcss",
+      "cloudflare-workers",
       "portfolio"
     ],
-    "featured": false,
+    "featured": true,
+    "origin": "curated",
+    "access": "private"
+  },
+  {
+    "name": "docs",
+    "description": "Experimental AI documentation generator for Python repositories with provider-based model selection and template-driven Markdown output.",
+    "language": "Python",
+    "stars": 2,
+    "forks": 0,
+    "updatedAt": "2025-01-01",
+    "url": "https://github.com/henryperkins/docs",
+    "topics": [
+      "python",
+      "documentation",
+      "ai",
+      "templates",
+      "automation"
+    ],
+    "featured": true,
     "origin": "curated",
     "access": "public"
   },
   {
-    "name": "wordpress-support-runbooks",
-    "description": "Support documentation templates and runbook structures used to reduce repeat requests and improve handoffs.",
-    "language": "Markdown",
+    "name": "mobile-rag-app",
+    "description": "React Native document assistant with local SQLite retrieval, PDF and OCR ingestion, and OpenAI-powered chat and embeddings.",
+    "language": "TypeScript",
     "stars": 0,
     "forks": 0,
-    "updatedAt": "2026-02-10",
+    "updatedAt": "2025-06-01",
+    "url": "https://github.com/henryperkins/mobile-rag-app",
     "topics": [
-      "documentation",
-      "support",
-      "wordpress",
-      "operations"
+      "react-native",
+      "typescript",
+      "rag",
+      "mobile",
+      "sqlite"
     ],
-    "featured": false,
+    "featured": true,
     "origin": "curated",
-    "access": "private"
+    "access": "public"
+  },
+  {
+    "name": "claude-code",
+    "description": "Mobile-first Claude chat UI with WebSocket streaming, SQLite-backed session history, and an optional Claude CLI runtime bridge.",
+    "language": "JavaScript",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2025-08-01",
+    "url": "https://github.com/henryperkins/claude-code",
+    "topics": [
+      "javascript",
+      "claude",
+      "websocket",
+      "chat",
+      "sqlite"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "public"
+  },
+  {
+    "name": "agentic-rag",
+    "description": "TypeScript RAG prototype with query rewriting, hybrid retrieval, reranking, verification loops, SSE streaming, and OpenTelemetry hooks.",
+    "language": "TypeScript",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2025-07-01",
+    "url": "https://github.com/henryperkins/agentic-rag",
+    "topics": [
+      "typescript",
+      "rag",
+      "agents",
+      "retrieval",
+      "observability"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "public"
+  },
+  {
+    "name": "mystic-tarot",
+    "description": "Animated tarot reading app with celestial presentation, Azure or local narrative generation, and journal persistence.",
+    "language": "JavaScript",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2025-05-01",
+    "url": "https://github.com/henryperkins/mystic-tarot",
+    "topics": [
+      "javascript",
+      "tarot",
+      "animation",
+      "ai",
+      "journal"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "public"
+  },
+  {
+    "name": "bookmark-extension",
+    "description": "Edge extension for bookmark cleanup with duplicate detection, folder suggestions, and a typed review dashboard.",
+    "language": "JavaScript",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2025-04-01",
+    "url": "https://github.com/henryperkins/bookmark-extension",
+    "topics": [
+      "javascript",
+      "browser-extension",
+      "edge",
+      "bookmarks",
+      "typescript"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "public"
+  },
+  {
+    "name": "azure_chatapp",
+    "description": "Azure OpenAI chat app with JWT auth, project-scoped conversations, knowledge routes, and shared telemetry bootstrap.",
+    "language": "Python",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2025-03-01",
+    "url": "https://github.com/henryperkins/azure_chatapp",
+    "topics": [
+      "python",
+      "azure",
+      "openai",
+      "jwt",
+      "chat"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "public"
+  },
+  {
+    "name": "chatter",
+    "description": "Flask chat app for Azure OpenAI reasoning models with saved sessions, web-search helpers, and model-specific streaming rules.",
+    "language": "Python",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2025-02-01",
+    "url": "https://github.com/henryperkins/chatter",
+    "topics": [
+      "python",
+      "flask",
+      "azure",
+      "openai",
+      "reasoning"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "public"
+  },
+  {
+    "name": "document-qa",
+    "description": "Minimal Streamlit starter that uploads .txt or .md files and streams GPT-3.5 answers from the full document text.",
+    "language": "Python",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2025-01-15",
+    "url": "https://github.com/henryperkins/document-qa",
+    "topics": [
+      "python",
+      "streamlit",
+      "gpt",
+      "documents",
+      "starter"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "public"
+  },
+  {
+    "name": "video_processing_toolkit",
+    "description": "CLI video-analysis pipeline for scene detection, Qwen2-VL descriptions, tagging, and structured JSON exports.",
+    "language": "Python",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2025-06-15",
+    "url": "https://github.com/henryperkins/video_processing_toolkit",
+    "topics": [
+      "python",
+      "video",
+      "qwen2-vl",
+      "computer-vision",
+      "cli"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "public"
+  },
+  {
+    "name": "my-mcp-github",
+    "description": "Azure AI Search MCP server for Cloudflare Workers with HTTP, SSE, and stdio transports plus dynamic tool families.",
+    "language": "TypeScript",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2025-09-01",
+    "url": "https://github.com/henryperkins/my-mcp-github",
+    "topics": [
+      "typescript",
+      "mcp",
+      "azure-ai-search",
+      "cloudflare-workers",
+      "sse"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "public"
+  },
+  {
+    "name": "newfolder",
+    "description": "Document and chat workspace with project-scoped search across files, threads, and optional vector matches.",
+    "language": "TypeScript",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2025-04-15",
+    "url": "https://github.com/henryperkins/newfolder",
+    "topics": [
+      "typescript",
+      "document-management",
+      "search",
+      "ai",
+      "chat"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "public"
+  },
+  {
+    "name": "real_time_chat_app",
+    "description": "Prototype Flask-SocketIO chat app with Azure OpenAI responses, room messaging, and persisted conversation threads.",
+    "language": "Python",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2025-02-15",
+    "url": "https://github.com/henryperkins/real_time_chat_app",
+    "topics": [
+      "python",
+      "azure",
+      "openai",
+      "websocket",
+      "prototype"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "public"
+  },
+  {
+    "name": "rememberliterally",
+    "description": "Flask chat app with AI responses, optional DB-backed history, image uploads, and model and reasoning controls.",
+    "language": "Python",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2025-05-15",
+    "url": "https://github.com/henryperkins/rememberliterally",
+    "topics": [
+      "python",
+      "flask",
+      "openai",
+      "chat",
+      "vision"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "public"
+  },
+  {
+    "name": "simple",
+    "description": "Python documentation generator with AST extraction, monitoring, and metrics around AI-assisted doc output.",
+    "language": "Python",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2025-01-10",
+    "url": "https://github.com/henryperkins/simple",
+    "topics": [
+      "python",
+      "documentation",
+      "ast",
+      "ai",
+      "observability"
+    ],
+    "featured": true,
+    "origin": "curated",
+    "access": "public"
   }
 ]

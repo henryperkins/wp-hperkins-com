@@ -2,11 +2,12 @@
 set -euo pipefail
 
 BASE_URL="${BASE_URL:-https://wp.hperkins.com}"
+WORK_DETAIL_REPO="${WORK_DETAIL_REPO:-henry-s-digital-canvas}"
 
 routes=(
   "/|200|hdc-home-page"
   "/work/|200|hdc-work-app"
-  "/work/lakefront-digital-portfolio/|200|hdc-work-detail"
+  "/work/${WORK_DETAIL_REPO}/|200|hdc-work-detail"
   "/resume/|200|hdc-resume-overview|Loading resume"
   "/resume/ats/|200|hdc-resume-ats|Loading ATS resume"
   "/hobbies/|200|hdc-hobbies-moments"

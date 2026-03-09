@@ -9,9 +9,16 @@
 
 	const apiFetch = wp.apiFetch;
 	const { __, sprintf } = wp.i18n;
-	const { addQueryArgs } = wp.url;
+	const { addQueryArgs, cleanForSlug } = wp.url;
 	const TAB_ID = config.tabId || 'hdc-ai-generate';
 	const FALLBACK_ERROR = __( 'Something went wrong while generating the image.', 'hdc-ai-media-modal' );
+	const DEFAULT_IMAGE_MIME_TYPE = 'image/png';
+	const MIME_TYPE_TO_EXTENSION = {
+		'image/gif': 'gif',
+		'image/jpeg': 'jpg',
+		'image/png': 'png',
+		'image/webp': 'webp',
+	};
 
 	let fallbackWarned = false;
 	let uploadFrame = null;
@@ -39,6 +46,20 @@
 		return fallbackMessage;
 	}
 
+	function getNestedValue( object, path, fallback = undefined ) {
+		let current = object;
+
+		for ( let index = 0; index < path.length; index++ ) {
+			if ( null === current || undefined === current || typeof current !== 'object' ) {
+				return fallback;
+			}
+
+			current = current[ path[ index ] ];
+		}
+
+		return undefined === current ? fallback : current;
+	}
+
 	function isAbilityNotFoundError( error ) {
 		if ( ! error || typeof error !== 'object' ) {
 			return false;
@@ -61,9 +82,107 @@
 		);
 	}
 
+	function detectMimeTypeFromBase64( base64Data ) {
+		try {
+			const signature = window.atob( base64Data.slice( 0, 32 ) );
+			const bytes = Array.from( signature, ( character ) => character.charCodeAt( 0 ) );
+
+			if (
+				bytes.length >= 8 &&
+				bytes[ 0 ] === 0x89 &&
+				bytes[ 1 ] === 0x50 &&
+				bytes[ 2 ] === 0x4e &&
+				bytes[ 3 ] === 0x47 &&
+				bytes[ 4 ] === 0x0d &&
+				bytes[ 5 ] === 0x0a &&
+				bytes[ 6 ] === 0x1a &&
+				bytes[ 7 ] === 0x0a
+			) {
+				return 'image/png';
+			}
+
+			if ( bytes.length >= 3 && bytes[ 0 ] === 0xff && bytes[ 1 ] === 0xd8 && bytes[ 2 ] === 0xff ) {
+				return 'image/jpeg';
+			}
+
+			if (
+				bytes.length >= 6 &&
+				( signature.slice( 0, 6 ) === 'GIF87a' || signature.slice( 0, 6 ) === 'GIF89a' )
+			) {
+				return 'image/gif';
+			}
+
+			if ( bytes.length >= 12 && signature.slice( 0, 4 ) === 'RIFF' && signature.slice( 8, 12 ) === 'WEBP' ) {
+				return 'image/webp';
+			}
+		} catch ( error ) {
+			// Fall back to PNG when the payload signature cannot be inspected.
+		}
+
+		return DEFAULT_IMAGE_MIME_TYPE;
+	}
+
+	function getImageMimeType( imagePayload ) {
+		const mimeType = getNestedValue( imagePayload, [ 'mime_type' ], '' );
+
+		if ( typeof mimeType === 'string' && mimeType ) {
+			return mimeType;
+		}
+
+		const imageData = getNestedValue( imagePayload, [ 'data' ], '' );
+
+		if ( typeof imageData === 'string' && imageData ) {
+			return detectMimeTypeFromBase64( imageData );
+		}
+
+		return DEFAULT_IMAGE_MIME_TYPE;
+	}
+
+	function buildDataUri( base64Data, mimeType ) {
+		return `data:${ mimeType };base64,${ base64Data }`;
+	}
+
+	function getFileExtension( mimeType ) {
+		return MIME_TYPE_TO_EXTENSION[ mimeType ] || 'png';
+	}
+
+	function createSafeFilename( prompt, mimeType, maxLength = 80 ) {
+		let safeFileName = typeof cleanForSlug === 'function' ? cleanForSlug( prompt || '' ) : '';
+
+		if ( ! safeFileName ) {
+			safeFileName = 'ai-generated-image';
+		}
+
+		if ( safeFileName.length > maxLength ) {
+			const truncated = safeFileName.substring( 0, maxLength );
+			const lastDash = truncated.lastIndexOf( '-' );
+
+			safeFileName = lastDash > maxLength * 0.5 ? truncated.substring( 0, lastDash ) : truncated;
+		}
+
+		return `${ safeFileName }.${ getFileExtension( mimeType ) }`;
+	}
+
+	function base64ToBlob( base64Data, mimeType ) {
+		const byteCharacters = window.atob( base64Data );
+		const byteArrays = [];
+
+		for ( let offset = 0; offset < byteCharacters.length; offset += 512 ) {
+			const slice = byteCharacters.slice( offset, offset + 512 );
+			const byteNumbers = Array.from( slice, ( character ) => character.charCodeAt( 0 ) );
+
+			byteArrays.push( new Uint8Array( byteNumbers ) );
+		}
+
+		return new window.Blob( byteArrays, { type: mimeType } );
+	}
+
 	function normalizeClassifaiResult( result ) {
 		const generatedImage = Array.isArray( result ) ? result[ 0 ] : result;
-		const base64Data = generatedImage?.url || generatedImage?.data || generatedImage?.b64_json || '';
+		const base64Data =
+			generatedImage && typeof generatedImage === 'object'
+				? generatedImage.url || generatedImage.data || generatedImage.b64_json || ''
+				: '';
 
 		if ( ! base64Data ) {
 			throw new Error( __( 'The ClassifAI image generation route returned an invalid response.', 'hdc-ai-media-modal' ) );
@@ -72,6 +191,7 @@
 		return {
 			image: {
 				data: base64Data,
+				mime_type: detectMimeTypeFromBase64( base64Data ),
 				provider_metadata: {
 					id: 'classifai',
 					name: 'ClassifAI',
@@ -128,11 +248,11 @@
 	}
 
 	async function executeAbility( abilityName, input = null, options = {} ) {
-		const abilities = window?.wp?.abilities ?? null;
+		const abilities = window && window.wp && window.wp.abilities ? window.wp.abilities : null;
 
-		if ( typeof abilities?.executeAbility === 'function' ) {
+		if ( abilities && typeof abilities.executeAbility === 'function' ) {
 			try {
-				return await abilities.executeAbility( abilityName, input ?? null );
+				return await abilities.executeAbility( abilityName, null == input ? null : input );
 			} catch ( error ) {
 				if ( ! isAbilityNotFoundError( error ) ) {
 					throw error;
@@ -159,7 +279,7 @@
 			path: `/wp-abilities/v1/abilities/${ abilityName }/run`,
 			method: 'POST',
 			data: {
-				input: input ?? null,
+				input: null == input ? null : input,
 			},
 		} );
 	}
@@ -179,14 +299,14 @@
 		return truncated;
 	}
 
-	async function maybeGenerateAltText( base64Image, prompt ) {
+	async function maybeGenerateAltText( base64Image, mimeType, prompt ) {
 		if ( ! config.altTextEnabled ) {
 			return prompt;
 		}
 
 		try {
 			const result = await executeAbility( 'ai/alt-text-generation', {
-				image_url: `data:image/png;base64,${ base64Image }`,
+				image_url: buildDataUri( base64Image, mimeType ),
 			} );
 
 			if ( result && typeof result === 'object' && typeof result.alt_text === 'string' && result.alt_text ) {
@@ -199,49 +319,143 @@
 		return prompt;
 	}
 
+	function normalizeUploadedAttachment( attachment ) {
+		const descriptionObject = getNestedValue( attachment, [ 'description' ], null );
+		const titleObject = getNestedValue( attachment, [ 'title' ], null );
+		const rawDescription = attachment && typeof attachment === 'object' ? attachment.description : undefined;
+		const rawTitle = attachment && typeof attachment === 'object' ? attachment.title : undefined;
+		const description =
+			typeof rawDescription === 'string'
+				? rawDescription
+				: descriptionObject && typeof descriptionObject === 'object' && descriptionObject.raw
+					? descriptionObject.raw
+					: '';
+		const title =
+			typeof rawTitle === 'string'
+				? rawTitle
+				: titleObject && typeof titleObject === 'object' && titleObject.raw
+					? titleObject.raw
+					: '';
+
+		return {
+			...attachment,
+			alt_text:
+				attachment && typeof attachment === 'object'
+					? attachment.alt_text || attachment.alt || ''
+					: '',
+			description,
+			title,
+		};
+	}
+
+	function uploadGeneratedImage( base64Data, prompt, additionalData ) {
+		const uploadMedia =
+			window && window.wp && window.wp.mediaUtils
+				? window.wp.mediaUtils.uploadMedia
+				: null;
+
+		if ( typeof uploadMedia !== 'function' ) {
+			throw new Error( __( 'The Media Library upload utilities are unavailable.', 'hdc-ai-media-modal' ) );
+		}
+
+		const mimeType = detectMimeTypeFromBase64( base64Data );
+		const file = new window.File(
+			[ base64ToBlob( base64Data, mimeType ) ],
+			createSafeFilename( prompt, mimeType ),
+			{ type: mimeType }
+		);
+
+		return new Promise( ( resolve, reject ) => {
+			let settled = false;
+
+			try {
+				uploadMedia( {
+					allowedTypes: [ 'image' ],
+					filesList: [ file ],
+					multiple: false,
+					additionalData,
+					onFileChange( files ) {
+						if ( settled || ! Array.isArray( files ) || ! files.length ) {
+							return;
+						}
+
+						const uploaded = files[ 0 ];
+
+						if ( uploaded && uploaded.id ) {
+							settled = true;
+							resolve( normalizeUploadedAttachment( uploaded ) );
+						}
+					},
+					onError( error ) {
+						if ( settled ) {
+							return;
+						}
+
+						settled = true;
+						reject( error );
+					},
+				} );
+			} catch ( error ) {
+				if ( settled ) {
+					return;
+				}
+
+				settled = true;
+				reject( error );
+			}
+		} );
+	}
+
 	async function importGeneratedImage( generatedImage, prompt, onProgress ) {
-		const imagePayload = generatedImage?.image;
-		const isClassifaiImage = imagePayload?.provider_metadata?.id === 'classifai';
+		const imagePayload = generatedImage && generatedImage.image ? generatedImage.image : null;
 
 		if ( ! imagePayload || ! imagePayload.data ) {
 			throw new Error( __( 'No generated image was returned.', 'hdc-ai-media-modal' ) );
 		}
 
+		const mimeType = getImageMimeType( imagePayload );
 		const importInput = {
-			data: imagePayload.data,
-			mime_type: 'image/png',
 			description: sprintf(
 				/* translators: 1: Provider name, 2: Model name, 3: Date, 4: Prompt. */
 				__( 'Generated by %1$s using %2$s on %3$s. Prompt: %4$s', 'hdc-ai-media-modal' ),
-				imagePayload.provider_metadata?.name || __( 'AI provider', 'hdc-ai-media-modal' ),
-				imagePayload.model_metadata?.name || __( 'AI model', 'hdc-ai-media-modal' ),
+				getNestedValue( imagePayload, [ 'provider_metadata', 'name' ], '' ) || __( 'AI provider', 'hdc-ai-media-modal' ),
+				getNestedValue( imagePayload, [ 'model_metadata', 'name' ], '' ) || __( 'AI model', 'hdc-ai-media-modal' ),
 				new Date().toLocaleDateString(),
 				prompt
 			),
-			meta: [
-				{
-					key: 'ai_generated',
-					value: '1',
-				},
-			],
 		};
 
-		if ( ! isClassifaiImage ) {
+		if ( config.aiImageAbilityEnabled ) {
+			importInput.meta = {
+				ai_generated: 1,
+			};
+		}
+
+		if ( config.altTextEnabled ) {
 			onProgress( __( 'Generating alt text…', 'hdc-ai-media-modal' ) );
-			importInput.alt_text = await maybeGenerateAltText( imagePayload.data, prompt );
+			importInput.alt_text = await maybeGenerateAltText( imagePayload.data, mimeType, prompt );
 		} else {
 			importInput.alt_text = prompt;
 		}
 		importInput.title = truncateTitle( importInput.alt_text || prompt || __( 'AI generated image', 'hdc-ai-media-modal' ) );
 
 		onProgress( __( 'Saving to the Media Library…', 'hdc-ai-media-modal' ) );
-		const imported = await executeAbility( 'ai/image-import', importInput );
 
-		if ( ! imported || typeof imported !== 'object' || ! imported.image ) {
-			throw new Error( __( 'The generated image could not be imported.', 'hdc-ai-media-modal' ) );
-		}
+		const postSettings = wp && wp.media && wp.media.model && wp.media.model.settings
+			? wp.media.model.settings
+			: null;
+		const postId =
+			postSettings && postSettings.post && postSettings.post.id
+				? postSettings.post.id
+				: 0;
 
-		return imported.image;
+		return uploadGeneratedImage( imagePayload.data, prompt, {
+			post: postId,
+			title: importInput.title,
+			alt_text: importInput.alt_text,
+			description: importInput.description,
+			meta: importInput.meta,
+		} );
 	}
 
 	const GenerateImageView = wp.media.View.extend( {
@@ -271,8 +485,14 @@
 		},
 
 		render() {
-			const previewSrc = this.state.generated?.image?.data
-				? `data:image/png;base64,${ this.state.generated.image.data }`
+			const generatedImage = this.state.generated && this.state.generated.image
+				? this.state.generated.image
+				: null;
+			const previewSrc = generatedImage && generatedImage.data
+				? buildDataUri(
+					generatedImage.data,
+					getImageMimeType( generatedImage )
+				)
 				: '';
 
 			this.$el.html(
@@ -283,7 +503,7 @@
 					errorMessage: this.state.errorMessage,
 					previewSrc,
 					hasGeneratedImage: !! previewSrc,
-					importedId: this.state.imported?.id || 0,
+					importedId: this.state.imported && this.state.imported.id ? this.state.imported.id : 0,
 				} )
 			);
 
@@ -385,7 +605,7 @@
 		},
 
 		async selectImportedAttachment() {
-			if ( ! this.state.imported?.id ) {
+			if ( ! this.state.imported || ! this.state.imported.id ) {
 				return;
 			}
 
@@ -393,7 +613,7 @@
 			await attachment.fetch();
 
 			const currentState = this.frame.state();
-			const selection = currentState?.get ? currentState.get( 'selection' ) : null;
+			const selection = currentState && currentState.get ? currentState.get( 'selection' ) : null;
 
 			if ( selection ) {
 				selection.reset( [ attachment ] );
@@ -449,7 +669,7 @@
 
 	function focusGenerateTab( frame ) {
 		window.setTimeout( () => {
-			if ( frame?.$el ) {
+			if ( frame && frame.$el ) {
 				const menuItem = frame.$el.find( `#menu-item-${ TAB_ID }` );
 
 				if ( menuItem.length ) {
@@ -483,6 +703,23 @@
 		} );
 
 		uploadFrame.open();
+	}
+
+	function maybeAutoOpenGenerateFrame() {
+		if ( ! config.autoOpen ) {
+			return;
+		}
+
+		openGenerateFrame();
+
+		if (
+			window.history &&
+			typeof window.history.replaceState === 'function' &&
+			typeof config.uploadUrl === 'string' &&
+			config.uploadUrl
+		) {
+			window.history.replaceState( {}, document.title, config.uploadUrl );
+		}
 	}
 
 	function injectUploadButton() {
@@ -532,10 +769,15 @@
 
 	patchMediaFrames();
 
-	if ( document.readyState === 'loading' ) {
-		document.addEventListener( 'DOMContentLoaded', injectUploadButton );
-	} else {
+	function bootstrapUploadScreen() {
 		injectUploadButton();
+		maybeAutoOpenGenerateFrame();
+	}
+
+	if ( document.readyState === 'loading' ) {
+		document.addEventListener( 'DOMContentLoaded', bootstrapUploadScreen );
+	} else {
+		bootstrapUploadScreen();
 	}
 
 	if ( config.isUploadScreen && document.body.classList.contains( 'upload-php' ) ) {

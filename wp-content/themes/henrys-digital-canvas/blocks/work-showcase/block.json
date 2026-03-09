@@ -59,21 +59,9 @@
 			"type": "number",
 			"default": 8
 		},
-		"githubProxyUrl": {
-			"type": "string",
-			"default": "/api/github/repos"
-		},
-		"githubLanguageSummaryProxyUrl": {
-			"type": "string",
-			"default": "/api/github/language-summary"
-		},
-		"githubRepoProofsProxyUrl": {
-			"type": "string",
-			"default": "/api/github/repo-proofs"
-		},
 		"languageSummaryMaxRepos": {
 			"type": "number",
-			"default": 120
+			"default": 80
 		}
 	},
 	"editorScript": "file:./index.js",

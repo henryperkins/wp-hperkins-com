@@ -22,6 +22,7 @@ $config = array(
 	'pageTitle'    => sanitize_text_field( (string) ( $about_content['pageTitle'] ?? 'About — Henry Perkins' ) ),
 	'heading'      => sanitize_text_field( $attrs['heading'] ),
 	'intro'        => isset( $about_content['intro'] ) && is_array( $about_content['intro'] ) ? array_values( $about_content['intro'] ) : array(),
+	'profile'      => isset( $about_content['profile'] ) && is_array( $about_content['profile'] ) ? $about_content['profile'] : array(),
 	'sectionLabels' => isset( $about_content['sectionLabels'] ) && is_array( $about_content['sectionLabels'] ) ? $about_content['sectionLabels'] : array(),
 	'valueCards'   => isset( $about_content['valueCards'] ) && is_array( $about_content['valueCards'] ) ? array_values( $about_content['valueCards'] ) : array(),
 	'timeline'     => isset( $about_content['timeline'] ) && is_array( $about_content['timeline'] ) ? array_values( $about_content['timeline'] ) : array(),

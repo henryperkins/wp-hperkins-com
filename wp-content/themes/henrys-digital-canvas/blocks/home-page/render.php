@@ -19,7 +19,7 @@ $config = array(
 	'recentWriting'  => isset( $home_content['recentWriting'] ) && is_array( $home_content['recentWriting'] ) ? $home_content['recentWriting'] : array(),
 	'contactCta'     => isset( $home_content['contactCta'] ) && is_array( $home_content['contactCta'] ) ? $home_content['contactCta'] : array(),
 	'repoTitles'     => isset( $home_content['repoTitles'] ) && is_array( $home_content['repoTitles'] ) ? $home_content['repoTitles'] : array(),
-	'githubUsername' => hdc_get_first_available_config_value( array( 'HDC_GITHUB_REPO_OWNER', 'GITHUB_REPO_OWNER' ) ),
+	'githubUsername' => hdc_get_configured_github_owner(),
 	'githubProxyUrl' => '/api/github/repos',
 	'workEndpoint'   => esc_url_raw( rest_url( 'henrys-digital-canvas/v1/work' ) ),
 	'blogEndpoint'   => esc_url_raw( add_query_arg( 'limit', 3, rest_url( 'henrys-digital-canvas/v1/blog' ) ) ),
@@ -27,10 +27,6 @@ $config = array(
 	'blogCount'      => 3,
 	'repoCount'      => 3,
 );
-
-if ( '' === trim( (string) $config['githubUsername'] ) ) {
-	$config['githubUsername'] = 'henryperkins';
-}
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(

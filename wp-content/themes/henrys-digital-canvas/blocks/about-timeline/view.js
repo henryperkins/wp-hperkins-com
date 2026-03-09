@@ -28,6 +28,10 @@
 		return Array.isArray( value ) ? value : [];
 	}
 
+	function ensureObject( value ) {
+		return value && typeof value === 'object' ? value : {};
+	}
+
 	function parseConfig( section ) {
 		let parsed = {};
 		try {
@@ -44,6 +48,19 @@
 					return ensureString( paragraph, '' );
 				} )
 				.filter( Boolean ),
+			profile: ( function () {
+				const profile = ensureObject( parsed.profile );
+				const defaultImageUrl = 'https://www.gravatar.com/avatar/251a0a7f43fc6a5086ffa73cebc49ab2?s=384';
+				const defaultCardAvatarUrl = 'https://www.gravatar.com/avatar/251a0a7f43fc6a5086ffa73cebc49ab2?s=128';
+				return {
+					imageUrl: ensureString( profile.imageUrl, defaultImageUrl ),
+					imageAlt: ensureString( profile.imageAlt, 'Henry Perkins' ),
+					cardAvatarUrl: ensureString( profile.cardAvatarUrl, defaultCardAvatarUrl ),
+					cardName: ensureString( profile.cardName, 'Henry Perkins' ),
+					cardTitle: ensureString( profile.cardTitle, 'Founder, Lakefront Digital' ),
+					linkedinUrl: ensureString( profile.linkedinUrl, 'https://linkedin.com/in/henryperkins' ),
+				};
+			} )(),
 			sectionLabels: {
 				values: ensureString(
 					parsed.sectionLabels && parsed.sectionLabels.values,
@@ -100,7 +117,19 @@
 			h(
 				'div',
 				{ className: 'hdc-about-timeline__intro hdc-about-timeline__intro--animated' },
-				h( 'div', { className: 'hdc-about-timeline__avatar', 'aria-hidden': 'true' }, 'HP' ),
+				h(
+					'div',
+					{ className: 'hdc-about-timeline__intro-media' },
+					config.profile.imageUrl
+						? h( 'img', {
+							className: 'hdc-about-timeline__portrait',
+							src: config.profile.imageUrl,
+							alt: config.profile.imageAlt,
+							decoding: 'async',
+							loading: 'eager',
+						} )
+						: h( 'div', { className: 'hdc-about-timeline__avatar', 'aria-hidden': 'true' }, 'HP' )
+				),
 				h(
 					'div',
 					{ className: 'hdc-about-timeline__copy' },
@@ -113,7 +142,42 @@
 							},
 							paragraph
 						);
-					} )
+					} ),
+					config.profile.linkedinUrl
+						? h(
+							'a',
+							{
+								className: 'hdc-about-timeline__profile-card',
+								href: config.profile.linkedinUrl,
+								target: '_blank',
+								rel: 'noopener noreferrer',
+								'aria-label': config.profile.cardName + ' ' + config.profile.cardTitle,
+							},
+							config.profile.cardAvatarUrl
+								? h( 'img', {
+									className: 'hdc-about-timeline__profile-avatar',
+									src: config.profile.cardAvatarUrl,
+									alt: '',
+									decoding: 'async',
+									loading: 'lazy',
+								} )
+								: null,
+							h(
+								'span',
+								{ className: 'hdc-about-timeline__profile-copy' },
+								h( 'span', { className: 'hdc-about-timeline__profile-name' }, config.profile.cardName ),
+								h( 'span', { className: 'hdc-about-timeline__profile-title' }, config.profile.cardTitle )
+							),
+							h(
+								'span',
+								{ className: 'hdc-about-timeline__profile-icon', 'aria-hidden': 'true' },
+								renderLucideIcon( h, 'linkedin', {
+									className: 'hdc-about-timeline__profile-icon-svg',
+									size: 18,
+								} )
+							)
+						)
+						: null
 				)
 			),
 			config.showValues && config.valueCards.length
@@ -171,13 +235,17 @@
 									'div',
 									{ className: 'hdc-about-timeline__row-main' },
 									h(
-										'p',
-										{ className: 'hdc-about-timeline__year' },
-										item.periodDateTime
-											? h( 'time', { dateTime: item.periodDateTime }, item.periodLabel )
-											: item.periodLabel
+										'div',
+										{ className: 'hdc-about-timeline__row-header' },
+										h( 'h3', { className: 'hdc-about-timeline__row-title' }, item.title ),
+										h(
+											'p',
+											{ className: 'hdc-about-timeline__year' },
+											item.periodDateTime
+												? h( 'time', { dateTime: item.periodDateTime }, item.periodLabel )
+												: item.periodLabel
+										)
 									),
-									h( 'h3', { className: 'hdc-about-timeline__row-title' }, item.title ),
 									h( 'p', { className: 'hdc-about-timeline__text' }, item.detail )
 								)
 							);

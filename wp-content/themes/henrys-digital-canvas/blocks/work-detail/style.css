@@ -242,6 +242,7 @@
 .hdc-work-detail__button:hover,
 .hdc-work-detail__button:focus-visible {
   outline: none;
+  box-shadow: 0 0 0 1px hsl(var(--interactive-border-active));
 }
 
 .hdc-work-detail__button-icon {

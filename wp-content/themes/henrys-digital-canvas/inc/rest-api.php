@@ -12,16 +12,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Resolve the best-available client IP for contact verification and rate limiting.
  *
+ * Prefers trusted proxy headers (CF-Connecting-IP for Cloudflare) over the
+ * spoofable X-Forwarded-For, and always falls back to REMOTE_ADDR.
+ *
  * @return string
  */
 function hdc_get_contact_client_ip() {
+	// Cloudflare sets this to the true client IP; it cannot be spoofed through CF.
+	if ( ! empty( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) {
+		return sanitize_text_field( wp_unslash( (string) $_SERVER['HTTP_CF_CONNECTING_IP'] ) );
+	}
+
+	// REMOTE_ADDR is set by the web server and is reliable when not behind a proxy.
+	$remote_addr = sanitize_text_field( (string) ( $_SERVER['REMOTE_ADDR'] ?? '' ) );
+	if ( '' !== $remote_addr && 'unknown' !== $remote_addr ) {
+		return $remote_addr;
+	}
+
+	// Last resort: X-Forwarded-For (first entry). Only reached when REMOTE_ADDR is
+	// unavailable, which is unusual outside of non-standard proxy configurations.
 	$forwarded_for = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? wp_unslash( (string) $_SERVER['HTTP_X_FORWARDED_FOR'] ) : '';
 	if ( '' !== trim( $forwarded_for ) ) {
 		$forwarded_parts = explode( ',', $forwarded_for );
 		return sanitize_text_field( trim( (string) $forwarded_parts[0] ) );
 	}
 
-	return sanitize_text_field( (string) ( $_SERVER['REMOTE_ADDR'] ?? 'unknown' ) );
+	return 'unknown';
 }
 
 /**
@@ -566,6 +582,22 @@ function hdc_handle_legacy_contact_endpoint( $wp ) {
 		exit;
 	}
 
+	// Verify Origin or Referer matches this site to mitigate CSRF.
+	$site_host   = strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
+	$origin      = isset( $_SERVER['HTTP_ORIGIN'] ) ? strtolower( (string) wp_parse_url( wp_unslash( $_SERVER['HTTP_ORIGIN'] ), PHP_URL_HOST ) ) : '';
+	$referer     = isset( $_SERVER['HTTP_REFERER'] ) ? strtolower( (string) wp_parse_url( wp_unslash( $_SERVER['HTTP_REFERER'] ), PHP_URL_HOST ) ) : '';
+	$origin_ok   = ( '' !== $origin && $origin === $site_host ) || ( '' !== $referer && $referer === $site_host );
+
+	if ( ! $origin_ok ) {
+		status_header( 403 );
+		echo wp_json_encode(
+			array(
+				'error' => __( 'Request origin not allowed.', 'henrys-digital-canvas' ),
+			)
+		);
+		exit;
+	}
+
 	$raw_body = file_get_contents( 'php://input' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 	$payload  = json_decode( (string) $raw_body, true );
 	if ( ! is_array( $payload ) ) {
@@ -617,31 +649,37 @@ function hdc_clamp_int( $value, $default, $min, $max ) {
 /**
  * Resolve GitHub repository owner from query params or configured defaults.
  *
- * @return string
+ * @return string|WP_Error
  */
 function hdc_resolve_github_username() {
-	$username = isset( $_GET['username'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['username'] ) ) : '';
-	if ( '' !== $username && preg_match( '/^[A-Za-z0-9-]{1,39}$/', $username ) ) {
-		return $username;
-	}
-
-	$configured_owner = '';
-	if ( defined( 'HDC_GITHUB_REPO_OWNER' ) && is_string( HDC_GITHUB_REPO_OWNER ) ) {
-		$configured_owner = HDC_GITHUB_REPO_OWNER;
-	}
-	if ( '' === trim( $configured_owner ) ) {
-		$env_owner = getenv( 'GITHUB_REPO_OWNER' );
-		if ( is_string( $env_owner ) ) {
-			$configured_owner = $env_owner;
-		}
-	}
-
+	$configured_owner = apply_filters( 'hdc_github_repo_owner', hdc_get_configured_github_owner() );
 	$configured_owner = sanitize_text_field( (string) $configured_owner );
 	if ( ! preg_match( '/^[A-Za-z0-9-]{1,39}$/', $configured_owner ) ) {
-		$configured_owner = 'henryperkins';
+		$configured_owner = hdc_get_configured_github_owner();
 	}
 
-	return apply_filters( 'hdc_github_repo_owner', $configured_owner );
+	$username = isset( $_GET['username'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['username'] ) ) : '';
+	if ( '' === $username ) {
+		return $configured_owner;
+	}
+
+	if ( ! preg_match( '/^[A-Za-z0-9-]{1,39}$/', $username ) ) {
+		return new WP_Error(
+			'hdc_invalid_github_username',
+			__( 'Invalid GitHub username.', 'henrys-digital-canvas' ),
+			array( 'status' => 400 )
+		);
+	}
+
+	if ( 0 !== strcasecmp( $username, $configured_owner ) ) {
+		return new WP_Error(
+			'hdc_github_username_not_allowed',
+			__( 'This endpoint only supports the configured GitHub owner.', 'henrys-digital-canvas' ),
+			array( 'status' => 400 )
+		);
+	}
+
+	return $configured_owner;
 }
 
 /**
@@ -772,6 +810,39 @@ function hdc_get_github_rate_limit_headers( $response ) {
 }
 
 /**
+ * Estimate retry-after seconds from GitHub rate-limit headers.
+ *
+ * @param array|string|null $response WordPress HTTP response array or null.
+ * @return int
+ */
+function hdc_get_github_rate_limit_retry_after_seconds( $response ) {
+	if ( ! is_array( $response ) ) {
+		return 60;
+	}
+
+	$retry_after = wp_remote_retrieve_header( $response, 'retry-after' );
+	if ( is_array( $retry_after ) ) {
+		$retry_after = reset( $retry_after );
+	}
+	if ( is_numeric( $retry_after ) ) {
+		return max( 60, min( 1800, (int) $retry_after ) );
+	}
+
+	$reset_time = wp_remote_retrieve_header( $response, 'x-ratelimit-reset' );
+	if ( is_array( $reset_time ) ) {
+		$reset_time = reset( $reset_time );
+	}
+	if ( is_numeric( $reset_time ) ) {
+		$seconds_until_reset = (int) $reset_time - time();
+		if ( $seconds_until_reset > 0 ) {
+			return max( 60, min( 1800, $seconds_until_reset ) );
+		}
+	}
+
+	return 60;
+}
+
+/**
  * Send a JSON response and terminate request handling.
  *
  * @param int                  $status_code HTTP status code.
@@ -800,6 +871,26 @@ function hdc_send_legacy_json_response( $status_code, $payload, $cache_control, 
 	status_header( $status_code );
 	echo wp_json_encode( $payload );
 	exit;
+}
+
+/**
+ * Decorate a cached language summary payload for stale fallback responses.
+ *
+ * @param array  $payload Cached successful payload.
+ * @param string $error_message User-facing error message.
+ * @return array
+ */
+function hdc_build_stale_github_language_summary_payload( $payload, $error_message ) {
+	if ( ! is_array( $payload ) ) {
+		return array();
+	}
+
+	$payload['stale'] = true;
+	if ( '' !== trim( $error_message ) ) {
+		$payload['error'] = sanitize_text_field( $error_message );
+	}
+
+	return $payload;
 }
 
 /**
@@ -1132,6 +1223,17 @@ function hdc_handle_legacy_github_repos_endpoint( $wp ) {
 	}
 
 	$username = hdc_resolve_github_username();
+	if ( is_wp_error( $username ) ) {
+		$error_data = $username->get_error_data();
+		hdc_send_legacy_json_response(
+			is_array( $error_data ) && ! empty( $error_data['status'] ) ? (int) $error_data['status'] : 400,
+			array(
+				'error' => $username->get_error_message(),
+			),
+			'no-store, no-cache, must-revalidate, max-age=0'
+		);
+	}
+
 	$per_page = hdc_clamp_int( $_GET['per_page'] ?? null, 100, 1, 100 );
 	$page     = hdc_clamp_int( $_GET['page'] ?? null, 1, 1, 1000 );
 	$cache_key = 'hdc_legacy_github_repos_' . md5( $username . '|' . $per_page . '|' . $page );
@@ -1212,10 +1314,23 @@ function hdc_handle_legacy_github_language_summary_endpoint( $wp ) {
 		);
 	}
 
-	$username  = hdc_resolve_github_username();
-	$max_repos = hdc_clamp_int( $_GET['max_repos'] ?? null, 100, 1, 200 );
-	$cache_key = 'hdc_legacy_github_language_summary_' . md5( $username . '|' . $max_repos );
-	$cached    = get_transient( $cache_key );
+	$username = hdc_resolve_github_username();
+	if ( is_wp_error( $username ) ) {
+		$error_data = $username->get_error_data();
+		hdc_send_legacy_json_response(
+			is_array( $error_data ) && ! empty( $error_data['status'] ) ? (int) $error_data['status'] : 400,
+			array(
+				'error' => $username->get_error_message(),
+			),
+			'no-store, no-cache, must-revalidate, max-age=0'
+		);
+	}
+
+	$max_repos       = hdc_clamp_int( $_GET['max_repos'] ?? null, 80, 1, 80 );
+	$cache_key       = 'hdc_legacy_github_language_summary_' . md5( $username . '|' . $max_repos );
+	$stale_cache_key = $cache_key . '_stale';
+	$cooldown_key    = 'hdc_legacy_github_language_summary_cooldown_' . md5( $username );
+	$cached          = get_transient( $cache_key );
 
 	if ( is_array( $cached ) ) {
 		hdc_send_legacy_json_response(
@@ -1225,13 +1340,42 @@ function hdc_handle_legacy_github_language_summary_endpoint( $wp ) {
 		);
 	}
 
+	$stale_cached = get_transient( $stale_cache_key );
+	$cooldown     = (int) get_transient( $cooldown_key );
+	if ( $cooldown > 0 ) {
+		$cooldown_headers = array(
+			'retry-after' => (string) $cooldown,
+		);
+
+		if ( is_array( $stale_cached ) ) {
+			hdc_send_legacy_json_response(
+				503,
+				hdc_build_stale_github_language_summary_payload(
+					$stale_cached,
+					__( 'Showing cached language totals while GitHub is temporarily unavailable.', 'henrys-digital-canvas' )
+				),
+				'no-store, no-cache, must-revalidate, max-age=0',
+				$cooldown_headers
+			);
+		}
+
+		hdc_send_legacy_json_response(
+			503,
+			array(
+				'error' => __( 'GitHub language summary is temporarily unavailable.', 'henrys-digital-canvas' ),
+			),
+			'no-store, no-cache, must-revalidate, max-age=0',
+			$cooldown_headers
+		);
+	}
+
 	$headers                   = hdc_get_github_request_headers();
 	$latest_rate_limit_headers = array();
+	$repositories              = array();
 	$per_page                  = 100;
-	$page_limit                = max( 1, (int) ceil( $max_repos / $per_page ) + 1 );
-	$all_repos                 = array();
+	$page_limit                = 2;
 
-	for ( $page = 1; $page <= $page_limit; $page++ ) {
+	for ( $page = 1; $page <= $page_limit && count( $repositories ) < $max_repos; $page++ ) {
 		$list_url = add_query_arg(
 			array(
 				'per_page' => $per_page,
@@ -1240,43 +1384,78 @@ function hdc_handle_legacy_github_language_summary_endpoint( $wp ) {
 			'https://api.github.com/users/' . rawurlencode( $username ) . '/repos'
 		);
 
-		$page_result = hdc_fetch_github_json( $list_url, $headers );
+		$page_result               = hdc_fetch_github_json( $list_url, $headers );
 		$latest_rate_limit_headers = hdc_get_github_rate_limit_headers( $page_result['response'] ?? null );
 
 		if ( empty( $page_result['ok'] ) ) {
+			if ( hdc_is_rate_limited_github_result( $page_result ) ) {
+				$cooldown = hdc_get_github_rate_limit_retry_after_seconds( $page_result['response'] ?? null );
+				set_transient( $cooldown_key, $cooldown, $cooldown );
+				$latest_rate_limit_headers['retry-after'] = (string) $cooldown;
+			}
+
+			$error_message = hdc_extract_github_payload_message( $page_result['payload'] ?? array() );
+			if ( '' === $error_message ) {
+				$error_message = __( 'GitHub language summary request failed.', 'henrys-digital-canvas' );
+			}
+
+			if ( is_array( $stale_cached ) ) {
+				hdc_send_legacy_json_response(
+					503,
+					hdc_build_stale_github_language_summary_payload( $stale_cached, $error_message ),
+					'no-store, no-cache, must-revalidate, max-age=0',
+					$latest_rate_limit_headers
+				);
+			}
+
 			hdc_send_legacy_json_response(
 				(int) ( $page_result['status'] ?? 502 ),
-				$page_result['payload'] ?? array( 'error' => 'GitHub API request failed' ),
+				$page_result['payload'] ?? array( 'error' => $error_message ),
 				'no-store, no-cache, must-revalidate, max-age=0',
 				$latest_rate_limit_headers
 			);
 		}
 
 		if ( ! is_array( $page_result['payload'] ) ) {
+			if ( is_array( $stale_cached ) ) {
+				hdc_send_legacy_json_response(
+					503,
+					hdc_build_stale_github_language_summary_payload(
+						$stale_cached,
+						__( 'Showing cached language totals because GitHub returned an unexpected response.', 'henrys-digital-canvas' )
+					),
+					'no-store, no-cache, must-revalidate, max-age=0',
+					$latest_rate_limit_headers
+				);
+			}
+
 			hdc_send_legacy_json_response(
 				502,
-				array( 'error' => 'Unexpected GitHub response shape' ),
+				array(
+					'error' => __( 'Unexpected GitHub response shape.', 'henrys-digital-canvas' ),
+				),
 				'no-store, no-cache, must-revalidate, max-age=0',
 				$latest_rate_limit_headers
 			);
 		}
 
 		$sanitized_page = array_map( 'hdc_sanitize_github_repo', $page_result['payload'] );
-		$all_repos      = array_merge( $all_repos, $sanitized_page );
+		foreach ( $sanitized_page as $repo ) {
+			if ( ! is_array( $repo ) || empty( $repo['name'] ) || ! empty( $repo['fork'] ) || ! empty( $repo['archived'] ) ) {
+				continue;
+			}
 
-		if ( count( $sanitized_page ) < $per_page || count( $all_repos ) >= $max_repos ) {
+			$repositories[] = $repo;
+			if ( count( $repositories ) >= $max_repos ) {
+				break 2;
+			}
+		}
+
+		if ( count( $page_result['payload'] ) < $per_page ) {
 			break;
 		}
 	}
 
-	$repositories = array_values(
-		array_filter(
-			$all_repos,
-			static function ( $repo ) {
-				return is_array( $repo ) && ! empty( $repo['name'] ) && empty( $repo['fork'] ) && empty( $repo['archived'] );
-			}
-		)
-	);
 	$repositories = array_slice( $repositories, 0, $max_repos );
 
 	$repo_language_counts = array();
@@ -1297,12 +1476,17 @@ function hdc_handle_legacy_github_language_summary_endpoint( $wp ) {
 			continue;
 		}
 
-		$language_url = 'https://api.github.com/repos/' . rawurlencode( $username ) . '/' . rawurlencode( $repo_name ) . '/languages';
-		$language_result = hdc_fetch_github_json( $language_url, $headers );
+		$language_url              = 'https://api.github.com/repos/' . rawurlencode( $username ) . '/' . rawurlencode( $repo_name ) . '/languages';
+		$language_result           = hdc_fetch_github_json( $language_url, $headers );
 		$latest_rate_limit_headers = hdc_get_github_rate_limit_headers( $language_result['response'] ?? null );
 
 		if ( empty( $language_result['ok'] ) ) {
 			$failed_language_request_count++;
+			if ( hdc_is_rate_limited_github_result( $language_result ) ) {
+				$cooldown = hdc_get_github_rate_limit_retry_after_seconds( $language_result['response'] ?? null );
+				set_transient( $cooldown_key, $cooldown, $cooldown );
+				$latest_rate_limit_headers['retry-after'] = (string) $cooldown;
+			}
 			continue;
 		}
 
@@ -1312,15 +1496,42 @@ function hdc_handle_legacy_github_language_summary_endpoint( $wp ) {
 		}
 	}
 
+	if ( $failed_language_request_count > 0 ) {
+		$error_message = __( 'GitHub language-byte totals are temporarily unavailable.', 'henrys-digital-canvas' );
+		if ( is_array( $stale_cached ) ) {
+			hdc_send_legacy_json_response(
+				503,
+				hdc_build_stale_github_language_summary_payload( $stale_cached, $error_message ),
+				'no-store, no-cache, must-revalidate, max-age=0',
+				$latest_rate_limit_headers
+			);
+		}
+
+		hdc_send_legacy_json_response(
+			503,
+			array(
+				'error'                      => $error_message,
+				'byteDataIncomplete'         => true,
+				'failedLanguageRequestCount' => $failed_language_request_count,
+			),
+			'no-store, no-cache, must-revalidate, max-age=0',
+			$latest_rate_limit_headers
+		);
+	}
+
+	delete_transient( $cooldown_key );
+
 	$response_payload = array(
-		'username'                 => $username,
-		'analyzedRepoCount'        => count( $repositories ),
-		'repoLanguageCounts'       => hdc_sort_language_counts_desc( $repo_language_counts ),
-		'languageByteTotals'       => hdc_sort_language_bytes_desc( $language_byte_totals ),
-		'byteDataIncomplete'       => $failed_language_request_count > 0,
-		'failedLanguageRequestCount' => $failed_language_request_count,
+		'username'                   => $username,
+		'analyzedRepoCount'          => count( $repositories ),
+		'repoLanguageCounts'         => hdc_sort_language_counts_desc( $repo_language_counts ),
+		'languageByteTotals'         => hdc_sort_language_bytes_desc( $language_byte_totals ),
+		'byteDataIncomplete'         => false,
+		'failedLanguageRequestCount' => 0,
+		'stale'                      => false,
 	);
 	set_transient( $cache_key, $response_payload, 300 );
+	set_transient( $stale_cache_key, $response_payload, DAY_IN_SECONDS );
 
 	hdc_send_legacy_json_response(
 		200,
@@ -1358,6 +1569,17 @@ function hdc_handle_legacy_github_repo_proofs_endpoint( $wp ) {
 	}
 
 	$username  = hdc_resolve_github_username();
+	if ( is_wp_error( $username ) ) {
+		$error_data = $username->get_error_data();
+		hdc_send_legacy_json_response(
+			is_array( $error_data ) && ! empty( $error_data['status'] ) ? (int) $error_data['status'] : 400,
+			array(
+				'error' => $username->get_error_message(),
+			),
+			'no-store, no-cache, must-revalidate, max-age=0'
+		);
+	}
+
 	$max_repos = hdc_clamp_int( $_GET['max_repos'] ?? null, 9, 1, 12 );
 	$repo_names = hdc_parse_requested_github_repo_names( $max_repos );
 

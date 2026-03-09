@@ -349,6 +349,22 @@
   overflow: hidden;
 }
 
+.hdc-home-page__empty-state {
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-surface);
+  display: grid;
+  gap: 0.5rem;
+  padding: 1.25rem 1.5rem;
+}
+
+.hdc-home-page__empty-title {
+  color: hsl(var(--foreground));
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0;
+}
+
 .hdc-home-page__resume-card {
   display: grid;
   gap: 1rem;
@@ -363,6 +379,25 @@
 .hdc-home-page__resume-stack {
   display: grid;
   gap: 0.85rem;
+}
+
+.hdc-home-page__resume-snapshot {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.hdc-home-page__resume-snapshot-label {
+  color: hsl(var(--text-accent));
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.hdc-home-page__resume-snapshot-items {
+  color: hsl(var(--text-subtle));
+  font-size: 0.78rem;
+  line-height: 1.6;
+  margin: 0;
 }
 
 .hdc-home-page__resume-latest {

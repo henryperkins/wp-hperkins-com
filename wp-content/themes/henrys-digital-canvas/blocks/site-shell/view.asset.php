@@ -1,5 +1,5 @@
 <?php
 return array(
 	'dependencies' => array( 'hdc-shared-utils' ),
-	'version'      => '1.0.0',
+	'version'      => filemtime( __DIR__ . '/view.js' ),
 );

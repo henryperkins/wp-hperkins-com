@@ -4,6 +4,7 @@ set -euo pipefail
 BASE_URL="${BASE_URL:-https://wp.hperkins.com}"
 BLOG_LIMIT="${BLOG_LIMIT:-3}"
 BLOG_DETAIL_SLUG="${BLOG_DETAIL_SLUG:-wordpress-ai-use-cases-developers-admins}"
+WORK_DETAIL_REPO="${WORK_DETAIL_REPO:-henry-s-digital-canvas}"
 
 endpoints=(
   "/wp-json/henrys-digital-canvas/v1/resume|200"
@@ -12,7 +13,7 @@ endpoints=(
   "/wp-json/henrys-digital-canvas/v1/blog?limit=${BLOG_LIMIT}|200"
   "/wp-json/henrys-digital-canvas/v1/blog/${BLOG_DETAIL_SLUG}|200"
   "/wp-json/henrys-digital-canvas/v1/work?limit=3|200"
-  "/wp-json/henrys-digital-canvas/v1/work/lakefront-digital-portfolio|200"
+  "/wp-json/henrys-digital-canvas/v1/work/${WORK_DETAIL_REPO}|200"
 )
 
 failures=0

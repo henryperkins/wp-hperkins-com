@@ -1191,7 +1191,7 @@
 						DetailSectionCard,
 						{
 							title: 'Case Study Breakdown',
-							description: 'The Challenge -> Technical Approach -> Shipped Results',
+							description: 'The Challenge \u2192 Technical Approach \u2192 Shipped Results',
 						},
 						h(
 							'div',

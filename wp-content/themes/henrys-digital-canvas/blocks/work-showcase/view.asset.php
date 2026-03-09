@@ -10,5 +10,5 @@ return array(
 		'hdc-shared-utils',
 		'wp-element',
 	),
-	'version'      => '20260304001721',
+	'version'      => filemtime( __DIR__ . '/view.js' ),
 );

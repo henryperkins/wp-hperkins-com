@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "description": "Operational smoke checks for Henry's Digital Canvas WordPress child theme",
   "scripts": {
+    "sync:pages": "./scripts/sync_page_sources.sh",
     "smoke:route": "./scripts/route_smoke.sh",
     "smoke:api": "./scripts/api_smoke.sh",
     "smoke:browser": "./scripts/browser_smoke.sh",
