@@ -10,8 +10,7 @@
 
 .hdc-blog-index__status,
 .hdc-blog-index__error,
-.hdc-blog-index__empty,
-.hdc-blog-index__source {
+.hdc-blog-index__empty {
   color: hsl(var(--text-meta));
   font-size: 0.9rem;
 }
@@ -42,12 +41,6 @@
   font-size: 0.95rem;
   margin: 0.45rem 0 0;
   max-width: 72ch;
-}
-
-.hdc-blog-index__source {
-  font-size: 0.78rem;
-  margin: 0.45rem 0 0;
-  text-transform: uppercase;
 }
 
 .hdc-blog-index__empty-state {

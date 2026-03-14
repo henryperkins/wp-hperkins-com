@@ -356,10 +356,7 @@
 				{ className: 'hdc-blog-index__intro' },
 				h( 'p', { className: 'hdc-blog-index__eyebrow' }, 'Insights' ),
 				h( 'h1', { className: 'hdc-blog-index__title' }, config.heading || 'Blog' ),
-				config.description ? h( 'p', { className: 'hdc-blog-index__description' }, config.description ) : null,
-				state.source && state.source !== 'unknown'
-					? h( 'p', { className: 'hdc-blog-index__source' }, 'Source: ' + state.source )
-					: null
+				config.description ? h( 'p', { className: 'hdc-blog-index__description' }, config.description ) : null
 			),
 			featured
 				? h(
