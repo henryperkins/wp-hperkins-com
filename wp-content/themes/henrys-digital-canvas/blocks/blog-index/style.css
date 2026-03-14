@@ -2,10 +2,26 @@
   display: block;
 }
 
-.hdc-blog-index__shell {
+.hdc-blog-index__hero {
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.hdc-blog-index__hero-inner {
   margin: 0 auto;
-  max-width: 1120px;
-  padding: 2rem 1rem;
+  max-width: 64rem;
+  padding: 3rem 1rem;
+}
+
+.hdc-blog-index__content {
+  margin: 0 auto;
+  max-width: 64rem;
+  padding: 3rem 1rem 2rem;
+}
+
+@media (min-width: 768px) {
+  .hdc-blog-index__hero-inner {
+    padding: 3.5rem 1rem;
+  }
 }
 
 .hdc-blog-index__status,
@@ -16,7 +32,7 @@
 }
 
 .hdc-blog-index__intro {
-  margin-bottom: 1.2rem;
+  margin-bottom: 0;
 }
 
 .hdc-blog-index__eyebrow {

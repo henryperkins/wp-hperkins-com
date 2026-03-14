@@ -352,177 +352,189 @@
 			'div',
 			{},
 			h(
-				'header',
-				{ className: 'hdc-blog-index__intro' },
-				h( 'p', { className: 'hdc-blog-index__eyebrow' }, 'Insights' ),
-				h( 'h1', { className: 'hdc-blog-index__title' }, config.heading || 'Blog' ),
-				config.description ? h( 'p', { className: 'hdc-blog-index__description' }, config.description ) : null
-			),
-			featured
-				? h(
-					'a',
-					{
-						className: 'hdc-blog-index__featured',
-						href: buildPostUrl( featured, config ),
-					},
-					h( 'span', { className: 'hdc-blog-index__featured-pill' }, 'Featured' ),
-					featured.featuredImageUrl
-						? h(
-							'div',
-							{ className: 'hdc-blog-index__featured-image-wrap' },
-							h( 'img', {
-								className: 'hdc-blog-index__featured-image',
-								src: featured.featuredImageUrl,
-								srcSet: featured.featuredImageSrcSet || undefined,
-								sizes: '(max-width: 900px) 100vw, 1120px',
-								alt: buildImageAlt( featured ),
-								loading: 'eager',
-								decoding: 'async',
-							} )
-						)
-						: null,
-					h( 'h3', { className: 'hdc-blog-index__featured-title' }, featured.title ),
-					h( 'p', { className: 'hdc-blog-index__featured-excerpt' }, featured.excerpt ),
-					h(
-						'div',
-						{ className: 'hdc-blog-index__featured-meta' },
-						h( 'span', {}, formatDateLabel( featured.date ) ),
-						h( 'span', {}, featured.readingTime || '' ),
-						h( 'span', { className: 'hdc-blog-index__featured-read' }, 'Read →' )
-					)
-				)
-				: null,
-			h(
-				'div',
-				{ className: 'hdc-blog-index__header-row' },
-				h( 'h3', { className: 'hdc-blog-index__section-title' }, 'All Posts' )
-			),
-			h(
-				'div',
-				{ className: 'hdc-blog-index__filters' },
-				h( 'input', {
-					type: 'search',
-					className: 'hdc-blog-index__search',
-					placeholder: 'Search posts…',
-					value: search,
-					onChange: function ( event ) {
-						setSearch( ensureString( event.target.value, '' ) );
-					},
-					'aria-label': 'Search blog posts',
-				} ),
+				'section',
+				{ className: 'hdc-blog-index__hero ember-surface' },
 				h(
 					'div',
-					{ className: 'hdc-blog-index__chips' },
-					allTags.map( function ( tag ) {
-						const isActive = tag === activeTag;
-						return h(
-							'button',
-							{
-								type: 'button',
-								className: 'hdc-blog-index__chip' + ( isActive ? ' is-active' : '' ),
-								onClick: function () {
-									setActiveTag( tag );
-								},
-								key: 'tag-' + tag,
-							},
-							tag
-						);
-					} )
+					{ className: 'hdc-blog-index__hero-inner' },
+					h(
+						'header',
+						{ className: 'hdc-blog-index__intro' },
+						h( 'p', { className: 'hdc-blog-index__eyebrow' }, 'Writing' ),
+						h( 'h1', { className: 'hdc-blog-index__title' }, config.heading || 'Blog' ),
+						config.description ? h( 'p', { className: 'hdc-blog-index__description' }, config.description ) : null
+					)
 				)
 			),
-			filtered.length === 0
-				? h(
-					'div',
-					{ className: 'hdc-blog-index__empty-state' },
-					h( 'h4', { className: 'hdc-blog-index__empty-title' }, 'No posts found' ),
-					h(
-						'p',
-						{ className: 'hdc-blog-index__empty' },
-						'Try a different keyword or clear active filters.'
-					)
-				)
-				: h(
-					'div',
-					{ className: 'hdc-blog-index__list' },
-					filtered.map( function ( post ) {
-						return h(
-							'a',
-							{
-								className: 'hdc-blog-index__card' + ( post.featuredImageUrl ? ' has-thumbnail' : '' ),
-								href: buildPostUrl( post, config ),
-								key: post.slug,
-							},
-							post.featuredImageUrl
-								? h(
-									'div',
-									{ className: 'hdc-blog-index__card-thumb-wrap' },
-									h( 'img', {
-										className: 'hdc-blog-index__card-thumb',
-										src: post.featuredImageUrl,
-										srcSet: post.featuredImageSrcSet || undefined,
-										sizes: '(max-width: 900px) 100vw, 180px',
-										alt: buildImageAlt( post ),
-										loading: 'lazy',
-										decoding: 'async',
-									} )
-								)
-								: null,
-							h(
+			h(
+				'div',
+				{ className: 'hdc-blog-index__content' },
+				featured
+					? h(
+						'a',
+						{
+							className: 'hdc-blog-index__featured',
+							href: buildPostUrl( featured, config ),
+						},
+						h( 'span', { className: 'hdc-blog-index__featured-pill' }, 'Featured' ),
+						featured.featuredImageUrl
+							? h(
 								'div',
-								{ className: 'hdc-blog-index__card-main' },
-								h( 'h4', { className: 'hdc-blog-index__card-title' }, post.title ),
-								h( 'p', { className: 'hdc-blog-index__card-excerpt' }, post.excerpt ),
-								h(
-									'div',
-									{ className: 'hdc-blog-index__tags' },
-									post.tags.map( function ( tag ) {
-										return h( 'span', { className: 'hdc-blog-index__tag', key: post.slug + '-tag-' + tag }, tag );
-									} )
-								)
-							),
-							h(
-								'div',
-								{ className: 'hdc-blog-index__card-meta' },
-								h( 'span', {}, formatDateLabel( post.date ) ),
-								h( 'span', {}, post.readingTime || '' )
+								{ className: 'hdc-blog-index__featured-image-wrap' },
+								h( 'img', {
+									className: 'hdc-blog-index__featured-image',
+									src: featured.featuredImageUrl,
+									srcSet: featured.featuredImageSrcSet || undefined,
+									sizes: '(max-width: 900px) 100vw, 1120px',
+									alt: buildImageAlt( featured ),
+									loading: 'eager',
+									decoding: 'async',
+								} )
 							)
-						);
-					} )
+							: null,
+						h( 'h3', { className: 'hdc-blog-index__featured-title' }, featured.title ),
+						h( 'p', { className: 'hdc-blog-index__featured-excerpt' }, featured.excerpt ),
+						h(
+							'div',
+							{ className: 'hdc-blog-index__featured-meta' },
+							h( 'span', {}, formatDateLabel( featured.date ) ),
+							h( 'span', {}, featured.readingTime || '' ),
+							h( 'span', { className: 'hdc-blog-index__featured-read' }, 'Read →' )
+						)
+					)
+					: null,
+				h(
+					'div',
+					{ className: 'hdc-blog-index__header-row' },
+					h( 'h3', { className: 'hdc-blog-index__section-title' }, 'All Posts' )
 				),
-			config.showNewsletterCta
-				? h(
-					'section',
-					{ className: 'hdc-blog-index__cta' },
-					h( 'h3', { className: 'hdc-blog-index__cta-title' }, 'Stay updated' ),
-					h(
-						'p',
-						{ className: 'hdc-blog-index__cta-description' },
-						'I do not run a newsletter yet. The best way to catch new posts is to follow me on LinkedIn.'
-					),
+				h(
+					'div',
+					{ className: 'hdc-blog-index__filters' },
+					h( 'input', {
+						type: 'search',
+						className: 'hdc-blog-index__search',
+						placeholder: 'Search posts…',
+						value: search,
+						onChange: function ( event ) {
+							setSearch( ensureString( event.target.value, '' ) );
+						},
+						'aria-label': 'Search blog posts',
+					} ),
 					h(
 						'div',
-						{ className: 'hdc-blog-index__cta-actions' },
+						{ className: 'hdc-blog-index__chips' },
+						allTags.map( function ( tag ) {
+							const isActive = tag === activeTag;
+							return h(
+								'button',
+								{
+									type: 'button',
+									className: 'hdc-blog-index__chip' + ( isActive ? ' is-active' : '' ),
+									onClick: function () {
+										setActiveTag( tag );
+									},
+									key: 'tag-' + tag,
+								},
+								tag
+							);
+						} )
+					)
+				),
+				filtered.length === 0
+					? h(
+						'div',
+						{ className: 'hdc-blog-index__empty-state' },
+						h( 'h4', { className: 'hdc-blog-index__empty-title' }, 'No posts found' ),
 						h(
-							'a',
-							{
-								className: 'hdc-blog-index__cta-primary',
-								href: config.linkedinUrl,
-								target: '_blank',
-								rel: 'noopener noreferrer',
-							},
-							'Follow on LinkedIn'
-						),
-						h(
-							'a',
-							{
-								className: 'hdc-blog-index__cta-secondary',
-								href: config.contactUrl,
-							},
-							'Reach out'
-						)
+							'p',
+							{ className: 'hdc-blog-index__empty' },
+							'Try a different keyword or clear active filters.'
 						)
 					)
-				: null
+					: h(
+						'div',
+						{ className: 'hdc-blog-index__list' },
+						filtered.map( function ( post ) {
+							return h(
+								'a',
+								{
+									className: 'hdc-blog-index__card' + ( post.featuredImageUrl ? ' has-thumbnail' : '' ),
+									href: buildPostUrl( post, config ),
+									key: post.slug,
+								},
+								post.featuredImageUrl
+									? h(
+										'div',
+										{ className: 'hdc-blog-index__card-thumb-wrap' },
+										h( 'img', {
+											className: 'hdc-blog-index__card-thumb',
+											src: post.featuredImageUrl,
+											srcSet: post.featuredImageSrcSet || undefined,
+											sizes: '(max-width: 900px) 100vw, 180px',
+											alt: buildImageAlt( post ),
+											loading: 'lazy',
+											decoding: 'async',
+										} )
+									)
+									: null,
+								h(
+									'div',
+									{ className: 'hdc-blog-index__card-main' },
+									h( 'h4', { className: 'hdc-blog-index__card-title' }, post.title ),
+									h( 'p', { className: 'hdc-blog-index__card-excerpt' }, post.excerpt ),
+									h(
+										'div',
+										{ className: 'hdc-blog-index__tags' },
+										post.tags.map( function ( tag ) {
+											return h( 'span', { className: 'hdc-blog-index__tag', key: post.slug + '-tag-' + tag }, tag );
+										} )
+									)
+								),
+								h(
+									'div',
+									{ className: 'hdc-blog-index__card-meta' },
+									h( 'span', {}, formatDateLabel( post.date ) ),
+									h( 'span', {}, post.readingTime || '' )
+								)
+							);
+						} )
+					),
+				config.showNewsletterCta
+					? h(
+						'section',
+						{ className: 'hdc-blog-index__cta' },
+						h( 'h3', { className: 'hdc-blog-index__cta-title' }, 'Stay updated' ),
+						h(
+							'p',
+							{ className: 'hdc-blog-index__cta-description' },
+							'I do not run a newsletter yet. The best way to catch new posts is to follow me on LinkedIn.'
+						),
+						h(
+							'div',
+							{ className: 'hdc-blog-index__cta-actions' },
+							h(
+								'a',
+								{
+									className: 'hdc-blog-index__cta-primary',
+									href: config.linkedinUrl,
+									target: '_blank',
+									rel: 'noopener noreferrer',
+								},
+								'Follow on LinkedIn'
+							),
+							h(
+								'a',
+								{
+									className: 'hdc-blog-index__cta-secondary',
+									href: config.contactUrl,
+								},
+								'Reach out'
+							)
+						)
+					)
+					: null
+			)
 		);
 	}
 
