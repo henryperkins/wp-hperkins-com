@@ -373,7 +373,7 @@
 					? h(
 						'a',
 						{
-							className: 'hdc-blog-index__featured',
+							className: 'hdc-blog-index__featured ember-surface',
 							href: buildPostUrl( featured, config ),
 						},
 						h( 'span', { className: 'hdc-blog-index__featured-pill' }, 'Featured' ),

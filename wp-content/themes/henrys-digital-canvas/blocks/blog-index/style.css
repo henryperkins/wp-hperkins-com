@@ -73,15 +73,25 @@
 }
 
 .hdc-blog-index__featured {
-  background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
-  border-radius: var(--radius-surface);
-  box-shadow: var(--shadow-surface-1);
+  border-radius: var(--radius-emphasis);
   color: inherit;
   display: block;
   margin: 0 0 1.4rem;
-  padding: 1rem;
+  padding: 1.5rem;
   text-decoration: none;
+}
+
+@media (min-width: 640px) {
+  .hdc-blog-index__featured {
+    padding: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hdc-blog-index__featured {
+    padding: 2.5rem;
+  }
 }
 
 .hdc-blog-index__featured-pill {
