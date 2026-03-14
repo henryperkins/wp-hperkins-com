@@ -119,6 +119,10 @@
   box-shadow: var(--shadow-glow);
 }
 
+.hdc-blog-index__featured:hover .hdc-blog-index__featured-title {
+  color: hsl(var(--link));
+}
+
 .hdc-blog-index__featured-pill {
   background: hsl(var(--primary));
   border-radius: var(--radius-pill);
@@ -152,6 +156,7 @@
   font-family: "Playfair Display", Georgia, serif;
   font-size: clamp(1.45rem, 2.8vw, 2rem);
   margin: 0.65rem 0 0;
+  transition: color var(--motion-duration-hover, 160ms) var(--motion-ease-standard, ease);
 }
 
 .hdc-blog-index__featured-excerpt {
@@ -285,6 +290,10 @@
   border-color: hsl(var(--interactive-border-hover, var(--border)));
 }
 
+.hdc-blog-index__card:hover .hdc-blog-index__card-title {
+  color: hsl(var(--link));
+}
+
 .hdc-blog-index__card-thumb-wrap {
   border: 1px solid hsl(var(--border));
   border-radius: calc(var(--radius-surface) - 0.2rem);
@@ -303,6 +312,7 @@
   color: hsl(var(--foreground));
   font-size: 1.04rem;
   margin: 0;
+  transition: color var(--motion-duration-hover, 160ms) var(--motion-ease-standard, ease);
 }
 
 .hdc-blog-index__card-excerpt {
