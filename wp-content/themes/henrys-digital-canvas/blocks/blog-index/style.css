@@ -80,6 +80,8 @@
   margin: 0 0 1.4rem;
   padding: 1.5rem;
   text-decoration: none;
+  transition: border-color var(--motion-duration-hover, 160ms) var(--motion-ease-standard, ease),
+              box-shadow var(--motion-duration-hover, 160ms) var(--motion-ease-standard, ease);
 }
 
 @media (min-width: 640px) {
@@ -92,6 +94,10 @@
   .hdc-blog-index__featured {
     padding: 2.5rem;
   }
+}
+
+.hdc-blog-index__featured:hover {
+  box-shadow: var(--shadow-glow);
 }
 
 .hdc-blog-index__featured-pill {
@@ -198,12 +204,22 @@
   line-height: 1;
   min-height: 2rem;
   padding: 0.45rem 0.66rem;
+  transition: border-color var(--motion-duration-hover, 160ms) var(--motion-ease-standard, ease),
+              background-color var(--motion-duration-hover, 160ms) var(--motion-ease-standard, ease),
+              box-shadow var(--motion-duration-hover, 160ms) var(--motion-ease-standard, ease);
 }
 
-.hdc-blog-index__chip.is-active {
-  background: hsl(var(--primary));
-  border-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
+.hdc-blog-index__chip:hover {
+  background: hsl(var(--card));
+  border-color: hsl(var(--border));
+}
+
+.hdc-blog-index__chip.is-active,
+.hdc-blog-index__chip[data-state="on"] {
+  background: hsl(var(--card));
+  border-color: hsl(var(--border));
+  box-shadow: var(--shadow-control);
+  color: hsl(var(--foreground));
 }
 
 .hdc-blog-index__list {
@@ -222,6 +238,14 @@
   grid-template-columns: minmax(0, 1fr);
   padding: 0.8rem;
   text-decoration: none;
+  transition: border-color var(--motion-duration-hover, 160ms) var(--motion-ease-standard, ease),
+              background-color var(--motion-duration-hover, 160ms) var(--motion-ease-standard, ease),
+              box-shadow var(--motion-duration-hover, 160ms) var(--motion-ease-standard, ease);
+}
+
+.hdc-blog-index__card:hover {
+  background: hsl(var(--surface-hover));
+  border-color: hsl(var(--interactive-border-hover, var(--border)));
 }
 
 .hdc-blog-index__card-thumb-wrap {
@@ -318,6 +342,9 @@
   min-height: 2.1rem;
   padding: 0.58rem 0.8rem;
   text-decoration: none;
+  transition: background-color var(--motion-duration-hover, 160ms) var(--motion-ease-standard, ease),
+              border-color var(--motion-duration-hover, 160ms) var(--motion-ease-standard, ease),
+              box-shadow var(--motion-duration-hover, 160ms) var(--motion-ease-standard, ease);
 }
 
 .hdc-blog-index__cta-primary {
@@ -326,10 +353,19 @@
   color: hsl(var(--primary-foreground));
 }
 
+.hdc-blog-index__cta-primary:hover {
+  filter: brightness(1.08);
+}
+
 .hdc-blog-index__cta-secondary {
   background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
   color: hsl(var(--foreground));
+}
+
+.hdc-blog-index__cta-secondary:hover {
+  background: hsl(var(--surface-hover));
+  border-color: hsl(var(--interactive-border-hover, var(--border)));
 }
 
 .hdc-blog-index-editor {

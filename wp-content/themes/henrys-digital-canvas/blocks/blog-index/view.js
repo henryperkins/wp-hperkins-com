@@ -398,7 +398,7 @@
 					? h(
 						'a',
 						{
-							className: 'hdc-blog-index__featured ember-surface',
+							className: 'hdc-blog-index__featured ember-surface focus-ring',
 							href: buildPostUrl( featured, config ),
 						},
 						h( 'span', { className: 'hdc-blog-index__featured-pill' }, 'Featured' ),
@@ -498,7 +498,7 @@
 							return h(
 								'a',
 								{
-									className: 'hdc-blog-index__card' + ( post.featuredImageUrl ? ' has-thumbnail' : '' ),
+									className: 'hdc-blog-index__card focus-ring' + ( post.featuredImageUrl ? ' has-thumbnail' : '' ),
 									href: buildPostUrl( post, config ),
 									key: post.slug,
 								},
