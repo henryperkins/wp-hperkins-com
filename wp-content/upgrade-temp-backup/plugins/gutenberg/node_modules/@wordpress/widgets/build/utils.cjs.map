@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/utils.js"],
+  "sourcesContent": ["// @ts-check\n\n/**\n * Get the internal widget id from block.\n *\n * @typedef  {Object} Attributes\n * @property {string}     __internalWidgetId The internal widget id.\n * @typedef  {Object} Block\n * @property {Attributes} attributes         The attributes of the block.\n *\n * @param    {Block}      block              The block.\n * @return {string} The internal widget id.\n */\nexport function getWidgetIdFromBlock( block ) {\n\treturn block.attributes.__internalWidgetId;\n}\n\n/**\n * Add internal widget id to block's attributes.\n *\n * @param {Block}  block    The block.\n * @param {string} widgetId The widget id.\n * @return {Block} The updated block.\n */\nexport function addWidgetIdToBlock( block, widgetId ) {\n\treturn {\n\t\t...block,\n\t\tattributes: {\n\t\t\t...( block.attributes || {} ),\n\t\t\t__internalWidgetId: widgetId,\n\t\t},\n\t};\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAaO,SAAS,qBAAsB,OAAQ;AAC7C,SAAO,MAAM,WAAW;AACzB;AASO,SAAS,mBAAoB,OAAO,UAAW;AACrD,SAAO;AAAA,IACN,GAAG;AAAA,IACH,YAAY;AAAA,MACX,GAAK,MAAM,cAAc,CAAC;AAAA,MAC1B,oBAAoB;AAAA,IACrB;AAAA,EACD;AACD;",
+  "names": []
+}

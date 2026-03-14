@@ -1,0 +1,131 @@
+// packages/block-editor/src/components/block-preview/index.js
+import clsx from "clsx";
+import { useDisabled, useMergeRefs } from "@wordpress/compose";
+import { useSelect } from "@wordpress/data";
+import { memo, useMemo } from "@wordpress/element";
+import deprecated from "@wordpress/deprecated";
+import { ExperimentalBlockEditorProvider } from "../provider/index.mjs";
+import AutoHeightBlockPreview from "./auto.mjs";
+import EditorStyles from "../editor-styles/index.mjs";
+import { store as blockEditorStore } from "../../store/index.mjs";
+import { BlockListItems } from "../block-list/index.mjs";
+import { Async } from "./async.mjs";
+import { jsx, jsxs } from "react/jsx-runtime";
+var EMPTY_ADDITIONAL_STYLES = [];
+function BlockPreview({
+  blocks,
+  viewportWidth = 1200,
+  minHeight,
+  additionalStyles = EMPTY_ADDITIONAL_STYLES,
+  // Deprecated props:
+  __experimentalMinHeight,
+  __experimentalPadding
+}) {
+  if (__experimentalMinHeight) {
+    minHeight = __experimentalMinHeight;
+    deprecated("The __experimentalMinHeight prop", {
+      since: "6.2",
+      version: "6.4",
+      alternative: "minHeight"
+    });
+  }
+  if (__experimentalPadding) {
+    additionalStyles = [
+      ...additionalStyles,
+      { css: `body { padding: ${__experimentalPadding}px; }` }
+    ];
+    deprecated("The __experimentalPadding prop of BlockPreview", {
+      since: "6.2",
+      version: "6.4",
+      alternative: "additionalStyles"
+    });
+  }
+  const originalSettings = useSelect(
+    (select) => select(blockEditorStore).getSettings(),
+    []
+  );
+  const settings = useMemo(
+    () => ({
+      ...originalSettings,
+      focusMode: false,
+      // Disable "Spotlight mode".
+      isPreviewMode: true
+    }),
+    [originalSettings]
+  );
+  const renderedBlocks = useMemo(
+    () => Array.isArray(blocks) ? blocks : [blocks],
+    [blocks]
+  );
+  if (!blocks || blocks.length === 0) {
+    return null;
+  }
+  return /* @__PURE__ */ jsx(
+    ExperimentalBlockEditorProvider,
+    {
+      value: renderedBlocks,
+      settings,
+      children: /* @__PURE__ */ jsx(
+        AutoHeightBlockPreview,
+        {
+          viewportWidth,
+          minHeight,
+          additionalStyles
+        }
+      )
+    }
+  );
+}
+var MemoizedBlockPreview = memo(BlockPreview);
+MemoizedBlockPreview.Async = Async;
+var block_preview_default = MemoizedBlockPreview;
+function useBlockPreview({ blocks, props = {}, layout }) {
+  const originalSettings = useSelect(
+    (select) => select(blockEditorStore).getSettings(),
+    []
+  );
+  const settings = useMemo(
+    () => ({
+      ...originalSettings,
+      styles: void 0,
+      // Clear styles included by the parent settings, as they are already output by the parent's EditorStyles.
+      focusMode: false,
+      // Disable "Spotlight mode".
+      isPreviewMode: true
+    }),
+    [originalSettings]
+  );
+  const disabledRef = useDisabled();
+  const ref = useMergeRefs([props.ref, disabledRef]);
+  const renderedBlocks = useMemo(
+    () => Array.isArray(blocks) ? blocks : [blocks],
+    [blocks]
+  );
+  const children = /* @__PURE__ */ jsxs(
+    ExperimentalBlockEditorProvider,
+    {
+      value: renderedBlocks,
+      settings,
+      children: [
+        /* @__PURE__ */ jsx(EditorStyles, {}),
+        /* @__PURE__ */ jsx(BlockListItems, { renderAppender: false, layout })
+      ]
+    }
+  );
+  return {
+    ...props,
+    ref,
+    className: clsx(
+      props.className,
+      "block-editor-block-preview__live-content",
+      "components-disabled"
+    ),
+    children: blocks?.length ? children : null
+  };
+}
+export {
+  BlockPreview,
+  block_preview_default as default,
+  useBlockPreview
+};
+//# sourceMappingURL=index.mjs.map

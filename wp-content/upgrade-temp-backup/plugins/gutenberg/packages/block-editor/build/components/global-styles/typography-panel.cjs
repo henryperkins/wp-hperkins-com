@@ -1,0 +1,674 @@
+"use strict";
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// packages/block-editor/src/components/global-styles/typography-panel.js
+var typography_panel_exports = {};
+__export(typography_panel_exports, {
+  default: () => TypographyPanel,
+  useHasTypographyPanel: () => useHasTypographyPanel
+});
+module.exports = __toCommonJS(typography_panel_exports);
+var import_components = require("@wordpress/components");
+var import_i18n = require("@wordpress/i18n");
+var import_element = require("@wordpress/element");
+var import_global_styles_engine = require("@wordpress/global-styles-engine");
+var import_font_family = __toESM(require("../font-family/index.cjs"));
+var import_font_appearance_control = __toESM(require("../font-appearance-control/index.cjs"));
+var import_line_height_control = __toESM(require("../line-height-control/index.cjs"));
+var import_letter_spacing_control = __toESM(require("../letter-spacing-control/index.cjs"));
+var import_text_alignment_control = __toESM(require("../text-alignment-control/index.cjs"));
+var import_text_transform_control = __toESM(require("../text-transform-control/index.cjs"));
+var import_text_decoration_control = __toESM(require("../text-decoration-control/index.cjs"));
+var import_text_indent_control = __toESM(require("../text-indent-control/index.cjs"));
+var import_writing_mode_control = __toESM(require("../writing-mode-control/index.cjs"));
+var import_utils = require("./utils.cjs");
+var import_object = require("../../utils/object.cjs");
+var import_typography_utils = require("./typography-utils.cjs");
+var import_get_font_styles_and_weights = require("../../utils/get-font-styles-and-weights.cjs");
+var import_jsx_runtime = require("react/jsx-runtime");
+var MIN_TEXT_COLUMNS = 1;
+var MAX_TEXT_COLUMNS = 6;
+function useHasTypographyPanel(settings) {
+  const hasFontFamily = useHasFontFamilyControl(settings);
+  const hasLineHeight = useHasLineHeightControl(settings);
+  const hasFontAppearance = useHasAppearanceControl(settings);
+  const hasLetterSpacing = useHasLetterSpacingControl(settings);
+  const hasTextAlign = useHasTextAlignmentControl(settings);
+  const hasTextTransform = useHasTextTransformControl(settings);
+  const hasTextDecoration = useHasTextDecorationControl(settings);
+  const hasTextIndent = useHasTextIndentControl(settings);
+  const hasWritingMode = useHasWritingModeControl(settings);
+  const hasTextColumns = useHasTextColumnsControl(settings);
+  const hasFontSize = useHasFontSizeControl(settings);
+  return hasFontFamily || hasLineHeight || hasFontAppearance || hasLetterSpacing || hasTextAlign || hasTextTransform || hasFontSize || hasTextDecoration || hasTextIndent || hasWritingMode || hasTextColumns;
+}
+function useHasFontSizeControl(settings) {
+  return settings?.typography?.defaultFontSizes !== false && settings?.typography?.fontSizes?.default?.length || settings?.typography?.fontSizes?.theme?.length || settings?.typography?.fontSizes?.custom?.length || settings?.typography?.customFontSize;
+}
+function useHasFontFamilyControl(settings) {
+  return ["default", "theme", "custom"].some(
+    (key) => settings?.typography?.fontFamilies?.[key]?.length
+  );
+}
+function useHasLineHeightControl(settings) {
+  return settings?.typography?.lineHeight;
+}
+function useHasAppearanceControl(settings) {
+  return settings?.typography?.fontStyle || settings?.typography?.fontWeight;
+}
+function useAppearanceControlLabel(settings) {
+  if (!settings?.typography?.fontStyle) {
+    return (0, import_i18n.__)("Font weight");
+  }
+  if (!settings?.typography?.fontWeight) {
+    return (0, import_i18n.__)("Font style");
+  }
+  return (0, import_i18n.__)("Appearance");
+}
+function useHasLetterSpacingControl(settings) {
+  return settings?.typography?.letterSpacing;
+}
+function useHasTextTransformControl(settings) {
+  return settings?.typography?.textTransform;
+}
+function useHasTextAlignmentControl(settings) {
+  return settings?.typography?.textAlign;
+}
+function useHasTextDecorationControl(settings) {
+  return settings?.typography?.textDecoration;
+}
+function useHasWritingModeControl(settings) {
+  return settings?.typography?.writingMode;
+}
+function useHasTextColumnsControl(settings) {
+  return settings?.typography?.textColumns;
+}
+function useHasTextIndentControl(settings) {
+  return settings?.typography?.textIndent;
+}
+function getMergedFontSizes(settings) {
+  const fontSizes = settings?.typography?.fontSizes;
+  const defaultFontSizesEnabled = !!settings?.typography?.defaultFontSizes;
+  return [
+    ...fontSizes?.custom ?? [],
+    ...fontSizes?.theme ?? [],
+    ...defaultFontSizesEnabled ? fontSizes?.default ?? [] : []
+  ];
+}
+function TypographyToolsPanel({
+  resetAllFilter,
+  onChange,
+  value,
+  panelId,
+  children
+}) {
+  const dropdownMenuProps = (0, import_utils.useToolsPanelDropdownMenuProps)();
+  const resetAll = () => {
+    const updatedValue = resetAllFilter(value);
+    onChange(updatedValue);
+  };
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+    import_components.__experimentalToolsPanel,
+    {
+      label: (0, import_i18n.__)("Typography"),
+      resetAll,
+      panelId,
+      dropdownMenuProps,
+      children
+    }
+  );
+}
+var DEFAULT_CONTROLS = {
+  fontFamily: true,
+  fontSize: true,
+  fontAppearance: true,
+  lineHeight: true,
+  letterSpacing: true,
+  textAlign: true,
+  textTransform: true,
+  textDecoration: true,
+  textIndent: true,
+  writingMode: true,
+  textColumns: true
+};
+function TypographyPanel({
+  as: Wrapper = TypographyToolsPanel,
+  value,
+  onChange,
+  inheritedValue = value,
+  settings,
+  panelId,
+  defaultControls = DEFAULT_CONTROLS,
+  isGlobalStyles = false
+}) {
+  const decodeValue = (rawValue) => (0, import_global_styles_engine.getValueFromVariable)({ settings }, "", rawValue);
+  const hasFontFamilyEnabled = useHasFontFamilyControl(settings);
+  const fontFamily = decodeValue(inheritedValue?.typography?.fontFamily);
+  const { fontFamilies, fontFamilyFaces } = (0, import_element.useMemo)(() => {
+    return (0, import_typography_utils.getMergedFontFamiliesAndFontFamilyFaces)(settings, fontFamily);
+  }, [settings, fontFamily]);
+  const setFontFamily = (newValue) => {
+    const slug = fontFamilies?.find(
+      ({ fontFamily: f }) => f === newValue
+    )?.slug;
+    let updatedValue = (0, import_object.setImmutably)(
+      value,
+      ["typography", "fontFamily"],
+      slug ? `var:preset|font-family|${slug}` : newValue || void 0
+    );
+    const newFontFamilyFaces = fontFamilies?.find(({ fontFamily: f }) => f === newValue)?.fontFace ?? [];
+    const { fontStyles, fontWeights } = (0, import_get_font_styles_and_weights.getFontStylesAndWeights)(newFontFamilyFaces);
+    const hasFontStyle = fontStyles?.some(
+      ({ value: fs }) => fs === fontStyle
+    );
+    const hasFontWeight = fontWeights?.some(
+      ({ value: fw }) => fw?.toString() === fontWeight?.toString()
+    );
+    if (!hasFontStyle || !hasFontWeight) {
+      const { nearestFontStyle, nearestFontWeight } = (0, import_typography_utils.findNearestStyleAndWeight)(
+        newFontFamilyFaces,
+        fontStyle,
+        fontWeight
+      );
+      if (nearestFontStyle || nearestFontWeight) {
+        updatedValue = {
+          ...updatedValue,
+          typography: {
+            ...updatedValue?.typography,
+            fontStyle: nearestFontStyle || void 0,
+            fontWeight: nearestFontWeight || void 0
+          }
+        };
+      } else if (fontStyle || fontWeight) {
+        updatedValue = {
+          ...updatedValue,
+          typography: {
+            ...updatedValue?.typography,
+            fontStyle: void 0,
+            fontWeight: void 0
+          }
+        };
+      }
+    }
+    onChange(updatedValue);
+  };
+  const hasFontFamily = () => !!value?.typography?.fontFamily;
+  const resetFontFamily = () => setFontFamily(void 0);
+  const hasFontSizeEnabled = useHasFontSizeControl(settings);
+  const disableCustomFontSizes = !settings?.typography?.customFontSize;
+  const mergedFontSizes = getMergedFontSizes(settings);
+  const fontSize = decodeValue(inheritedValue?.typography?.fontSize);
+  const currentFontSizeSlug = (() => {
+    const rawValue = inheritedValue?.typography?.fontSize;
+    if (!rawValue || typeof rawValue !== "string") {
+      return void 0;
+    }
+    if (rawValue.startsWith("var:preset|font-size|")) {
+      return rawValue.replace("var:preset|font-size|", "");
+    }
+    const cssVarMatch = rawValue.match(
+      /^var\(--wp--preset--font-size--([^)]+)\)$/
+    );
+    if (cssVarMatch) {
+      return cssVarMatch[1];
+    }
+    return void 0;
+  })();
+  const setFontSize = (newValue, metadata) => {
+    const actualValue = !!metadata?.slug ? `var:preset|font-size|${metadata?.slug}` : newValue;
+    onChange(
+      (0, import_object.setImmutably)(
+        value,
+        ["typography", "fontSize"],
+        actualValue || void 0
+      )
+    );
+  };
+  const hasFontSize = () => !!value?.typography?.fontSize;
+  const resetFontSize = () => setFontSize(void 0);
+  const hasAppearanceControl = useHasAppearanceControl(settings);
+  const appearanceControlLabel = useAppearanceControlLabel(settings);
+  const hasFontStyles = settings?.typography?.fontStyle;
+  const hasFontWeights = settings?.typography?.fontWeight;
+  const fontStyle = decodeValue(inheritedValue?.typography?.fontStyle);
+  const fontWeight = decodeValue(inheritedValue?.typography?.fontWeight);
+  const setFontAppearance = (0, import_element.useCallback)(
+    ({ fontStyle: newFontStyle, fontWeight: newFontWeight }) => {
+      if (newFontStyle !== fontStyle || newFontWeight !== fontWeight) {
+        onChange({
+          ...value,
+          typography: {
+            ...value?.typography,
+            fontStyle: newFontStyle || void 0,
+            fontWeight: newFontWeight || void 0
+          }
+        });
+      }
+    },
+    [fontStyle, fontWeight, onChange, value]
+  );
+  const hasFontAppearance = () => !!value?.typography?.fontStyle || !!value?.typography?.fontWeight;
+  const resetFontAppearance = (0, import_element.useCallback)(() => {
+    setFontAppearance({});
+  }, [setFontAppearance]);
+  const hasLineHeightEnabled = useHasLineHeightControl(settings);
+  const lineHeight = decodeValue(inheritedValue?.typography?.lineHeight);
+  const setLineHeight = (newValue) => {
+    onChange(
+      (0, import_object.setImmutably)(
+        value,
+        ["typography", "lineHeight"],
+        newValue || void 0
+      )
+    );
+  };
+  const hasLineHeight = () => value?.typography?.lineHeight !== void 0;
+  const resetLineHeight = () => setLineHeight(void 0);
+  const hasLetterSpacingControl = useHasLetterSpacingControl(settings);
+  const letterSpacing = decodeValue(
+    inheritedValue?.typography?.letterSpacing
+  );
+  const setLetterSpacing = (newValue) => {
+    onChange(
+      (0, import_object.setImmutably)(
+        value,
+        ["typography", "letterSpacing"],
+        newValue || void 0
+      )
+    );
+  };
+  const hasLetterSpacing = () => !!value?.typography?.letterSpacing;
+  const resetLetterSpacing = () => setLetterSpacing(void 0);
+  const hasTextIndentControl = useHasTextIndentControl(settings);
+  const textIndent = decodeValue(inheritedValue?.typography?.textIndent);
+  const textIndentSetting = settings?.typography?.textIndent ?? "subsequent";
+  const isTextIndentAll = textIndentSetting === "all";
+  const setTextIndentValue = (newValue) => {
+    onChange(
+      (0, import_object.setImmutably)(
+        value,
+        ["typography", "textIndent"],
+        newValue || void 0
+      )
+    );
+  };
+  const onToggleTextIndentAll = (newValue) => {
+    onChange({
+      ...value,
+      settings: {
+        typography: {
+          textIndent: newValue ? "all" : "subsequent"
+        }
+      }
+    });
+  };
+  const hasTextIndent = () => !!value?.typography?.textIndent;
+  const resetTextIndent = () => {
+    onChange(
+      (0, import_object.setImmutably)(value, ["typography", "textIndent"], void 0)
+    );
+  };
+  const textIndentHelp = isTextIndentAll ? (0, import_i18n.__)("Indents the first line of all paragraphs.") : (0, import_i18n.__)("Indents the first line of each paragraph after the first one.");
+  const hasTextColumnsControl = useHasTextColumnsControl(settings);
+  const textColumns = decodeValue(inheritedValue?.typography?.textColumns);
+  const setTextColumns = (newValue) => {
+    onChange(
+      (0, import_object.setImmutably)(
+        value,
+        ["typography", "textColumns"],
+        newValue || void 0
+      )
+    );
+  };
+  const hasTextColumns = () => !!value?.typography?.textColumns;
+  const resetTextColumns = () => setTextColumns(void 0);
+  const hasTextTransformControl = useHasTextTransformControl(settings);
+  const textTransform = decodeValue(
+    inheritedValue?.typography?.textTransform
+  );
+  const setTextTransform = (newValue) => {
+    onChange(
+      (0, import_object.setImmutably)(
+        value,
+        ["typography", "textTransform"],
+        newValue || void 0
+      )
+    );
+  };
+  const hasTextTransform = () => !!value?.typography?.textTransform;
+  const resetTextTransform = () => setTextTransform(void 0);
+  const hasTextDecorationControl = useHasTextDecorationControl(settings);
+  const textDecoration = decodeValue(
+    inheritedValue?.typography?.textDecoration
+  );
+  const setTextDecoration = (newValue) => {
+    onChange(
+      (0, import_object.setImmutably)(
+        value,
+        ["typography", "textDecoration"],
+        newValue || void 0
+      )
+    );
+  };
+  const hasTextDecoration = () => !!value?.typography?.textDecoration;
+  const resetTextDecoration = () => setTextDecoration(void 0);
+  const hasWritingModeControl = useHasWritingModeControl(settings);
+  const writingMode = decodeValue(inheritedValue?.typography?.writingMode);
+  const setWritingMode = (newValue) => {
+    onChange(
+      (0, import_object.setImmutably)(
+        value,
+        ["typography", "writingMode"],
+        newValue || void 0
+      )
+    );
+  };
+  const hasWritingMode = () => !!value?.typography?.writingMode;
+  const resetWritingMode = () => setWritingMode(void 0);
+  const hasTextAlignmentControl = useHasTextAlignmentControl(settings);
+  const textAlign = decodeValue(inheritedValue?.typography?.textAlign);
+  const setTextAlign = (newValue) => {
+    onChange(
+      (0, import_object.setImmutably)(
+        value,
+        ["typography", "textAlign"],
+        newValue || void 0
+      )
+    );
+  };
+  const hasTextAlign = () => !!value?.typography?.textAlign;
+  const resetTextAlign = () => setTextAlign(void 0);
+  const resetAllFilter = (0, import_element.useCallback)((previousValue) => {
+    return {
+      ...previousValue,
+      typography: {}
+    };
+  }, []);
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+    Wrapper,
+    {
+      resetAllFilter,
+      value,
+      onChange,
+      panelId,
+      children: [
+        hasFontFamilyEnabled && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+          import_components.__experimentalToolsPanelItem,
+          {
+            label: (0, import_i18n.__)("Font"),
+            hasValue: hasFontFamily,
+            onDeselect: resetFontFamily,
+            isShownByDefault: defaultControls.fontFamily,
+            panelId,
+            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+              import_font_family.default,
+              {
+                fontFamilies,
+                value: fontFamily,
+                onChange: setFontFamily,
+                size: "__unstable-large"
+              }
+            )
+          }
+        ),
+        hasFontSizeEnabled && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+          import_components.__experimentalToolsPanelItem,
+          {
+            label: (0, import_i18n.__)("Size"),
+            hasValue: hasFontSize,
+            onDeselect: resetFontSize,
+            isShownByDefault: defaultControls.fontSize,
+            panelId,
+            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+              import_components.FontSizePicker,
+              {
+                value: currentFontSizeSlug || fontSize,
+                valueMode: currentFontSizeSlug ? "slug" : "literal",
+                onChange: setFontSize,
+                fontSizes: mergedFontSizes,
+                disableCustomFontSizes,
+                withReset: false,
+                withSlider: true,
+                size: "__unstable-large"
+              }
+            )
+          }
+        ),
+        hasAppearanceControl && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+          import_components.__experimentalToolsPanelItem,
+          {
+            label: appearanceControlLabel,
+            hasValue: hasFontAppearance,
+            onDeselect: resetFontAppearance,
+            isShownByDefault: defaultControls.fontAppearance,
+            panelId,
+            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+              import_font_appearance_control.default,
+              {
+                value: {
+                  fontStyle,
+                  fontWeight
+                },
+                onChange: setFontAppearance,
+                hasFontStyles,
+                hasFontWeights,
+                fontFamilyFaces,
+                size: "__unstable-large"
+              }
+            )
+          }
+        ),
+        hasLineHeightEnabled && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+          import_components.__experimentalToolsPanelItem,
+          {
+            className: "single-column",
+            label: (0, import_i18n.__)("Line height"),
+            hasValue: hasLineHeight,
+            onDeselect: resetLineHeight,
+            isShownByDefault: defaultControls.lineHeight,
+            panelId,
+            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+              import_line_height_control.default,
+              {
+                __unstableInputWidth: "auto",
+                value: lineHeight,
+                onChange: setLineHeight,
+                size: "__unstable-large"
+              }
+            )
+          }
+        ),
+        hasLetterSpacingControl && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+          import_components.__experimentalToolsPanelItem,
+          {
+            className: "single-column",
+            label: (0, import_i18n.__)("Letter spacing"),
+            hasValue: hasLetterSpacing,
+            onDeselect: resetLetterSpacing,
+            isShownByDefault: defaultControls.letterSpacing,
+            panelId,
+            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+              import_letter_spacing_control.default,
+              {
+                value: letterSpacing,
+                onChange: setLetterSpacing,
+                size: "__unstable-large",
+                __unstableInputWidth: "auto"
+              }
+            )
+          }
+        ),
+        hasTextIndentControl && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+          import_components.__experimentalToolsPanelItem,
+          {
+            label: (0, import_i18n.__)("Line indent"),
+            hasValue: hasTextIndent,
+            onDeselect: resetTextIndent,
+            isShownByDefault: defaultControls.textIndent,
+            panelId,
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+                import_text_indent_control.default,
+                {
+                  value: textIndent,
+                  onChange: setTextIndentValue,
+                  size: "__unstable-large",
+                  __unstableInputWidth: "auto",
+                  withSlider: true,
+                  hasBottomMargin: isGlobalStyles
+                }
+              ),
+              isGlobalStyles && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+                import_components.ToggleControl,
+                {
+                  label: (0, import_i18n.__)("Indent all paragraphs"),
+                  checked: isTextIndentAll,
+                  onChange: onToggleTextIndentAll,
+                  help: textIndentHelp
+                }
+              )
+            ]
+          }
+        ),
+        hasTextColumnsControl && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+          import_components.__experimentalToolsPanelItem,
+          {
+            className: "single-column",
+            label: (0, import_i18n.__)("Columns"),
+            hasValue: hasTextColumns,
+            onDeselect: resetTextColumns,
+            isShownByDefault: defaultControls.textColumns,
+            panelId,
+            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+              import_components.__experimentalNumberControl,
+              {
+                label: (0, import_i18n.__)("Columns"),
+                max: MAX_TEXT_COLUMNS,
+                min: MIN_TEXT_COLUMNS,
+                onChange: setTextColumns,
+                size: "__unstable-large",
+                spinControls: "custom",
+                value: textColumns,
+                initialPosition: 1
+              }
+            )
+          }
+        ),
+        hasTextDecorationControl && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+          import_components.__experimentalToolsPanelItem,
+          {
+            className: "single-column",
+            label: (0, import_i18n.__)("Decoration"),
+            hasValue: hasTextDecoration,
+            onDeselect: resetTextDecoration,
+            isShownByDefault: defaultControls.textDecoration,
+            panelId,
+            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+              import_text_decoration_control.default,
+              {
+                value: textDecoration,
+                onChange: setTextDecoration,
+                size: "__unstable-large",
+                __unstableInputWidth: "auto"
+              }
+            )
+          }
+        ),
+        hasWritingModeControl && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+          import_components.__experimentalToolsPanelItem,
+          {
+            className: "single-column",
+            label: (0, import_i18n.__)("Orientation"),
+            hasValue: hasWritingMode,
+            onDeselect: resetWritingMode,
+            isShownByDefault: defaultControls.writingMode,
+            panelId,
+            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+              import_writing_mode_control.default,
+              {
+                value: writingMode,
+                onChange: setWritingMode,
+                size: "__unstable-large"
+              }
+            )
+          }
+        ),
+        hasTextTransformControl && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+          import_components.__experimentalToolsPanelItem,
+          {
+            label: (0, import_i18n.__)("Letter case"),
+            hasValue: hasTextTransform,
+            onDeselect: resetTextTransform,
+            isShownByDefault: defaultControls.textTransform,
+            panelId,
+            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+              import_text_transform_control.default,
+              {
+                value: textTransform,
+                onChange: setTextTransform,
+                showNone: true,
+                isBlock: true,
+                size: "__unstable-large"
+              }
+            )
+          }
+        ),
+        hasTextAlignmentControl && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+          import_components.__experimentalToolsPanelItem,
+          {
+            label: (0, import_i18n.__)("Text alignment"),
+            hasValue: hasTextAlign,
+            onDeselect: resetTextAlign,
+            isShownByDefault: defaultControls.textAlign,
+            panelId,
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+                import_text_alignment_control.default,
+                {
+                  value: textAlign,
+                  onChange: setTextAlign,
+                  options: ["left", "center", "right", "justify"],
+                  size: "__unstable-large"
+                }
+              ),
+              textAlign === "justify" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_components.Notice, { status: "warning", isDismissible: false, children: (0, import_i18n.__)(
+                "Justified text can reduce readability. For better accessibility, use left-aligned text instead."
+              ) }) })
+            ]
+          }
+        )
+      ]
+    }
+  );
+}
+// Annotate the CommonJS export names for ESM import in node:
+0 && (module.exports = {
+  useHasTypographyPanel
+});
+//# sourceMappingURL=typography-panel.cjs.map

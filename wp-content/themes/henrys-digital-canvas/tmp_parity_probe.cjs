@@ -92,7 +92,12 @@ async function checkShell(target) {
   let mobileVisible = false;
   if (target.name === 'wp') {
     await mPage.click('[data-hdc-menu-trigger]');
-    mobileVisible = await mPage.evaluate(() => !document.querySelector('[data-hdc-mobile-menu]')?.hasAttribute('hidden'));
+    mobileVisible = await mPage.evaluate(() => {
+      const menu = document.querySelector('[data-hdc-mobile-menu]');
+      if (!menu) return false;
+      const styles = window.getComputedStyle(menu);
+      return styles.visibility !== 'hidden' && styles.pointerEvents !== 'none' && menu.getClientRects().length > 0;
+    });
   } else {
     await mPage.click('button[aria-label="Open menu"]');
     mobileVisible = await mPage.evaluate(() => {

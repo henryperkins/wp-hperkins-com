@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/pinned-items/index.js"],
+  "sourcesContent": ["/**\n * External dependencies\n */\nimport clsx from 'clsx';\n\n/**\n * WordPress dependencies\n */\nimport { Slot, Fill } from '@wordpress/components';\n\nfunction PinnedItems( { scope, ...props } ) {\n\treturn <Fill name={ `PinnedItems/${ scope }` } { ...props } />;\n}\n\nfunction PinnedItemsSlot( { scope, className, ...props } ) {\n\treturn (\n\t\t<Slot name={ `PinnedItems/${ scope }` } { ...props }>\n\t\t\t{ ( fills ) =>\n\t\t\t\tfills?.length > 0 && (\n\t\t\t\t\t<div\n\t\t\t\t\t\tclassName={ clsx(\n\t\t\t\t\t\t\tclassName,\n\t\t\t\t\t\t\t'interface-pinned-items'\n\t\t\t\t\t\t) }\n\t\t\t\t\t>\n\t\t\t\t\t\t{ fills }\n\t\t\t\t\t</div>\n\t\t\t\t)\n\t\t\t}\n\t\t</Slot>\n\t);\n}\n\nPinnedItems.Slot = PinnedItemsSlot;\n\nexport default PinnedItems;\n"],
+  "mappings": ";AAGA,OAAO,UAAU;AAKjB,SAAS,MAAM,YAAY;AAGnB;AADR,SAAS,YAAa,EAAE,OAAO,GAAG,MAAM,GAAI;AAC3C,SAAO,oBAAC,QAAK,MAAO,eAAgB,KAAM,IAAO,GAAG,OAAQ;AAC7D;AAEA,SAAS,gBAAiB,EAAE,OAAO,WAAW,GAAG,MAAM,GAAI;AAC1D,SACC,oBAAC,QAAK,MAAO,eAAgB,KAAM,IAAO,GAAG,OAC1C,WAAE,UACH,OAAO,SAAS,KACf;AAAA,IAAC;AAAA;AAAA,MACA,WAAY;AAAA,QACX;AAAA,QACA;AAAA,MACD;AAAA,MAEE;AAAA;AAAA,EACH,GAGH;AAEF;AAEA,YAAY,OAAO;AAEnB,IAAO,uBAAQ;",
+  "names": []
+}

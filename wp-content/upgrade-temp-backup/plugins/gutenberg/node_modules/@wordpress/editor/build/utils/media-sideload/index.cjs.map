@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/utils/media-sideload/index.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { privateApis } from '@wordpress/media-utils';\n\n/**\n * Internal dependencies\n */\nimport { unlock } from '../../lock-unlock';\n\nconst { sideloadMedia: mediaSideload } = unlock( privateApis );\n\nexport default mediaSideload;\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,yBAA4B;AAK5B,yBAAuB;AAEvB,IAAM,EAAE,eAAe,cAAc,QAAI,2BAAQ,8BAAY;AAE7D,IAAO,yBAAQ;",
+  "names": []
+}

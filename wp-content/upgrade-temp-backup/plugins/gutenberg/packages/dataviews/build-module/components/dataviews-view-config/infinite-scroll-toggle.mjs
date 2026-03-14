@@ -1,0 +1,34 @@
+// packages/dataviews/src/components/dataviews-view-config/infinite-scroll-toggle.tsx
+import { ToggleControl } from "@wordpress/components";
+import { __ } from "@wordpress/i18n";
+import { useContext } from "@wordpress/element";
+import DataViewsContext from "../dataviews-context/index.mjs";
+import { jsx } from "react/jsx-runtime";
+function InfiniteScrollToggle() {
+  const context = useContext(DataViewsContext);
+  const { view, onChangeView } = context;
+  const infiniteScrollEnabled = view.infiniteScrollEnabled ?? false;
+  if (!context.hasInfiniteScrollHandler) {
+    return null;
+  }
+  return /* @__PURE__ */ jsx(
+    ToggleControl,
+    {
+      label: __("Enable infinite scroll"),
+      help: __(
+        "Automatically load more content as you scroll, instead of showing pagination links."
+      ),
+      checked: infiniteScrollEnabled,
+      onChange: (newValue) => {
+        onChangeView({
+          ...view,
+          infiniteScrollEnabled: newValue
+        });
+      }
+    }
+  );
+}
+export {
+  InfiniteScrollToggle as default
+};
+//# sourceMappingURL=infinite-scroll-toggle.mjs.map

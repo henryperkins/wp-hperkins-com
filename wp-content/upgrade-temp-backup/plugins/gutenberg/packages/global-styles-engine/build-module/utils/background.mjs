@@ -1,0 +1,29 @@
+// packages/global-styles-engine/src/utils/background.ts
+var BACKGROUND_BLOCK_DEFAULT_VALUES = {
+  backgroundSize: "cover",
+  backgroundPosition: "50% 50%"
+  // used only when backgroundSize is 'contain'.
+};
+function setBackgroundStyleDefaults(backgroundStyle) {
+  if (!backgroundStyle || // @ts-expect-error
+  !backgroundStyle?.backgroundImage?.url) {
+    return;
+  }
+  let backgroundStylesWithDefaults;
+  if (!backgroundStyle?.backgroundSize) {
+    backgroundStylesWithDefaults = {
+      backgroundSize: BACKGROUND_BLOCK_DEFAULT_VALUES.backgroundSize
+    };
+  }
+  if ("contain" === backgroundStyle?.backgroundSize && !backgroundStyle?.backgroundPosition) {
+    backgroundStylesWithDefaults = {
+      backgroundPosition: BACKGROUND_BLOCK_DEFAULT_VALUES.backgroundPosition
+    };
+  }
+  return backgroundStylesWithDefaults;
+}
+export {
+  BACKGROUND_BLOCK_DEFAULT_VALUES,
+  setBackgroundStyleDefaults
+};
+//# sourceMappingURL=background.mjs.map

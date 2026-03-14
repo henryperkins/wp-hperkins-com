@@ -1,0 +1,53 @@
+// packages/block-library/src/navigation-link/link-ui/block-inserter.js
+import { __ } from "@wordpress/i18n";
+import { useSelect } from "@wordpress/data";
+import {
+  store as blockEditorStore,
+  privateApis as blockEditorPrivateApis
+} from "@wordpress/block-editor";
+import DialogWrapper from "./dialog-wrapper.mjs";
+import { unlock } from "../../lock-unlock.mjs";
+import { jsx } from "react/jsx-runtime";
+var { PrivateQuickInserter: QuickInserter } = unlock(
+  blockEditorPrivateApis
+);
+function LinkUIBlockInserter({ clientId, onBack, onBlockInsert }) {
+  const { rootBlockClientId } = useSelect(
+    (select) => {
+      const { getBlockRootClientId } = select(blockEditorStore);
+      return {
+        rootBlockClientId: getBlockRootClientId(clientId)
+      };
+    },
+    [clientId]
+  );
+  if (!clientId) {
+    return null;
+  }
+  return /* @__PURE__ */ jsx(
+    DialogWrapper,
+    {
+      className: "link-ui-block-inserter",
+      title: __("Add block"),
+      description: __("Choose a block to add to your Navigation."),
+      onBack,
+      children: /* @__PURE__ */ jsx(
+        QuickInserter,
+        {
+          rootClientId: rootBlockClientId,
+          clientId,
+          isAppender: false,
+          prioritizePatterns: false,
+          selectBlockOnInsert: !onBlockInsert,
+          onSelect: onBlockInsert ? onBlockInsert : void 0,
+          hasSearch: false
+        }
+      )
+    }
+  );
+}
+var block_inserter_default = LinkUIBlockInserter;
+export {
+  block_inserter_default as default
+};
+//# sourceMappingURL=block-inserter.mjs.map

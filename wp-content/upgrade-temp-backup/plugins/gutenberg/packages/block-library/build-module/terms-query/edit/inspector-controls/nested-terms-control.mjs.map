@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../src/terms-query/edit/inspector-controls/nested-terms-control.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { ToggleControl } from '@wordpress/components';\n\nexport default function NestedTermsControl( { value, onChange, ...props } ) {\n\treturn (\n\t\t<ToggleControl checked={ value } onChange={ onChange } { ...props } />\n\t);\n}\n"],
+  "mappings": ";AAGA,SAAS,qBAAqB;AAI5B;AAFa,SAAR,mBAAqC,EAAE,OAAO,UAAU,GAAG,MAAM,GAAI;AAC3E,SACC,oBAAC,iBAAc,SAAU,OAAQ,UAAwB,GAAG,OAAQ;AAEtE;",
+  "names": []
+}

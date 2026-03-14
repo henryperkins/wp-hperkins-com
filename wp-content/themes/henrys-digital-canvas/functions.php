@@ -371,6 +371,106 @@ function hdc_override_document_title( $pre_title ) {
 add_filter( 'pre_get_document_title', 'hdc_override_document_title', 20 );
 
 /**
+ * Normalize a route-relative metadata URL into an absolute site URL.
+ *
+ * @param string $value Raw metadata URL.
+ * @return string
+ */
+function hdc_get_absolute_metadata_url( $value ) {
+	$value = trim( (string) $value );
+	if ( '' === $value ) {
+		return '';
+	}
+
+	if ( preg_match( '#^https?://#i', $value ) ) {
+		return esc_url_raw( $value );
+	}
+
+	if ( 0 === strpos( $value, '/images/' ) ) {
+		$relative_path = ltrim( substr( $value, strlen( '/images/' ) ), '/' );
+		return esc_url_raw( get_theme_file_uri( 'assets/images/' . $relative_path ) );
+	}
+
+	return esc_url_raw( home_url( $value ) );
+}
+
+/**
+ * Output homepage metadata that mirrors the React HOME_METADATA contract.
+ *
+ * @return void
+ */
+function hdc_output_homepage_metadata() {
+	if ( ! is_front_page() || is_admin() || is_feed() ) {
+		return;
+	}
+
+	$home_contract = hdc_get_home_content_data_contract();
+	$metadata      = isset( $home_contract['metadata'] ) && is_array( $home_contract['metadata'] ) ? $home_contract['metadata'] : array();
+	if ( empty( $metadata ) ) {
+		return;
+	}
+
+	$title       = wp_strip_all_tags( (string) ( $metadata['title'] ?? '' ) );
+	$description = wp_strip_all_tags( (string) ( $metadata['description'] ?? '' ) );
+	$canonical   = hdc_get_absolute_metadata_url( (string) ( $metadata['canonical'] ?? '/' ) );
+	$open_graph  = isset( $metadata['openGraph'] ) && is_array( $metadata['openGraph'] ) ? $metadata['openGraph'] : array();
+	$twitter     = isset( $metadata['twitter'] ) && is_array( $metadata['twitter'] ) ? $metadata['twitter'] : array();
+
+	if ( '' !== $description ) {
+		printf( '<meta name="description" content="%s" />' . "\n", esc_attr( $description ) );
+	}
+
+	if ( '' !== $canonical ) {
+		printf( '<link rel="canonical" href="%s" />' . "\n", esc_url( $canonical ) );
+	}
+
+	$og_title       = wp_strip_all_tags( (string) ( $open_graph['title'] ?? $title ) );
+	$og_description = wp_strip_all_tags( (string) ( $open_graph['description'] ?? $description ) );
+	$og_type        = sanitize_text_field( (string) ( $open_graph['type'] ?? 'website' ) );
+	$og_url         = hdc_get_absolute_metadata_url( (string) ( $open_graph['url'] ?? '/' ) );
+	$og_image       = hdc_get_absolute_metadata_url( (string) ( $open_graph['image'] ?? '' ) );
+	$og_image_alt   = wp_strip_all_tags( (string) ( $open_graph['imageAlt'] ?? '' ) );
+
+	if ( '' !== $og_title ) {
+		printf( '<meta property="og:title" content="%s" />' . "\n", esc_attr( $og_title ) );
+	}
+	if ( '' !== $og_description ) {
+		printf( '<meta property="og:description" content="%s" />' . "\n", esc_attr( $og_description ) );
+	}
+	if ( '' !== $og_type ) {
+		printf( '<meta property="og:type" content="%s" />' . "\n", esc_attr( $og_type ) );
+	}
+	if ( '' !== $og_url ) {
+		printf( '<meta property="og:url" content="%s" />' . "\n", esc_url( $og_url ) );
+	}
+	if ( '' !== $og_image ) {
+		printf( '<meta property="og:image" content="%s" />' . "\n", esc_url( $og_image ) );
+	}
+	if ( '' !== $og_image_alt ) {
+		printf( '<meta property="og:image:alt" content="%s" />' . "\n", esc_attr( $og_image_alt ) );
+	}
+
+	$twitter_card        = sanitize_text_field( (string) ( $twitter['card'] ?? 'summary_large_image' ) );
+	$twitter_title       = wp_strip_all_tags( (string) ( $twitter['title'] ?? $title ) );
+	$twitter_description = wp_strip_all_tags( (string) ( $twitter['description'] ?? $description ) );
+	$twitter_image       = hdc_get_absolute_metadata_url( (string) ( $twitter['image'] ?? $og_image ) );
+
+	if ( '' !== $twitter_card ) {
+		printf( '<meta name="twitter:card" content="%s" />' . "\n", esc_attr( $twitter_card ) );
+	}
+	if ( '' !== $twitter_title ) {
+		printf( '<meta name="twitter:title" content="%s" />' . "\n", esc_attr( $twitter_title ) );
+	}
+	if ( '' !== $twitter_description ) {
+		printf( '<meta name="twitter:description" content="%s" />' . "\n", esc_attr( $twitter_description ) );
+	}
+	if ( '' !== $twitter_image ) {
+		printf( '<meta name="twitter:image" content="%s" />' . "\n", esc_url( $twitter_image ) );
+	}
+}
+add_action( 'wp_head', 'hdc_output_homepage_metadata', 5 );
+
+/**
  * Output fallback favicon links when no Site Icon is configured.
  *
  * @return void

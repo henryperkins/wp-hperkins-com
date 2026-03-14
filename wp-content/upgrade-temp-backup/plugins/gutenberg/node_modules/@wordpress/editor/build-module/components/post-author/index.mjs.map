@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/post-author/index.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { useSelect } from '@wordpress/data';\nimport { store as coreStore } from '@wordpress/core-data';\n\n/**\n * Internal dependencies\n */\nimport PostAuthorCombobox from './combobox';\nimport PostAuthorSelect from './select';\nimport { AUTHORS_QUERY } from './constants';\n\nconst minimumUsersForCombobox = 25;\n\n/**\n * Renders the component for selecting the post author.\n *\n * @return {React.ReactNode} The rendered component.\n */\nfunction PostAuthor() {\n\tconst showCombobox = useSelect( ( select ) => {\n\t\tconst authors = select( coreStore ).getUsers( AUTHORS_QUERY );\n\n\t\treturn authors?.length >= minimumUsersForCombobox;\n\t}, [] );\n\n\tif ( showCombobox ) {\n\t\treturn <PostAuthorCombobox />;\n\t}\n\treturn <PostAuthorSelect />;\n}\n\nexport default PostAuthor;\n"],
+  "mappings": ";AAGA,SAAS,iBAAiB;AAC1B,SAAS,SAAS,iBAAiB;AAKnC,OAAO,wBAAwB;AAC/B,OAAO,sBAAsB;AAC7B,SAAS,qBAAqB;AAiBrB;AAfT,IAAM,0BAA0B;AAOhC,SAAS,aAAa;AACrB,QAAM,eAAe,UAAW,CAAE,WAAY;AAC7C,UAAM,UAAU,OAAQ,SAAU,EAAE,SAAU,aAAc;AAE5D,WAAO,SAAS,UAAU;AAAA,EAC3B,GAAG,CAAC,CAAE;AAEN,MAAK,cAAe;AACnB,WAAO,oBAAC,sBAAmB;AAAA,EAC5B;AACA,SAAO,oBAAC,oBAAiB;AAC1B;AAEA,IAAO,sBAAQ;",
+  "names": []
+}

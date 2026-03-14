@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/fields/title/index.ts"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { Field } from '@wordpress/dataviews';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport type { CommonPost } from '../../types';\nimport { getItemTitle } from '../../actions/utils';\nimport TitleView from './view';\n\nconst titleField: Field< CommonPost > = {\n\ttype: 'text',\n\tid: 'title',\n\tlabel: __( 'Title' ),\n\tplaceholder: __( 'No title' ),\n\tgetValue: ( { item } ) => getItemTitle( item ),\n\trender: TitleView,\n\tenableHiding: true,\n\tenableGlobalSearch: true,\n\tfilterBy: false,\n};\n\n/**\n * Title for the any entity with a `title` property.\n * For patterns, pages or templates you should use the respective field\n * because there are some differences in the rendering, labels, etc.\n */\nexport default titleField;\n"],
+  "mappings": ";AAIA,SAAS,UAAU;AAMnB,SAAS,oBAAoB;AAC7B,OAAO,eAAe;AAEtB,IAAM,aAAkC;AAAA,EACvC,MAAM;AAAA,EACN,IAAI;AAAA,EACJ,OAAO,GAAI,OAAQ;AAAA,EACnB,aAAa,GAAI,UAAW;AAAA,EAC5B,UAAU,CAAE,EAAE,KAAK,MAAO,aAAc,IAAK;AAAA,EAC7C,QAAQ;AAAA,EACR,cAAc;AAAA,EACd,oBAAoB;AAAA,EACpB,UAAU;AACX;AAOA,IAAO,gBAAQ;",
+  "names": []
+}

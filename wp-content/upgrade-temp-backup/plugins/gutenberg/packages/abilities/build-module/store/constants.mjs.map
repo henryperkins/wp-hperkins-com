@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/store/constants.ts"],
+  "sourcesContent": ["/**\n * Store constants\n */\nexport const STORE_NAME = 'core/abilities';\n\n// Validation patterns\nexport const ABILITY_NAME_PATTERN = /^[a-z0-9-]+(?:\\/[a-z0-9-]+){1,3}$/;\nexport const CATEGORY_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;\n\n// Action types\nexport const REGISTER_ABILITY = 'REGISTER_ABILITY';\nexport const UNREGISTER_ABILITY = 'UNREGISTER_ABILITY';\nexport const REGISTER_ABILITY_CATEGORY = 'REGISTER_ABILITY_CATEGORY';\nexport const UNREGISTER_ABILITY_CATEGORY = 'UNREGISTER_ABILITY_CATEGORY';\n"],
+  "mappings": ";AAGO,IAAM,aAAa;AAGnB,IAAM,uBAAuB;AAC7B,IAAM,wBAAwB;AAG9B,IAAM,mBAAmB;AACzB,IAAM,qBAAqB;AAC3B,IAAM,4BAA4B;AAClC,IAAM,8BAA8B;",
+  "names": []
+}

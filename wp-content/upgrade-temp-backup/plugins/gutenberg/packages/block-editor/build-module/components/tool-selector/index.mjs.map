@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/tool-selector/index.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport deprecated from '@wordpress/deprecated';\nimport { forwardRef } from '@wordpress/element';\n\nfunction ToolSelector() {\n\tdeprecated( 'wp.blockEditor.ToolSelector', {\n\t\tsince: '6.9',\n\t\thint: 'The ToolSelector component no longer renders anything.',\n\t} );\n\n\treturn null;\n}\n\n/**\n * This component has been deprecated and no longer renders anything.\n */\nexport default forwardRef( ToolSelector );\n"],
+  "mappings": ";AAGA,OAAO,gBAAgB;AACvB,SAAS,kBAAkB;AAE3B,SAAS,eAAe;AACvB,aAAY,+BAA+B;AAAA,IAC1C,OAAO;AAAA,IACP,MAAM;AAAA,EACP,CAAE;AAEF,SAAO;AACR;AAKA,IAAO,wBAAQ,WAAY,YAAa;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/preset-colors.tsx"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport { useStylesPreviewColors } from './preview-hooks';\n\nexport default function PresetColors() {\n\tconst { paletteColors } = useStylesPreviewColors();\n\treturn paletteColors.slice( 0, 4 ).map( ( { slug, color }, index ) => (\n\t\t<div\n\t\t\tkey={ `${ slug }-${ index }` }\n\t\t\tstyle={ {\n\t\t\t\tflexGrow: 1,\n\t\t\t\theight: '100%',\n\t\t\t\tbackground: color,\n\t\t\t} }\n\t\t/>\n\t) );\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,2BAAuC;AAKrC;AAHa,SAAR,eAAgC;AACtC,QAAM,EAAE,cAAc,QAAI,6CAAuB;AACjD,SAAO,cAAc,MAAO,GAAG,CAAE,EAAE,IAAK,CAAE,EAAE,MAAM,MAAM,GAAG,UAC1D;AAAA,IAAC;AAAA;AAAA,MAEA,OAAQ;AAAA,QACP,UAAU;AAAA,QACV,QAAQ;AAAA,QACR,YAAY;AAAA,MACb;AAAA;AAAA,IALM,GAAI,IAAK,IAAK,KAAM;AAAA,EAM3B,CACC;AACH;",
+  "names": []
+}

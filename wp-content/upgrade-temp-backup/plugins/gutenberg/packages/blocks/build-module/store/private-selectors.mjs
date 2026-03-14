@@ -1,0 +1,167 @@
+// packages/blocks/src/store/private-selectors.js
+import { createSelector, createRegistrySelector } from "@wordpress/data";
+import deprecated from "@wordpress/deprecated";
+import { getBlockType } from "./selectors.mjs";
+import { getValueFromObjectPath } from "./utils.mjs";
+import { __EXPERIMENTAL_STYLE_PROPERTY as STYLE_PROPERTY } from "../api/constants.mjs";
+var ROOT_BLOCK_SUPPORTS = [
+  "background",
+  "backgroundColor",
+  "color",
+  "linkColor",
+  "captionColor",
+  "buttonColor",
+  "headingColor",
+  "fontFamily",
+  "fontSize",
+  "fontStyle",
+  "fontWeight",
+  "lineHeight",
+  "padding",
+  "contentSize",
+  "wideSize",
+  "blockGap",
+  "textAlign",
+  "textDecoration",
+  "textIndent",
+  "textTransform",
+  "letterSpacing"
+];
+function filterElementBlockSupports(blockSupports, name, element) {
+  return blockSupports.filter((support) => {
+    if (support === "fontSize" && element === "heading") {
+      return false;
+    }
+    if (support === "textDecoration" && !name && element !== "link") {
+      return false;
+    }
+    if (support === "textTransform" && !name && !(["heading", "h1", "h2", "h3", "h4", "h5", "h6"].includes(
+      element
+    ) || element === "button" || element === "caption" || element === "text")) {
+      return false;
+    }
+    if (support === "letterSpacing" && !name && !(["heading", "h1", "h2", "h3", "h4", "h5", "h6"].includes(
+      element
+    ) || element === "button" || element === "caption" || element === "text")) {
+      return false;
+    }
+    if (support === "textIndent" && !name) {
+      return false;
+    }
+    if (support === "textColumns" && !name) {
+      return false;
+    }
+    return true;
+  });
+}
+var getSupportedStyles = createSelector(
+  (state, name, element) => {
+    if (!name) {
+      return filterElementBlockSupports(
+        ROOT_BLOCK_SUPPORTS,
+        name,
+        element
+      );
+    }
+    const blockType = getBlockType(state, name);
+    if (!blockType) {
+      return [];
+    }
+    const supportKeys = [];
+    if (blockType?.supports?.spacing?.blockGap) {
+      supportKeys.push("blockGap");
+    }
+    if (blockType?.supports?.shadow) {
+      supportKeys.push("shadow");
+    }
+    Object.keys(STYLE_PROPERTY).forEach((styleName) => {
+      if (!STYLE_PROPERTY[styleName].support) {
+        return;
+      }
+      if (STYLE_PROPERTY[styleName].requiresOptOut) {
+        if (STYLE_PROPERTY[styleName].support[0] in blockType.supports && getValueFromObjectPath(
+          blockType.supports,
+          STYLE_PROPERTY[styleName].support
+        ) !== false) {
+          supportKeys.push(styleName);
+          return;
+        }
+      }
+      if (getValueFromObjectPath(
+        blockType.supports,
+        STYLE_PROPERTY[styleName].support,
+        false
+      )) {
+        supportKeys.push(styleName);
+      }
+    });
+    return filterElementBlockSupports(supportKeys, name, element);
+  },
+  (state, name) => [state.blockTypes[name]]
+);
+function getBootstrappedBlockType(state, name) {
+  return state.bootstrappedBlockTypes[name];
+}
+function getUnprocessedBlockTypes(state) {
+  return state.unprocessedBlockTypes;
+}
+function getAllBlockBindingsSources(state) {
+  return state.blockBindingsSources;
+}
+function getBlockBindingsSource(state, sourceName) {
+  return state.blockBindingsSources[sourceName];
+}
+var getBlockBindingsSourceFieldsList = createRegistrySelector(
+  (select) => createSelector(
+    (state, source, blockContext) => {
+      if (!source.getFieldsList) {
+        return [];
+      }
+      const context = {};
+      if (source?.usesContext?.length) {
+        for (const key of source.usesContext) {
+          context[key] = blockContext[key];
+        }
+      }
+      return source.getFieldsList({ select, context });
+    },
+    (state, source, blockContext) => [
+      source.getFieldsList,
+      source.usesContext,
+      blockContext
+    ]
+  )
+);
+var hasContentRoleAttribute = (state, blockTypeName) => {
+  const blockType = getBlockType(state, blockTypeName);
+  if (!blockType) {
+    return false;
+  }
+  return Object.values(blockType.attributes).some(
+    ({ role, __experimentalRole }) => {
+      if (role === "content") {
+        return true;
+      }
+      if (__experimentalRole === "content") {
+        deprecated("__experimentalRole attribute", {
+          since: "6.7",
+          version: "6.8",
+          alternative: "role attribute",
+          hint: `Check the block.json of the ${blockTypeName} block.`
+        });
+        return true;
+      }
+      return false;
+    }
+  );
+};
+export {
+  getAllBlockBindingsSources,
+  getBlockBindingsSource,
+  getBlockBindingsSourceFieldsList,
+  getBootstrappedBlockType,
+  getSupportedStyles,
+  getUnprocessedBlockTypes,
+  hasContentRoleAttribute
+};
+//# sourceMappingURL=private-selectors.mjs.map

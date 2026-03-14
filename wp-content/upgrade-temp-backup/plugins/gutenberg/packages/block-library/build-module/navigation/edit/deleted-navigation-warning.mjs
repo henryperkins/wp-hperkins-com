@@ -1,0 +1,36 @@
+// packages/block-library/src/navigation/edit/deleted-navigation-warning.js
+import { Warning } from "@wordpress/block-editor";
+import { Button, Notice } from "@wordpress/components";
+import { __ } from "@wordpress/i18n";
+import { useState, createInterpolateElement } from "@wordpress/element";
+import { jsx } from "react/jsx-runtime";
+function DeletedNavigationWarning({ onCreateNew, isNotice = false }) {
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const handleButtonClick = () => {
+    setIsButtonDisabled(true);
+    onCreateNew();
+  };
+  const message = createInterpolateElement(
+    __(
+      "Navigation Menu has been deleted or is unavailable. <button>Create a new Menu?</button>"
+    ),
+    {
+      button: /* @__PURE__ */ jsx(
+        Button,
+        {
+          __next40pxDefaultSize: true,
+          onClick: handleButtonClick,
+          variant: "link",
+          disabled: isButtonDisabled,
+          accessibleWhenDisabled: true
+        }
+      )
+    }
+  );
+  return isNotice ? /* @__PURE__ */ jsx(Notice, { status: "warning", isDismissible: false, children: message }) : /* @__PURE__ */ jsx(Warning, { children: message });
+}
+var deleted_navigation_warning_default = DeletedNavigationWarning;
+export {
+  deleted_navigation_warning_default as default
+};
+//# sourceMappingURL=deleted-navigation-warning.mjs.map

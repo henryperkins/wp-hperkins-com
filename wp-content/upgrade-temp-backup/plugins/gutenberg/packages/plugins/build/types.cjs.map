@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/types.ts"],
+  "sourcesContent": ["/**\n * Props for the PluginErrorBoundary component.\n */\nexport interface PluginErrorBoundaryProps {\n\t/**\n\t * The name of the plugin that may encounter an error.\n\t */\n\tname: string;\n\t/**\n\t * The child components to render.\n\t */\n\tchildren: React.ReactNode;\n\t/**\n\t * Callback function called when an error occurs.\n\t */\n\tonError?: ( name: string, error: Error ) => void;\n}\n\n/**\n * State for the PluginErrorBoundary component.\n */\nexport interface PluginErrorBoundaryState {\n\thasError: boolean;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

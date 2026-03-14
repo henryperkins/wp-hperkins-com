@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/page-patterns/utils.js"],
+  "sourcesContent": ["export const filterOutDuplicatesByName = ( currentItem, index, items ) =>\n\tindex === items.findIndex( ( item ) => currentItem.name === item.name );\n"],
+  "mappings": ";AAAO,IAAM,4BAA4B,CAAE,aAAa,OAAO,UAC9D,UAAU,MAAM,UAAW,CAAE,SAAU,YAAY,SAAS,KAAK,IAAK;",
+  "names": []
+}

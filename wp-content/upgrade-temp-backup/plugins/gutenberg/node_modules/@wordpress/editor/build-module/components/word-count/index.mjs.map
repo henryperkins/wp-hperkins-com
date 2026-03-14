@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/word-count/index.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { useSelect } from '@wordpress/data';\nimport { _x } from '@wordpress/i18n';\nimport { count as wordCount } from '@wordpress/wordcount';\n\n/**\n * Internal dependencies\n */\nimport { store as editorStore } from '../../store';\n\n/**\n * Renders the word count of the post content.\n *\n * @return {React.ReactNode} The rendered WordCount component.\n */\nexport default function WordCount() {\n\tconst content = useSelect(\n\t\t( select ) => select( editorStore ).getEditedPostAttribute( 'content' ),\n\t\t[]\n\t);\n\n\t/*\n\t * translators: If your word count is based on single characters (e.g. East Asian characters),\n\t * enter 'characters_excluding_spaces' or 'characters_including_spaces'. Otherwise, enter 'words'.\n\t * Do not translate into your own language.\n\t */\n\tconst wordCountType = _x( 'words', 'Word count type. Do not translate!' );\n\n\treturn (\n\t\t<span className=\"word-count\">\n\t\t\t{ wordCount( content, wordCountType ) }\n\t\t</span>\n\t);\n}\n"],
+  "mappings": ";AAGA,SAAS,iBAAiB;AAC1B,SAAS,UAAU;AACnB,SAAS,SAAS,iBAAiB;AAKnC,SAAS,SAAS,mBAAmB;AAqBnC;AAda,SAAR,YAA6B;AACnC,QAAM,UAAU;AAAA,IACf,CAAE,WAAY,OAAQ,WAAY,EAAE,uBAAwB,SAAU;AAAA,IACtE,CAAC;AAAA,EACF;AAOA,QAAM,gBAAgB,GAAI,SAAS,oCAAqC;AAExE,SACC,oBAAC,UAAK,WAAU,cACb,oBAAW,SAAS,aAAc,GACrC;AAEF;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/inspector-controls/last-item.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { createSlotFill } from '@wordpress/components';\n\n/**\n * Internal dependencies\n */\nimport {\n\tuseBlockEditContext,\n\tmayDisplayControlsKey,\n} from '../block-edit/context';\n\nconst { Fill, Slot } = createSlotFill( Symbol( 'InspectorControlsLastItem' ) );\n\nconst InspectorControlsLastItem = ( props ) => {\n\tconst context = useBlockEditContext();\n\tif ( ! context[ mayDisplayControlsKey ] ) {\n\t\treturn null;\n\t}\n\treturn <Fill { ...props } />;\n};\nInspectorControlsLastItem.Slot = function InspectorControlsLastItemSlot(\n\tprops\n) {\n\treturn <Slot { ...props } />;\n};\n\nexport default InspectorControlsLastItem;\n"],
+  "mappings": ";AAGA,SAAS,sBAAsB;AAK/B;AAAA,EACC;AAAA,EACA;AAAA,OACM;AASC;AAPR,IAAM,EAAE,MAAM,KAAK,IAAI,eAAgB,uBAAQ,2BAA4B,CAAE;AAE7E,IAAM,4BAA4B,CAAE,UAAW;AAC9C,QAAM,UAAU,oBAAoB;AACpC,MAAK,CAAE,QAAS,qBAAsB,GAAI;AACzC,WAAO;AAAA,EACR;AACA,SAAO,oBAAC,QAAO,GAAG,OAAQ;AAC3B;AACA,0BAA0B,OAAO,SAAS,8BACzC,OACC;AACD,SAAO,oBAAC,QAAO,GAAG,OAAQ;AAC3B;AAEA,IAAO,oBAAQ;",
+  "names": []
+}

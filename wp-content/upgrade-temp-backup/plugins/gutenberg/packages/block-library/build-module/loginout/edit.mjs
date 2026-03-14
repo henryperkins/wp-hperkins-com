@@ -1,0 +1,82 @@
+// packages/block-library/src/loginout/edit.js
+import { InspectorControls, useBlockProps } from "@wordpress/block-editor";
+import {
+  ToggleControl,
+  __experimentalToolsPanel as ToolsPanel,
+  __experimentalToolsPanelItem as ToolsPanelItem
+} from "@wordpress/components";
+import { __ } from "@wordpress/i18n";
+import { useToolsPanelDropdownMenuProps } from "../utils/hooks.mjs";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+function LoginOutEdit({ attributes, setAttributes }) {
+  const { displayLoginAsForm, redirectToCurrent } = attributes;
+  const dropdownMenuProps = useToolsPanelDropdownMenuProps();
+  return /* @__PURE__ */ jsxs(Fragment, { children: [
+    /* @__PURE__ */ jsx(InspectorControls, { children: /* @__PURE__ */ jsxs(
+      ToolsPanel,
+      {
+        label: __("Settings"),
+        resetAll: () => {
+          setAttributes({
+            displayLoginAsForm: false,
+            redirectToCurrent: true
+          });
+        },
+        dropdownMenuProps,
+        children: [
+          /* @__PURE__ */ jsx(
+            ToolsPanelItem,
+            {
+              label: __("Display login as form"),
+              isShownByDefault: true,
+              hasValue: () => displayLoginAsForm,
+              onDeselect: () => setAttributes({ displayLoginAsForm: false }),
+              children: /* @__PURE__ */ jsx(
+                ToggleControl,
+                {
+                  label: __("Display login as form"),
+                  checked: displayLoginAsForm,
+                  onChange: () => setAttributes({
+                    displayLoginAsForm: !displayLoginAsForm
+                  })
+                }
+              )
+            }
+          ),
+          /* @__PURE__ */ jsx(
+            ToolsPanelItem,
+            {
+              label: __("Redirect to current URL"),
+              isShownByDefault: true,
+              hasValue: () => !redirectToCurrent,
+              onDeselect: () => setAttributes({ redirectToCurrent: true }),
+              children: /* @__PURE__ */ jsx(
+                ToggleControl,
+                {
+                  label: __("Redirect to current URL"),
+                  checked: redirectToCurrent,
+                  onChange: () => setAttributes({
+                    redirectToCurrent: !redirectToCurrent
+                  })
+                }
+              )
+            }
+          )
+        ]
+      }
+    ) }),
+    /* @__PURE__ */ jsx(
+      "div",
+      {
+        ...useBlockProps({
+          className: "logged-in"
+        }),
+        children: /* @__PURE__ */ jsx("a", { href: "#login-pseudo-link", children: __("Log out") })
+      }
+    )
+  ] });
+}
+export {
+  LoginOutEdit as default
+};
+//# sourceMappingURL=edit.mjs.map

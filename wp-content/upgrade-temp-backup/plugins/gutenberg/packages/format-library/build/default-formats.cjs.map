@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/default-formats.js"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport { bold } from './bold';\nimport { code } from './code';\nimport { image } from './image';\nimport { italic } from './italic';\nimport { link } from './link';\nimport { strikethrough } from './strikethrough';\nimport { underline } from './underline';\nimport { textColor } from './text-color';\nimport { subscript } from './subscript';\nimport { superscript } from './superscript';\nimport { keyboard } from './keyboard';\nimport { unknown } from './unknown';\nimport { language } from './language';\nimport { math } from './math';\nimport { nonBreakingSpace } from './non-breaking-space';\n\nexport default [\n\tbold,\n\tcode,\n\timage,\n\titalic,\n\tlink,\n\tstrikethrough,\n\tunderline,\n\ttextColor,\n\tsubscript,\n\tsuperscript,\n\tkeyboard,\n\tunknown,\n\tlanguage,\n\tmath,\n\tnonBreakingSpace,\n];\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,kBAAqB;AACrB,kBAAqB;AACrB,mBAAsB;AACtB,oBAAuB;AACvB,kBAAqB;AACrB,2BAA8B;AAC9B,uBAA0B;AAC1B,wBAA0B;AAC1B,uBAA0B;AAC1B,yBAA4B;AAC5B,sBAAyB;AACzB,qBAAwB;AACxB,sBAAyB;AACzB,kBAAqB;AACrB,gCAAiC;AAEjC,IAAO,0BAAQ;AAAA,EACd;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AACD;",
+  "names": []
+}

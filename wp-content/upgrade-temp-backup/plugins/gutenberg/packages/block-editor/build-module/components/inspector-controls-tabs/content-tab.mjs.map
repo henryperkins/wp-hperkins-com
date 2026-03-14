@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/inspector-controls-tabs/content-tab.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { PanelBody } from '@wordpress/components';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport BlockQuickNavigation from '../block-quick-navigation';\n\nconst ContentTab = ( {\n\tcontentClientIds,\n\tonSwitchToListView,\n\thasListViewTab,\n} ) => {\n\tif ( ! contentClientIds || contentClientIds.length === 0 ) {\n\t\treturn null;\n\t}\n\n\tconst shouldShowBlockFields =\n\t\twindow?.__experimentalContentOnlyInspectorFields;\n\n\treturn (\n\t\t<>\n\t\t\t{ ! shouldShowBlockFields && (\n\t\t\t\t<PanelBody title={ __( 'Content' ) }>\n\t\t\t\t\t<BlockQuickNavigation\n\t\t\t\t\t\tclientIds={ contentClientIds }\n\t\t\t\t\t\tonSwitchToListView={ onSwitchToListView }\n\t\t\t\t\t\thasListViewTab={ hasListViewTab }\n\t\t\t\t\t/>\n\t\t\t\t</PanelBody>\n\t\t\t) }\n\t\t</>\n\t);\n};\n\nexport default ContentTab;\n"],
+  "mappings": ";AAGA,SAAS,iBAAiB;AAC1B,SAAS,UAAU;AAKnB,OAAO,0BAA0B;AAe/B,mBAGG,WAHH;AAbF,IAAM,aAAa,CAAE;AAAA,EACpB;AAAA,EACA;AAAA,EACA;AACD,MAAO;AACN,MAAK,CAAE,oBAAoB,iBAAiB,WAAW,GAAI;AAC1D,WAAO;AAAA,EACR;AAEA,QAAM,wBACL,QAAQ;AAET,SACC,gCACG,WAAE,yBACH,oBAAC,aAAU,OAAQ,GAAI,SAAU,GAChC;AAAA,IAAC;AAAA;AAAA,MACA,WAAY;AAAA,MACZ;AAAA,MACA;AAAA;AAAA,EACD,GACD,GAEF;AAEF;AAEA,IAAO,sBAAQ;",
+  "names": []
+}

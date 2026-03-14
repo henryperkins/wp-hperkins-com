@@ -9,16 +9,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$home_content = hdc_get_home_content_data_contract();
+$home_content   = hdc_get_home_content_data_contract();
+$initial_posts  = hdc_get_blog_posts_data_contract( 3 );
+$initial_resume = hdc_get_resume_data_contract();
 
 $config = array(
-	'pageTitle'      => sanitize_text_field( (string) ( $home_content['pageTitle'] ?? 'Henry Perkins — Technical Portfolio' ) ),
 	'hero'           => isset( $home_content['hero'] ) && is_array( $home_content['hero'] ) ? $home_content['hero'] : array(),
 	'selectedWork'   => isset( $home_content['selectedWork'] ) && is_array( $home_content['selectedWork'] ) ? $home_content['selectedWork'] : array(),
+	'throughline'    => isset( $home_content['throughline'] ) && is_array( $home_content['throughline'] ) ? $home_content['throughline'] : array(),
 	'resumeSnapshot' => isset( $home_content['resumeSnapshot'] ) && is_array( $home_content['resumeSnapshot'] ) ? $home_content['resumeSnapshot'] : array(),
 	'recentWriting'  => isset( $home_content['recentWriting'] ) && is_array( $home_content['recentWriting'] ) ? $home_content['recentWriting'] : array(),
 	'contactCta'     => isset( $home_content['contactCta'] ) && is_array( $home_content['contactCta'] ) ? $home_content['contactCta'] : array(),
 	'repoTitles'     => isset( $home_content['repoTitles'] ) && is_array( $home_content['repoTitles'] ) ? $home_content['repoTitles'] : array(),
+	'initialPosts'   => is_array( $initial_posts ) ? $initial_posts : array(),
+	'initialResume'  => is_array( $initial_resume ) ? $initial_resume : array(),
 	'githubUsername' => hdc_get_configured_github_owner(),
 	'githubProxyUrl' => '/api/github/repos',
 	'workEndpoint'   => esc_url_raw( rest_url( 'henrys-digital-canvas/v1/work' ) ),

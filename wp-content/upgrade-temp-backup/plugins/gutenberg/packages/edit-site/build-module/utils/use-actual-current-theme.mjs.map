@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/utils/use-actual-current-theme.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport apiFetch from '@wordpress/api-fetch';\nimport { useState, useEffect } from '@wordpress/element';\nimport { addQueryArgs } from '@wordpress/url';\n\nconst ACTIVE_THEMES_URL = '/wp/v2/themes?status=active';\n\nexport function useActualCurrentTheme() {\n\tconst [ currentTheme, setCurrentTheme ] = useState();\n\n\tuseEffect( () => {\n\t\t// Set the `wp_theme_preview` to empty string to bypass the createThemePreviewMiddleware.\n\t\tconst path = addQueryArgs( ACTIVE_THEMES_URL, {\n\t\t\tcontext: 'edit',\n\t\t\twp_theme_preview: '',\n\t\t} );\n\n\t\tapiFetch( { path } )\n\t\t\t.then( ( activeThemes ) => setCurrentTheme( activeThemes[ 0 ] ) )\n\t\t\t// Do nothing\n\t\t\t.catch( () => {} );\n\t}, [] );\n\n\treturn currentTheme;\n}\n"],
+  "mappings": ";AAGA,OAAO,cAAc;AACrB,SAAS,UAAU,iBAAiB;AACpC,SAAS,oBAAoB;AAE7B,IAAM,oBAAoB;AAEnB,SAAS,wBAAwB;AACvC,QAAM,CAAE,cAAc,eAAgB,IAAI,SAAS;AAEnD,YAAW,MAAM;AAEhB,UAAM,OAAO,aAAc,mBAAmB;AAAA,MAC7C,SAAS;AAAA,MACT,kBAAkB;AAAA,IACnB,CAAE;AAEF,aAAU,EAAE,KAAK,CAAE,EACjB,KAAM,CAAE,iBAAkB,gBAAiB,aAAc,CAAE,CAAE,CAAE,EAE/D,MAAO,MAAM;AAAA,IAAC,CAAE;AAAA,EACnB,GAAG,CAAC,CAAE;AAEN,SAAO;AACR;",
+  "names": []
+}

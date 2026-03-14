@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/types.ts"],
+  "sourcesContent": ["/**\n * External dependencies\n */\nimport type { Point, Area, MediaSize } from 'react-easy-crop';\n\n// Re-export types for convenience.\nexport type { Point, Area, MediaSize };\n\nexport type Flip = {\n\thorizontal: boolean;\n\tvertical: boolean;\n};\n\nexport interface ImageCropperState {\n\trotation?: number;\n\tcrop?: Area;\n\tzoom?: number;\n\tflip?: Flip;\n\taspectRatio?: number;\n}\n\nexport interface CropperState {\n\tcrop: Point;\n\tcroppedArea?: Area;\n\tcroppedAreaPixels?: Area | null;\n\tzoom: number;\n\trotation: number;\n\tflip: Flip;\n\taspectRatio: number;\n\tmediaSize: MediaSize | null;\n}\n\nexport interface ImageCropperProps {\n\tsrc: string;\n\tonLoad?: ( mediaSize: MediaSize ) => void;\n\tminZoom?: number;\n\tmaxZoom?: number;\n}\n\nexport interface ImageCropperContextValue {\n\tcropperState: CropperState;\n\tsetCropperState: (\n\t\tnewState:\n\t\t\t| Partial< CropperState >\n\t\t\t| ( ( prev: CropperState ) => Partial< CropperState > )\n\t) => void;\n\tresetState: ImageCropperState | null;\n\tsetResetState: (\n\t\tnewResetState: Partial< ImageCropperState > | null\n\t) => void;\n\tisDirty: boolean;\n\treset: () => void;\n\tgetCroppedImage: ( src: string ) => Promise< string | null >;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

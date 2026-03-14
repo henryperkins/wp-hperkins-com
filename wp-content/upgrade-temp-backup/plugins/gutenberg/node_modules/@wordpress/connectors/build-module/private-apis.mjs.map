@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/private-apis.ts"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport { lock } from './lock-unlock';\nimport { store, STORE_NAME } from './store';\n\nexport const privateApis: Record< string, never > = {};\nlock( privateApis, { store, STORE_NAME } );\n"],
+  "mappings": ";AAGA,SAAS,YAAY;AACrB,SAAS,OAAO,kBAAkB;AAE3B,IAAM,cAAuC,CAAC;AACrD,KAAM,aAAa,EAAE,OAAO,WAAW,CAAE;",
+  "names": []
+}

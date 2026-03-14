@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/welcome-guide/index.js"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport WelcomeGuideEditor from './editor';\nimport WelcomeGuidePage from './page';\nimport WelcomeGuideTemplate from './template';\n\nexport default function WelcomeGuide( { postType } ) {\n\treturn (\n\t\t<>\n\t\t\t<WelcomeGuideEditor />\n\t\t\t{ postType === 'page' && <WelcomeGuidePage /> }\n\t\t\t{ postType === 'wp_template' && <WelcomeGuideTemplate /> }\n\t\t</>\n\t);\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,oBAA+B;AAC/B,kBAA6B;AAC7B,sBAAiC;AAI/B;AAFa,SAAR,aAA+B,EAAE,SAAS,GAAI;AACpD,SACC,4EACC;AAAA,gDAAC,cAAAA,SAAA,EAAmB;AAAA,IAClB,aAAa,UAAU,4CAAC,YAAAC,SAAA,EAAiB;AAAA,IACzC,aAAa,iBAAiB,4CAAC,gBAAAC,SAAA,EAAqB;AAAA,KACvD;AAEF;",
+  "names": ["WelcomeGuideEditor", "WelcomeGuidePage", "WelcomeGuideTemplate"]
+}

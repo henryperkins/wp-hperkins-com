@@ -1,0 +1,12 @@
+// packages/core-data/src/utils/if-matching-action.js
+var ifMatchingAction = (isMatch) => (reducer) => (state, action) => {
+  if (state === void 0 || isMatch(action)) {
+    return reducer(state, action);
+  }
+  return state;
+};
+var if_matching_action_default = ifMatchingAction;
+export {
+  if_matching_action_default as default
+};
+//# sourceMappingURL=if-matching-action.mjs.map

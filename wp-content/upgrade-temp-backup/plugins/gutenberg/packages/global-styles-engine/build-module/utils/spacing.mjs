@@ -1,0 +1,15 @@
+// packages/global-styles-engine/src/utils/spacing.ts
+function getSpacingPresetCssVar(value) {
+  if (!value) {
+    return;
+  }
+  const slug = value.match(/var:preset\|spacing\|(.+)/);
+  if (!slug) {
+    return value;
+  }
+  return `var(--wp--preset--spacing--${slug[1]})`;
+}
+export {
+  getSpacingPresetCssVar
+};
+//# sourceMappingURL=spacing.mjs.map

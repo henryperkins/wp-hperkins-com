@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/hooks/use-dimensions-props.js"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport { getInlineStyles } from './style';\n\n// This utility is intended to assist where the serialization of the dimensions\n// block support is being skipped for a block but the dimensions related CSS\n// styles still need to be generated so they can be applied to inner elements.\n\n/**\n * Provides the CSS class names and inline styles for a block's dimensions support\n * attributes.\n *\n * @param {Object} attributes Block attributes.\n * @return {Object} Dimensions block support derived CSS classes & styles.\n */\nexport function getDimensionsClassesAndStyles( attributes ) {\n\tconst { style } = attributes;\n\n\t// Collect inline styles for dimensions.\n\tconst dimensionsStyles = style?.dimensions || {};\n\tconst styleProp = getInlineStyles( { dimensions: dimensionsStyles } );\n\n\treturn {\n\t\tclassName: dimensionsStyles.aspectRatio\n\t\t\t? 'has-aspect-ratio'\n\t\t\t: undefined,\n\t\tstyle: styleProp,\n\t};\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,mBAAgC;AAazB,SAAS,8BAA+B,YAAa;AAC3D,QAAM,EAAE,MAAM,IAAI;AAGlB,QAAM,mBAAmB,OAAO,cAAc,CAAC;AAC/C,QAAM,gBAAY,8BAAiB,EAAE,YAAY,iBAAiB,CAAE;AAEpE,SAAO;AAAA,IACN,WAAW,iBAAiB,cACzB,qBACA;AAAA,IACH,OAAO;AAAA,EACR;AACD;",
+  "names": []
+}

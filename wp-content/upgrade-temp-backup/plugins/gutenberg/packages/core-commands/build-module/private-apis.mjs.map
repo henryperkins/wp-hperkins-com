@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/private-apis.js"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport { useAdminNavigationCommands } from './admin-navigation-commands';\nimport { useSiteEditorNavigationCommands } from './site-editor-navigation-commands';\nimport { lock } from './lock-unlock';\n\nfunction useCommands() {\n\tuseAdminNavigationCommands();\n\tuseSiteEditorNavigationCommands();\n}\n\nexport const privateApis = {};\nlock( privateApis, {\n\tuseCommands,\n} );\n"],
+  "mappings": ";AAGA,SAAS,kCAAkC;AAC3C,SAAS,uCAAuC;AAChD,SAAS,YAAY;AAErB,SAAS,cAAc;AACtB,6BAA2B;AAC3B,kCAAgC;AACjC;AAEO,IAAM,cAAc,CAAC;AAC5B,KAAM,aAAa;AAAA,EAClB;AACD,CAAE;",
+  "names": []
+}

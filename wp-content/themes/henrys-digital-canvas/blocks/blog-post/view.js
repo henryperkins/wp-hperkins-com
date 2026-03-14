@@ -8,6 +8,7 @@
 	const useEffect = element.useEffect;
 	const useMemo = element.useMemo;
 	const useState = element.useState;
+	const useRef = element.useRef;
 	const createRoot = element.createRoot;
 	const legacyRender = element.render;
 
@@ -371,6 +372,7 @@
 			}
 
 			if ( line.trim() === '' ) {
+				elements.push( h( 'br', { key: keyPrefix + '-br-' + String( i ), 'aria-hidden': 'true' } ) );
 				i++;
 				continue;
 			}
@@ -393,7 +395,7 @@
 
 				return h(
 					'pre',
-					{ key: 'code-' + String( index ), className: 'hdc-blog-post__code' },
+					{ key: 'code-' + String( index ), className: 'hdc-blog-post__code', 'data-lang': lang || undefined },
 					lang ? h( 'span', { className: 'hdc-blog-post__code-lang' }, lang ) : null,
 					h( 'code', {}, code )
 				);
@@ -407,7 +409,298 @@
 		} );
 	}
 
+	/* ------------------------------------------------------------------ */
+	/*  Lightweight syntax highlighter                                     */
+	/* ------------------------------------------------------------------ */
+
+	function escapeHtml( str ) {
+		return String( str )
+			.replace( /&/g, '&amp;' )
+			.replace( /</g, '&lt;' )
+			.replace( />/g, '&gt;' )
+			.replace( /"/g, '&quot;' );
+	}
+
+	function normalizeLang( lang ) {
+		var key = String( lang || '' ).toLowerCase().trim();
+		var aliases = {
+			js: 'javascript', jsx: 'javascript', tsx: 'javascript',
+			ts: 'javascript', typescript: 'javascript',
+			py: 'python',
+			sh: 'bash', shell: 'bash', zsh: 'bash',
+		};
+		return aliases[ key ] || key;
+	}
+
+	function buildHighlightRules( lang ) {
+		var jsKeywords = 'async|await|break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|from|function|if|import|in|instanceof|let|new|null|of|return|static|super|switch|this|throw|try|typeof|undefined|var|void|while|with|yield|true|false';
+		var pyKeywords = 'and|as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|True|False|None|self|print';
+		var bashKeywords = 'if|then|else|elif|fi|for|while|do|done|case|esac|function|return|exit|echo|export|source|alias|local|readonly|declare|set|unset|shift|trap|eval|exec|test';
+		var cssAtRules = '@media|@keyframes|@import|@font-face|@supports|@layer|@container|@property';
+
+		var commonRules = [
+			{ type: 'comment', pattern: /\/\/[^\n]*/y },
+			{ type: 'comment', pattern: /\/\*[\s\S]*?\*\//y },
+			{ type: 'string', pattern: /"(?:[^"\\]|\\.)*"/y },
+			{ type: 'string', pattern: /'(?:[^'\\]|\\.)*'/y },
+			{ type: 'string', pattern: /`(?:[^`\\]|\\.)*`/y },
+			{ type: 'number', pattern: /\b(?:0[xXoObB][\da-fA-F_]+|\d+\.?\d*(?:[eE][+-]?\d+)?)\b/y },
+		];
+
+		if ( lang === 'javascript' ) {
+			return commonRules.concat( [
+				{ type: 'keyword', pattern: new RegExp( '\\b(?:' + jsKeywords + ')\\b', 'y' ) },
+				{ type: 'function', pattern: /\b[a-zA-Z_$]\w*(?=\s*\()/y },
+				{ type: 'operator', pattern: /=>|\.{3}|[!=<>]=?=?|[+\-*/%&|^~!?:]+/y },
+				{ type: 'punctuation', pattern: /[{}[\]();,.]/y },
+			] );
+		}
+
+		if ( lang === 'python' ) {
+			return [
+				{ type: 'comment', pattern: /#[^\n]*/y },
+				{ type: 'string', pattern: /"""[\s\S]*?"""/y },
+				{ type: 'string', pattern: /'''[\s\S]*?'''/y },
+				{ type: 'string', pattern: /f?"(?:[^"\\]|\\.)*"/y },
+				{ type: 'string', pattern: /f?'(?:[^'\\]|\\.)*'/y },
+				{ type: 'number', pattern: /\b(?:0[xXoObB][\da-fA-F_]+|\d+\.?\d*(?:[eE][+-]?\d+)?)\b/y },
+				{ type: 'keyword', pattern: new RegExp( '\\b(?:' + pyKeywords + ')\\b', 'y' ) },
+				{ type: 'decorator', pattern: /@\w+/y },
+				{ type: 'function', pattern: /\b[a-zA-Z_]\w*(?=\s*\()/y },
+				{ type: 'operator', pattern: /[!=<>]=?|[+\-*/%&|^~:]+|\*\*/y },
+				{ type: 'punctuation', pattern: /[{}[\]();,.]/y },
+			];
+		}
+
+		if ( lang === 'css' ) {
+			return [
+				{ type: 'comment', pattern: /\/\*[\s\S]*?\*\//y },
+				{ type: 'keyword', pattern: new RegExp( '(?:' + cssAtRules + ')\\b', 'y' ) },
+				{ type: 'string', pattern: /"(?:[^"\\]|\\.)*"/y },
+				{ type: 'string', pattern: /'(?:[^'\\]|\\.)*'/y },
+				{ type: 'number', pattern: /\b\d+\.?\d*(?:%|px|em|rem|vh|vw|fr|s|ms|deg|ch|ex)?\b/y },
+				{ type: 'function', pattern: /\b[a-zA-Z-]+(?=\()/y },
+				{ type: 'property', pattern: /[a-zA-Z-]+(?=\s*:)/y },
+				{ type: 'punctuation', pattern: /[{}();:,]/y },
+			];
+		}
+
+		if ( lang === 'json' ) {
+			return [
+				{ type: 'property', pattern: /"(?:[^"\\]|\\.)*"(?=\s*:)/y },
+				{ type: 'string', pattern: /"(?:[^"\\]|\\.)*"/y },
+				{ type: 'keyword', pattern: /\b(?:true|false|null)\b/y },
+				{ type: 'number', pattern: /\b\d+\.?\d*(?:[eE][+-]?\d+)?\b/y },
+				{ type: 'punctuation', pattern: /[{}[\]:,]/y },
+			];
+		}
+
+		if ( lang === 'bash' ) {
+			return [
+				{ type: 'comment', pattern: /#[^\n]*/y },
+				{ type: 'string', pattern: /"(?:[^"\\]|\\.)*"/y },
+				{ type: 'string', pattern: /'[^']*'/y },
+				{ type: 'variable', pattern: /\$\{?[a-zA-Z_]\w*\}?/y },
+				{ type: 'keyword', pattern: new RegExp( '\\b(?:' + bashKeywords + ')\\b', 'y' ) },
+				{ type: 'number', pattern: /\b\d+\b/y },
+				{ type: 'operator', pattern: /[|&;><]+|&&|\|\|/y },
+				{ type: 'punctuation', pattern: /[{}[\]()]/y },
+			];
+		}
+
+		// Generic fallback
+		return commonRules.concat( [
+			{ type: 'keyword', pattern: new RegExp( '\\b(?:' + jsKeywords + ')\\b', 'y' ) },
+			{ type: 'function', pattern: /\b[a-zA-Z_$]\w*(?=\s*\()/y },
+			{ type: 'operator', pattern: /[!=<>]=?=?|[+\-*/%&|^~!?:]+|=>/y },
+			{ type: 'punctuation', pattern: /[{}[\]();,.]/y },
+		] );
+	}
+
+	function tokenize( code, rules ) {
+		var tokens = [];
+		var pos = 0;
+		var len = code.length;
+
+		while ( pos < len ) {
+			var bestMatch = null;
+			var bestType = '';
+
+			for ( var r = 0; r < rules.length; r++ ) {
+				rules[ r ].pattern.lastIndex = pos;
+				var m = rules[ r ].pattern.exec( code );
+				if ( m && m.index === pos && m[0].length > 0 ) {
+					if ( ! bestMatch || m[0].length > bestMatch[0].length ) {
+						bestMatch = m;
+						bestType = rules[ r ].type;
+					}
+				}
+			}
+
+			if ( bestMatch ) {
+				tokens.push( { type: bestType, text: bestMatch[0] } );
+				pos += bestMatch[0].length;
+			} else {
+				var end = pos + 1;
+				while ( end < len ) {
+					var found = false;
+					for ( var r2 = 0; r2 < rules.length; r2++ ) {
+						rules[ r2 ].pattern.lastIndex = end;
+						var m2 = rules[ r2 ].pattern.exec( code );
+						if ( m2 && m2.index === end && m2[0].length > 0 ) {
+							found = true;
+							break;
+						}
+					}
+					if ( found ) {
+						break;
+					}
+					end++;
+				}
+				tokens.push( { type: 'plain', text: code.slice( pos, end ) } );
+				pos = end;
+			}
+		}
+
+		return tokens;
+	}
+
+	function highlightCodeElement( codeEl, lang ) {
+		var text = codeEl.textContent || '';
+		if ( ! text.trim() ) {
+			return;
+		}
+
+		var langKey = normalizeLang( lang );
+		if ( ! langKey ) {
+			return;
+		}
+
+		var rules = buildHighlightRules( langKey );
+		var tokens = tokenize( text, rules );
+		var html = tokens.map( function ( t ) {
+			var escaped = escapeHtml( t.text );
+			if ( t.type === 'plain' ) {
+				return escaped;
+			}
+			return '<span class="hdc-token-' + t.type + '">' + escaped + '</span>';
+		} ).join( '' );
+
+		codeEl.innerHTML = html;
+	}
+
+	/* ------------------------------------------------------------------ */
+	/*  Code block copy button (DOM-based)                                 */
+	/* ------------------------------------------------------------------ */
+
+	function addCopyButton( preEl ) {
+		if ( preEl.querySelector( '.hdc-blog-post__code-copy' ) ) {
+			return;
+		}
+
+		var codeEl = preEl.querySelector( 'code' );
+		if ( ! codeEl ) {
+			return;
+		}
+
+		var btn = document.createElement( 'button' );
+		btn.type = 'button';
+		btn.className = 'hdc-blog-post__code-copy';
+		btn.setAttribute( 'aria-label', 'Copy code block' );
+		btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="hdc-blog-post__code-copy-icon" data-icon="copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+
+		var checkSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="hdc-blog-post__code-copy-icon" data-icon="check"><path d="M20 6 9 17l-5-5"/></svg>';
+		var copySvg = btn.innerHTML;
+		var timeout = 0;
+
+		btn.addEventListener( 'click', function () {
+			var text = codeEl.textContent || '';
+			if ( ! navigator.clipboard ) {
+				return;
+			}
+
+			navigator.clipboard.writeText( text ).then( function () {
+				btn.innerHTML = checkSvg;
+				btn.classList.add( 'is-copied' );
+				btn.setAttribute( 'aria-label', 'Code copied' );
+				clearTimeout( timeout );
+				timeout = setTimeout( function () {
+					btn.innerHTML = copySvg;
+					btn.classList.remove( 'is-copied' );
+					btn.setAttribute( 'aria-label', 'Copy code block' );
+				}, 2000 );
+			} );
+		} );
+
+		preEl.appendChild( btn );
+	}
+
+	/* ------------------------------------------------------------------ */
+	/*  SectionJumpNav with active state tracking                          */
+	/* ------------------------------------------------------------------ */
+
 	function SectionJumpNav( props ) {
+		const [ activeHref, setActiveHref ] = useState( '' );
+
+		useEffect(
+			function () {
+				if ( ! props.items.length ) {
+					return;
+				}
+
+				if ( typeof IntersectionObserver === 'undefined' ) {
+					return;
+				}
+
+				var headingEls = [];
+				props.items.forEach( function ( item ) {
+					var id = item.href.replace( /^#/, '' );
+					var el = document.getElementById( id );
+					if ( el ) {
+						headingEls.push( el );
+					}
+				} );
+
+				if ( ! headingEls.length ) {
+					return;
+				}
+
+				// Use a rootMargin that accounts for the sticky header and activates in
+				// the top third of the viewport.
+				var observer = new IntersectionObserver(
+					function ( entries ) {
+						entries.forEach( function ( entry ) {
+							if ( entry.isIntersecting ) {
+								setActiveHref( '#' + entry.target.id );
+							}
+						} );
+					},
+					{
+						rootMargin: '-100px 0px -66% 0px',
+						threshold: 0,
+					}
+				);
+
+				headingEls.forEach( function ( el ) {
+					observer.observe( el );
+				} );
+
+				function onHashChange() {
+					if ( window.location.hash ) {
+						setActiveHref( window.location.hash );
+					}
+				}
+
+				window.addEventListener( 'hashchange', onHashChange );
+
+				return function () {
+					observer.disconnect();
+					window.removeEventListener( 'hashchange', onHashChange );
+				};
+			},
+			[ props.items ]
+		);
+
 		if ( ! props.items.length ) {
 			return null;
 		}
@@ -427,12 +720,17 @@
 						'ul',
 						{ className: 'hdc-blog-post__jump-nav-list' },
 						props.items.map( function ( item ) {
+							var isActive = activeHref === item.href;
 							return h(
 								'li',
 								{ className: 'hdc-blog-post__jump-nav-item', key: item.href },
 								h(
 									'a',
-									{ className: 'hdc-blog-post__jump-nav-link', href: item.href },
+									{
+										className: 'hdc-blog-post__jump-nav-link' + ( isActive ? ' hdc-blog-post__jump-nav-link--active' : '' ),
+										href: item.href,
+										'aria-current': isActive ? 'true' : undefined,
+									},
 									item.label
 								)
 							);
@@ -453,6 +751,7 @@
 			posts: [],
 		} );
 		const [ progress, setProgress ] = useState( 0 );
+		const rootRef = useRef( null );
 
 		const signature = useMemo( function () {
 			return JSON.stringify( config );
@@ -609,6 +908,46 @@
 			[ config.showProgress, config.showScrollTop ]
 		);
 
+		// Code block enhancement: syntax highlighting + copy buttons
+		useEffect(
+			function () {
+				if ( state.loading || ! state.post ) {
+					return;
+				}
+
+				// Small delay to ensure DOM has rendered
+				var raf = requestAnimationFrame( function () {
+					var container = rootRef.current;
+					if ( ! container ) {
+						container = document;
+					}
+
+					var codeBlocks = container.querySelectorAll( '.hdc-blog-post__code' );
+					codeBlocks.forEach( function ( pre ) {
+						var codeEl = pre.querySelector( 'code' );
+						if ( ! codeEl ) {
+							return;
+						}
+
+						// Determine language from data attribute or lang label
+						var lang = pre.getAttribute( 'data-lang' ) || '';
+						if ( ! lang ) {
+							var langSpan = pre.querySelector( '.hdc-blog-post__code-lang' );
+							lang = langSpan ? ( langSpan.textContent || '' ).trim() : '';
+						}
+
+						highlightCodeElement( codeEl, lang );
+						addCopyButton( pre );
+					} );
+				} );
+
+				return function () {
+					cancelAnimationFrame( raf );
+				};
+			},
+			[ state.loading, state.post ]
+		);
+
 		const relatedPosts = useMemo(
 			function () {
 				if ( ! state.post ) {
@@ -702,7 +1041,7 @@
 
 			return h(
 				'div',
-				{},
+				{ ref: rootRef, className: 'hdc-blog-post__root' + ( prefersReducedMotion ? '' : ' hdc-blog-post__root--entering' ) },
 				config.showProgress
 					? h(
 						'div',
@@ -752,6 +1091,10 @@
 									alt: buildImageAlt( post ),
 									loading: 'eager',
 									decoding: 'async',
+									fetchPriority: 'high',
+									onError: function ( e ) {
+										e.target.style.display = 'none';
+									},
 								} )
 							)
 							: null,
@@ -766,7 +1109,7 @@
 						h(
 							'p',
 							{ className: 'hdc-blog-post__meta' },
-							h( 'span', {}, formatDateLabel( post.date ) ),
+							h( 'time', { dateTime: post.date }, formatDateLabel( post.date ) ),
 							post.readingTime
 								? h(
 									'span',

@@ -1,0 +1,106 @@
+// packages/block-editor/src/components/global-styles/background-panel.js
+import {
+  __experimentalToolsPanel as ToolsPanel,
+  __experimentalToolsPanelItem as ToolsPanelItem
+} from "@wordpress/components";
+import { useCallback, Platform } from "@wordpress/element";
+import { __ } from "@wordpress/i18n";
+import BackgroundImageControl from "../background-image-control/index.mjs";
+import { useToolsPanelDropdownMenuProps } from "./utils.mjs";
+import { setImmutably } from "../../utils/object.mjs";
+import { jsx } from "react/jsx-runtime";
+var DEFAULT_CONTROLS = {
+  backgroundImage: true
+};
+function useHasBackgroundPanel(settings) {
+  return Platform.OS === "web" && settings?.background?.backgroundImage;
+}
+function hasBackgroundSizeValue(style) {
+  return style?.background?.backgroundPosition !== void 0 || style?.background?.backgroundSize !== void 0;
+}
+function hasBackgroundImageValue(style) {
+  return !!style?.background?.backgroundImage?.id || // Supports url() string values in theme.json.
+  "string" === typeof style?.background?.backgroundImage || !!style?.background?.backgroundImage?.url;
+}
+function BackgroundToolsPanel({
+  resetAllFilter,
+  onChange,
+  value,
+  panelId,
+  children,
+  headerLabel
+}) {
+  const dropdownMenuProps = useToolsPanelDropdownMenuProps();
+  const resetAll = () => {
+    const updatedValue = resetAllFilter(value);
+    onChange(updatedValue);
+  };
+  return /* @__PURE__ */ jsx(
+    ToolsPanel,
+    {
+      label: headerLabel,
+      resetAll,
+      panelId,
+      dropdownMenuProps,
+      children
+    }
+  );
+}
+function BackgroundImagePanel({
+  as: Wrapper = BackgroundToolsPanel,
+  value,
+  onChange,
+  inheritedValue,
+  settings,
+  panelId,
+  defaultControls = DEFAULT_CONTROLS,
+  defaultValues = {},
+  headerLabel = __("Background")
+}) {
+  const showBackgroundImageControl = useHasBackgroundPanel(settings);
+  const resetBackground = () => onChange(setImmutably(value, ["background"], {}));
+  const resetAllFilter = useCallback((previousValue) => {
+    return {
+      ...previousValue,
+      background: {}
+    };
+  }, []);
+  return /* @__PURE__ */ jsx(
+    Wrapper,
+    {
+      resetAllFilter,
+      value,
+      onChange,
+      panelId,
+      headerLabel,
+      children: showBackgroundImageControl && /* @__PURE__ */ jsx(
+        ToolsPanelItem,
+        {
+          hasValue: () => !!value?.background,
+          label: __("Image"),
+          onDeselect: resetBackground,
+          isShownByDefault: defaultControls.backgroundImage,
+          panelId,
+          children: /* @__PURE__ */ jsx(
+            BackgroundImageControl,
+            {
+              value,
+              onChange,
+              settings,
+              inheritedValue,
+              defaultControls,
+              defaultValues
+            }
+          )
+        }
+      )
+    }
+  );
+}
+export {
+  BackgroundImagePanel as default,
+  hasBackgroundImageValue,
+  hasBackgroundSizeValue,
+  useHasBackgroundPanel
+};
+//# sourceMappingURL=background-panel.mjs.map

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/index.ts"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport {\n\thome,\n\tstyles,\n\tnavigation,\n\tpage,\n\tsymbol,\n\tsymbolFilled,\n\tlayout,\n} from '@wordpress/icons';\nimport { dispatch } from '@wordpress/data';\nimport { store as bootStore } from '@wordpress/boot';\n\n/**\n * Initialize edit-site menu items with icons.\n * This function is mandatory - all init modules must export 'init'.\n */\nexport async function init() {\n\t// Define icons for menu items\n\tconst menuIcons: Record< string, { icon: React.ReactElement } > = {\n\t\thome: { icon: home },\n\t\tstyles: { icon: styles },\n\t\tnavigation: { icon: navigation },\n\t\tpages: { icon: page },\n\t\ttemplateParts: { icon: symbolFilled },\n\t\tpatterns: { icon: symbol },\n\t\ttemplates: { icon: layout },\n\t};\n\n\t// Update each menu item with its icon\n\tObject.entries( menuIcons ).forEach( ( [ id, { icon } ] ) => {\n\t\tdispatch( bootStore ).updateMenuItem( id, { icon } );\n\t} );\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,mBAQO;AACP,kBAAyB;AACzB,kBAAmC;AAMnC,eAAsB,OAAO;AAE5B,QAAM,YAA4D;AAAA,IACjE,MAAM,EAAE,MAAM,kBAAK;AAAA,IACnB,QAAQ,EAAE,MAAM,oBAAO;AAAA,IACvB,YAAY,EAAE,MAAM,wBAAW;AAAA,IAC/B,OAAO,EAAE,MAAM,kBAAK;AAAA,IACpB,eAAe,EAAE,MAAM,0BAAa;AAAA,IACpC,UAAU,EAAE,MAAM,oBAAO;AAAA,IACzB,WAAW,EAAE,MAAM,oBAAO;AAAA,EAC3B;AAGA,SAAO,QAAS,SAAU,EAAE,QAAS,CAAE,CAAE,IAAI,EAAE,KAAK,CAAE,MAAO;AAC5D,8BAAU,YAAAA,KAAU,EAAE,eAAgB,IAAI,EAAE,KAAK,CAAE;AAAA,EACpD,CAAE;AACH;",
+  "names": ["bootStore"]
+}

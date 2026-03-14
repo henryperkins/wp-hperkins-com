@@ -40,13 +40,6 @@
 								setAttributes( { siteTitle: siteTitle } );
 							},
 						} ),
-						el( TextControl, {
-							label: __( 'Tagline', 'henrys-digital-canvas' ),
-							value: attrs.tagline,
-							onChange: function ( tagline ) {
-								setAttributes( { tagline: tagline } );
-							},
-						} ),
 						el( ToggleControl, {
 							label: __( 'Show command launcher', 'henrys-digital-canvas' ),
 							checked: !! attrs.showCommandLauncher,
@@ -77,10 +70,7 @@
 							'henrys-digital-canvas'
 						)
 					),
-					el( 'p', { className: 'hdc-site-shell-editor__title' }, attrs.siteTitle || __( 'Henry T. Perkins', 'henrys-digital-canvas' ) ),
-					attrs.tagline
-						? el( 'p', { className: 'hdc-site-shell-editor__tagline' }, attrs.tagline )
-						: null
+					el( 'p', { className: 'hdc-site-shell-editor__title' }, attrs.siteTitle || __( 'Henry T. Perkins', 'henrys-digital-canvas' ) )
 				)
 			);
 		},

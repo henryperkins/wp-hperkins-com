@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/non-breaking-space/index.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __ } from '@wordpress/i18n';\nimport { insert } from '@wordpress/rich-text';\nimport { RichTextShortcut } from '@wordpress/block-editor';\n\nconst name = 'core/non-breaking-space';\nconst title = __( 'Non breaking space' );\n\nexport const nonBreakingSpace = {\n\tname,\n\ttitle,\n\ttagName: 'nbsp',\n\tclassName: null,\n\tedit( { value, onChange } ) {\n\t\tfunction addNonBreakingSpace() {\n\t\t\tonChange( insert( value, '\\u00a0' ) );\n\t\t}\n\n\t\treturn (\n\t\t\t<RichTextShortcut\n\t\t\t\ttype=\"primaryShift\"\n\t\t\t\tcharacter=\" \"\n\t\t\t\tonUse={ addNonBreakingSpace }\n\t\t\t/>\n\t\t);\n\t},\n};\n"],
+  "mappings": ";AAGA,SAAS,UAAU;AACnB,SAAS,cAAc;AACvB,SAAS,wBAAwB;AAgB9B;AAdH,IAAM,OAAO;AACb,IAAM,QAAQ,GAAI,oBAAqB;AAEhC,IAAM,mBAAmB;AAAA,EAC/B;AAAA,EACA;AAAA,EACA,SAAS;AAAA,EACT,WAAW;AAAA,EACX,KAAM,EAAE,OAAO,SAAS,GAAI;AAC3B,aAAS,sBAAsB;AAC9B,eAAU,OAAQ,OAAO,MAAS,CAAE;AAAA,IACrC;AAEA,WACC;AAAA,MAAC;AAAA;AAAA,QACA,MAAK;AAAA,QACL,WAAU;AAAA,QACV,OAAQ;AAAA;AAAA,IACT;AAAA,EAEF;AACD;",
+  "names": []
+}

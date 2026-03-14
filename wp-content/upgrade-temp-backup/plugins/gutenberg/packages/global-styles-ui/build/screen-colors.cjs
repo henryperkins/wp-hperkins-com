@@ -1,0 +1,86 @@
+"use strict";
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// packages/global-styles-ui/src/screen-colors.tsx
+var screen_colors_exports = {};
+__export(screen_colors_exports, {
+  default: () => screen_colors_default
+});
+module.exports = __toCommonJS(screen_colors_exports);
+var import_i18n = require("@wordpress/i18n");
+var import_components = require("@wordpress/components");
+var import_block_editor = require("@wordpress/block-editor");
+var import_screen_header = require("./screen-header.cjs");
+var import_screen_body = require("./screen-body.cjs");
+var import_palette = __toESM(require("./palette.cjs"));
+var import_hooks = require("./hooks.cjs");
+var import_lock_unlock = require("./lock-unlock.cjs");
+var import_jsx_runtime = require("react/jsx-runtime");
+var { useSettingsForBlockElement, ColorPanel: StylesColorPanel } = (0, import_lock_unlock.unlock)(
+  import_block_editor.privateApis
+);
+function ScreenColors() {
+  const [style, setStyle] = (0, import_hooks.useStyle)(
+    "",
+    void 0,
+    "user",
+    false
+  );
+  const [inheritedStyle] = (0, import_hooks.useStyle)(
+    "",
+    void 0,
+    "merged",
+    false
+  );
+  const [rawSettings] = (0, import_hooks.useSetting)("");
+  const settings = useSettingsForBlockElement(rawSettings);
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      import_screen_header.ScreenHeader,
+      {
+        title: (0, import_i18n.__)("Colors"),
+        description: (0, import_i18n.__)(
+          "Palette colors and the application of those colors on site elements."
+        )
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_screen_body.ScreenBody, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_components.__experimentalVStack, { spacing: 7, children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_palette.default, {}) }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      StylesColorPanel,
+      {
+        inheritedValue: inheritedStyle,
+        value: style,
+        onChange: setStyle,
+        settings
+      }
+    )
+  ] });
+}
+var screen_colors_default = ScreenColors;
+//# sourceMappingURL=screen-colors.cjs.map

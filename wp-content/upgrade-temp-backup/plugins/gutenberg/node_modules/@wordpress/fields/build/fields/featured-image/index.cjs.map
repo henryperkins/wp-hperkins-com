@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/fields/featured-image/index.tsx"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { Field } from '@wordpress/dataviews';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport MediaEdit from '../../components/media-edit';\nimport type { BasePostWithEmbeddedFeaturedMedia } from '../../types';\nimport { FeaturedImageView } from './featured-image-view';\n\nconst featuredImageField: Field< BasePostWithEmbeddedFeaturedMedia > = {\n\tid: 'featured_media',\n\ttype: 'media',\n\tlabel: __( 'Featured Image' ),\n\tEdit: ( props ) => <MediaEdit { ...props } isExpanded />,\n\trender: FeaturedImageView,\n\tsetValue: ( { value } ) => ( {\n\t\tfeatured_media: value ?? 0,\n\t} ),\n\tenableSorting: false,\n\tfilterBy: false,\n};\n\n/**\n * Featured Image field for BasePostWithEmbeddedFeaturedMedia.\n */\nexport default featuredImageField;\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAIA,kBAAmB;AAKnB,wBAAsB;AAEtB,iCAAkC;AAMd;AAJpB,IAAM,qBAAiE;AAAA,EACtE,IAAI;AAAA,EACJ,MAAM;AAAA,EACN,WAAO,gBAAI,gBAAiB;AAAA,EAC5B,MAAM,CAAE,UAAW,4CAAC,kBAAAA,SAAA,EAAY,GAAG,OAAQ,YAAU,MAAC;AAAA,EACtD,QAAQ;AAAA,EACR,UAAU,CAAE,EAAE,MAAM,OAAS;AAAA,IAC5B,gBAAgB,SAAS;AAAA,EAC1B;AAAA,EACA,eAAe;AAAA,EACf,UAAU;AACX;AAKA,IAAO,yBAAQ;",
+  "names": ["MediaEdit"]
+}

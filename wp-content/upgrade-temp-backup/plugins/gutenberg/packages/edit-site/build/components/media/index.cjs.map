@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/media/index.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { useEntityRecord } from '@wordpress/core-data';\n\nfunction Media( { id, size = [ 'large', 'medium', 'thumbnail' ], ...props } ) {\n\tconst { record: media } = useEntityRecord( 'postType', 'attachment', id );\n\tconst currentSize = size.find(\n\t\t( s ) => !! media?.media_details?.sizes?.[ s ]\n\t);\n\n\tconst mediaUrl =\n\t\tmedia?.media_details?.sizes?.[ currentSize ]?.source_url ||\n\t\tmedia?.source_url;\n\n\tif ( ! mediaUrl ) {\n\t\treturn null;\n\t}\n\n\treturn <img { ...props } src={ mediaUrl } alt={ media.alt_text } />;\n}\n\nexport default Media;\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,uBAAgC;AAgBxB;AAdR,SAAS,MAAO,EAAE,IAAI,OAAO,CAAE,SAAS,UAAU,WAAY,GAAG,GAAG,MAAM,GAAI;AAC7E,QAAM,EAAE,QAAQ,MAAM,QAAI,kCAAiB,YAAY,cAAc,EAAG;AACxE,QAAM,cAAc,KAAK;AAAA,IACxB,CAAE,MAAO,CAAC,CAAE,OAAO,eAAe,QAAS,CAAE;AAAA,EAC9C;AAEA,QAAM,WACL,OAAO,eAAe,QAAS,WAAY,GAAG,cAC9C,OAAO;AAER,MAAK,CAAE,UAAW;AACjB,WAAO;AAAA,EACR;AAEA,SAAO,4CAAC,SAAM,GAAG,OAAQ,KAAM,UAAW,KAAM,MAAM,UAAW;AAClE;AAEA,IAAO,gBAAQ;",
+  "names": []
+}

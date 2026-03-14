@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/index.tsx"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nexport { Editor } from './components/editor';\nexport { Preview } from './components/preview';\nexport { useEditorAssets, loadEditorAssets } from './hooks/use-editor-assets';\nexport { useEditorSettings } from './hooks/use-editor-settings';\n"],
+  "mappings": ";AAGA,SAAS,cAAc;AACvB,SAAS,eAAe;AACxB,SAAS,iBAAiB,wBAAwB;AAClD,SAAS,yBAAyB;",
+  "names": []
+}

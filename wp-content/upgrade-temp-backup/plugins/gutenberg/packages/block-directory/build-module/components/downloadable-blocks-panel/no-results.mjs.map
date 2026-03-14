@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/downloadable-blocks-panel/no-results.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __ } from '@wordpress/i18n';\nimport { Tip, ExternalLink } from '@wordpress/components';\n\nfunction DownloadableBlocksNoResults() {\n\treturn (\n\t\t<>\n\t\t\t<div className=\"block-editor-inserter__no-results\">\n\t\t\t\t<p>{ __( 'No results found.' ) }</p>\n\t\t\t</div>\n\t\t\t<div className=\"block-editor-inserter__tips\">\n\t\t\t\t<Tip>\n\t\t\t\t\t{ __( 'Interested in creating your own block?' ) }\n\t\t\t\t\t<br />\n\t\t\t\t\t<ExternalLink href=\"https://developer.wordpress.org/block-editor/\">\n\t\t\t\t\t\t{ __( 'Get started here' ) }.\n\t\t\t\t\t</ExternalLink>\n\t\t\t\t</Tip>\n\t\t\t</div>\n\t\t</>\n\t);\n}\n\nexport default DownloadableBlocksNoResults;\n"],
+  "mappings": ";AAGA,SAAS,UAAU;AACnB,SAAS,KAAK,oBAAoB;AAIhC,mBAEE,KAMC,YARH;AAFF,SAAS,8BAA8B;AACtC,SACC,iCACC;AAAA,wBAAC,SAAI,WAAU,qCACd,8BAAC,OAAI,aAAI,mBAAoB,GAAG,GACjC;AAAA,IACA,oBAAC,SAAI,WAAU,+BACd,+BAAC,OACE;AAAA,SAAI,wCAAyC;AAAA,MAC/C,oBAAC,QAAG;AAAA,MACJ,qBAAC,gBAAa,MAAK,iDAChB;AAAA,WAAI,kBAAmB;AAAA,QAAG;AAAA,SAC7B;AAAA,OACD,GACD;AAAA,KACD;AAEF;AAEA,IAAO,qBAAQ;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/subtitle.tsx"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __experimentalHeading as Heading } from '@wordpress/components';\n\ninterface SubtitleProps {\n\tchildren: React.ReactNode;\n\tlevel?: 1 | 2 | 3 | 4 | 5 | 6;\n}\n\nexport function Subtitle( { children, level = 2 }: SubtitleProps ) {\n\treturn (\n\t\t<Heading className=\"global-styles-ui-subtitle\" level={ level }>\n\t\t\t{ children }\n\t\t</Heading>\n\t);\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,wBAAiD;AAS/C;AAFK,SAAS,SAAU,EAAE,UAAU,QAAQ,EAAE,GAAmB;AAClE,SACC,4CAAC,kBAAAA,uBAAA,EAAQ,WAAU,6BAA4B,OAC5C,UACH;AAEF;",
+  "names": ["Heading"]
+}

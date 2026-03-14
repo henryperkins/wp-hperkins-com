@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/sidebar-navigation-screen-navigation-menus/constants.js"],
+  "sourcesContent": ["// This requested is preloaded in `gutenberg_preload_navigation_posts`.\n// As unbounded queries are limited to 100 by `fetchAllMiddleware`\n// on apiFetch this query is limited to 100.\n// These parameters must be kept aligned with those in\n// lib/compat/wordpress-6.3/navigation-block-preloading.php\n// and\n// block-library/src/navigation/constants.js\nexport const PRELOADED_NAVIGATION_MENUS_QUERY = {\n\tper_page: 100,\n\tstatus: [ 'publish', 'draft' ],\n\torder: 'desc',\n\torderby: 'date',\n};\n"],
+  "mappings": ";AAOO,IAAM,mCAAmC;AAAA,EAC/C,UAAU;AAAA,EACV,QAAQ,CAAE,WAAW,OAAQ;AAAA,EAC7B,OAAO;AAAA,EACP,SAAS;AACV;",
+  "names": []
+}

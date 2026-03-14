@@ -1,0 +1,22 @@
+// packages/media-utils/src/utils/get-mime-types-array.ts
+function getMimeTypesArray(wpMimeTypesObject) {
+  if (!wpMimeTypesObject) {
+    return null;
+  }
+  return Object.entries(wpMimeTypesObject).flatMap(
+    ([extensionsString, mime]) => {
+      const [type] = mime.split("/");
+      const extensions = extensionsString.split("|");
+      return [
+        mime,
+        ...extensions.map(
+          (extension) => `${type}/${extension}`
+        )
+      ];
+    }
+  );
+}
+export {
+  getMimeTypesArray
+};
+//# sourceMappingURL=get-mime-types-array.mjs.map

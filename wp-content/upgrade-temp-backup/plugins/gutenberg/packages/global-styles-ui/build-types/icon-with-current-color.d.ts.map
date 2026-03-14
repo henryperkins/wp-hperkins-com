@@ -1,0 +1,1 @@
+{"version":3,"file":"icon-with-current-color.d.ts","sourceRoot":"","sources":["../src/icon-with-current-color.tsx"],"names":[],"mappings":"AAUA,UAAU,yBAAyB;IAClC,IAAI,EAAE,GAAG,CAAC;IACV,SAAS,CAAC,EAAE,MAAM,CAAC;IACnB,IAAI,CAAC,EAAE,MAAM,CAAC;IACd,CAAE,GAAG,EAAE,MAAM,GAAI,GAAG,CAAC;CACrB;AAED,wBAAgB,oBAAoB,CAAE,EACrC,SAAS,EACT,GAAG,KAAK,EACR,EAAE,yBAAyB,+BAU3B"}

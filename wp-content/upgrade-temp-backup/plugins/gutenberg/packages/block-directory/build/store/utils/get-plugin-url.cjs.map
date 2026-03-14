@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/store/utils/get-plugin-url.js"],
+  "sourcesContent": ["/**\n * Get the plugin's direct API link out of a block-directory response.\n *\n * @param {Object} block The block object\n *\n * @return {string} The plugin URL, if exists.\n */\nexport default function getPluginUrl( block ) {\n\tif ( ! block ) {\n\t\treturn false;\n\t}\n\tconst link = block.links[ 'wp:plugin' ] || block.links.self;\n\tif ( link && link.length ) {\n\t\treturn link[ 0 ].href;\n\t}\n\treturn false;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAOe,SAAR,aAA+B,OAAQ;AAC7C,MAAK,CAAE,OAAQ;AACd,WAAO;AAAA,EACR;AACA,QAAM,OAAO,MAAM,MAAO,WAAY,KAAK,MAAM,MAAM;AACvD,MAAK,QAAQ,KAAK,QAAS;AAC1B,WAAO,KAAM,CAAE,EAAE;AAAA,EAClB;AACA,SAAO;AACR;",
+  "names": []
+}

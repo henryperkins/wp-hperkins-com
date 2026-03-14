@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/private-apis.js"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport { useEntityRecordsWithPermissions } from './hooks/use-entity-records';\nimport { RECEIVE_INTERMEDIATE_RESULTS } from './utils';\nimport {\n\tuseActiveCollaborators,\n\tuseResolvedSelection,\n\tuseLastPostSave,\n} from './hooks/use-post-editor-awareness-state';\nimport { lock } from './lock-unlock';\nimport { retrySyncConnection } from './sync';\n\nexport const privateApis = {};\nlock( privateApis, {\n\tuseEntityRecordsWithPermissions,\n\tRECEIVE_INTERMEDIATE_RESULTS,\n\tretrySyncConnection,\n\tuseActiveCollaborators,\n\tuseResolvedSelection,\n\tuseLastPostSave,\n} );\n"],
+  "mappings": ";AAGA,SAAS,uCAAuC;AAChD,SAAS,oCAAoC;AAC7C;AAAA,EACC;AAAA,EACA;AAAA,EACA;AAAA,OACM;AACP,SAAS,YAAY;AACrB,SAAS,2BAA2B;AAE7B,IAAM,cAAc,CAAC;AAC5B,KAAM,aAAa;AAAA,EAClB;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AACD,CAAE;",
+  "names": []
+}

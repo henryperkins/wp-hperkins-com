@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/store/private-selectors.js"],
+  "sourcesContent": ["export function getListViewToggleRef( state ) {\n\treturn state.listViewToggleRef;\n}\n\nexport function getInserterSidebarToggleRef( state ) {\n\treturn state.inserterSidebarToggleRef;\n}\n"],
+  "mappings": ";AAAO,SAAS,qBAAsB,OAAQ;AAC7C,SAAO,MAAM;AACd;AAEO,SAAS,4BAA6B,OAAQ;AACpD,SAAO,MAAM;AACd;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/utils/file.js"],
+  "sourcesContent": ["/**\n * Reads the textual content of the given file.\n *\n * @param {File} file File.\n * @return {Promise<string>}  Content of the file.\n */\nexport function readTextFile( file ) {\n\tconst reader = new window.FileReader();\n\treturn new Promise( ( resolve ) => {\n\t\treader.onload = () => {\n\t\t\tresolve( reader.result );\n\t\t};\n\t\treader.readAsText( file );\n\t} );\n}\n"],
+  "mappings": ";AAMO,SAAS,aAAc,MAAO;AACpC,QAAM,SAAS,IAAI,OAAO,WAAW;AACrC,SAAO,IAAI,QAAS,CAAE,YAAa;AAClC,WAAO,SAAS,MAAM;AACrB,cAAS,OAAO,MAAO;AAAA,IACxB;AACA,WAAO,WAAY,IAAK;AAAA,EACzB,CAAE;AACH;",
+  "names": []
+}

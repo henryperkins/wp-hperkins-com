@@ -16,6 +16,48 @@
 				return null;
 			};
 
+	let revealObserver = null;
+
+	function initRevealObserver() {
+		if ( typeof document === 'undefined' ) {
+			return;
+		}
+
+		if ( revealObserver ) {
+			revealObserver.disconnect();
+			revealObserver = null;
+		}
+
+		if ( typeof IntersectionObserver === 'undefined' ) {
+			document.querySelectorAll( '.hdc-reveal' ).forEach( function ( el ) {
+				el.classList.add( 'is-visible' );
+			} );
+			return;
+		}
+
+		revealObserver = new IntersectionObserver(
+			function ( entries ) {
+				entries.forEach( function ( entry ) {
+					if ( entry.isIntersecting ) {
+						entry.target.classList.add( 'is-visible' );
+						revealObserver.unobserve( entry.target );
+					}
+				} );
+			},
+			{ threshold: 0.1 }
+		);
+
+		document.querySelectorAll( '.hdc-reveal:not(.is-visible)' ).forEach( function ( el ) {
+			var rect = el.getBoundingClientRect();
+			var isAboveFold = rect.top < window.innerHeight && rect.bottom > 0;
+			if ( isAboveFold ) {
+				el.classList.add( 'is-visible' );
+			} else {
+				revealObserver.observe( el );
+			}
+		} );
+	}
+
 	const REPO_PROXY_PAGE_SIZE = 100;
 	const REPO_PROXY_MAX_PAGES = 20;
 
@@ -91,13 +133,21 @@
 		return normalized;
 	}
 
-	function formatDate( rawDate ) {
-		if ( ! rawDate ) {
-			return '';
+	function parseStableDate( rawDate ) {
+		const value = ensureString( rawDate, '' );
+		if ( ! value ) {
+			return null;
 		}
 
-		const date = new Date( rawDate );
-		if ( Number.isNaN( date.getTime() ) ) {
+		const normalized = /^\d{4}-\d{2}-\d{2}$/.test( value ) ? value + 'T12:00:00' : value;
+		const date = new Date( normalized );
+
+		return Number.isNaN( date.getTime() ) ? null : date;
+	}
+
+	function formatDate( rawDate ) {
+		const date = parseStableDate( rawDate );
+		if ( ! date ) {
 			return '';
 		}
 
@@ -109,7 +159,8 @@
 	}
 
 	function getUpdatedAtTimestamp( value ) {
-		const timestamp = new Date( value || '' ).getTime();
+		const date = parseStableDate( value );
+		const timestamp = date ? date.getTime() : 0;
 		return Number.isFinite( timestamp ) ? timestamp : 0;
 	}
 
@@ -128,7 +179,7 @@
 	}
 
 	function getHomeRepoTitle( repo, repoTitles ) {
-		return ensureString( repoTitles[ repo.name ], '' ) || humanizeRepoName( repo.name );
+		return ensureString( repo.displayName, '' ) || ensureString( repoTitles[ repo.name ], '' ) || humanizeRepoName( repo.name );
 	}
 
 	function getHomeRepoSummary( repo ) {
@@ -144,12 +195,12 @@
 			return 'Open source';
 		}
 
-		return 'Selected build';
+		return 'Curated project';
 	}
 
 	function getHomeRepoCtaLabel( repo ) {
 		if ( repo.origin === 'github' && repo.access !== 'private' ) {
-			return 'View build';
+			return 'View project';
 		}
 
 		return 'View case study';
@@ -164,13 +215,15 @@
 		}
 
 		return {
-			pageTitle: ensureString( parsed.pageTitle, 'Henry Perkins — Technical Portfolio' ),
 			hero: ensureObject( parsed.hero ),
 			selectedWork: ensureObject( parsed.selectedWork ),
+			throughline: ensureObject( parsed.throughline ),
 			resumeSnapshot: ensureObject( parsed.resumeSnapshot ),
 			recentWriting: ensureObject( parsed.recentWriting ),
 			contactCta: ensureObject( parsed.contactCta ),
 			repoTitles: ensureObject( parsed.repoTitles ),
+			initialPosts: parsed.initialPosts,
+			initialResume: parsed.initialResume,
 			githubUsername: ensureString( parsed.githubUsername, 'henryperkins' ),
 			githubProxyUrl: ensureString( parsed.githubProxyUrl, '/api/github/repos' ),
 			workEndpoint: ensureString( parsed.workEndpoint, '/wp-json/henrys-digital-canvas/v1/work' ),
@@ -193,6 +246,7 @@
 		return {
 			id: sourceRepo.id || localRepo.id || name,
 			name: name,
+			displayName: ensureString( localRepo.displayName, ensureString( sourceRepo.displayName, '' ) ),
 			description: ensureString( localRepo.description, '' ) || ensureString( sourceRepo.description, 'Description coming soon.' ),
 			language: ensureString( sourceRepo.language, ensureString( localRepo.language, 'Unknown' ) ),
 			updatedAt: updatedAt,
@@ -278,6 +332,37 @@
 		return false;
 	}
 
+	function normalizePostItem( post ) {
+		const slug = ensureString( post && post.slug, '' );
+		const title = stripHtml( post && ( post.title && post.title.rendered ? post.title.rendered : post.title ) ) || 'Untitled post';
+		const thumbnailUrl = ensureString( post && post.featuredImageUrl, '' );
+
+		return {
+			id: post && post.id ? post.id : slug || title,
+			link: slug ? '/blog/' + encodeURIComponent( slug ) + '/' : ensureString( post && post.url, '#' ),
+			title: title,
+			excerpt: stripHtml( post && post.excerpt ),
+			date: ensureString( post && post.date, '' ),
+			dateLabel: formatDate( post && post.date ),
+			readingTime: ensureString( post && post.readingTime, '' ),
+			thumbnailUrl: thumbnailUrl,
+			thumbnailAlt: ensureString( post && post.featuredImageAlt, title + ' featured image' ),
+			thumbnailSrcSet: ensureString( post && post.featuredImageSrcSet, '' ),
+		};
+	}
+
+	function normalizePostsPayload( payload, count ) {
+		const posts = payload && Array.isArray( payload.posts ) ? payload.posts : Array.isArray( payload ) ? payload : [];
+
+		return posts.slice( 0, count ).map( normalizePostItem );
+	}
+
+	function normalizeResumeData( payload ) {
+		const resume = payload && payload.data ? payload.data : payload;
+
+		return resume && typeof resume === 'object' && ! Array.isArray( resume ) ? resume : null;
+	}
+
 	async function fetchPosts( config ) {
 		const endpoint = normalizePostsEndpoint( config.blogEndpoint, config.blogCount );
 		const response = await fetch( endpoint, {
@@ -291,25 +376,8 @@
 		}
 
 		const payload = await response.json();
-		const posts = payload && Array.isArray( payload.posts ) ? payload.posts : Array.isArray( payload ) ? payload : [];
 
-		return posts.slice( 0, config.blogCount ).map( function ( post ) {
-			const slug = ensureString( post && post.slug, '' );
-			const title = stripHtml( post && ( post.title && post.title.rendered ? post.title.rendered : post.title ) ) || 'Untitled post';
-			const thumbnailUrl = ensureString( post && post.featuredImageUrl, '' );
-
-			return {
-				id: post.id || slug || title,
-				link: slug ? '/blog/' + encodeURIComponent( slug ) + '/' : ensureString( post && post.url, '#' ),
-				title: title,
-				excerpt: stripHtml( post && post.excerpt ),
-				dateLabel: formatDate( post && post.date ),
-				readingTime: ensureString( post && post.readingTime, '' ),
-				thumbnailUrl: thumbnailUrl,
-				thumbnailAlt: ensureString( post && post.featuredImageAlt, title + ' featured image' ),
-				thumbnailSrcSet: ensureString( post && post.featuredImageSrcSet, '' ),
-			};
-		} );
+		return normalizePostsPayload( payload, config.blogCount );
 	}
 
 	async function fetchReposFromContract( config ) {
@@ -424,11 +492,125 @@
 		}
 
 		const payload = await response.json();
-		return payload && payload.data ? payload.data : payload;
+		return normalizeResumeData( payload );
+	}
+
+	function RecentWritingLoadingState( props ) {
+		return h(
+			'div',
+			{ 'aria-hidden': 'true', className: 'hdc-home-page__post-stack' },
+			Array.from( { length: props.count } ).map( function ( item, index ) {
+				return h(
+					'div',
+					{
+						className: 'hdc-home-page__post-card hdc-home-page__post-card--skeleton ember-surface',
+						key: 'post-skeleton-' + String( index ),
+					},
+					h( 'div', { className: 'hdc-home-page__post-thumb-wrap' }, h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--thumb' } ) ),
+					h(
+						'div',
+						{ className: 'hdc-home-page__post-body' },
+						h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--title' } ),
+						h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--line' } ),
+						h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--line hdc-home-page__skeleton--line-short' } ),
+						h(
+							'div',
+							{ className: 'hdc-home-page__post-meta' },
+							h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--meta' } ),
+							h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--meta hdc-home-page__skeleton--meta-short' } )
+						)
+					)
+				);
+			} )
+		);
+	}
+
+	function WorkGridLoadingState( props ) {
+		return h(
+			'div',
+			{ 'aria-hidden': 'true', className: 'hdc-home-page__work-grid' },
+			Array.from( { length: props.count } ).map( function ( item, index ) {
+				return h(
+					'div',
+					{
+						className: 'hdc-home-page__work-card hdc-home-page__work-card--skeleton ember-surface',
+						key: 'work-skeleton-' + String( index ),
+					},
+					h(
+						'div',
+						{ className: 'hdc-home-page__work-meta' },
+						h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--meta' } ),
+						h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--badge' } )
+					),
+					h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--title' } ),
+					h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--line' } ),
+					h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--line hdc-home-page__skeleton--line-short' } ),
+					h(
+						'div',
+						{ className: 'hdc-home-page__card-footer' },
+						h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--meta' } ),
+						h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--meta' } )
+					)
+				);
+			} )
+		);
+	}
+
+	function ResumeSnapshotLoadingState() {
+		return h(
+			'div',
+			{ 'aria-hidden': 'true', className: 'hdc-home-page__resume-stack' },
+			h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--title hdc-home-page__skeleton--title-wide' } ),
+			h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--line' } ),
+			h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--line hdc-home-page__skeleton--line-short' } ),
+			h(
+				'div',
+				{ className: 'hdc-home-page__resume-snapshot' },
+				h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--meta' } ),
+				h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--line hdc-home-page__skeleton--line-medium' } )
+			),
+			h(
+				'div',
+				{ className: 'hdc-home-page__badges', 'data-loading': 'true' },
+				h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--badge' } ),
+				h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--badge' } ),
+				h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--badge' } )
+			)
+		);
+	}
+
+	function SectionEmptyState( props ) {
+		return h(
+			'div',
+			{ className: 'hdc-home-page__empty-state ember-surface' },
+			h(
+				'div',
+				{ className: 'hdc-home-page__empty-state-header' },
+				h(
+					'span',
+					{ 'aria-hidden': 'true', className: 'hdc-home-page__empty-state-icon' },
+					renderLucideIcon( h, props.iconName, { size: 16 } )
+				),
+				h( 'h3', { className: 'hdc-home-page__empty-title' }, props.title )
+				),
+			h( 'p', { className: 'hdc-home-page__empty' }, props.description ),
+			props.actionHref && props.actionLabel
+				? h(
+					'a',
+					{
+						className: 'hdc-home-page__text-link focus-ring',
+						href: props.actionHref,
+					},
+					props.actionLabel
+				)
+				: null
+		);
 	}
 
 	function HomePageApp( props ) {
 		const config = props.config;
+		const initialPosts = normalizePostsPayload( config.initialPosts, config.blogCount );
+		const initialResume = normalizeResumeData( config.initialResume );
 		const [ reposState, setReposState ] = useState( {
 			error: '',
 			items: [],
@@ -437,19 +619,19 @@
 		} );
 		const [ postsState, setPostsState ] = useState( {
 			error: '',
-			items: [],
-			loading: true,
+			items: initialPosts,
+			loading: initialPosts.length === 0,
 		} );
 		const [ resumeState, setResumeState ] = useState( {
-			data: null,
-			loading: true,
+			data: initialResume,
+			loading: ! initialResume,
 		} );
 
 		useEffect(
 			function () {
-				document.title = config.pageTitle;
+				initRevealObserver();
 			},
-			[ config.pageTitle ]
+			[ reposState.loading, postsState.loading, resumeState.loading ]
 		);
 
 		useEffect(
@@ -501,7 +683,7 @@
 
 						setPostsState( {
 							error: error instanceof Error ? error.message : 'Recent writing is temporarily unavailable.',
-							items: [],
+							items: initialPosts,
 							loading: false,
 						} );
 					} );
@@ -523,7 +705,7 @@
 						}
 
 						setResumeState( {
-							data: null,
+							data: initialResume,
 							loading: false,
 						} );
 					} );
@@ -567,7 +749,7 @@
 			{},
 			h(
 				'section',
-				{ className: 'hdc-home-page__hero noise' },
+				{ className: 'hdc-home-page__hero noise hdc-reveal hdc-reveal--fade-in', style: { '--reveal-index': 0 } },
 				h(
 					'div',
 					{ className: 'hero-backdrop', 'aria-hidden': 'true' },
@@ -580,27 +762,33 @@
 					h(
 						'div',
 						{ className: 'hdc-home-page__hero-content' },
-						h( 'p', { className: 'hdc-home-page__hero-eyebrow' }, ensureString( config.hero.eyebrow, '' ) ),
+						ensureString( config.hero.eyebrow, '' )
+							? h( 'p', { className: 'hdc-home-page__hero-eyebrow' }, ensureString( config.hero.eyebrow, '' ) )
+							: null,
 						h( 'h1', { className: 'hdc-home-page__hero-title' }, ensureString( config.hero.title, 'Henry T. Perkins' ) ),
 						h( 'p', { className: 'hdc-home-page__hero-description' }, ensureString( config.hero.description, '' ) ),
 						h(
 							'div',
 							{ className: 'hdc-home-page__hero-actions' },
-							h(
-								'a',
-								{
-									className: 'hdc-home-page__button hdc-home-page__button--hero focus-ring',
-									href: ensureString( config.hero.primaryCtaHref, '/contact/' ),
-								},
-								ensureString( config.hero.primaryCtaLabel, 'Work with me' )
-							),
-							h(
-								'a',
-								{
-									className: 'hdc-home-page__button hdc-home-page__button--secondary hdc-home-page__button--hero-secondary focus-ring',
-									href: ensureString( config.hero.secondaryCtaHref, '/work/' ),
-								},
-								ensureString( config.hero.secondaryCtaLabel, 'View case studies' )
+						h(
+							'a',
+							{
+								className: 'hdc-home-page__button hdc-home-page__button--hero focus-ring',
+								'data-contrast-probe': 'hero-action-primary-home',
+								href: ensureString( config.hero.primaryCtaHref, '/contact/' ),
+							},
+							ensureString( config.hero.primaryCtaLabel, 'Work with me' ),
+							renderLucideIcon( h, 'arrow-right', { size: 16 } )
+						),
+						h(
+							'a',
+							{
+								className: 'hdc-home-page__button hdc-home-page__button--secondary hdc-home-page__button--hero-secondary focus-ring',
+								'data-contrast-probe': 'hero-action-secondary-home',
+								href: ensureString( config.hero.secondaryCtaHref, '/contact/' ),
+							},
+								ensureString( config.hero.secondaryCtaLabel, 'Work With Me' ),
+								renderLucideIcon( h, 'arrow-right', { size: 16 } )
 							)
 						)
 					)
@@ -630,30 +818,19 @@
 						: sourceLabel
 				),
 				reposState.loading
-					? h(
-						'div',
-						{ className: 'hdc-home-page__work-grid' },
-						Array.from( { length: config.repoCount } ).map( function ( item, index ) {
-							return h(
-								'div',
-								{
-									className: 'hdc-home-page__work-card hdc-home-page__work-card--skeleton ember-surface',
-									key: 'work-skeleton-' + String( index ),
-								}
-							);
-						} )
-					)
+					? h( WorkGridLoadingState, { count: config.repoCount } )
 					: featuredRepos.length
 						? h(
 							'div',
 							{ className: 'hdc-home-page__work-grid' },
-							featuredRepos.map( function ( repo ) {
+							featuredRepos.map( function ( repo, repoIndex ) {
 								return h(
 									'a',
 									{
-										className: 'hdc-home-page__work-card ember-surface focus-ring',
+										className: 'hdc-home-page__work-card ember-surface focus-ring hdc-reveal',
 										href: repo.url,
 										key: repo.id || repo.name,
+										style: { '--reveal-index': repoIndex },
 									},
 									h(
 										'div',
@@ -674,7 +851,7 @@
 										h( 'span', { className: 'hdc-home-page__badge' }, getHomeRepoBadge( repo ) )
 									),
 									h( 'h3', { className: 'hdc-home-page__card-title' }, getHomeRepoTitle( repo, config.repoTitles ) ),
-									h( 'p', { className: 'hdc-home-page__card-copy' }, getHomeRepoSummary( repo ) ),
+									h( 'p', { className: 'hdc-home-page__card-copy hdc-home-page__card-copy--clamp' }, getHomeRepoSummary( repo ) ),
 									h(
 										'div',
 										{ className: 'hdc-home-page__card-footer' },
@@ -689,6 +866,7 @@
 													size: 12,
 												} )
 											),
+											h( 'span', { className: 'screen-reader-text' }, 'Updated:' ),
 											formatDate( repo.updatedAt )
 										),
 										h( 'span', { className: 'hdc-home-page__card-cta' }, getHomeRepoCtaLabel( repo ) )
@@ -696,12 +874,53 @@
 								);
 							} )
 						)
-						: h(
+						: h( SectionEmptyState, {
+							actionHref: ensureString( config.selectedWork.actionHref, '/work/' ),
+							actionLabel: ensureString( config.selectedWork.actionLabel, 'View all work' ),
+							description: selectedWorkEmptyDescription,
+							iconName: 'briefcase',
+							title: selectedWorkEmptyTitle,
+						} )
+			),
+			h(
+				'section',
+				{ className: 'hdc-home-page__section', id: 'throughline' },
+				h(
+					'div',
+					{ className: 'hdc-reveal hdc-reveal--fade-in', style: { '--reveal-index': 0 } },
+					h( 'h2', { className: 'hdc-home-page__section-title hdc-home-page__section-title--intro' }, ensureString( config.throughline.title, 'From the floor to the frontier.' ) )
+				),
+				h(
+					'div',
+					{ className: 'hdc-home-page__throughline-grid' },
+					h(
+						'div',
+						{ className: 'hdc-home-page__throughline-narrative' },
+						ensureArray( config.throughline.paragraphs ).map( function ( paragraph, index ) {
+							return h( 'p', { className: 'hdc-home-page__throughline-paragraph', key: 'tp-' + String( index ) }, ensureString( paragraph, '' ) );
+						} )
+					),
+					h(
+						'div',
+						{ className: 'hdc-reveal', style: { '--reveal-index': 1 } },
+						h(
 							'div',
-							{ className: 'hdc-home-page__empty-state ember-surface' },
-							h( 'h3', { className: 'hdc-home-page__empty-title' }, selectedWorkEmptyTitle ),
-							h( 'p', { className: 'hdc-home-page__empty' }, selectedWorkEmptyDescription )
+							{ className: 'hdc-home-page__throughline-quote-card' },
+							h(
+								'div',
+								{ className: 'hdc-home-page__throughline-quote-header' },
+								renderLucideIcon( h, 'quote', { size: 18, props: { 'aria-hidden': 'true' } } ),
+								h( 'span', { className: 'hdc-home-page__eyebrow' }, ensureString( ensureObject( config.throughline.quote ).eyebrow, 'A former colleague' ) )
+							),
+							h(
+								'blockquote',
+								{ className: 'hdc-home-page__throughline-blockquote' },
+								h( 'p', { className: 'hdc-home-page__throughline-quote-text' }, '\u201C' + ensureString( ensureObject( config.throughline.quote ).text, '' ) + '\u201D' ),
+								h( 'footer', { className: 'hdc-home-page__throughline-quote-footer' }, ensureString( ensureObject( config.throughline.quote ).attribution, '' ) )
+							)
 						)
+					)
+				)
 			),
 			h(
 				'section',
@@ -719,27 +938,37 @@
 						ensureString( config.resumeSnapshot.actionLabel, 'Interactive resume' )
 					)
 				),
-				h(
-					'div',
-					{ className: 'hdc-home-page__resume-grid' },
+					h(
+						'div',
+						{ className: 'hdc-home-page__resume-grid' },
 					h(
 						'div',
 						{ className: 'hdc-home-page__resume-card ember-surface' },
-						h( 'p', { className: 'hdc-home-page__eyebrow' }, ensureString( config.resumeSnapshot.positioningEyebrow, 'Positioning' ) ),
+						h( 'p', { className: 'hdc-home-page__eyebrow', 'data-contrast-probe': 'ember-eyebrow-home' }, ensureString( config.resumeSnapshot.positioningEyebrow, 'Positioning' ) ),
 						resumeState.loading
-							? h( 'p', { className: 'hdc-home-page__copy' }, 'Loading resume data…' )
+							? h( ResumeSnapshotLoadingState )
 							: h(
-								'div',
-								{ className: 'hdc-home-page__resume-stack' },
-								resume && resume.headline ? h( 'h3', { className: 'hdc-home-page__card-title' }, resume.headline ) : null,
-								resume && resume.subheadline ? h( 'p', { className: 'hdc-home-page__card-copy' }, resume.subheadline ) : null,
+							'div',
+							{ className: 'hdc-home-page__resume-stack' },
+							resume && resume.headline ? h( 'h3', { className: 'hdc-home-page__card-title' }, resume.headline ) : null,
+							resume && resume.subheadline ? h( 'p', { className: 'hdc-home-page__card-copy', 'data-contrast-probe': 'ember-body-home' }, resume.subheadline ) : null,
 								resumeSnapshotLabel || resumeSnapshotItems.length
 									? h(
 										'div',
 										{ className: 'hdc-home-page__resume-snapshot' },
 										resumeSnapshotLabel ? h( 'p', { className: 'hdc-home-page__resume-snapshot-label' }, resumeSnapshotLabel ) : null,
 										resumeSnapshotItems.length
-											? h( 'p', { className: 'hdc-home-page__resume-snapshot-items' }, resumeSnapshotItems.join( ' · ' ) )
+											? h(
+												'p',
+												{ className: 'hdc-home-page__resume-snapshot-items' },
+												resumeSnapshotItems.reduce( function ( acc, item, idx ) {
+													if ( idx > 0 ) {
+														acc.push( h( 'span', { className: 'hdc-home-page__inline-dot', 'aria-hidden': 'true', key: 'dot-' + String( idx ) }, '\u00B7' ) );
+													}
+													acc.push( h( 'span', { key: 'item-' + String( idx ) }, item ) );
+													return acc;
+												}, [] )
+											)
 											: null
 									)
 									: null,
@@ -776,10 +1005,10 @@
 						'div',
 						{ className: 'hdc-home-page__resume-card hdc-home-page__resume-card--accent ember-surface ember-surface-strong' },
 						h( 'p', { className: 'hdc-home-page__eyebrow' }, ensureString( config.resumeSnapshot.bestFitEyebrow, 'Best fit' ) ),
-						h( 'h3', { className: 'hdc-home-page__card-title' }, ensureString( config.resumeSnapshot.bestFitTitle, 'Where I plug in fastest' ) ),
+						h( 'h3', { className: 'hdc-home-page__card-title' }, ensureString( config.resumeSnapshot.bestFitTitle, 'Where I contribute fastest' ) ),
 						h(
 							'ul',
-							{ className: 'hdc-home-page__list' },
+							{ className: 'hdc-home-page__list list-accent-disc' },
 							ensureArray( config.resumeSnapshot.focusAreas ).map( function ( area, index ) {
 								return h( 'li', { key: 'focus-area-' + String( index ) }, ensureString( area, '' ) );
 							} )
@@ -804,18 +1033,19 @@
 					)
 				),
 				postsState.loading
-					? h( 'p', { className: 'hdc-home-page__copy' }, 'Loading recent writing…' )
+					? h( RecentWritingLoadingState, { count: config.blogCount } )
 					: postsState.items.length
 						? h(
 							'div',
 							{ className: 'hdc-home-page__post-stack' },
-							postsState.items.map( function ( post ) {
+							postsState.items.map( function ( post, postIndex ) {
 								return h(
 									'a',
 									{
-										className: 'hdc-home-page__post-card focus-ring',
+										className: 'hdc-home-page__post-card focus-ring hdc-reveal hdc-reveal--slide-left',
 										href: post.link,
 										key: post.id,
+										style: { '--reveal-index': postIndex },
 									},
 									post.thumbnailUrl
 										? h(
@@ -824,7 +1054,10 @@
 											h( 'img', {
 												alt: post.thumbnailAlt,
 												className: 'hdc-feed-card-thumb',
+												decoding: 'async',
 												loading: 'lazy',
+												onError: function ( e ) { e.target.style.display = 'none'; },
+												sizes: '(min-width: 640px) 112px, 96px',
 												src: post.thumbnailUrl,
 												srcSet: post.thumbnailSrcSet || undefined,
 											} )
@@ -838,19 +1071,20 @@
 										h(
 											'div',
 											{ className: 'hdc-home-page__post-meta' },
-											h( 'span', {}, post.dateLabel ),
+											h( 'time', { dateTime: post.date }, post.dateLabel ),
 											post.readingTime ? h( 'span', {}, post.readingTime ) : null
 										)
 									)
 								);
 							} )
 						)
-						: h(
-							'div',
-							{ className: 'hdc-home-page__empty-state ember-surface' },
-							h( 'h3', { className: 'hdc-home-page__empty-title' }, recentWritingEmptyTitle ),
-							h( 'p', { className: 'hdc-home-page__empty' }, recentWritingEmptyDescription )
-						)
+						: h( SectionEmptyState, {
+							actionHref: ensureString( config.recentWriting.actionHref, '/blog/' ),
+							actionLabel: ensureString( config.recentWriting.actionLabel, 'All posts' ),
+							description: recentWritingEmptyDescription,
+							iconName: 'file-text',
+							title: recentWritingEmptyTitle,
+						} )
 			),
 			h(
 				'section',

@@ -1,0 +1,19 @@
+// packages/block-editor/src/components/unit-control/index.js
+import {
+  __experimentalUseCustomUnits as useCustomUnits,
+  __experimentalUnitControl as BaseUnitControl
+} from "@wordpress/components";
+import { useSettings } from "../use-settings/index.mjs";
+import { jsx } from "react/jsx-runtime";
+function UnitControl({ units: unitsProp, ...props }) {
+  const [availableUnits] = useSettings("spacing.units");
+  const units = useCustomUnits({
+    availableUnits: availableUnits || ["%", "px", "em", "rem", "vw"],
+    units: unitsProp
+  });
+  return /* @__PURE__ */ jsx(BaseUnitControl, { units, ...props });
+}
+export {
+  UnitControl as default
+};
+//# sourceMappingURL=index.mjs.map

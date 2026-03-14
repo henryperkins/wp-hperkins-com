@@ -1,0 +1,24 @@
+// packages/sync/src/config.ts
+var CRDT_DOC_VERSION = 1;
+var CRDT_DOC_META_PERSISTENCE_KEY = "fromPersistence";
+var CRDT_RECORD_MAP_KEY = "document";
+var CRDT_STATE_MAP_KEY = "state";
+var CRDT_STATE_MAP_SAVED_AT_KEY = "savedAt";
+var CRDT_STATE_MAP_SAVED_BY_KEY = "savedBy";
+var CRDT_STATE_MAP_VERSION_KEY = "version";
+var LOCAL_EDITOR_ORIGIN = "gutenberg";
+var LOCAL_SYNC_MANAGER_ORIGIN = "syncManager";
+var LOCAL_UNDO_IGNORED_ORIGIN = "gutenberg-undo-ignored";
+export {
+  CRDT_DOC_META_PERSISTENCE_KEY,
+  CRDT_DOC_VERSION,
+  CRDT_RECORD_MAP_KEY,
+  CRDT_STATE_MAP_KEY,
+  CRDT_STATE_MAP_SAVED_AT_KEY,
+  CRDT_STATE_MAP_SAVED_BY_KEY,
+  CRDT_STATE_MAP_VERSION_KEY,
+  LOCAL_EDITOR_ORIGIN,
+  LOCAL_SYNC_MANAGER_ORIGIN,
+  LOCAL_UNDO_IGNORED_ORIGIN
+};
+//# sourceMappingURL=config.mjs.map

@@ -1,0 +1,9 @@
+// packages/editor/src/hooks/index.js
+import "./custom-sources-backwards-compatibility.mjs";
+import "./default-autocompleters.mjs";
+import "./media-upload.mjs";
+import "./pattern-overrides.mjs";
+import "./navigation-link-view-button.mjs";
+import "./template-part-navigation-edit-button.mjs";
+import "./push-changes-to-global-styles/index.mjs";
+//# sourceMappingURL=index.mjs.map

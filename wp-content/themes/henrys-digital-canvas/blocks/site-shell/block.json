@@ -17,11 +17,7 @@
 	"attributes": {
 		"siteTitle": {
 			"type": "string",
-			"default": "Henry T. Perkins"
-		},
-		"tagline": {
-			"type": "string",
-			"default": ""
+			"default": "Henry Perkins"
 		},
 		"showCommandLauncher": {
 			"type": "boolean",

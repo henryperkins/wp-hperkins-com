@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/font-library/utils/constants.ts"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { _x } from '@wordpress/i18n';\n\nexport const ALLOWED_FILE_EXTENSIONS = [ 'otf', 'ttf', 'woff', 'woff2' ];\n\nexport const FONT_WEIGHTS: Record< string, string > = {\n\t100: _x( 'Thin', 'font weight' ),\n\t200: _x( 'Extra-light', 'font weight' ),\n\t300: _x( 'Light', 'font weight' ),\n\t400: _x( 'Normal', 'font weight' ),\n\t500: _x( 'Medium', 'font weight' ),\n\t600: _x( 'Semi-bold', 'font weight' ),\n\t700: _x( 'Bold', 'font weight' ),\n\t800: _x( 'Extra-bold', 'font weight' ),\n\t900: _x( 'Black', 'font weight' ),\n};\n\nexport const FONT_STYLES: Record< string, string > = {\n\tnormal: _x( 'Normal', 'font style' ),\n\titalic: _x( 'Italic', 'font style' ),\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,kBAAmB;AAEZ,IAAM,0BAA0B,CAAE,OAAO,OAAO,QAAQ,OAAQ;AAEhE,IAAM,eAAyC;AAAA,EACrD,SAAK,gBAAI,QAAQ,aAAc;AAAA,EAC/B,SAAK,gBAAI,eAAe,aAAc;AAAA,EACtC,SAAK,gBAAI,SAAS,aAAc;AAAA,EAChC,SAAK,gBAAI,UAAU,aAAc;AAAA,EACjC,SAAK,gBAAI,UAAU,aAAc;AAAA,EACjC,SAAK,gBAAI,aAAa,aAAc;AAAA,EACpC,SAAK,gBAAI,QAAQ,aAAc;AAAA,EAC/B,SAAK,gBAAI,cAAc,aAAc;AAAA,EACrC,SAAK,gBAAI,SAAS,aAAc;AACjC;AAEO,IAAM,cAAwC;AAAA,EACpD,YAAQ,gBAAI,UAAU,YAAa;AAAA,EACnC,YAAQ,gBAAI,UAAU,YAAa;AACpC;",
+  "names": []
+}

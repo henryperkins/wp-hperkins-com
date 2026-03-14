@@ -5,7 +5,7 @@ const WORK_DETAIL_REPO = process.env.WORK_DETAIL_REPO || 'henry-s-digital-canvas
 
 const ROUTES = [
 	{ path: '/', selector: '.hdc-home-page', status: 200 },
-	{ path: '/work/', selector: '.hdc-work-app', status: 200 },
+	{ path: '/work/', selector: '.hdc-work-showcase', status: 200 },
 	{ path: `/work/${ WORK_DETAIL_REPO }/`, selector: '.hdc-work-detail', status: 200 },
 	{ path: '/resume/', selector: '.hdc-resume-overview', status: 200 },
 	{ path: '/resume/ats/', selector: '.hdc-resume-ats', status: 200 },
@@ -172,11 +172,22 @@ test.describe('Henrys Digital Canvas browser smoke', () => {
 			.toContain('/about/');
 
 		await page.goto('/', { waitUntil: 'networkidle' });
+		const commandDialog = page.locator('[data-hdc-command-dialog]');
 		await page.keyboard.down('Control');
 		await page.keyboard.press('k');
 		await page.keyboard.up('Control');
-		await expect(page.locator('[data-hdc-command-dialog]:not([hidden])')).toHaveCount(1, { timeout: 5000 });
+		await expect(commandDialog).toBeVisible({ timeout: 5000 });
+		const commandInput = page.locator('[data-hdc-command-input]');
+		await expect(commandInput).toBeFocused();
+		await page.keyboard.down('Control');
+		await page.keyboard.press('k');
+		await page.keyboard.up('Control');
+		await expect(commandDialog).toBeVisible();
+		await commandInput.fill('about');
+		await page.keyboard.press('ArrowDown');
+		await expect(page.locator('.hdc-site-shell__command-item.is-highlighted').first()).toContainText('About');
 		await page.keyboard.press('Escape');
+		await expect(commandDialog).toBeHidden({ timeout: 5000 });
 
 		const mobileContext = await browser.newContext({
 			baseURL: process.env.BASE_URL || 'https://wp.hperkins.com',
@@ -186,16 +197,17 @@ test.describe('Henrys Digital Canvas browser smoke', () => {
 
 		await mobilePage.goto('/', { waitUntil: 'networkidle' });
 		const menuButton = mobilePage.locator('[data-hdc-menu-trigger]');
+		const mobileMenu = mobilePage.locator('[data-hdc-mobile-menu]');
 		await expect(menuButton).toHaveAttribute('aria-label', /open menu/i);
 		await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
 		await menuButton.click();
-		await expect(mobilePage.locator('[data-hdc-mobile-menu]:not([hidden])')).toHaveCount(1, {
+		await expect(mobileMenu).toBeVisible({
 			timeout: 8000,
 		});
 		await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
 		await expect(menuButton).toHaveAttribute('aria-label', /close menu/i);
 		await mobilePage.keyboard.press('Escape');
-		await expect(mobilePage.locator('[data-hdc-mobile-menu]:not([hidden])')).toHaveCount(0, {
+		await expect(mobileMenu).toBeHidden({
 			timeout: 8000,
 		});
 

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/meta-boxes/meta-box-visibility.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { useEffect } from '@wordpress/element';\nimport { useSelect } from '@wordpress/data';\nimport { store as editorStore } from '@wordpress/editor';\n\nexport default function MetaBoxVisibility( { id } ) {\n\tconst isVisible = useSelect(\n\t\t( select ) => {\n\t\t\treturn select( editorStore ).isEditorPanelEnabled(\n\t\t\t\t`meta-box-${ id }`\n\t\t\t);\n\t\t},\n\t\t[ id ]\n\t);\n\n\tuseEffect( () => {\n\t\tconst element = document.getElementById( id );\n\t\tif ( ! element ) {\n\t\t\treturn;\n\t\t}\n\n\t\tif ( isVisible ) {\n\t\t\telement.classList.remove( 'is-hidden' );\n\t\t} else {\n\t\t\telement.classList.add( 'is-hidden' );\n\t\t}\n\t}, [ id, isVisible ] );\n\n\treturn null;\n}\n"],
+  "mappings": ";AAGA,SAAS,iBAAiB;AAC1B,SAAS,iBAAiB;AAC1B,SAAS,SAAS,mBAAmB;AAEtB,SAAR,kBAAoC,EAAE,GAAG,GAAI;AACnD,QAAM,YAAY;AAAA,IACjB,CAAE,WAAY;AACb,aAAO,OAAQ,WAAY,EAAE;AAAA,QAC5B,YAAa,EAAG;AAAA,MACjB;AAAA,IACD;AAAA,IACA,CAAE,EAAG;AAAA,EACN;AAEA,YAAW,MAAM;AAChB,UAAM,UAAU,SAAS,eAAgB,EAAG;AAC5C,QAAK,CAAE,SAAU;AAChB;AAAA,IACD;AAEA,QAAK,WAAY;AAChB,cAAQ,UAAU,OAAQ,WAAY;AAAA,IACvC,OAAO;AACN,cAAQ,UAAU,IAAK,WAAY;AAAA,IACpC;AAAA,EACD,GAAG,CAAE,IAAI,SAAU,CAAE;AAErB,SAAO;AACR;",
+  "names": []
+}

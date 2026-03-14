@@ -1,0 +1,3 @@
+import type { ToggleGroupControlContextProps } from '../types';
+export declare const ToggleGroupControlAsButtonGroup: import("react").ForwardRefExoticComponent<Pick<import("../types").ToggleGroupControlProps, "children" | "onChange" | "size" | "value" | "label" | "isAdaptiveWidth"> & Pick<ToggleGroupControlContextProps, "setSelectedElement"> & Omit<Omit<import("react").DetailedHTMLProps<import("react").HTMLAttributes<HTMLDivElement>, HTMLDivElement>, "ref">, "children" | "onChange" | "size" | "value" | "label" | "as" | "isAdaptiveWidth" | "setSelectedElement"> & import("react").RefAttributes<HTMLDivElement>>;
+//# sourceMappingURL=as-button-group.d.ts.map

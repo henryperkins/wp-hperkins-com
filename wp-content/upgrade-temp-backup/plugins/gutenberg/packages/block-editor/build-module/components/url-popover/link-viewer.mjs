@@ -1,0 +1,49 @@
+// packages/block-editor/src/components/url-popover/link-viewer.js
+import clsx from "clsx";
+import { __ } from "@wordpress/i18n";
+import { Button } from "@wordpress/components";
+import { pencil } from "@wordpress/icons";
+import LinkViewerURL from "./link-viewer-url.mjs";
+import { jsx, jsxs } from "react/jsx-runtime";
+function LinkViewer({
+  className,
+  linkClassName,
+  onEditLinkClick,
+  url,
+  urlLabel,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxs(
+    "div",
+    {
+      className: clsx(
+        "block-editor-url-popover__link-viewer",
+        className
+      ),
+      ...props,
+      children: [
+        /* @__PURE__ */ jsx(
+          LinkViewerURL,
+          {
+            url,
+            urlLabel,
+            className: linkClassName
+          }
+        ),
+        onEditLinkClick && /* @__PURE__ */ jsx(
+          Button,
+          {
+            icon: pencil,
+            label: __("Edit"),
+            onClick: onEditLinkClick,
+            size: "compact"
+          }
+        )
+      ]
+    }
+  );
+}
+export {
+  LinkViewer as default
+};
+//# sourceMappingURL=link-viewer.mjs.map

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/index.ts"],
+  "sourcesContent": ["/**\n * External dependencies\n */\nimport * as core from '@actions/core';\n\n/**\n * Internal dependencies\n */\nimport { run } from './run';\n\nrun().catch( ( error ) => {\n\tcore.error( error instanceof Error ? error : String( error ) );\n} );\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;AAGA,WAAsB;AAKtB,iBAAoB;AAAA,IAEpB,gBAAI,EAAE,MAAO,CAAEA,WAAW;AACzB,EAAK,WAAOA,kBAAiB,QAAQA,SAAQ,OAAQA,MAAM,CAAE;AAC9D,CAAE;",
+  "names": ["error"]
+}

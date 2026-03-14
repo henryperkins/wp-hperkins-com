@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/fields/status/status-view.tsx"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __experimentalHStack as HStack, Icon } from '@wordpress/components';\n\n/**\n * Internal dependencies\n */\nimport type { BasePost } from '../../types';\nimport STATUSES from './status-elements';\n\nfunction StatusView( { item }: { item: BasePost } ) {\n\tconst status = STATUSES.find( ( { value } ) => value === item.status );\n\tconst label = status?.label || item.status;\n\tconst icon = status?.icon;\n\treturn (\n\t\t<HStack alignment=\"left\" spacing={ 0 }>\n\t\t\t{ icon && (\n\t\t\t\t<div className=\"fields-controls__status-icon\">\n\t\t\t\t\t<Icon icon={ icon } />\n\t\t\t\t</div>\n\t\t\t) }\n\t\t\t<span>{ label }</span>\n\t\t</HStack>\n\t);\n}\n\nexport default StatusView;\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,wBAAqD;AAMrD,6BAAqB;AAOnB;AALF,SAAS,WAAY,EAAE,KAAK,GAAwB;AACnD,QAAM,SAAS,uBAAAA,QAAS,KAAM,CAAE,EAAE,MAAM,MAAO,UAAU,KAAK,MAAO;AACrE,QAAM,QAAQ,QAAQ,SAAS,KAAK;AACpC,QAAM,OAAO,QAAQ;AACrB,SACC,6CAAC,kBAAAC,sBAAA,EAAO,WAAU,QAAO,SAAU,GAChC;AAAA,YACD,4CAAC,SAAI,WAAU,gCACd,sDAAC,0BAAK,MAAc,GACrB;AAAA,IAED,4CAAC,UAAO,iBAAO;AAAA,KAChB;AAEF;AAEA,IAAO,sBAAQ;",
+  "names": ["STATUSES", "HStack"]
+}

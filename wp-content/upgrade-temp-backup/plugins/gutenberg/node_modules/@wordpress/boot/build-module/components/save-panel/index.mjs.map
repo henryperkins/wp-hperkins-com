@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/save-panel/index.tsx"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { useState } from '@wordpress/element';\nimport { Modal } from '@wordpress/components';\nimport { EntitiesSavedStates } from '@wordpress/editor';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport useSaveShortcut from './use-save-shortcut';\n\nexport default function SavePanel() {\n\tconst [ isOpen, setIsOpen ] = useState< boolean >( false );\n\tuseSaveShortcut( {\n\t\topenSavePanel: () => setIsOpen( true ),\n\t} );\n\tif ( ! isOpen ) {\n\t\treturn false;\n\t}\n\treturn (\n\t\t<Modal\n\t\t\tclassName=\"edit-site-save-panel__modal\"\n\t\t\tonRequestClose={ () => setIsOpen( false ) }\n\t\t\ttitle={ __( 'Review changes' ) }\n\t\t\tsize=\"small\"\n\t\t>\n\t\t\t<EntitiesSavedStates\n\t\t\t\tclose={ () => setIsOpen( false ) }\n\t\t\t\tvariant=\"inline\"\n\t\t\t/>\n\t\t</Modal>\n\t);\n}\n"],
+  "mappings": ";AAGA,SAAS,gBAAgB;AACzB,SAAS,aAAa;AACtB,SAAS,2BAA2B;AACpC,SAAS,UAAU;AAKnB,OAAO,qBAAqB;AAiBzB;AAfY,SAAR,YAA6B;AACnC,QAAM,CAAE,QAAQ,SAAU,IAAI,SAAqB,KAAM;AACzD,kBAAiB;AAAA,IAChB,eAAe,MAAM,UAAW,IAAK;AAAA,EACtC,CAAE;AACF,MAAK,CAAE,QAAS;AACf,WAAO;AAAA,EACR;AACA,SACC;AAAA,IAAC;AAAA;AAAA,MACA,WAAU;AAAA,MACV,gBAAiB,MAAM,UAAW,KAAM;AAAA,MACxC,OAAQ,GAAI,gBAAiB;AAAA,MAC7B,MAAK;AAAA,MAEL;AAAA,QAAC;AAAA;AAAA,UACA,OAAQ,MAAM,UAAW,KAAM;AAAA,UAC/B,SAAQ;AAAA;AAAA,MACT;AAAA;AAAA,EACD;AAEF;",
+  "names": []
+}

@@ -76,7 +76,7 @@
         'import' => 'static'
       )
     ),
-    'version' => '243a659f91c3dc9841c7'
+    'version' => '96a846e1d7b789c39ab9'
   ),
   'block-library/playlist/view.js' => array(
     'dependencies' => array(
@@ -175,7 +175,7 @@
       'wp-i18n',
       'wp-private-apis'
     ),
-    'version' => 'fb1bf5511eb12e411ec6'
+    'version' => '0db9a26c7920b6ab9f4a'
   ),
   'core-abilities/index.js' => array(
     'dependencies' => array(
@@ -298,7 +298,7 @@
     'dependencies' => array(
       
     ),
-    'version' => 'd782ee980156eae3b7fe'
+    'version' => '61b86a5f5540ba666280'
   ),
   'workflow/index.js' => array(
     'dependencies' => array(

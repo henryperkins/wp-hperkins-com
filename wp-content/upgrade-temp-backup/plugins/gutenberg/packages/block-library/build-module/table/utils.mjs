@@ -1,0 +1,12 @@
+// packages/block-library/src/table/utils.js
+function normalizeRowColSpan(rowColSpan) {
+  const parsedValue = parseInt(rowColSpan, 10);
+  if (!Number.isInteger(parsedValue)) {
+    return void 0;
+  }
+  return parsedValue < 0 || parsedValue === 1 ? void 0 : parsedValue.toString();
+}
+export {
+  normalizeRowColSpan
+};
+//# sourceMappingURL=utils.mjs.map

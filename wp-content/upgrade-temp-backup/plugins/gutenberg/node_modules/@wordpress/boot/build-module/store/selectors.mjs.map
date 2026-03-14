@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/store/selectors.ts"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport type { State } from './types';\n\nexport function getMenuItems( state: State ) {\n\treturn Object.values( state.menuItems );\n}\n\nexport function getRoutes( state: State ) {\n\treturn state.routes;\n}\n\nexport function getDashboardLink( state: State ) {\n\treturn state.dashboardLink;\n}\n"],
+  "mappings": ";AAKO,SAAS,aAAc,OAAe;AAC5C,SAAO,OAAO,OAAQ,MAAM,SAAU;AACvC;AAEO,SAAS,UAAW,OAAe;AACzC,SAAO,MAAM;AACd;AAEO,SAAS,iBAAkB,OAAe;AAChD,SAAO,MAAM;AACd;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/components/index.js"],
+  "sourcesContent": ["export { default as MoveToWidgetArea } from './move-to-widget-area';\n"],
+  "mappings": ";AAAA,SAAoB,WAAXA,gBAAmC;",
+  "names": ["default"]
+}

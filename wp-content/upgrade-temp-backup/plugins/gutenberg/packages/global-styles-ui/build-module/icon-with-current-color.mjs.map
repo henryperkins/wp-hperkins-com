@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/icon-with-current-color.tsx"],
+  "sourcesContent": ["/**\n * External dependencies\n */\nimport clsx from 'clsx';\n\n/**\n * WordPress dependencies\n */\nimport { Icon } from '@wordpress/icons';\n\ninterface IconWithCurrentColorProps {\n\ticon: any;\n\tclassName?: string;\n\tsize?: number;\n\t[ key: string ]: any;\n}\n\nexport function IconWithCurrentColor( {\n\tclassName,\n\t...props\n}: IconWithCurrentColorProps ) {\n\treturn (\n\t\t<Icon\n\t\t\tclassName={ clsx(\n\t\t\t\tclassName,\n\t\t\t\t'global-styles-ui-icon-with-current-color'\n\t\t\t) }\n\t\t\t{ ...props }\n\t\t/>\n\t);\n}\n"],
+  "mappings": ";AAGA,OAAO,UAAU;AAKjB,SAAS,YAAY;AAcnB;AALK,SAAS,qBAAsB;AAAA,EACrC;AAAA,EACA,GAAG;AACJ,GAA+B;AAC9B,SACC;AAAA,IAAC;AAAA;AAAA,MACA,WAAY;AAAA,QACX;AAAA,QACA;AAAA,MACD;AAAA,MACE,GAAG;AAAA;AAAA,EACN;AAEF;",
+  "names": []
+}

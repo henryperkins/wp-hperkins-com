@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/utils/order-entity-records-by-search.js"],
+  "sourcesContent": ["export function orderEntityRecordsBySearch( records = [], search = '' ) {\n\tif ( ! Array.isArray( records ) || ! records.length ) {\n\t\treturn [];\n\t}\n\n\tif ( ! search ) {\n\t\treturn records;\n\t}\n\n\tconst priority = [];\n\tconst nonPriority = [];\n\n\tfor ( let i = 0; i < records.length; i++ ) {\n\t\tconst record = records[ i ];\n\t\tif (\n\t\t\trecord?.title?.raw?.toLowerCase()?.includes( search?.toLowerCase() )\n\t\t) {\n\t\t\tpriority.push( record );\n\t\t} else {\n\t\t\tnonPriority.push( record );\n\t\t}\n\t}\n\n\treturn priority.concat( nonPriority );\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,SAAS,2BAA4B,UAAU,CAAC,GAAG,SAAS,IAAK;AACvE,MAAK,CAAE,MAAM,QAAS,OAAQ,KAAK,CAAE,QAAQ,QAAS;AACrD,WAAO,CAAC;AAAA,EACT;AAEA,MAAK,CAAE,QAAS;AACf,WAAO;AAAA,EACR;AAEA,QAAM,WAAW,CAAC;AAClB,QAAM,cAAc,CAAC;AAErB,WAAU,IAAI,GAAG,IAAI,QAAQ,QAAQ,KAAM;AAC1C,UAAM,SAAS,QAAS,CAAE;AAC1B,QACC,QAAQ,OAAO,KAAK,YAAY,GAAG,SAAU,QAAQ,YAAY,CAAE,GAClE;AACD,eAAS,KAAM,MAAO;AAAA,IACvB,OAAO;AACN,kBAAY,KAAM,MAAO;AAAA,IAC1B;AAAA,EACD;AAEA,SAAO,SAAS,OAAQ,WAAY;AACrC;",
+  "names": []
+}

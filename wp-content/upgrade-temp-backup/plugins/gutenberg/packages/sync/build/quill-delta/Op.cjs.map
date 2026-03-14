@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/quill-delta/Op.ts"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport type AttributeMap from './AttributeMap';\n\ninterface Op {\n\t// only one property out of {insert, delete, retain} will be present\n\tinsert?: string | Record< string, unknown >;\n\tdelete?: number;\n\tretain?: number | Record< string, unknown >;\n\n\tattributes?: AttributeMap;\n}\n\nnamespace Op {\n\texport function length( op: Op ): number {\n\t\tif ( typeof op.delete === 'number' ) {\n\t\t\treturn op.delete;\n\t\t} else if ( typeof op.retain === 'number' ) {\n\t\t\treturn op.retain;\n\t\t} else if ( typeof op.retain === 'object' && op.retain !== null ) {\n\t\t\treturn 1;\n\t\t}\n\t\treturn typeof op.insert === 'string' ? op.insert.length : 1;\n\t}\n}\n\nexport default Op;\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAcA,IAAU;AAAA,CAAV,CAAUA,QAAV;AACQ,WAAS,OAAQ,IAAiB;AACxC,QAAK,OAAO,GAAG,WAAW,UAAW;AACpC,aAAO,GAAG;AAAA,IACX,WAAY,OAAO,GAAG,WAAW,UAAW;AAC3C,aAAO,GAAG;AAAA,IACX,WAAY,OAAO,GAAG,WAAW,YAAY,GAAG,WAAW,MAAO;AACjE,aAAO;AAAA,IACR;AACA,WAAO,OAAO,GAAG,WAAW,WAAW,GAAG,OAAO,SAAS;AAAA,EAC3D;AATO,EAAAA,IAAS;AAAA,GADP;AAaV,IAAO,aAAQ;",
+  "names": ["Op"]
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/icon/index.js"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport initBlock from '../utils/init-block';\nimport edit from './edit';\nimport metadata from './block.json';\nimport icon from './icon';\n\nconst { name } = metadata;\nexport { metadata, name };\nexport const settings = {\n\ticon,\n\texample: {\n\t\tattributes: {\n\t\t\ticon: 'core/audio',\n\t\t\tstyle: {\n\t\t\t\tdimensions: {\n\t\t\t\t\twidth: '48px',\n\t\t\t\t},\n\t\t\t},\n\t\t},\n\t},\n\tedit,\n};\n\nexport const init = () => initBlock( { name, metadata, settings } );\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA,+BAAAA;AAAA,EAAA;AAAA;AAAA;AAAA;AAGA,wBAAsB;AACtB,kBAAiB;AACjB,mBAAqB;AACrB,kBAAiB;AAEjB,IAAM,EAAE,KAAK,IAAI,aAAAA;AAEV,IAAM,WAAW;AAAA,EACvB,kBAAAC;AAAA,EACA,SAAS;AAAA,IACR,YAAY;AAAA,MACX,MAAM;AAAA,MACN,OAAO;AAAA,QACN,YAAY;AAAA,UACX,OAAO;AAAA,QACR;AAAA,MACD;AAAA,IACD;AAAA,EACD;AAAA,EACA,kBAAAC;AACD;AAEO,IAAM,OAAO,UAAM,kBAAAC,SAAW,EAAE,MAAM,uBAAAC,SAAU,SAAS,CAAE;",
+  "names": ["metadata", "icon", "edit", "initBlock", "metadata"]
+}

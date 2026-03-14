@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/fields/order/index.ts"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { Field } from '@wordpress/dataviews';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport type { BasePost } from '../../types';\n\nconst orderField: Field< BasePost > = {\n\tid: 'menu_order',\n\ttype: 'integer',\n\tlabel: __( 'Order' ),\n\tdescription: __( 'Determines the order of pages.' ),\n\tfilterBy: false,\n\tisValid: {\n\t\trequired: true,\n\t},\n};\n\n/**\n * Order field for BasePost.\n */\nexport default orderField;\n"],
+  "mappings": ";AAIA,SAAS,UAAU;AAOnB,IAAM,aAAgC;AAAA,EACrC,IAAI;AAAA,EACJ,MAAM;AAAA,EACN,OAAO,GAAI,OAAQ;AAAA,EACnB,aAAa,GAAI,gCAAiC;AAAA,EAClD,UAAU;AAAA,EACV,SAAS;AAAA,IACR,UAAU;AAAA,EACX;AACD;AAKA,IAAO,gBAAQ;",
+  "names": []
+}

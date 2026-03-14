@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/heading/save.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { RichText, useBlockProps } from '@wordpress/block-editor';\n\nexport default function save( { attributes } ) {\n\tconst { content, level } = attributes;\n\tconst TagName = 'h' + level;\n\n\treturn (\n\t\t<TagName { ...useBlockProps.save() }>\n\t\t\t<RichText.Content value={ content } />\n\t\t</TagName>\n\t);\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,0BAAwC;AAQrC;AANY,SAAR,KAAuB,EAAE,WAAW,GAAI;AAC9C,QAAM,EAAE,SAAS,MAAM,IAAI;AAC3B,QAAM,UAAU,MAAM;AAEtB,SACC,4CAAC,WAAU,GAAG,kCAAc,KAAK,GAChC,sDAAC,6BAAS,SAAT,EAAiB,OAAQ,SAAU,GACrC;AAEF;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/collaborators-overlay/get-avatar-url.ts"],
+  "sourcesContent": ["/**\n * Extracts the best available avatar URL from a collaborator's avatar_urls map.\n * Prefers the 48px size, then 96px, then 24px.\n *\n * @param avatarUrls - The avatar_urls map from collaborator info.\n */\nexport function getAvatarUrl( avatarUrls?: {\n\t'24'?: string;\n\t'48'?: string;\n\t'96'?: string;\n} ): string | undefined {\n\treturn avatarUrls?.[ '48' ] || avatarUrls?.[ '96' ] || avatarUrls?.[ '24' ];\n}\n"],
+  "mappings": ";AAMO,SAAS,aAAc,YAIN;AACvB,SAAO,aAAc,IAAK,KAAK,aAAc,IAAK,KAAK,aAAc,IAAK;AAC3E;",
+  "names": []
+}

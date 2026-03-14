@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/api/index.js"],
+  "sourcesContent": ["/**\n * Determines whether a block is overridable.\n *\n * @param {WPBlock} block The block to test.\n *\n * @return {boolean} `true` if a block is overridable, `false` otherwise.\n */\nexport function isOverridableBlock( block ) {\n\treturn (\n\t\t!! block.attributes.metadata?.name &&\n\t\t!! block.attributes.metadata?.bindings &&\n\t\tObject.values( block.attributes.metadata.bindings ).some(\n\t\t\t( binding ) => binding.source === 'core/pattern-overrides'\n\t\t)\n\t);\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAOO,SAAS,mBAAoB,OAAQ;AAC3C,SACC,CAAC,CAAE,MAAM,WAAW,UAAU,QAC9B,CAAC,CAAE,MAAM,WAAW,UAAU,YAC9B,OAAO,OAAQ,MAAM,WAAW,SAAS,QAAS,EAAE;AAAA,IACnD,CAAE,YAAa,QAAQ,WAAW;AAAA,EACnC;AAEF;",
+  "names": []
+}

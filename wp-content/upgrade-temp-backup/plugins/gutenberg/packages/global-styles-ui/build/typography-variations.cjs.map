@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/typography-variations.tsx"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { GlobalStylesConfig } from '@wordpress/global-styles-engine';\n\n/**\n * Internal dependencies\n */\nimport TypographyVariationsInternal from './variations/variations-typography';\nimport { withGlobalStylesProvider } from './with-global-styles-provider';\n\nexport interface TypographyVariationsProps {\n\tvalue: GlobalStylesConfig;\n\tbaseValue: GlobalStylesConfig;\n\tonChange: ( config: GlobalStylesConfig ) => void;\n\ttitle?: string;\n\tgap?: number;\n}\n\n/**\n * Render Typography Variations.\n *\n * @example\n * ```tsx\n * <TypographyVariations\n *   value={userConfig}\n *   baseValue={baseConfig}\n *   onChange={setUserConfig}\n *   title=\"Typography\"\n *   gap={3}\n * />\n * ```\n */\nexport const TypographyVariations: React.ComponentType< TypographyVariationsProps > =\n\twithGlobalStylesProvider( TypographyVariationsInternal );\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAQA,mCAAyC;AACzC,yCAAyC;AAwBlC,IAAM,2BACZ,6DAA0B,6BAAAA,OAA6B;",
+  "names": ["TypographyVariationsInternal"]
+}

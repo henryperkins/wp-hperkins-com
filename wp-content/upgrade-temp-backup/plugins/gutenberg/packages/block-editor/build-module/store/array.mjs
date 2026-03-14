@@ -1,0 +1,22 @@
+// packages/block-editor/src/store/array.js
+function insertAt(array, elements, index) {
+  return [
+    ...array.slice(0, index),
+    ...Array.isArray(elements) ? elements : [elements],
+    ...array.slice(index)
+  ];
+}
+function moveTo(array, from, to, count = 1) {
+  const withoutMovedElements = [...array];
+  withoutMovedElements.splice(from, count);
+  return insertAt(
+    withoutMovedElements,
+    array.slice(from, from + count),
+    to
+  );
+}
+export {
+  insertAt,
+  moveTo
+};
+//# sourceMappingURL=array.mjs.map

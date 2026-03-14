@@ -1,0 +1,26 @@
+"use strict";
+
+// packages/block-editor/src/hooks/settings.js
+var import_hooks = require("@wordpress/hooks");
+var import_blocks = require("@wordpress/blocks");
+var hasSettingsSupport = (blockType) => (0, import_blocks.hasBlockSupport)(blockType, "__experimentalSettings", false);
+function addAttribute(settings) {
+  if (!hasSettingsSupport(settings)) {
+    return settings;
+  }
+  if (!settings?.attributes?.settings) {
+    settings.attributes = {
+      ...settings.attributes,
+      settings: {
+        type: "object"
+      }
+    };
+  }
+  return settings;
+}
+(0, import_hooks.addFilter)(
+  "blocks.registerBlockType",
+  "core/settings/addAttribute",
+  addAttribute
+);
+//# sourceMappingURL=settings.cjs.map

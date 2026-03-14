@@ -1,0 +1,34 @@
+// packages/block-editor/src/components/convert-to-group-buttons/use-convert-to-group-button-props.js
+import { store as blocksStore } from "@wordpress/blocks";
+import { useSelect } from "@wordpress/data";
+import { store as blockEditorStore } from "../../store/index.mjs";
+function useConvertToGroupButtonProps(selectedClientIds) {
+  return useSelect(
+    (select) => {
+      const {
+        getBlocksByClientId,
+        getSelectedBlockClientIds,
+        isUngroupable,
+        isGroupable
+      } = select(blockEditorStore);
+      const { getGroupingBlockName, getBlockType } = select(blocksStore);
+      const clientIds = selectedClientIds?.length ? selectedClientIds : getSelectedBlockClientIds();
+      const blocksSelection = getBlocksByClientId(clientIds);
+      const [firstSelectedBlock] = blocksSelection;
+      const _isUngroupable = clientIds.length === 1 && isUngroupable(clientIds[0]);
+      return {
+        clientIds,
+        isGroupable: isGroupable(clientIds),
+        isUngroupable: _isUngroupable,
+        blocksSelection,
+        groupingBlockName: getGroupingBlockName(),
+        onUngroup: _isUngroupable && getBlockType(firstSelectedBlock.name)?.transforms?.ungroup
+      };
+    },
+    [selectedClientIds]
+  );
+}
+export {
+  useConvertToGroupButtonProps as default
+};
+//# sourceMappingURL=use-convert-to-group-button-props.mjs.map

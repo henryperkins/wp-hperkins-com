@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/font-library/lib/lib-font.browser.d.ts"],
+  "sourcesContent": ["// Type declarations for lib-font.browser.js\nexport class Font {\n\tconstructor( name: string, options?: any );\n\topentype: any;\n\ttables: any;\n\tonload?: ( event: { detail: { font: any } } ) => void;\n\tfromDataBuffer( buffer: ArrayBuffer | any, filename: string ): void;\n\tstatic create( name: string, options?: any ): Font;\n\tstatic load( url: string, options?: any ): Promise< Font >;\n\tstatic loadFromArrayBuffer( arrayBuffer: ArrayBuffer, options?: any ): Font;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AACO,IAAM,OAAN,MAAW;AAAA,EAEjB;AAAA,EACA;AAAA,EACA;AAKD;",
+  "names": []
+}

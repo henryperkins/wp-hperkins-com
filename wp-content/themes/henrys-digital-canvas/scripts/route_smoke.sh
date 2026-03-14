@@ -6,7 +6,7 @@ WORK_DETAIL_REPO="${WORK_DETAIL_REPO:-henry-s-digital-canvas}"
 
 routes=(
   "/|200|hdc-home-page"
-  "/work/|200|hdc-work-app"
+  "/work/|200|hdc-work-showcase"
   "/work/${WORK_DETAIL_REPO}/|200|hdc-work-detail"
   "/resume/|200|hdc-resume-overview|Loading resume"
   "/resume/ats/|200|hdc-resume-ats|Loading ATS resume"

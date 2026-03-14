@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/index.ts"],
+  "sourcesContent": ["/**\n * WordPress Abilities API Client\n *\n * This package provides a client for interacting with the\n * WordPress Abilities API, allowing you to list, retrieve, and execute\n * abilities from client-side code.\n *\n * @package\n */\n\n/**\n * Public API functions\n */\nexport {\n\tgetAbilities,\n\tgetAbility,\n\tgetAbilityCategories,\n\tgetAbilityCategory,\n\texecuteAbility,\n\tregisterAbility,\n\tunregisterAbility,\n\tregisterAbilityCategory,\n\tunregisterAbilityCategory,\n} from './api';\n\n/**\n * The store can be used directly with @wordpress/data via selectors\n * in React components with useSelect.\n *\n * @example\n * ```js\n * import { useSelect } from '@wordpress/data';\n * import { store as abilitiesStore } from '@wordpress/abilities';\n *\n * function MyComponent() {\n *   const abilities = useSelect(\n *     (select) => select(abilitiesStore).getAbilities(),\n *     []\n *   );\n *   // Use abilities...\n * }\n * ```\n */\nexport { store } from './store';\n\n/**\n * Type definitions\n */\nexport type {\n\tAbility,\n\tAbilityCategory,\n\tAbilityCategoryArgs,\n\tAbilitiesQueryArgs,\n\tAbilityCallback,\n\tPermissionCallback,\n\tAbilityInput,\n\tAbilityOutput,\n\tValidationError,\n} from './types';\n\n/**\n * Validation utilities\n */\nexport { validateValueFromSchema } from './validation';\n"],
+  "mappings": ";AAaA;AAAA,EACC;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,OACM;AAoBP,SAAS,aAAa;AAoBtB,SAAS,+BAA+B;",
+  "names": []
+}

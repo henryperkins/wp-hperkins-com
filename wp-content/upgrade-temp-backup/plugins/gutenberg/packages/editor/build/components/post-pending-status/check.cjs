@@ -1,0 +1,47 @@
+"use strict";
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// packages/editor/src/components/post-pending-status/check.js
+var check_exports = {};
+__export(check_exports, {
+  PostPendingStatusCheck: () => PostPendingStatusCheck,
+  default: () => check_default
+});
+module.exports = __toCommonJS(check_exports);
+var import_data = require("@wordpress/data");
+var import_store = require("../../store/index.cjs");
+function PostPendingStatusCheck({ children }) {
+  const { hasPublishAction, isPublished } = (0, import_data.useSelect)((select) => {
+    const { isCurrentPostPublished, getCurrentPost } = select(import_store.store);
+    return {
+      hasPublishAction: getCurrentPost()._links?.["wp:action-publish"] ?? false,
+      isPublished: isCurrentPostPublished()
+    };
+  }, []);
+  if (isPublished || !hasPublishAction) {
+    return null;
+  }
+  return children;
+}
+var check_default = PostPendingStatusCheck;
+// Annotate the CommonJS export names for ESM import in node:
+0 && (module.exports = {
+  PostPendingStatusCheck
+});
+//# sourceMappingURL=check.cjs.map

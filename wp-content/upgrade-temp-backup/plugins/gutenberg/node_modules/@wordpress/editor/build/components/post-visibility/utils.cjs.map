@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/post-visibility/utils.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __ } from '@wordpress/i18n';\n\nexport const VISIBILITY_OPTIONS = [\n\t{\n\t\tlabel: __( 'Public' ),\n\t\tvalue: 'public',\n\t\tdescription: __( 'Visible to everyone.' ),\n\t},\n\t{\n\t\tlabel: __( 'Private' ),\n\t\tvalue: 'private',\n\t\tdescription: __( 'Only visible to site admins and editors.' ),\n\t},\n\t{\n\t\tlabel: __( 'Password protected' ),\n\t\tvalue: 'password',\n\t\tdescription: __( 'Only visible to those who know the password.' ),\n\t},\n];\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,kBAAmB;AAEZ,IAAM,qBAAqB;AAAA,EACjC;AAAA,IACC,WAAO,gBAAI,QAAS;AAAA,IACpB,OAAO;AAAA,IACP,iBAAa,gBAAI,sBAAuB;AAAA,EACzC;AAAA,EACA;AAAA,IACC,WAAO,gBAAI,SAAU;AAAA,IACrB,OAAO;AAAA,IACP,iBAAa,gBAAI,0CAA2C;AAAA,EAC7D;AAAA,EACA;AAAA,IACC,WAAO,gBAAI,oBAAqB;AAAA,IAChC,OAAO;AAAA,IACP,iBAAa,gBAAI,8CAA+C;AAAA,EACjE;AACD;",
+  "names": []
+}

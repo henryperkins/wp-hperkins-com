@@ -1,0 +1,45 @@
+// packages/block-editor/src/components/list-view/use-list-view-expand-selected-item.js
+import { useEffect, useState } from "@wordpress/element";
+import { useSelect } from "@wordpress/data";
+import { store as blockEditorStore } from "../../store/index.mjs";
+function useListViewExpandSelectedItem({
+  firstSelectedBlockClientId,
+  setExpandedState
+}) {
+  const [selectedTreeId, setSelectedTreeId] = useState(null);
+  const { selectedBlockParentClientIds } = useSelect(
+    (select) => {
+      const { getBlockParents } = select(blockEditorStore);
+      return {
+        selectedBlockParentClientIds: getBlockParents(
+          firstSelectedBlockClientId,
+          false
+        )
+      };
+    },
+    [firstSelectedBlockClientId]
+  );
+  useEffect(() => {
+    if (selectedTreeId === firstSelectedBlockClientId) {
+      return;
+    }
+    if (selectedBlockParentClientIds?.length) {
+      setExpandedState({
+        type: "expand",
+        clientIds: selectedBlockParentClientIds
+      });
+    }
+  }, [
+    firstSelectedBlockClientId,
+    selectedBlockParentClientIds,
+    selectedTreeId,
+    setExpandedState
+  ]);
+  return {
+    setSelectedTreeId
+  };
+}
+export {
+  useListViewExpandSelectedItem as default
+};
+//# sourceMappingURL=use-list-view-expand-selected-item.mjs.map

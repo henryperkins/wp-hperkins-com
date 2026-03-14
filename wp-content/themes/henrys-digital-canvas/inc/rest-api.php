@@ -911,17 +911,34 @@ function hdc_sanitize_github_repo( $repo ) {
 		}
 	}
 
+	$license = null;
+	if ( isset( $repo['license'] ) && is_array( $repo['license'] ) ) {
+		$spdx_id = isset( $repo['license']['spdx_id'] ) && is_string( $repo['license']['spdx_id'] ) ? trim( $repo['license']['spdx_id'] ) : '';
+		$name    = isset( $repo['license']['name'] ) && is_string( $repo['license']['name'] ) ? trim( $repo['license']['name'] ) : '';
+
+		if ( '' !== $spdx_id || '' !== $name ) {
+			$license = array(
+				'spdx_id' => $spdx_id,
+				'name'    => $name,
+			);
+		}
+	}
+
 	$sanitized = array(
-		'name'             => isset( $repo['name'] ) && is_string( $repo['name'] ) ? $repo['name'] : '',
-		'description'      => isset( $repo['description'] ) && is_string( $repo['description'] ) ? $repo['description'] : null,
-		'language'         => isset( $repo['language'] ) && is_string( $repo['language'] ) ? $repo['language'] : null,
-		'stargazers_count' => isset( $repo['stargazers_count'] ) && is_numeric( $repo['stargazers_count'] ) ? (int) $repo['stargazers_count'] : 0,
-		'forks_count'      => isset( $repo['forks_count'] ) && is_numeric( $repo['forks_count'] ) ? (int) $repo['forks_count'] : 0,
-		'pushed_at'        => isset( $repo['pushed_at'] ) && is_string( $repo['pushed_at'] ) ? $repo['pushed_at'] : '',
-		'html_url'         => isset( $repo['html_url'] ) && is_string( $repo['html_url'] ) ? $repo['html_url'] : '',
-		'topics'           => $topics,
-		'fork'             => ! empty( $repo['fork'] ),
-		'archived'         => ! empty( $repo['archived'] ),
+		'name'              => isset( $repo['name'] ) && is_string( $repo['name'] ) ? $repo['name'] : '',
+		'description'       => isset( $repo['description'] ) && is_string( $repo['description'] ) ? $repo['description'] : null,
+		'language'          => isset( $repo['language'] ) && is_string( $repo['language'] ) ? $repo['language'] : null,
+		'stargazers_count'  => isset( $repo['stargazers_count'] ) && is_numeric( $repo['stargazers_count'] ) ? (int) $repo['stargazers_count'] : 0,
+		'forks_count'       => isset( $repo['forks_count'] ) && is_numeric( $repo['forks_count'] ) ? (int) $repo['forks_count'] : 0,
+		'open_issues_count' => isset( $repo['open_issues_count'] ) && is_numeric( $repo['open_issues_count'] ) ? (int) $repo['open_issues_count'] : 0,
+		'pushed_at'         => isset( $repo['pushed_at'] ) && is_string( $repo['pushed_at'] ) ? $repo['pushed_at'] : '',
+		'created_at'        => isset( $repo['created_at'] ) && is_string( $repo['created_at'] ) ? $repo['created_at'] : '',
+		'html_url'          => isset( $repo['html_url'] ) && is_string( $repo['html_url'] ) ? $repo['html_url'] : '',
+		'homepage'          => isset( $repo['homepage'] ) && is_string( $repo['homepage'] ) ? $repo['homepage'] : null,
+		'license'           => $license,
+		'topics'            => $topics,
+		'fork'              => ! empty( $repo['fork'] ),
+		'archived'          => ! empty( $repo['archived'] ),
 	);
 
 	if ( isset( $repo['default_branch'] ) && is_string( $repo['default_branch'] ) && '' !== $repo['default_branch'] ) {
@@ -1148,6 +1165,82 @@ function hdc_sanitize_github_release( $payload ) {
 }
 
 /**
+ * Sanitize GitHub Actions workflow-run payload for frontend consumers.
+ *
+ * @param mixed $payload Raw workflow-run payload.
+ * @return array<string,mixed>|null
+ */
+function hdc_sanitize_github_workflow_run( $payload ) {
+	if ( ! is_array( $payload ) ) {
+		return null;
+	}
+
+	$status     = isset( $payload['status'] ) && is_string( $payload['status'] ) ? trim( $payload['status'] ) : '';
+	$html_url   = isset( $payload['html_url'] ) && is_string( $payload['html_url'] ) ? trim( $payload['html_url'] ) : '';
+	$created_at = isset( $payload['created_at'] ) && is_string( $payload['created_at'] ) ? trim( $payload['created_at'] ) : '';
+
+	if ( '' === $status || '' === $html_url || '' === $created_at ) {
+		return null;
+	}
+
+	$conclusion  = isset( $payload['conclusion'] ) && is_string( $payload['conclusion'] ) ? trim( $payload['conclusion'] ) : null;
+	$head_branch = isset( $payload['head_branch'] ) && is_string( $payload['head_branch'] ) ? trim( $payload['head_branch'] ) : null;
+	$name        = isset( $payload['name'] ) && is_string( $payload['name'] ) ? trim( $payload['name'] ) : null;
+
+	return array(
+		'conclusion' => '' !== (string) $conclusion ? $conclusion : null,
+		'status'     => $status,
+		'htmlUrl'    => $html_url,
+		'createdAt'  => $created_at,
+		'headBranch' => '' !== (string) $head_branch ? $head_branch : null,
+		'name'       => '' !== (string) $name ? $name : null,
+	);
+}
+
+/**
+ * Extract the default branch from a GitHub repository payload.
+ *
+ * @param mixed $payload Raw repository payload.
+ * @return string|null
+ */
+function hdc_extract_github_repo_default_branch( $payload ) {
+	if ( ! is_array( $payload ) || ! isset( $payload['default_branch'] ) || ! is_string( $payload['default_branch'] ) ) {
+		return null;
+	}
+
+	$default_branch = trim( $payload['default_branch'] );
+	return '' !== $default_branch ? $default_branch : null;
+}
+
+/**
+ * Derive a simplified CI status from a workflow run.
+ *
+ * @param array<string,mixed>|null $workflow_run Sanitized workflow-run payload.
+ * @return string
+ */
+function hdc_derive_github_ci_status( $workflow_run ) {
+	if ( ! is_array( $workflow_run ) ) {
+		return 'none';
+	}
+
+	$status = isset( $workflow_run['status'] ) && is_string( $workflow_run['status'] ) ? $workflow_run['status'] : '';
+	if ( in_array( $status, array( 'in_progress', 'queued', 'waiting', 'pending' ), true ) ) {
+		return 'running';
+	}
+
+	$conclusion = isset( $workflow_run['conclusion'] ) && is_string( $workflow_run['conclusion'] ) ? $workflow_run['conclusion'] : '';
+	if ( 'success' === $conclusion ) {
+		return 'passing';
+	}
+
+	if ( in_array( $conclusion, array( 'failure', 'timed_out', 'startup_failure' ), true ) ) {
+		return 'failing';
+	}
+
+	return 'neutral';
+}
+
+/**
  * Parse requested GitHub repo names from query params.
  *
  * @param int $max_repos Maximum number of repos to accept.
@@ -1156,7 +1249,26 @@ function hdc_sanitize_github_release( $payload ) {
 function hdc_parse_requested_github_repo_names( $max_repos ) {
 	$values = array();
 
-	if ( isset( $_GET['repo'] ) ) {
+	$query_string = isset( $_SERVER['QUERY_STRING'] ) && is_string( $_SERVER['QUERY_STRING'] )
+		? wp_unslash( $_SERVER['QUERY_STRING'] )
+		: '';
+	if ( '' !== $query_string ) {
+		foreach ( explode( '&', $query_string ) as $query_part ) {
+			if ( '' === $query_part ) {
+				continue;
+			}
+
+			$pair = explode( '=', $query_part, 2 );
+			$key  = rawurldecode( $pair[0] );
+			if ( 'repo' !== $key && 'repo[]' !== $key ) {
+				continue;
+			}
+
+			$values[] = rawurldecode( $pair[1] ?? '' );
+		}
+	}
+
+	if ( empty( $values ) && isset( $_GET['repo'] ) ) {
 		$raw_repo = wp_unslash( $_GET['repo'] );
 		if ( is_array( $raw_repo ) ) {
 			$values = array_merge( $values, $raw_repo );
@@ -1689,3 +1801,164 @@ function hdc_handle_legacy_github_repo_proofs_endpoint( $wp ) {
 	);
 }
 add_action( 'parse_request', 'hdc_handle_legacy_github_repo_proofs_endpoint' );
+
+/**
+ * Backward-compatible non-REST GitHub CI status endpoint for `/api/github/ci-status`.
+ *
+ * @param WP $wp Current request.
+ * @return void
+ */
+function hdc_handle_legacy_github_ci_status_endpoint( $wp ) {
+	if ( ! isset( $wp->request ) || 'api/github/ci-status' !== trim( (string) $wp->request, '/' ) ) {
+		return;
+	}
+
+	$method = strtoupper( (string) ( $_SERVER['REQUEST_METHOD'] ?? 'GET' ) );
+	if ( 'OPTIONS' === $method ) {
+		hdc_send_legacy_json_response( 204, array(), 'no-store, no-cache, must-revalidate, max-age=0' );
+	}
+
+	if ( 'GET' !== $method ) {
+		hdc_send_legacy_json_response(
+			405,
+			array(
+				'error' => __( 'Method not allowed.', 'henrys-digital-canvas' ),
+			),
+			'no-store, no-cache, must-revalidate, max-age=0'
+		);
+	}
+
+	$username = hdc_resolve_github_username();
+	if ( is_wp_error( $username ) ) {
+		$error_data = $username->get_error_data();
+		hdc_send_legacy_json_response(
+			is_array( $error_data ) && ! empty( $error_data['status'] ) ? (int) $error_data['status'] : 400,
+			array(
+				'error' => $username->get_error_message(),
+			),
+			'no-store, no-cache, must-revalidate, max-age=0'
+		);
+	}
+
+	$max_repos = hdc_clamp_int( $_GET['max_repos'] ?? null, 9, 1, 12 );
+	$repo_names = hdc_parse_requested_github_repo_names( $max_repos );
+
+	if ( empty( $repo_names ) ) {
+		hdc_send_legacy_json_response(
+			400,
+			array(
+				'error' => __( 'At least one valid repo name must be provided using repo=<name>.', 'henrys-digital-canvas' ),
+			),
+			'no-store, no-cache, must-revalidate, max-age=0'
+		);
+	}
+
+	$cache_key = 'hdc_legacy_github_ci_status_' . md5( $username . '|' . implode( '|', $repo_names ) );
+	$cached    = get_transient( $cache_key );
+
+	if ( is_array( $cached ) ) {
+		hdc_send_legacy_json_response(
+			200,
+			$cached,
+			'public, max-age=120, s-maxage=300, stale-while-revalidate=86400'
+		);
+	}
+
+	$headers                   = hdc_get_github_request_headers();
+	$latest_rate_limit_headers = array();
+	$first_rate_limited_result = null;
+	$results                   = array();
+	$failed_repo_count         = 0;
+
+	foreach ( $repo_names as $repo_name ) {
+		$repo_url    = 'https://api.github.com/repos/' . rawurlencode( $username ) . '/' . rawurlencode( $repo_name );
+		$repo_result = hdc_fetch_github_json( $repo_url, $headers );
+
+		if ( isset( $repo_result['response'] ) ) {
+			$latest_rate_limit_headers = hdc_get_github_rate_limit_headers( $repo_result['response'] );
+		}
+		if ( null === $first_rate_limited_result && hdc_is_rate_limited_github_result( $repo_result ) ) {
+			$first_rate_limited_result = $repo_result;
+		}
+
+		if ( empty( $repo_result['ok'] ) ) {
+			$results[] = array(
+				'repo'      => $repo_name,
+				'latestRun' => null,
+				'ciStatus'  => 'unavailable',
+				'error'     => hdc_extract_github_payload_message( $repo_result['payload'] ?? array() ) ?: sprintf( 'Repository metadata request failed (status %d).', (int) ( $repo_result['status'] ?? 0 ) ),
+			);
+			$failed_repo_count += 1;
+			continue;
+		}
+
+		$default_branch = hdc_extract_github_repo_default_branch( $repo_result['payload'] ?? array() );
+		if ( ! $default_branch ) {
+			$results[] = array(
+				'repo'      => $repo_name,
+				'latestRun' => null,
+				'ciStatus'  => 'unavailable',
+				'error'     => 'Default branch metadata is unavailable for this repository.',
+			);
+			$failed_repo_count += 1;
+			continue;
+		}
+
+		$actions_url    = 'https://api.github.com/repos/' . rawurlencode( $username ) . '/' . rawurlencode( $repo_name ) . '/actions/runs?branch=' . rawurlencode( $default_branch ) . '&per_page=1';
+		$actions_result = hdc_fetch_github_json( $actions_url, $headers );
+
+		if ( isset( $actions_result['response'] ) ) {
+			$latest_rate_limit_headers = hdc_get_github_rate_limit_headers( $actions_result['response'] );
+		}
+		if ( null === $first_rate_limited_result && hdc_is_rate_limited_github_result( $actions_result ) ) {
+			$first_rate_limited_result = $actions_result;
+		}
+
+		if ( empty( $actions_result['ok'] ) ) {
+			$results[] = array(
+				'repo'      => $repo_name,
+				'latestRun' => null,
+				'ciStatus'  => 'unavailable',
+				'error'     => hdc_extract_github_payload_message( $actions_result['payload'] ?? array() ) ?: sprintf( 'CI status request failed (status %d).', (int) ( $actions_result['status'] ?? 0 ) ),
+			);
+			$failed_repo_count += 1;
+			continue;
+		}
+
+		$workflow_runs = isset( $actions_result['payload']['workflow_runs'] ) && is_array( $actions_result['payload']['workflow_runs'] )
+			? $actions_result['payload']['workflow_runs']
+			: array();
+		$latest_run = ! empty( $workflow_runs ) ? hdc_sanitize_github_workflow_run( $workflow_runs[0] ) : null;
+
+		$results[] = array(
+			'repo'      => $repo_name,
+			'latestRun' => $latest_run,
+			'ciStatus'  => hdc_derive_github_ci_status( $latest_run ),
+		);
+	}
+
+	if ( $failed_repo_count === count( $results ) && is_array( $first_rate_limited_result ) ) {
+		hdc_send_legacy_json_response(
+			(int) ( $first_rate_limited_result['status'] ?? 502 ),
+			$first_rate_limited_result['payload'] ?? array( 'error' => 'GitHub API request failed' ),
+			'no-store, no-cache, must-revalidate, max-age=0',
+			hdc_get_github_rate_limit_headers( $first_rate_limited_result['response'] ?? null )
+		);
+	}
+
+	$payload = array(
+		'username' => $username,
+		'repoCount' => count( $repo_names ),
+		'results' => $results,
+	);
+
+	set_transient( $cache_key, $payload, 120 );
+
+	hdc_send_legacy_json_response(
+		200,
+		$payload,
+		'public, max-age=120, s-maxage=300, stale-while-revalidate=86400',
+		$latest_rate_limit_headers
+	);
+}
+add_action( 'parse_request', 'hdc_handle_legacy_github_ci_status_endpoint' );

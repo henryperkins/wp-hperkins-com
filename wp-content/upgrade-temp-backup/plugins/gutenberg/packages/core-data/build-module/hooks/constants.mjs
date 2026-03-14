@@ -1,0 +1,12 @@
+// packages/core-data/src/hooks/constants.ts
+var Status = /* @__PURE__ */ ((Status2) => {
+  Status2["Idle"] = "IDLE";
+  Status2["Resolving"] = "RESOLVING";
+  Status2["Error"] = "ERROR";
+  Status2["Success"] = "SUCCESS";
+  return Status2;
+})(Status || {});
+export {
+  Status
+};
+//# sourceMappingURL=constants.mjs.map

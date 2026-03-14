@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/private-apis.ts"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport { sideloadMedia } from './utils/sideload-media';\nimport { MediaUploadModal } from './components/media-upload-modal';\nimport { lock } from './lock-unlock';\n\n/**\n * Private @wordpress/media-utils APIs.\n */\nexport const privateApis = {};\n\nlock( privateApis, {\n\tsideloadMedia,\n\tMediaUploadModal,\n} );\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,4BAA8B;AAC9B,gCAAiC;AACjC,yBAAqB;AAKd,IAAM,cAAc,CAAC;AAAA,IAE5B,yBAAM,aAAa;AAAA,EAClB;AAAA,EACA;AACD,CAAE;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/index.ts"],
+  "sourcesContent": ["export { store } from './store';\nexport { default as InlineNotices } from './components/inline-notices';\nexport { default as SnackbarNotices } from './components/snackbar-notices';\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,mBAAsB;AACtB,4BAAyC;AACzC,8BAA2C;",
+  "names": []
+}

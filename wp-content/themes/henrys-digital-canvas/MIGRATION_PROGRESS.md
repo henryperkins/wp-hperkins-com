@@ -1094,7 +1094,7 @@ Last updated: 2026-03-05 (UTC)
 | `/about` | `about-timeline` | Yes | Yes | Yes | No | `verified` | Keep heading-level and timeline rendering checks after content changes. |
 | `/contact` | `contact-form` | Yes | Yes | Yes | No | `verified` | Keep submit lifecycle and validation response checks. |
 | `404` | `not-found` + `templates/404.html` | Yes | Yes | Yes | No | `verified` | Keep page-title and recovery-action checks. |
-| Shared shell | `site-shell`, `parts/header.html`, `parts/footer.html` | Yes | Yes | Yes | No | `verified` | Keep command palette/theme/mobile-nav smoke coverage and retain accepted brand-tagline variance note. |
+| Shared shell | `site-shell`, `parts/header.html`, `parts/footer.html` | Yes | Yes | Yes | No | `verified` | Keep command palette/theme/mobile-nav smoke coverage with visibility-state assertions for dialog and menu interactions. |
 
 ### Execution Sequence For Future Major Changes
 1. Update contracts first (`inc/data-contracts.php`, `inc/rest-api.php`) when data shape changes.
@@ -1607,3 +1607,34 @@ Close the final two low-severity parity variances (shared-shell tagline and resu
 
 ### Updated Parity Status
 - **All audited parity items resolved** (0 High, 0 Medium, 0 Low currently open).
+
+## 2026-03-09 Header/Footer Parity Refresh
+
+### Objective
+Refresh `site-shell` and footer parity against the current React `AppHeader`, `ThemeSwitcher`, `CommandPalette`, and `AppFooter` implementations without regressing smoke coverage.
+
+### What Shipped
+- `blocks/site-shell/view.js` now mirrors the source shell interaction model by:
+  - ignoring Cmd/Ctrl+K inside editable fields;
+  - using the `⌘K` shortcut label on Apple platforms;
+  - adding arrow-key highlight + Enter activation for command results;
+  - moving command dialog, theme menu, and mobile menu visibility to stateful CSS classes so motion and visibility assertions stay aligned.
+- `blocks/site-shell/render.php` and `blocks/site-shell/style.css` now:
+  - use Sun/Moon theme icons and SVG menu icons instead of placeholder text/Unicode;
+  - apply the source nav active/hover tokens and `1400px` container width;
+  - remove the WP-only shared-shell `tagline` markup;
+  - align footer list semantics, inverse focus styling, inverse text-shadow treatment, and footer surface styling with the React source.
+- `blocks/site-shell/block.json` and `blocks/site-shell/index.js` removed the obsolete `tagline` attribute/control so the editor contract matches the frontend contract.
+- `scripts/playwright/browser-smoke.spec.cjs` and `tmp_parity_probe.cjs` now validate actual visibility state instead of relying on `[hidden]` attributes, and browser smoke covers the command-palette editable-target guard plus keyboard highlight flow.
+
+### What Was Verified
+- Syntax validation:
+  - `node --check blocks/site-shell/view.js`
+  - `node --check blocks/site-shell/index.js`
+  - `php -l blocks/site-shell/render.php`
+  - `node -e "JSON.parse(require('fs').readFileSync('blocks/site-shell/block.json', 'utf8'))"`
+- Runtime validation:
+  - `npm run smoke:full` (route, API, and browser smoke all passed on 2026-03-09)
+
+### Current Status
+- No known header/footer parity drift remains in the audited WordPress shell scope.

@@ -216,6 +216,7 @@
   --text-body: var(--wpds-color-text-secondary);
   --text-subtle: var(--wpds-color-text-muted);
   --text-meta: var(--wpds-color-text-meta);
+  --text-accent: 38 92% 32%;
   --link: var(--wpds-color-link);
   --link-hover: var(--wpds-color-link-hover);
 
@@ -289,6 +290,7 @@
   --shadow-glow: var(--shadow-emphasis);
   --shadow-cta-hero: 0 18px 38px hsl(0 0% 0% / 0.45);
   --shadow-floating: 0 18px 38px -20px hsl(20 20% 12% / 0.34);
+  --shadow-control: 0 1px 2px hsl(20 20% 15% / 0.12);
 
   --border-emphasis: 35 84% 44% / 0.32;
   --text-shadow-hero-title: 0 14px 28px hsl(0 0% 0% / 0.8);
@@ -407,6 +409,7 @@ body.is-dark-theme,
   --text-body: var(--wpds-color-text-secondary);
   --text-subtle: var(--wpds-color-text-muted);
   --text-meta: var(--wpds-color-text-meta);
+  --text-accent: 38 92% 58%;
   --link: var(--wpds-color-link);
   --link-hover: var(--wpds-color-link-hover);
 
@@ -469,6 +472,7 @@ body.is-dark-theme,
   --shadow-glow: var(--shadow-emphasis);
   --shadow-cta-hero: 0 18px 38px hsl(0 0% 0% / 0.52);
   --shadow-floating: 0 20px 40px -20px hsl(0 0% 0% / 0.66);
+  --shadow-control: 0 1px 2px hsl(0 0% 0% / 0.36);
   --border-emphasis: 35 90% 52% / 0.34;
   --text-shadow-hero-title: 0 14px 28px hsl(0 0% 0% / 0.82);
   --text-shadow-hero-body: 0 8px 18px hsl(0 0% 0% / 0.78);
@@ -908,6 +912,19 @@ body.admin-bar {
   box-shadow:
     0 0 0 var(--focus-ring-width) hsl(var(--ring)),
     0 0 0 calc(var(--focus-ring-width) + var(--focus-ring-offset)) hsl(var(--inverse-background));
+}
+
+.screen-reader-text {
+  border: 0;
+  clip: rect(1px, 1px, 1px, 1px);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  word-wrap: normal !important;
 }
 
 .glass {

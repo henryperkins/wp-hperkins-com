@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/preferences-modal/enable-publish-sidebar.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { useDispatch, useSelect } from '@wordpress/data';\nimport { privateApis as preferencesPrivateApis } from '@wordpress/preferences';\n\n/**\n * Internal dependencies\n */\nimport { unlock } from '../../lock-unlock';\nimport { store as editorStore } from '../../store';\n\nconst { PreferenceBaseOption } = unlock( preferencesPrivateApis );\n\nexport default function EnablePublishSidebarOption( props ) {\n\tconst isChecked = useSelect( ( select ) => {\n\t\treturn select( editorStore ).isPublishSidebarEnabled();\n\t}, [] );\n\tconst { enablePublishSidebar, disablePublishSidebar } =\n\t\tuseDispatch( editorStore );\n\n\treturn (\n\t\t<PreferenceBaseOption\n\t\t\tisChecked={ isChecked }\n\t\t\tonChange={ ( isEnabled ) =>\n\t\t\t\tisEnabled ? enablePublishSidebar() : disablePublishSidebar()\n\t\t\t}\n\t\t\t{ ...props }\n\t\t/>\n\t);\n}\n"],
+  "mappings": ";AAGA,SAAS,aAAa,iBAAiB;AACvC,SAAS,eAAe,8BAA8B;AAKtD,SAAS,cAAc;AACvB,SAAS,SAAS,mBAAmB;AAYnC;AAVF,IAAM,EAAE,qBAAqB,IAAI,OAAQ,sBAAuB;AAEjD,SAAR,2BAA6C,OAAQ;AAC3D,QAAM,YAAY,UAAW,CAAE,WAAY;AAC1C,WAAO,OAAQ,WAAY,EAAE,wBAAwB;AAAA,EACtD,GAAG,CAAC,CAAE;AACN,QAAM,EAAE,sBAAsB,sBAAsB,IACnD,YAAa,WAAY;AAE1B,SACC;AAAA,IAAC;AAAA;AAAA,MACA;AAAA,MACA,UAAW,CAAE,cACZ,YAAY,qBAAqB,IAAI,sBAAsB;AAAA,MAE1D,GAAG;AAAA;AAAA,EACN;AAEF;",
+  "names": []
+}

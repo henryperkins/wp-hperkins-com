@@ -1,0 +1,12 @@
+// packages/block-editor/src/elements/index.js
+var ELEMENT_CLASS_NAMES = {
+  button: "wp-element-button",
+  caption: "wp-element-caption"
+};
+var __experimentalGetElementClassName = (element) => {
+  return ELEMENT_CLASS_NAMES[element] ? ELEMENT_CLASS_NAMES[element] : "";
+};
+export {
+  __experimentalGetElementClassName
+};
+//# sourceMappingURL=index.mjs.map

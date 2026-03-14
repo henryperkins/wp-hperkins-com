@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/utils/get-media-type.ts"],
+  "sourcesContent": ["/**\n * Media type result.\n */\nexport interface MediaType {\n\ttype: 'image' | 'video' | 'audio' | 'application';\n}\n\n/**\n * Determines the media type from a MIME type string.\n *\n * @param mimeType - The MIME type to check.\n * @return Object with type property ('image', 'video', 'audio', or 'application').\n */\nexport function getMediaTypeFromMimeType( mimeType?: string ): MediaType {\n\tif ( ! mimeType ) {\n\t\treturn { type: 'application' };\n\t}\n\n\tif ( mimeType.startsWith( 'image/' ) ) {\n\t\treturn { type: 'image' };\n\t}\n\tif ( mimeType.startsWith( 'video/' ) ) {\n\t\treturn { type: 'video' };\n\t}\n\tif ( mimeType.startsWith( 'audio/' ) ) {\n\t\treturn { type: 'audio' };\n\t}\n\treturn { type: 'application' };\n}\n"],
+  "mappings": ";AAaO,SAAS,yBAA0B,UAA+B;AACxE,MAAK,CAAE,UAAW;AACjB,WAAO,EAAE,MAAM,cAAc;AAAA,EAC9B;AAEA,MAAK,SAAS,WAAY,QAAS,GAAI;AACtC,WAAO,EAAE,MAAM,QAAQ;AAAA,EACxB;AACA,MAAK,SAAS,WAAY,QAAS,GAAI;AACtC,WAAO,EAAE,MAAM,QAAQ;AAAA,EACxB;AACA,MAAK,SAAS,WAAY,QAAS,GAAI;AACtC,WAAO,EAAE,MAAM,QAAQ;AAAA,EACxB;AACA,SAAO,EAAE,MAAM,cAAc;AAC9B;",
+  "names": []
+}

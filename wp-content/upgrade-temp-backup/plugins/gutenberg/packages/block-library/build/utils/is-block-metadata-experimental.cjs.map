@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/utils/is-block-metadata-experimental.js"],
+  "sourcesContent": ["/**\n * Checks if the block is experimental based on the metadata loaded\n * from block.json.\n *\n * @param {Object} metadata Parsed block.json metadata.\n * @return {boolean} Is the block experimental?\n */\nexport default function isBlockMetadataExperimental( metadata ) {\n\treturn (\n\t\tmetadata &&\n\t\t'__experimental' in metadata &&\n\t\tmetadata.__experimental !== false\n\t);\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAOe,SAAR,4BAA8C,UAAW;AAC/D,SACC,YACA,oBAAoB,YACpB,SAAS,mBAAmB;AAE9B;",
+  "names": []
+}

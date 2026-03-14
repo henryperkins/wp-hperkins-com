@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/fields/parent/index.ts"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { Field } from '@wordpress/dataviews';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport type { BasePost } from '../../types';\nimport { ParentEdit } from './parent-edit';\nimport { ParentView } from './parent-view';\n\nconst parentField: Field< BasePost > = {\n\tid: 'parent',\n\ttype: 'text',\n\tlabel: __( 'Parent' ),\n\tEdit: ParentEdit,\n\trender: ParentView,\n\tenableSorting: true,\n\tfilterBy: false,\n};\n\n/**\n * Parent field for BasePost.\n */\nexport default parentField;\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAIA,kBAAmB;AAMnB,yBAA2B;AAC3B,yBAA2B;AAE3B,IAAM,cAAiC;AAAA,EACtC,IAAI;AAAA,EACJ,MAAM;AAAA,EACN,WAAO,gBAAI,QAAS;AAAA,EACpB,MAAM;AAAA,EACN,QAAQ;AAAA,EACR,eAAe;AAAA,EACf,UAAU;AACX;AAKA,IAAO,iBAAQ;",
+  "names": []
+}

@@ -1,0 +1,110 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#wp--skip-link--target"
+  - generic [ref=e3]:
+    - banner:
+      - banner [ref=e4]:
+        - generic [ref=e5]:
+          - link "Henry Perkins" [ref=e6] [cursor=pointer]:
+            - /url: https://wp.hperkins.com/
+            - generic [ref=e9]: Henry Perkins
+          - navigation "Primary" [ref=e10]:
+            - list [ref=e11]:
+              - listitem [ref=e12]:
+                - link "Home" [ref=e13] [cursor=pointer]:
+                  - /url: https://wp.hperkins.com/
+              - listitem [ref=e14]:
+                - link "Work" [ref=e15] [cursor=pointer]:
+                  - /url: https://wp.hperkins.com/work/
+              - listitem [ref=e16]:
+                - link "Resume" [ref=e17] [cursor=pointer]:
+                  - /url: https://wp.hperkins.com/resume/
+              - listitem [ref=e18]:
+                - link "Hobbies" [ref=e19] [cursor=pointer]:
+                  - /url: https://wp.hperkins.com/hobbies/
+              - listitem [ref=e20]:
+                - link "Blog" [ref=e21] [cursor=pointer]:
+                  - /url: https://wp.hperkins.com/blog/
+              - listitem [ref=e22]:
+                - link "About" [ref=e23] [cursor=pointer]:
+                  - /url: https://wp.hperkins.com/about/
+              - listitem [ref=e24]:
+                - link "Contact" [ref=e25] [cursor=pointer]:
+                  - /url: https://wp.hperkins.com/contact/
+          - generic [ref=e26]:
+            - button "Open command palette" [ref=e27] [cursor=pointer]:
+              - img [ref=e29]
+              - generic [ref=e32]: Ctrl+K
+            - 'button "Theme: System" [ref=e34] [cursor=pointer]':
+              - img [ref=e35]
+              - generic [ref=e41]: Theme
+    - main [ref=e42]:
+      - generic [ref=e43]:
+        - paragraph [ref=e44]:
+          - emphasis [ref=e45]: Why the hardest engineering work happens between the meeting and the ticket.
+        - paragraph [ref=e46]: Last year I joined a kickoff call where the client spent forty minutes describing what they wanted. By the end, every person on our side had a different understanding of the project. The problem wasn’t that the client was unclear. The problem was that nobody on our team stopped to restate what we’d heard, name the constraints, and propose a sequence. That gap — between information arriving and information becoming usable — is where most projects quietly start failing.
+        - heading "What Clarity Means in Practice" [level=3] [ref=e47]
+        - paragraph [ref=e48]: "Clarity is not “good documentation” in the abstract. It is three specific artifacts that prevent downstream chaos:"
+        - paragraph [ref=e49]:
+          - strong [ref=e50]: A spec with a “not in scope” section and a constraint column
+          - text: that a stakeholder approves in one pass. Most specs miss the constraint column and the explicit exclusions, which is exactly why teams end up building things they never agreed to.
+        - paragraph [ref=e51]:
+          - strong [ref=e52]: An async status update
+          - text: that gets a reply of “got it, no need to sync” — and cancels a meeting.
+        - paragraph [ref=e53]:
+          - strong [ref=e54]: A module rename or reorganization
+          - text: that makes intent visible to the next engineer who touches the code.
+        - paragraph [ref=e55]: None of these are glamorous. All of them prevent the kind of confusion that costs weeks.
+        - heading "Why Clarity Is Undervalued" [level=3] [ref=e56]
+        - paragraph [ref=e57]: Clarity doesn’t look impressive. It looks obvious after the fact. The person who makes things clear rarely gets credit for the confusion they prevented. Nobody thanks you for the three rounds of revision that didn’t happen.
+        - paragraph [ref=e58]: Because it doesn’t involve writing logic, people often brush it off as a soft skill. But figuring out exactly what not to build, and writing it down so simply that nobody can misunderstand it, is one of the most valuable technical skills you can develop.
+        - heading "Three Forms of Technical Clarity" [level=3] [ref=e59]
+        - paragraph [ref=e60]: Treating clarity as an engineering tool gives you massive leverage. It usually shows up in three forms.
+        - paragraph [ref=e61]:
+          - strong [ref=e62]: Written clarity
+          - text: prevents the “I thought we agreed” conversation. On a recent client intake, the brief was a messy pile of feature requests. I rewrote it into a one-page document defining the exact data shapes our API would accept, and explicitly listed the edge cases we were ignoring for V1. The client signed off in one pass, and we never had to argue about whether a missing feature was a bug.
+        - paragraph [ref=e63]:
+          - strong [ref=e64]: Verbal clarity
+          - text: "keeps a stakeholder aligned without a second call. When a client asked to add a new third-party integration halfway through a sprint, I didn’t just say no. I laid out the tradeoff: “We can build that, but it pushes the core checkout flow back by two weeks. Do you want to swap them?” They dropped the request immediately, and we kept moving. What made that work wasn’t just the honesty — it was presenting a swap instead of a wall. People can make decisions when you give them a real choice between two concrete outcomes. They shut down when you hand them a vague “it’s complicated.”"
+        - paragraph [ref=e65]:
+          - strong [ref=e66]: Structural clarity
+          - text: makes the next engineer’s change cheaper. When I inherited a messy backend a few years ago, the first thing I did wasn’t refactoring the logic. I renamed three core services so their names actually matched what they did and grouped related files into a single directory. The next time a junior developer had to fix a bug there, they found it in ten minutes instead of two hours. Code is written once but read hundreds of times. Making it legible is engineering work.
+        - heading "What It Costs When Clarity Is Missing" [level=3] [ref=e67]
+        - paragraph [ref=e68]: When clarity is missing, you pay for it in scope creep, rework, and support tickets that should never have existed.
+        - paragraph [ref=e69]: A few years ago, I watched a team spend six weeks building a custom reporting dashboard because the initial spec just said “needs admin analytics.” Nobody bothered to clarify what the admins actually needed to see. When we finally shipped it, the client clicked around for two minutes and said, “This is great, but we really just needed a CSV export button.” Six weeks of work replaced by a feature that would have taken an afternoon — because nobody wrote down the real constraint.
+        - heading "Sequencing the Build" [level=3] [ref=e70]
+        - paragraph [ref=e71]: "My personal rule for enforcing clarity is to keep modules under 900 lines of code, but the deeper habit is sequencing: forcing yourself to decide what gets built first, what gets built second, and what doesn’t get built yet."
+        - paragraph [ref=e72]: "When we were rebuilding PromptForge — a full migration across Cloudflare Workers, D1, and Pages with total feature parity — the ambition was sprawling. It was a recipe for endless, wandering development. So instead of trying to hold the whole vision in our heads, we forced a sequence. Week one: one working endpoint. Week two: a clean build that passes. Week three: UI phase one. By saying no to the interface and complex auth in week one, we drew a hard boundary around just the prompt execution logic and shipped a clean, passing build immediately. The contrast between the full ambition and that scoped first step is the whole lesson. Clarity isn’t just about what you communicate — it’s about what you’re willing to cut."
+        - separator [ref=e73]
+        - paragraph [ref=e74]: Clarity doesn’t announce itself. Nobody thanks you for the three rounds of revision that didn’t happen, or the support ticket that was never filed, or the meeting that wasn’t needed. But every team I’ve worked on that shipped well had at least one person whose job, whether they knew it or not, was to turn ambiguity into a next step. That’s not project management. That’s engineering. And if a project is still vague after a meeting, the meeting didn’t create progress — sequence before solution.
+    - contentinfo [ref=e75]:
+      - contentinfo [ref=e76]:
+        - generic [ref=e77]:
+          - generic [ref=e78]:
+            - generic [ref=e79]:
+              - paragraph [ref=e80]: Henry Perkins
+              - paragraph [ref=e81]:
+                - generic [ref=e82]: Support Enablement
+                - generic [ref=e84]: WordPress Delivery
+                - generic [ref=e86]: AI Workflows
+            - list [ref=e87]:
+              - listitem [ref=e88]:
+                - link "GitHub" [ref=e89] [cursor=pointer]:
+                  - /url: https://github.com/henryperkins
+                  - img [ref=e90]
+                  - generic [ref=e93]: GitHub
+              - listitem [ref=e94]:
+                - link "LinkedIn" [ref=e95] [cursor=pointer]:
+                  - /url: https://linkedin.com/in/henryperkins
+                  - img [ref=e96]
+                  - generic [ref=e100]: LinkedIn
+              - listitem [ref=e101]:
+                - link "Email" [ref=e102] [cursor=pointer]:
+                  - /url: mailto:henry@lakefrontdigital.io
+                  - img [ref=e103]
+                  - generic [ref=e106]: Email
+          - paragraph [ref=e107]: © 2026 Henry Perkins. Built with React and Tailwind CSS.
+```

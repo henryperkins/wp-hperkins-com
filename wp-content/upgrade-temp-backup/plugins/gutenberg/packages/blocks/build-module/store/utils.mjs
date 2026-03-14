@@ -1,0 +1,25 @@
+// packages/blocks/src/store/utils.js
+var getValueFromObjectPath = (object, path, defaultValue) => {
+  const normalizedPath = Array.isArray(path) ? path : path.split(".");
+  let value = object;
+  normalizedPath.forEach((fieldName) => {
+    value = value?.[fieldName];
+  });
+  return value ?? defaultValue;
+};
+function isObject(candidate) {
+  return typeof candidate === "object" && candidate.constructor === Object && candidate !== null;
+}
+function matchesAttributes(blockAttributes, variationAttributes) {
+  if (isObject(blockAttributes) && isObject(variationAttributes)) {
+    return Object.entries(variationAttributes).every(
+      ([key, value]) => matchesAttributes(blockAttributes?.[key], value)
+    );
+  }
+  return blockAttributes === variationAttributes;
+}
+export {
+  getValueFromObjectPath,
+  matchesAttributes
+};
+//# sourceMappingURL=utils.mjs.map

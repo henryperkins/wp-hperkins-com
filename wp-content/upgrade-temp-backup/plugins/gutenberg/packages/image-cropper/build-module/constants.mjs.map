@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/constants.ts"],
+  "sourcesContent": ["export const MIN_ZOOM = 1;\nexport const MAX_ZOOM = 5;\nexport const DEFAULT_ASPECT_RATIO_SLUG = 'original';\n"],
+  "mappings": ";AAAO,IAAM,WAAW;AACjB,IAAM,WAAW;AACjB,IAAM,4BAA4B;",
+  "names": []
+}

@@ -1,0 +1,26 @@
+// packages/block-library/src/image/constants.js
+var MIN_SIZE = 20;
+var LINK_DESTINATION_NONE = "none";
+var LINK_DESTINATION_MEDIA = "media";
+var LINK_DESTINATION_ATTACHMENT = "attachment";
+var LINK_DESTINATION_CUSTOM = "custom";
+var NEW_TAB_REL = ["noreferrer", "noopener"];
+var ALLOWED_MEDIA_TYPES = ["image"];
+var MEDIA_ID_NO_FEATURED_IMAGE_SET = 0;
+var SIZED_LAYOUTS = ["flex", "grid"];
+var DEFAULT_MEDIA_SIZE_SLUG = "full";
+var IMAGE_PRELOAD_DELAY = 200;
+export {
+  ALLOWED_MEDIA_TYPES,
+  DEFAULT_MEDIA_SIZE_SLUG,
+  IMAGE_PRELOAD_DELAY,
+  LINK_DESTINATION_ATTACHMENT,
+  LINK_DESTINATION_CUSTOM,
+  LINK_DESTINATION_MEDIA,
+  LINK_DESTINATION_NONE,
+  MEDIA_ID_NO_FEATURED_IMAGE_SET,
+  MIN_SIZE,
+  NEW_TAB_REL,
+  SIZED_LAYOUTS
+};
+//# sourceMappingURL=constants.mjs.map

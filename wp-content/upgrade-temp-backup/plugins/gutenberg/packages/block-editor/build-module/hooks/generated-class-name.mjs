@@ -1,0 +1,27 @@
+// packages/block-editor/src/hooks/generated-class-name.js
+import { addFilter } from "@wordpress/hooks";
+import { hasBlockSupport, getBlockDefaultClassName } from "@wordpress/blocks";
+function addGeneratedClassName(extraProps, blockType) {
+  if (hasBlockSupport(blockType, "className", true)) {
+    if (typeof extraProps.className === "string") {
+      extraProps.className = [
+        .../* @__PURE__ */ new Set([
+          getBlockDefaultClassName(blockType.name),
+          ...extraProps.className.split(" ")
+        ])
+      ].join(" ").trim();
+    } else {
+      extraProps.className = getBlockDefaultClassName(blockType.name);
+    }
+  }
+  return extraProps;
+}
+addFilter(
+  "blocks.getSaveContent.extraProps",
+  "core/generated-class-name/save-props",
+  addGeneratedClassName
+);
+export {
+  addGeneratedClassName
+};
+//# sourceMappingURL=generated-class-name.mjs.map

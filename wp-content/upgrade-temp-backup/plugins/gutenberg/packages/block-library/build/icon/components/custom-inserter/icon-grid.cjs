@@ -1,0 +1,73 @@
+"use strict";
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// packages/block-library/src/icon/components/custom-inserter/icon-grid.js
+var icon_grid_exports = {};
+__export(icon_grid_exports, {
+  default: () => IconGrid
+});
+module.exports = __toCommonJS(icon_grid_exports);
+var import_i18n = require("@wordpress/i18n");
+var import_components = require("@wordpress/components");
+var import_html_renderer = __toESM(require("../../../utils/html-renderer.cjs"));
+var import_jsx_runtime = require("react/jsx-runtime");
+function IconGrid({ icons, onChange, attributes }) {
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "wp-block-icon__inserter-grid", children: !icons?.length ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "wp-block-icon__inserter-grid-no-results", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: (0, import_i18n.__)("No results found.") }) }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+    "div",
+    {
+      className: "wp-block-icon__inserter-grid-icons-list",
+      "aria-label": (0, import_i18n.__)("Icon library"),
+      children: icons.map((icon) => {
+        return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+          import_components.Button,
+          {
+            className: "wp-block-icon__inserter-grid-icons-list-item",
+            onClick: () => onChange(icon.name),
+            variant: icon.name === attributes?.icon ? "primary" : void 0,
+            __next40pxDefaultSize: true,
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "wp-block-icon__inserter-grid-icons-list-item-icon", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+                import_html_renderer.default,
+                {
+                  html: icon.content,
+                  wrapperProps: {
+                    style: { width: "24px" }
+                  }
+                }
+              ) }),
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "wp-block-icon__inserter-grid-icons-list-item-title", children: icon.label })
+            ]
+          },
+          icon.name
+        );
+      })
+    }
+  ) });
+}
+//# sourceMappingURL=icon-grid.cjs.map

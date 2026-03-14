@@ -1,0 +1,16 @@
+// packages/global-styles-engine/src/settings/set-setting.ts
+import { setImmutably } from "../utils/object.mjs";
+function setSetting(globalStyles, path, newValue, blockName) {
+  const appendedBlockPath = blockName ? ".blocks." + blockName : "";
+  const appendedPropertyPath = path ? "." + path : "";
+  const finalPath = `settings${appendedBlockPath}${appendedPropertyPath}`;
+  return setImmutably(
+    globalStyles,
+    finalPath.split("."),
+    newValue
+  );
+}
+export {
+  setSetting
+};
+//# sourceMappingURL=set-setting.mjs.map

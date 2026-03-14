@@ -1,0 +1,30 @@
+// packages/core-data/src/queried-data/actions.js
+function receiveItems(items, edits, meta) {
+  return {
+    type: "RECEIVE_ITEMS",
+    items: Array.isArray(items) ? items : [items],
+    persistedEdits: edits,
+    meta
+  };
+}
+function removeItems(kind, name, records, invalidateCache = false) {
+  return {
+    type: "REMOVE_ITEMS",
+    itemIds: Array.isArray(records) ? records : [records],
+    kind,
+    name,
+    invalidateCache
+  };
+}
+function receiveQueriedItems(items, query = {}, edits, meta) {
+  return {
+    ...receiveItems(items, edits, meta),
+    query
+  };
+}
+export {
+  receiveItems,
+  receiveQueriedItems,
+  removeItems
+};
+//# sourceMappingURL=actions.mjs.map

@@ -1,0 +1,1 @@
+{"version":3,"file":"no-unsafe-wp-apis.d.ts","sourceRoot":"","sources":["../rules/no-unsafe-wp-apis.js"],"names":[],"mappings":";;;wBAAW,OAAO,QAAQ,EAAE,IAAI,CAAC,UAAU;;YAsF7B,OAAO,QAAQ,EAAE,IAAI;yBACrB,MAAM,CAAC,MAAM,EAAE,MAAM,EAAE,GAAC,SAAS,CAAC"}

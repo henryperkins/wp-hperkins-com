@@ -1,0 +1,60 @@
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// packages/customize-widgets/src/components/sidebar-block-editor/sidebar-editor-provider.js
+var sidebar_editor_provider_exports = {};
+__export(sidebar_editor_provider_exports, {
+  default: () => SidebarEditorProvider
+});
+module.exports = __toCommonJS(sidebar_editor_provider_exports);
+var import_block_editor = require("@wordpress/block-editor");
+var import_use_sidebar_block_editor = __toESM(require("./use-sidebar-block-editor.cjs"));
+var import_use_blocks_focus_control = __toESM(require("../focus-control/use-blocks-focus-control.cjs"));
+var import_lock_unlock = require("../../lock-unlock.cjs");
+var import_jsx_runtime = require("react/jsx-runtime");
+var { ExperimentalBlockEditorProvider } = (0, import_lock_unlock.unlock)(import_block_editor.privateApis);
+function SidebarEditorProvider({
+  sidebar,
+  settings,
+  children
+}) {
+  const [blocks, onInput, onChange] = (0, import_use_sidebar_block_editor.default)(sidebar);
+  (0, import_use_blocks_focus_control.default)(blocks);
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+    ExperimentalBlockEditorProvider,
+    {
+      value: blocks,
+      onInput,
+      onChange,
+      settings,
+      useSubRegistry: false,
+      children
+    }
+  );
+}
+//# sourceMappingURL=sidebar-editor-provider.cjs.map

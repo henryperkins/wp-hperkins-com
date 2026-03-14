@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/hooks/default-autocompleters.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { addFilter } from '@wordpress/hooks';\n\n/**\n * Internal dependencies\n */\nimport { userAutocompleter } from '../components';\n\nfunction setDefaultCompleters( completers = [] ) {\n\t// Provide copies so filters may directly modify them.\n\tcompleters.push( { ...userAutocompleter } );\n\n\treturn completers;\n}\n\naddFilter(\n\t'editor.Autocomplete.completers',\n\t'editor/autocompleters/set-default-completers',\n\tsetDefaultCompleters\n);\n"],
+  "mappings": ";AAGA,SAAS,iBAAiB;AAK1B,SAAS,yBAAyB;AAElC,SAAS,qBAAsB,aAAa,CAAC,GAAI;AAEhD,aAAW,KAAM,EAAE,GAAG,kBAAkB,CAAE;AAE1C,SAAO;AACR;AAEA;AAAA,EACC;AAAA,EACA;AAAA,EACA;AACD;",
+  "names": []
+}

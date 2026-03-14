@@ -1,0 +1,142 @@
+// packages/editor/src/components/post-actions/set-as-homepage.js
+import { __, sprintf } from "@wordpress/i18n";
+import { useMemo } from "@wordpress/element";
+import {
+  Button,
+  __experimentalText as Text,
+  __experimentalHStack as HStack,
+  __experimentalVStack as VStack
+} from "@wordpress/components";
+import { useDispatch, useSelect } from "@wordpress/data";
+import { store as coreStore } from "@wordpress/core-data";
+import { store as noticesStore } from "@wordpress/notices";
+import { getItemTitle } from "../../utils/get-item-title.mjs";
+import { jsx, jsxs } from "react/jsx-runtime";
+var SetAsHomepageModal = ({ items, closeModal }) => {
+  const [item] = items;
+  const pageTitle = getItemTitle(item);
+  const { showOnFront, currentHomePage, isSaving } = useSelect(
+    (select) => {
+      const { getEntityRecord, isSavingEntityRecord } = select(coreStore);
+      const siteSettings = getEntityRecord("root", "site");
+      const currentHomePageItem = getEntityRecord(
+        "postType",
+        "page",
+        siteSettings?.page_on_front
+      );
+      return {
+        showOnFront: siteSettings?.show_on_front,
+        currentHomePage: currentHomePageItem,
+        isSaving: isSavingEntityRecord("root", "site")
+      };
+    }
+  );
+  const { saveEntityRecord } = useDispatch(coreStore);
+  const { createSuccessNotice, createErrorNotice } = useDispatch(noticesStore);
+  async function onSetPageAsHomepage(event) {
+    event.preventDefault();
+    try {
+      await saveEntityRecord("root", "site", {
+        page_on_front: item.id,
+        show_on_front: "page"
+      });
+      createSuccessNotice(__("Homepage updated."), {
+        type: "snackbar"
+      });
+    } catch (error) {
+      const errorMessage = error.message && error.code !== "unknown_error" ? error.message : __("An error occurred while setting the homepage.");
+      createErrorNotice(errorMessage, { type: "snackbar" });
+    } finally {
+      closeModal?.();
+    }
+  }
+  let modalWarning = "";
+  if ("posts" === showOnFront) {
+    modalWarning = __(
+      "This will replace the current homepage which is set to display latest posts."
+    );
+  } else if (currentHomePage) {
+    modalWarning = sprintf(
+      // translators: %s: title of the current home page.
+      __('This will replace the current homepage: "%s"'),
+      getItemTitle(currentHomePage)
+    );
+  }
+  const modalText = sprintf(
+    // translators: %1$s: title of the page to be set as the homepage, %2$s: homepage replacement warning message.
+    __('Set "%1$s" as the site homepage? %2$s'),
+    pageTitle,
+    modalWarning
+  ).trim();
+  const modalButtonLabel = __("Set homepage");
+  return /* @__PURE__ */ jsx("form", { onSubmit: onSetPageAsHomepage, children: /* @__PURE__ */ jsxs(VStack, { spacing: "5", children: [
+    /* @__PURE__ */ jsx(Text, { children: modalText }),
+    /* @__PURE__ */ jsxs(HStack, { justify: "right", children: [
+      /* @__PURE__ */ jsx(
+        Button,
+        {
+          __next40pxDefaultSize: true,
+          variant: "tertiary",
+          onClick: () => {
+            closeModal?.();
+          },
+          disabled: isSaving,
+          accessibleWhenDisabled: true,
+          children: __("Cancel")
+        }
+      ),
+      /* @__PURE__ */ jsx(
+        Button,
+        {
+          __next40pxDefaultSize: true,
+          variant: "primary",
+          type: "submit",
+          disabled: isSaving,
+          accessibleWhenDisabled: true,
+          children: modalButtonLabel
+        }
+      )
+    ] })
+  ] }) });
+};
+var useSetAsHomepageAction = () => {
+  const { pageOnFront, pageForPosts } = useSelect((select) => {
+    const { getEntityRecord, canUser } = select(coreStore);
+    const siteSettings = canUser("read", {
+      kind: "root",
+      name: "site"
+    }) ? getEntityRecord("root", "site") : void 0;
+    return {
+      pageOnFront: siteSettings?.page_on_front,
+      pageForPosts: siteSettings?.page_for_posts
+    };
+  });
+  return useMemo(
+    () => ({
+      id: "set-as-homepage",
+      label: __("Set as homepage"),
+      isEligible(post) {
+        if (post.status !== "publish") {
+          return false;
+        }
+        if (post.type !== "page") {
+          return false;
+        }
+        if (pageOnFront === post.id) {
+          return false;
+        }
+        if (pageForPosts === post.id) {
+          return false;
+        }
+        return true;
+      },
+      modalFocusOnMount: "firstContentElement",
+      RenderModal: SetAsHomepageModal
+    }),
+    [pageForPosts, pageOnFront]
+  );
+};
+export {
+  useSetAsHomepageAction
+};
+//# sourceMappingURL=set-as-homepage.mjs.map

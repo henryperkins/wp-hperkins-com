@@ -23,10 +23,6 @@
 			"type": "string",
 			"default": "Selected repositories and client case studies focused on problem framing, implementation decisions, and shipped outcomes."
 		},
-		"githubUsername": {
-			"type": "string",
-			"default": "henryperkins"
-		},
 		"repoCount": {
 			"type": "number",
 			"default": 100
@@ -58,10 +54,6 @@
 		"sparklineWeeks": {
 			"type": "number",
 			"default": 8
-		},
-		"languageSummaryMaxRepos": {
-			"type": "number",
-			"default": 80
 		}
 	},
 	"editorScript": "file:./index.js",

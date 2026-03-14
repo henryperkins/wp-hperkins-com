@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/fields/discussion/index.tsx"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { Field } from '@wordpress/dataviews';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport type { BasePost } from '../../types';\n\nconst discussionField: Field< BasePost > = {\n\tid: 'discussion',\n\tlabel: __( 'Discussion' ),\n\ttype: 'text',\n\trender: ( { item } ) => {\n\t\tconst commentsOpen = item.comment_status === 'open';\n\t\tconst pingsOpen = item.ping_status === 'open';\n\n\t\tif ( commentsOpen && pingsOpen ) {\n\t\t\treturn __( 'Open' );\n\t\t}\n\t\tif ( commentsOpen && ! pingsOpen ) {\n\t\t\treturn __( 'Comments only' );\n\t\t}\n\t\tif ( ! commentsOpen && pingsOpen ) {\n\t\t\treturn __( 'Pings only' );\n\t\t}\n\t\treturn __( 'Closed' );\n\t},\n\tfilterBy: false,\n};\n\n/**\n * Discussion field for BasePost with custom render logic.\n */\nexport default discussionField;\n"],
+  "mappings": ";AAIA,SAAS,UAAU;AAOnB,IAAM,kBAAqC;AAAA,EAC1C,IAAI;AAAA,EACJ,OAAO,GAAI,YAAa;AAAA,EACxB,MAAM;AAAA,EACN,QAAQ,CAAE,EAAE,KAAK,MAAO;AACvB,UAAM,eAAe,KAAK,mBAAmB;AAC7C,UAAM,YAAY,KAAK,gBAAgB;AAEvC,QAAK,gBAAgB,WAAY;AAChC,aAAO,GAAI,MAAO;AAAA,IACnB;AACA,QAAK,gBAAgB,CAAE,WAAY;AAClC,aAAO,GAAI,eAAgB;AAAA,IAC5B;AACA,QAAK,CAAE,gBAAgB,WAAY;AAClC,aAAO,GAAI,YAAa;AAAA,IACzB;AACA,WAAO,GAAI,QAAS;AAAA,EACrB;AAAA,EACA,UAAU;AACX;AAKA,IAAO,qBAAQ;",
+  "names": []
+}

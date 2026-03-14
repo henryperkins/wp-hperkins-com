@@ -6,7 +6,7 @@
  * database. It is used to cache and deliver pages.
  *
  * @site  https://wp.hperkins.com
- * @time  Sun, 08 Mar 2026 00:03:10 GMT
+ * @time  Fri, 13 Mar 2026 22:38:16 GMT
  *
  * @since  1.5.0
  * @since  1.6.0  The `clear_site_cache_on_saved_post` setting was added.
@@ -29,9 +29,9 @@ return array (
   'cache_expires' => 0,
   'cache_expiry_time' => 0,
   'clear_site_cache_on_saved_post' => 1,
-  'clear_site_cache_on_saved_comment' => 0,
-  'clear_site_cache_on_saved_term' => 0,
-  'clear_site_cache_on_saved_user' => 0,
+  'clear_site_cache_on_saved_comment' => 1,
+  'clear_site_cache_on_saved_term' => 1,
+  'clear_site_cache_on_saved_user' => 1,
   'clear_site_cache_on_changed_plugin' => 1,
   'convert_image_urls_to_webp' => 1,
   'mobile_cache' => 1,

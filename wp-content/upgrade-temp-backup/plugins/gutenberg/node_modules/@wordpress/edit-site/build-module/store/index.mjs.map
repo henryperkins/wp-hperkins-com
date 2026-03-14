@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/store/index.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { createReduxStore, register } from '@wordpress/data';\n\n/**\n * Internal dependencies\n */\nimport reducer from './reducer';\nimport * as actions from './actions';\nimport * as privateActions from './private-actions';\nimport * as selectors from './selectors';\nimport * as privateSelectors from './private-selectors';\nimport { STORE_NAME } from './constants';\nimport { unlock } from '../lock-unlock';\n\nexport const storeConfig = {\n\treducer,\n\tactions,\n\tselectors,\n};\n\nexport const store = createReduxStore( STORE_NAME, storeConfig );\nregister( store );\nunlock( store ).registerPrivateSelectors( privateSelectors );\nunlock( store ).registerPrivateActions( privateActions );\n"],
+  "mappings": ";AAGA,SAAS,kBAAkB,gBAAgB;AAK3C,OAAO,aAAa;AACpB,YAAY,aAAa;AACzB,YAAY,oBAAoB;AAChC,YAAY,eAAe;AAC3B,YAAY,sBAAsB;AAClC,SAAS,kBAAkB;AAC3B,SAAS,cAAc;AAEhB,IAAM,cAAc;AAAA,EAC1B;AAAA,EACA;AAAA,EACA;AACD;AAEO,IAAM,QAAQ,iBAAkB,YAAY,WAAY;AAC/D,SAAU,KAAM;AAChB,OAAQ,KAAM,EAAE,yBAA0B,gBAAiB;AAC3D,OAAQ,KAAM,EAAE,uBAAwB,cAAe;",
+  "names": []
+}

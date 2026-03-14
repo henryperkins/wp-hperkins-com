@@ -32,8 +32,6 @@
 	const MAX_SPARKLINE_WEEKS = 16;
 	const GITHUB_REPO_LIST_LIMIT = 100;
 	const GITHUB_REPO_MAX_PAGES = 20;
-	const GITHUB_LANGUAGE_SUMMARY_MAX_REPOS_DEFAULT = 80;
-	const GITHUB_LANGUAGE_SUMMARY_MAX_REPOS_LIMIT = 80;
 	const RATE_LIMIT_COOLDOWN_FALLBACK_MS = 60000;
 	const ROLE_ORDER = [ 'Systems', 'Product', 'Craft', 'Performance' ];
 	const ROLE_DESCRIPTION_MAP = {
@@ -71,13 +69,43 @@
 		'app',
 	] );
 	const repoRateLimitCooldownByQueryKey = new Map();
-	const languageSummaryRateLimitCooldownByQueryKey = new Map();
 	const repoProofRateLimitCooldownByQueryKey = new Map();
-	const compactNumberFormatter = new Intl.NumberFormat( 'en-US', {
-		notation: 'compact',
-		maximumFractionDigits: 1,
-	} );
-	const wholeNumberFormatter = new Intl.NumberFormat( 'en-US' );
+	const ciStatusRateLimitCooldownByQueryKey = new Map();
+	let revealObserver = null;
+
+	function initRevealObserver() {
+		if ( typeof document === 'undefined' ) {
+			return;
+		}
+
+		if ( revealObserver ) {
+			revealObserver.disconnect();
+			revealObserver = null;
+		}
+
+		if ( typeof IntersectionObserver === 'undefined' ) {
+			document.querySelectorAll( '.hdc-reveal' ).forEach( function ( element ) {
+				element.classList.add( 'is-visible' );
+			} );
+			return;
+		}
+
+		revealObserver = new IntersectionObserver(
+			function ( entries ) {
+				entries.forEach( function ( entry ) {
+					if ( entry.isIntersecting ) {
+						entry.target.classList.add( 'is-visible' );
+						revealObserver.unobserve( entry.target );
+					}
+				} );
+			},
+			{ threshold: 0.1 }
+		);
+
+		document.querySelectorAll( '.hdc-reveal:not(.is-visible)' ).forEach( function ( element ) {
+			revealObserver.observe( element );
+		} );
+	}
 
 	function h() {
 		return createElement.apply( undefined, arguments );
@@ -319,6 +347,11 @@
 				} ),
 			shipped: sanitizeString( repo.shipped, '' ),
 			signals: normalizedSignals,
+			license: sanitizeString( repo.license, '' ),
+			openIssuesAndPullRequests:
+				Number.isFinite( Number( repo.openIssuesAndPullRequests ) )
+					? Number( repo.openIssuesAndPullRequests )
+					: 0,
 			receipts: ensureArray( repo.receipts )
 				.filter( function ( item ) {
 					return item && typeof item === 'object';
@@ -448,18 +481,13 @@
 				MAX_SPARKLINE_WEEKS
 			),
 			githubProxyUrl: sanitizeString( parsed.githubProxyUrl, '/api/github/repos' ),
-			githubLanguageSummaryProxyUrl: sanitizeString(
-				parsed.githubLanguageSummaryProxyUrl,
-				'/api/github/language-summary'
-			),
 			githubRepoProofsProxyUrl: sanitizeString(
 				parsed.githubRepoProofsProxyUrl,
 				'/api/github/repo-proofs'
 			),
-			languageSummaryMaxRepos: clamp(
-				Number.parseInt( parsed.languageSummaryMaxRepos, 10 ) || GITHUB_LANGUAGE_SUMMARY_MAX_REPOS_DEFAULT,
-				1,
-				GITHUB_LANGUAGE_SUMMARY_MAX_REPOS_LIMIT
+			githubCIStatusProxyUrl: sanitizeString(
+				parsed.githubCIStatusProxyUrl,
+				'/api/github/ci-status'
 			),
 			localReposUrl: sanitizeString( parsed.localReposUrl, '' ),
 			repoCaseStudyDetailsUrl: sanitizeString( parsed.repoCaseStudyDetailsUrl, '' ),
@@ -700,6 +728,13 @@
 			const description = hasCuratedDescription( localDescription )
 				? localDescription
 				: sanitizeString( repo.description, PLACEHOLDER_DESCRIPTION );
+			const license =
+				repo.license &&
+				typeof repo.license === 'object' &&
+				(
+					sanitizeString( repo.license.spdx_id, '' ) ||
+					sanitizeString( repo.license.name, '' )
+				);
 
 			return normalizeRepo(
 				Object.assign( {}, localRepo || {}, {
@@ -708,10 +743,12 @@
 					language: language,
 					stars: Number.isFinite( repo.stargazers_count ) ? repo.stargazers_count : 0,
 					forks: Number.isFinite( repo.forks_count ) ? repo.forks_count : 0,
+					openIssuesAndPullRequests: Number.isFinite( repo.open_issues_count ) ? repo.open_issues_count : 0,
 					updatedAt: updatedAt,
 					_updatedAtMs: getUpdatedAtTimestamp( repo.pushed_at || updatedAt ),
 					url: sanitizeString( repo.html_url, localRepo ? localRepo.url : '' ),
 					defaultBranch: sanitizeString( repo.default_branch, localRepo ? localRepo.defaultBranch : '' ),
+					license: license || ( localRepo ? localRepo.license : '' ),
 					topics: topics,
 					featured: localRepo ? !! localRepo.featured : false,
 					demoUrl: localRepo ? localRepo.demoUrl : '',
@@ -770,78 +807,9 @@
 		return 'github-repos:' + owner;
 	}
 
-	function getLanguageSummaryRateLimitCooldownQueryKey( owner, maxRepos ) {
-		return 'github-language-summary:' + owner + ':' + String( maxRepos );
-	}
-
 	function normalizeLanguage( language ) {
 		const normalized = typeof language === 'string' ? language.trim() : '';
 		return normalized || 'Unknown';
-	}
-
-	function buildFallbackRepoLanguageCounts( repos ) {
-		const counts = new Map();
-		repos.forEach( function ( repo ) {
-			const language = normalizeLanguage( repo.language );
-			counts.set( language, ( counts.get( language ) || 0 ) + 1 );
-		} );
-
-		return Array.from( counts.entries() )
-			.map( function ( entry ) {
-				return { language: entry[ 0 ], count: entry[ 1 ] };
-			} )
-			.sort( function ( a, b ) {
-				return b.count - a.count || a.language.localeCompare( b.language );
-			} );
-	}
-
-	function buildFallbackLanguageSummary( repos, source, username ) {
-		return {
-			username: username || 'unknown',
-			analyzedRepoCount: repos.length,
-			repoLanguageCounts: buildFallbackRepoLanguageCounts( repos ),
-			languageByteTotals: [],
-			byteDataIncomplete: true,
-			failedLanguageRequestCount: 0,
-			source: source,
-		};
-	}
-
-	function isLanguageRepoCountArray( value ) {
-		return Array.isArray( value ) && value.every( function ( entry ) {
-			return (
-				entry &&
-				typeof entry === 'object' &&
-				typeof entry.language === 'string' &&
-				typeof entry.count === 'number'
-			);
-		} );
-	}
-
-	function isLanguageByteTotalArray( value ) {
-		return Array.isArray( value ) && value.every( function ( entry ) {
-			return (
-				entry &&
-				typeof entry === 'object' &&
-				typeof entry.language === 'string' &&
-				typeof entry.bytes === 'number'
-			);
-		} );
-	}
-
-	function isValidGitHubLanguageSummaryPayload( payload ) {
-		return (
-			payload &&
-			typeof payload === 'object' &&
-			typeof payload.username === 'string' &&
-			typeof payload.analyzedRepoCount === 'number' &&
-			typeof payload.byteDataIncomplete === 'boolean' &&
-			typeof payload.failedLanguageRequestCount === 'number' &&
-			( typeof payload.stale === 'undefined' || typeof payload.stale === 'boolean' ) &&
-			! Array.isArray( payload ) &&
-			isLanguageRepoCountArray( payload.repoLanguageCounts ) &&
-			isLanguageByteTotalArray( payload.languageByteTotals )
-		);
 	}
 
 	async function fetchGitHubReposProxyPage( config, perPage, page ) {
@@ -893,68 +861,6 @@
 		}
 
 		return mapGitHubRepos( allRepos, localRepos, config );
-	}
-
-	async function fetchGitHubLanguageSummaryFromProxy( config ) {
-		const requestUrl = new URL( resolveRequestUrl( config.githubLanguageSummaryProxyUrl ) );
-		requestUrl.searchParams.set( 'username', config.githubUsername );
-		requestUrl.searchParams.set( 'max_repos', String( config.languageSummaryMaxRepos ) );
-
-		const response = await fetch( requestUrl.toString(), {
-			headers: {
-				Accept: 'application/json',
-			},
-		} );
-
-		let payload = null;
-		try {
-			payload = await response.json();
-		} catch ( error ) {
-			throw createGitHubProxyError( 'GitHub language summary proxy returned invalid JSON', response, null );
-		}
-
-		if ( ! isValidGitHubLanguageSummaryPayload( payload ) ) {
-			throw createGitHubProxyError(
-				'GitHub language summary response had an unexpected shape',
-				response,
-				payload
-			);
-		}
-
-		if ( ! response.ok && payload.stale !== true ) {
-			const message = parsePayloadMessage( payload ) || 'GitHub language summary request failed';
-			throw createGitHubProxyError( message + ' (status ' + response.status + ')', response, payload );
-		}
-
-		return payload;
-	}
-
-	async function loadLanguageSummary( config, repos ) {
-		const username = sanitizeString( config.githubUsername, 'unknown' );
-		const cooldownQueryKey = getLanguageSummaryRateLimitCooldownQueryKey(
-			username,
-			config.languageSummaryMaxRepos
-		);
-
-		if ( getRemainingRateLimitCooldownMs( languageSummaryRateLimitCooldownByQueryKey, cooldownQueryKey ) > 0 ) {
-			return buildFallbackLanguageSummary( repos, 'fallback-ratelimit', username );
-		}
-
-		try {
-			const summary = await fetchGitHubLanguageSummaryFromProxy( config );
-			return Object.assign( {}, summary, {
-				source: summary.stale ? 'stale' : 'live',
-			} );
-		} catch ( error ) {
-			if ( isRateLimitError( error ) ) {
-				setRateLimitCooldown( languageSummaryRateLimitCooldownByQueryKey, cooldownQueryKey, error );
-				return buildFallbackLanguageSummary( repos, 'fallback-ratelimit', username );
-			}
-			if ( isOfflineError( error ) ) {
-				return buildFallbackLanguageSummary( repos, 'fallback-offline', username );
-			}
-			return buildFallbackLanguageSummary( repos, 'fallback-error', username );
-		}
 	}
 
 	function getRepoProofRateLimitCooldownQueryKey( owner, repoNames ) {
@@ -1081,6 +987,129 @@
 		}
 	}
 
+	function isCIStatusResultArray( value ) {
+		const validStatuses = [ 'passing', 'failing', 'running', 'none', 'neutral', 'unavailable' ];
+
+		return Array.isArray( value ) && value.every( function ( entry ) {
+			return (
+				entry &&
+				typeof entry === 'object' &&
+				typeof entry.repo === 'string' &&
+				typeof entry.ciStatus === 'string' &&
+				validStatuses.indexOf( entry.ciStatus ) !== -1
+			);
+		} );
+	}
+
+	function buildCIStatusMap( results ) {
+		const map = {};
+
+		results.forEach( function ( entry ) {
+			const repoName = sanitizeString( entry.repo, '' );
+			if ( ! repoName ) {
+				return;
+			}
+
+			map[ repoName ] = entry.ciStatus;
+			map[ repoName.toLowerCase() ] = entry.ciStatus;
+		} );
+
+		return map;
+	}
+
+	async function loadCIStatus( config, repoNames ) {
+		const normalizedRepoNames = Array.from(
+			new Set(
+				repoNames
+					.map( function ( repoName ) {
+						return sanitizeString( repoName, '' );
+					} )
+					.filter( Boolean )
+			)
+		).sort( function ( left, right ) {
+			return left.localeCompare( right );
+		} );
+
+		if ( normalizedRepoNames.length === 0 || ! config.githubCIStatusProxyUrl ) {
+			return {
+				ciStatusByRepo: {},
+				source: 'live',
+			};
+		}
+
+		const username = sanitizeString( config.githubUsername, 'unknown' );
+		const cooldownQueryKey = 'github-ci-status:' + username + ':' + concatTextParts( normalizedRepoNames, '|' );
+
+		if ( getRemainingRateLimitCooldownMs( ciStatusRateLimitCooldownByQueryKey, cooldownQueryKey ) > 0 ) {
+			return {
+				ciStatusByRepo: {},
+				source: 'fallback-ratelimit',
+			};
+		}
+
+		try {
+			const requestUrl = new URL( resolveRequestUrl( config.githubCIStatusProxyUrl ) );
+			requestUrl.searchParams.set( 'username', username );
+			normalizedRepoNames.forEach( function ( repoName ) {
+				requestUrl.searchParams.append( 'repo', repoName );
+			} );
+
+			const response = await fetch( requestUrl.toString(), {
+				headers: {
+					Accept: 'application/json',
+				},
+			} );
+
+			let payload = null;
+			try {
+				payload = await response.json();
+			} catch ( error ) {
+				throw createGitHubProxyError( 'GitHub CI status proxy returned invalid JSON', response, null );
+			}
+
+			if (
+				! payload ||
+				typeof payload !== 'object' ||
+				typeof payload.repoCount !== 'number' ||
+				! isCIStatusResultArray( payload.results )
+			) {
+				throw createGitHubProxyError(
+					'GitHub CI status response had an unexpected shape',
+					response,
+					payload
+				);
+			}
+
+			if ( ! response.ok ) {
+				const message = parsePayloadMessage( payload ) || 'GitHub CI status request failed';
+				throw createGitHubProxyError( message + ' (status ' + response.status + ')', response, payload );
+			}
+
+			return {
+				ciStatusByRepo: buildCIStatusMap( payload.results ),
+				source: 'live',
+			};
+		} catch ( error ) {
+			if ( isRateLimitError( error ) ) {
+				setRateLimitCooldown( ciStatusRateLimitCooldownByQueryKey, cooldownQueryKey, error );
+				return {
+					ciStatusByRepo: {},
+					source: 'fallback-ratelimit',
+				};
+			}
+			if ( isOfflineError( error ) ) {
+				return {
+					ciStatusByRepo: {},
+					source: 'fallback-offline',
+				};
+			}
+			return {
+				ciStatusByRepo: {},
+				source: 'fallback-error',
+			};
+		}
+	}
+
 	async function loadWorkData( config ) {
 		const localReposPromise = loadLocalRepos( config );
 		const detailsPromise = loadRepoCaseStudyDetails( config );
@@ -1140,13 +1169,11 @@
 		repos = repos.map( function ( repo ) {
 			return withUpdatedAtTimestamp( normalizeRepo( repo ) );
 		} );
-		const languageSummary = await loadLanguageSummary( config, repos );
 
 		return {
 			repos: repos,
 			source: source,
 			detailsUnavailable: !! config.repoCaseStudyDetailsUrl && ! detailsResult.ok,
-			languageSummary: languageSummary,
 		};
 	}
 
@@ -1154,7 +1181,11 @@
 		return h(
 			'span',
 			{
-				className: classNames( 'hdc-work-badge', props.variant ? 'is-' + props.variant : 'is-secondary' ),
+				className: classNames(
+					'hdc-work-badge',
+					props.variant ? 'is-' + props.variant : 'is-secondary',
+					props.className
+				),
 			},
 			props.children
 		);
@@ -1169,34 +1200,6 @@
 				? h( 'p', { className: 'hdc-work-section-description' }, props.description )
 				: null
 		);
-	}
-
-	function formatLanguageSourceMessage( source ) {
-		if ( source === 'loading' ) {
-			return 'Loading language distributions from GitHub.';
-		}
-		if ( source === 'live' ) {
-			return 'Language distributions are synced from GitHub.';
-		}
-		if ( source === 'stale' ) {
-			return 'Showing cached GitHub language totals while live sync recovers.';
-		}
-		if ( source === 'fallback-ratelimit' ) {
-			return 'GitHub API rate limit reached. Language charts are temporarily unavailable.';
-		}
-		if ( source === 'fallback-offline' ) {
-			return 'Offline mode detected. Language charts are temporarily unavailable.';
-		}
-
-		return 'Live language-byte totals are unavailable right now.';
-	}
-
-	function formatCompactNumber( value ) {
-		return compactNumberFormatter.format( Number.isFinite( Number( value ) ) ? Number( value ) : 0 );
-	}
-
-	function formatWholeNumber( value ) {
-		return wholeNumberFormatter.format( Number.isFinite( Number( value ) ) ? Number( value ) : 0 );
 	}
 
 	function StatCard( props ) {
@@ -1216,6 +1219,56 @@
 			h( 'h3', { className: 'hdc-work-empty-title' }, props.title ),
 			h( 'p', { className: 'hdc-work-empty-description' }, props.description ),
 			props.action || null
+		);
+	}
+
+	function LoadingSkeleton() {
+		return h(
+			Fragment,
+			null,
+			h(
+				'div',
+				{ className: 'hdc-work-skeleton-filters' },
+				h( 'span', { className: 'hdc-work-skeleton is-h8 is-w-20 is-rounded-pill' } ),
+				h( 'span', { className: 'hdc-work-skeleton is-h8 is-w-20 is-rounded-pill' } ),
+				h( 'span', { className: 'hdc-work-skeleton is-h8 is-w-20 is-rounded-pill' } ),
+				h( 'span', { className: 'hdc-work-skeleton is-h8 is-w-20 is-rounded-pill' } ),
+				h( 'span', { className: 'hdc-work-skeleton is-h8 is-w-20 is-rounded-pill' } ),
+				h( 'span', { className: 'hdc-work-skeleton is-h9 is-w-36 is-rounded-surface is-ml-auto' } )
+			),
+			h(
+				'div',
+				{ className: 'hdc-work-skeleton-grid' },
+				[ 0, 1, 2, 3, 4, 5 ].map( function ( index ) {
+					return h(
+						'div',
+						{ key: 'skeleton-card-' + index, className: 'hdc-work-skeleton-card' },
+						h(
+							'div',
+							{ className: 'hdc-work-skeleton-card-head' },
+							h( 'span', { className: 'hdc-work-skeleton is-h5 is-w-24' } ),
+							h( 'span', { className: 'hdc-work-skeleton is-h4 is-w-14' } )
+						),
+						h( 'span', { className: 'hdc-work-skeleton is-h6 is-w-3-4' } ),
+						h( 'span', { className: 'hdc-work-skeleton is-h4 is-w-full' } ),
+						h( 'span', { className: 'hdc-work-skeleton is-h4 is-w-5-6' } ),
+						h(
+							'div',
+							{ className: 'hdc-work-skeleton-card-topics' },
+							h( 'span', { className: 'hdc-work-skeleton is-h5 is-w-16 is-rounded-pill' } ),
+							h( 'span', { className: 'hdc-work-skeleton is-h5 is-w-14 is-rounded-pill' } ),
+							h( 'span', { className: 'hdc-work-skeleton is-h5 is-w-20 is-rounded-pill' } )
+						),
+						h(
+							'div',
+							{ className: 'hdc-work-skeleton-card-footer' },
+							h( 'span', { className: 'hdc-work-skeleton is-h4 is-w-12' } ),
+							h( 'span', { className: 'hdc-work-skeleton is-h4 is-w-12' } ),
+							h( 'span', { className: 'hdc-work-skeleton is-h4 is-w-20' } )
+						)
+					);
+				} )
+			)
 		);
 	}
 
@@ -1348,30 +1401,6 @@
 		const totalActivity = props.activityBuckets.reduce( function ( sum, bucket ) {
 			return sum + bucket.count;
 		}, 0 );
-		const barChartData = ( props.repoLanguageCounts || [] ).slice( 0, 12 );
-		const maxLanguageRepoCount = Math.max.apply(
-			undefined,
-			[ 1 ].concat(
-				barChartData.map( function ( entry ) {
-					return Number.isFinite( Number( entry.count ) ) ? Number( entry.count ) : 0;
-				} )
-			)
-		);
-		const treemapData = ( props.languageByteTotals || [] ).slice( 0, 18 );
-		const totalLanguageBytes = treemapData.reduce( function ( sum, entry ) {
-			const bytes = Number.isFinite( Number( entry.bytes ) ) ? Number( entry.bytes ) : 0;
-			return sum + Math.max( 0, bytes );
-		}, 0 );
-		const languageSummaryDescription = concatTextParts(
-			[
-				formatLanguageSourceMessage( props.languageSummarySource ),
-				'Analyzed repositories: ' + String( props.analyzedRepoCount ) + '.',
-				props.languageSummarySource === 'live' && props.byteDataIncomplete
-					? 'Some repositories could not provide language-byte totals.'
-					: '',
-			],
-			' '
-		);
 		const recentRepoPreviewLabel = concatTextParts(
 			props.recentRepoPreview.map( function ( repo ) {
 				return repo.name;
@@ -1381,7 +1410,10 @@
 
 		return h(
 			'section',
-			{ className: 'hdc-work-signals' },
+			{
+				className: classNames( 'hdc-work-signals', 'hdc-reveal' ),
+				style: { '--reveal-index': 0 },
+			},
 			h( SectionIntro, {
 				title: 'Engineering Signals',
 				description:
@@ -1408,7 +1440,7 @@
 						? h(
 							'div',
 							{ className: 'hdc-work-badge-row' },
-							props.activeLanguages.map( function ( item ) {
+							props.activeLanguages.slice( 0, 3 ).map( function ( item ) {
 								return h(
 									Badge,
 									{
@@ -1461,107 +1493,6 @@
 						)
 					)
 				)
-				,
-				h(
-					'div',
-					{ className: 'hdc-work-language-distribution' },
-					h( SectionIntro, {
-						title: 'Language Distribution',
-						description: languageSummaryDescription,
-					} ),
-					h(
-						'div',
-						{ className: 'hdc-work-language-grid' },
-						h(
-							'article',
-							{ className: 'hdc-work-language-card' },
-							h( 'h4', { className: 'hdc-work-language-title' }, 'Primary Language by Repository' ),
-							h(
-								'p',
-								{ className: 'hdc-work-language-description' },
-								'Repository count by primary language.'
-							),
-							barChartData.length > 0
-								? h(
-									'div',
-									{ className: 'hdc-work-language-bars' },
-									barChartData.map( function ( entry ) {
-										const count = Number.isFinite( Number( entry.count ) ) ? Number( entry.count ) : 0;
-										const widthPercent = Math.max( 4, Math.round( ( count / maxLanguageRepoCount ) * 100 ) );
-										return h(
-											'div',
-											{ className: 'hdc-work-language-bar-row', key: 'repo-language-' + entry.language },
-											h( 'span', { className: 'hdc-work-language-bar-label' }, entry.language ),
-											h(
-												'span',
-												{ className: 'hdc-work-language-bar-track' },
-												h( 'span', {
-													className: 'hdc-work-language-bar-fill',
-													style: { width: widthPercent + '%' },
-												} )
-											),
-											h(
-												'span',
-												{ className: 'hdc-work-language-bar-value' },
-												formatWholeNumber( count )
-											)
-										);
-									} )
-								)
-								: h(
-									'p',
-									{ className: 'hdc-work-language-empty' },
-									'No repository language data available.'
-								)
-						),
-						h(
-							'article',
-							{ className: 'hdc-work-language-card' },
-							h( 'h4', { className: 'hdc-work-language-title' }, 'Language Share by Bytes' ),
-							h(
-								'p',
-								{ className: 'hdc-work-language-description' },
-								'Aggregated byte totals from repository language breakdowns.'
-							),
-							treemapData.length > 0
-								? h(
-									'div',
-									{ className: 'hdc-work-byte-treemap', role: 'list' },
-									treemapData.map( function ( entry ) {
-										const bytes = Number.isFinite( Number( entry.bytes ) ) ? Number( entry.bytes ) : 0;
-										const weight = totalLanguageBytes > 0 ? bytes / totalLanguageBytes : 0;
-										const flexGrow = Math.max( 1, Math.round( weight * 120 ) );
-										const flexBasis = Math.max( 90, Math.round( weight * 520 ) );
-
-										return h(
-											'div',
-											{
-												className: 'hdc-work-byte-tile',
-												key: 'language-byte-' + entry.language,
-												role: 'listitem',
-												title: entry.language + ': ' + formatWholeNumber( bytes ) + ' bytes',
-												style: {
-													flexGrow: flexGrow,
-													flexBasis: flexBasis + 'px',
-												},
-											},
-											h( 'span', { className: 'hdc-work-byte-language' }, entry.language ),
-											h(
-												'span',
-												{ className: 'hdc-work-byte-value' },
-												formatCompactNumber( bytes )
-											)
-										);
-									} )
-								)
-								: h(
-									'p',
-									{ className: 'hdc-work-language-empty' },
-									'Language byte totals are currently unavailable.'
-								)
-						)
-					)
-				)
 			);
 	}
 
@@ -1581,10 +1512,14 @@
 			h(
 				'div',
 				{ className: 'hdc-work-featured-grid' },
-				props.repos.map( function ( repo ) {
+				props.repos.map( function ( repo, index ) {
 					return h(
 						'article',
-						{ key: 'featured-' + repo.name, className: 'hdc-work-featured-card' },
+						{
+							key: 'featured-' + repo.name,
+							className: classNames( 'hdc-work-featured-card', 'hdc-reveal' ),
+							style: { '--reveal-index': index },
+						},
 						h(
 							'div',
 							{ className: 'hdc-work-featured-top' },
@@ -1689,8 +1624,27 @@
 	}
 
 	function RoleGroups( props ) {
+		const [ expandedRoles, setExpandedRoles ] = useState( function () {
+			return new Set();
+		} );
+		const totalRepos = props.groups.reduce( function ( sum, group ) {
+			return sum + group.repos.length;
+		}, 0 );
+
 		if ( props.groups.length === 0 ) {
 			return null;
+		}
+
+		function handleToggleRole( role ) {
+			setExpandedRoles( function ( previous ) {
+				const next = new Set( previous );
+				if ( next.has( role ) ) {
+					next.delete( role );
+				} else {
+					next.add( role );
+				}
+				return next;
+			} );
 		}
 
 		return h(
@@ -1704,14 +1658,46 @@
 			h(
 				'div',
 				{ className: 'hdc-work-role-grid' },
-				props.groups.map( function ( group ) {
-					const latestRepo = group.repos.slice().sort( compareReposByUpdatedAtDesc )[ 0 ] || null;
-					const previewRepos = group.repos.slice( 0, 2 );
-					const hiddenPreviewCount = Math.max( 0, group.repos.length - previewRepos.length );
+				props.groups.map( function ( group, groupIndex ) {
+					const sortedRepos = group.repos.slice().sort( compareReposByUpdatedAtDesc );
+					const latestRepo = sortedRepos[ 0 ] || null;
+					const isExpanded = expandedRoles.has( group.role );
+					const visibleRepos = isExpanded ? sortedRepos : sortedRepos.slice( 0, 2 );
+					const hiddenPreviewCount = Math.max( 0, sortedRepos.length - 2 );
+					const canExpand = hiddenPreviewCount > 0;
+					const proportionPercent = totalRepos > 0 ? Math.round( ( sortedRepos.length / totalRepos ) * 100 ) : 0;
 
 					return h(
 						'article',
-						{ key: 'role-' + group.role, className: 'hdc-work-role-card' },
+						{
+							key: 'role-' + group.role,
+							className: classNames( 'hdc-work-role-card', 'hdc-reveal', isExpanded && 'is-expanded' ),
+							role: canExpand ? 'button' : undefined,
+							'aria-expanded': canExpand ? String( isExpanded ) : undefined,
+							tabIndex: canExpand ? 0 : undefined,
+							style: { '--reveal-index': groupIndex },
+							onClick: canExpand
+								? function () {
+									handleToggleRole( group.role );
+								}
+								: undefined,
+							onKeyDown: canExpand
+								? function ( event ) {
+									if ( event.key === 'Enter' || event.key === ' ' ) {
+										event.preventDefault();
+										handleToggleRole( group.role );
+									}
+								}
+								: undefined,
+						},
+						h(
+							'div',
+							{ className: 'hdc-work-role-proportion' },
+							h( 'div', {
+								className: 'hdc-work-role-proportion-fill',
+								style: { width: proportionPercent + '%' },
+							} )
+						),
 						h(
 							'div',
 							{ className: 'hdc-work-role-header' },
@@ -1745,7 +1731,7 @@
 								)
 								: null
 						),
-						previewRepos.length > 0
+						visibleRepos.length > 0
 							? h(
 								'div',
 								{ className: 'hdc-work-role-preview' },
@@ -1753,21 +1739,65 @@
 								h(
 									'div',
 									{ className: 'hdc-work-badge-row' },
-									previewRepos.map( function ( repo ) {
+									visibleRepos.map( function ( repo ) {
 										return h(
-											Badge,
-											{ key: group.role + '-' + repo.name, variant: 'outline' },
+											'a',
+											{
+												key: group.role + '-' + repo.name,
+												className: 'hdc-work-badge is-outline hdc-work-role-repo-link',
+												href: getWorkDetailUrl( repo.name ),
+												onClick: function ( event ) {
+													event.stopPropagation();
+												},
+												onKeyDown: function ( event ) {
+													event.stopPropagation();
+												},
+											},
 											repo.name
 										);
 									} ).concat(
-										hiddenPreviewCount > 0
+										! isExpanded && hiddenPreviewCount > 0
 											? [
 												h(
 													Badge,
-													{ key: group.role + '-hidden-preview', variant: 'outline' },
+													{
+														key: group.role + '-hidden-preview',
+														variant: 'outline',
+														className: 'hdc-work-role-toggle-badge',
+													},
 													'+',
 													String( hiddenPreviewCount ),
-													' more'
+													' more',
+													h(
+														'span',
+														{
+															className: 'hdc-work-role-badge-chevron',
+															'aria-hidden': 'true',
+														},
+														renderLucideIcon( h, 'chevron-down', { size: 12 } )
+													)
+												),
+											]
+											: []
+									).concat(
+										isExpanded && canExpand
+											? [
+												h(
+													Badge,
+													{
+														key: group.role + '-show-less',
+														variant: 'outline',
+														className: 'hdc-work-role-toggle-badge',
+													},
+													'Show less',
+													h(
+														'span',
+														{
+															className: 'hdc-work-role-badge-chevron',
+															'aria-hidden': 'true',
+														},
+														renderLucideIcon( h, 'chevron-down', { size: 12 } )
+													)
 												),
 											]
 											: []
@@ -1836,6 +1866,11 @@
 	function RepoCard( props ) {
 		const repo = props.repo;
 		const repoProof = props.repoProof || null;
+		const ciStatusClassMap = {
+			passing: 'is-ci-passing',
+			failing: 'is-ci-failing',
+			running: 'is-ci-running',
+		};
 		const communityHealthScore =
 			repoProof &&
 			repoProof.communityHealth &&
@@ -1849,15 +1884,21 @@
 			typeof repoProof.latestRelease.tagName === 'string';
 		const visibleTopics = repo.topics.slice( 0, 3 );
 		const hiddenTopicCount = Math.max( 0, repo.topics.length - visibleTopics.length );
+		const ciStatusClass = props.ciStatus ? ciStatusClassMap[ props.ciStatus ] : '';
 		const hasMetadataBadges =
 			visibleTopics.length > 0 ||
 			hiddenTopicCount > 0 ||
 			typeof communityHealthScore === 'number' ||
-			hasPublishedRelease;
+			hasPublishedRelease ||
+			!! repo.license ||
+			!! ciStatusClass;
 
 		return h(
 			'article',
-			{ className: 'hdc-work-repo-card' },
+			{
+				className: classNames( 'hdc-work-repo-card', 'hdc-reveal' ),
+				style: { '--reveal-index': props.revealIndex || 0 },
+			},
 			h(
 				'div',
 				{ className: 'hdc-work-repo-head' },
@@ -1932,6 +1973,40 @@
 								? [ h( Badge, { key: repo.name + '-release', variant: 'outline' }, 'Release ' + repoProof.latestRelease.tagName ) ]
 								: []
 						)
+						.concat(
+							repo.license
+								? [
+									h(
+										Badge,
+										{
+											key: repo.name + '-license',
+											variant: 'outline',
+										},
+										h(
+											'span',
+											{ className: 'hdc-work-repo-meta-icon', 'aria-hidden': 'true' },
+											renderLucideIcon( h, 'scale', { className: 'hdc-work-repo-meta-icon-svg', size: 12 } )
+										),
+										' ' + repo.license
+									),
+								]
+								: []
+						)
+						.concat(
+							ciStatusClass
+								? [
+									h(
+										Badge,
+										{
+											key: repo.name + '-ci',
+											variant: 'outline',
+											className: ciStatusClass,
+										},
+										'CI ' + props.ciStatus
+									),
+								]
+								: []
+						)
 				)
 				: null,
 			h(
@@ -1942,26 +2017,38 @@
 					{ className: 'hdc-work-repo-meta' },
 					repo.origin === 'github'
 						? [
-					h(
-						'span',
-						{ className: 'hdc-work-repo-meta-item' },
-						h(
-							'span',
-							{ className: 'hdc-work-repo-meta-icon', 'aria-hidden': 'true' },
-							renderLucideIcon( h, 'star', { className: 'hdc-work-repo-meta-icon-svg', size: 12 } )
-						),
-						h( 'span', null, String( repo.stars ) )
-					),
-					h(
-						'span',
-						{ className: 'hdc-work-repo-meta-item' },
-						h(
-							'span',
-							{ className: 'hdc-work-repo-meta-icon', 'aria-hidden': 'true' },
-							renderLucideIcon( h, 'git-fork', { className: 'hdc-work-repo-meta-icon-svg', size: 12 } )
-						),
-						h( 'span', null, String( repo.forks ) )
-					),
+							h(
+								'span',
+								{ className: 'hdc-work-repo-meta-item' },
+								h(
+									'span',
+									{ className: 'hdc-work-repo-meta-icon', 'aria-hidden': 'true' },
+									renderLucideIcon( h, 'star', { className: 'hdc-work-repo-meta-icon-svg', size: 12 } )
+								),
+								h( 'span', null, String( repo.stars ) )
+							),
+							h(
+								'span',
+								{ className: 'hdc-work-repo-meta-item' },
+								h(
+									'span',
+									{ className: 'hdc-work-repo-meta-icon', 'aria-hidden': 'true' },
+									renderLucideIcon( h, 'git-fork', { className: 'hdc-work-repo-meta-icon-svg', size: 12 } )
+								),
+								h( 'span', null, String( repo.forks ) )
+							),
+							repo.openIssuesAndPullRequests > 0
+								? h(
+									'span',
+									{ className: 'hdc-work-repo-meta-item' },
+									h(
+										'span',
+										{ className: 'hdc-work-repo-meta-icon', 'aria-hidden': 'true' },
+										renderLucideIcon( h, 'circle-dot', { className: 'hdc-work-repo-meta-icon-svg', size: 12 } )
+									),
+									h( 'span', null, String( repo.openIssuesAndPullRequests ) )
+								)
+								: null,
 						]
 						: [ h( 'span', { className: 'hdc-work-repo-meta-label' }, 'Case study' ) ],
 					h(
@@ -1985,7 +2072,7 @@
 				)
 			)
 		);
-		}
+	}
 
 	function RepositoryLibrary( props ) {
 		if ( props.describedRepos.length === 0 ) {
@@ -2062,14 +2149,16 @@
 					h(
 						'div',
 						{ className: 'hdc-work-repo-grid' },
-						props.paginatedRepos.map( function ( repo ) {
+						props.paginatedRepos.map( function ( repo, index ) {
 							return h( RepoCard, {
 								key: 'repo-' + repo.name,
 								repo: repo,
 								repoProof: props.repoProofsByRepoName[ repo.name ] || props.repoProofsByRepoName[ String( repo.name ).toLowerCase() ] || null,
+								ciStatus: props.ciStatusByRepoName[ repo.name ] || props.ciStatusByRepoName[ String( repo.name ).toLowerCase() ] || null,
 								compareSelected: props.compareSelection.indexOf( repo.name ) !== -1,
 								onToggleCompare: props.onToggleCompareRepo,
 								openInNewTab: props.openInNewTab,
+								revealIndex: index,
 							} );
 						} )
 					)
@@ -2388,11 +2477,9 @@
 		const [ error, setError ] = useState( '' );
 		const [ repos, setRepos ] = useState( [] );
 		const [ source, setSource ] = useState( 'fallback-error' );
-		const [ languageSummary, setLanguageSummary ] = useState( function () {
-			return buildFallbackLanguageSummary( [], 'loading', 'unknown' );
-		} );
 		const [ detailsUnavailable, setDetailsUnavailable ] = useState( false );
 		const [ repoProofsByRepoName, setRepoProofsByRepoName ] = useState( {} );
+		const [ ciStatusByRepoName, setCIStatusByRepoName ] = useState( {} );
 		const [ filter, setFilter ] = useState( initialState.filter );
 		const [ sort, setSort ] = useState( initialState.sort );
 		const [ view, setView ] = useState( initialState.view );
@@ -2422,20 +2509,18 @@
 
 		useEffect(
 			function () {
-					let cancelled = false;
-					setLoading( true );
-					setError( '' );
-					setLanguageSummary( buildFallbackLanguageSummary( [], 'loading', config.githubUsername ) );
+				let cancelled = false;
+				setLoading( true );
+				setError( '' );
 
 				loadWorkData( config )
 					.then( function ( data ) {
 						if ( cancelled ) {
 							return;
 						}
-							setRepos( data.repos );
-							setSource( data.source );
-							setLanguageSummary( data.languageSummary );
-							setDetailsUnavailable( data.detailsUnavailable );
+						setRepos( data.repos );
+						setSource( data.source );
+						setDetailsUnavailable( data.detailsUnavailable );
 						setLoading( false );
 						if ( data.repos.length === 0 ) {
 							setError( 'No repositories are available to display.' );
@@ -2446,14 +2531,11 @@
 							return;
 						}
 						setLoading( false );
-							setRepos( [] );
-							setSource( 'fallback-error' );
-							setLanguageSummary(
-								buildFallbackLanguageSummary( [], 'fallback-error', config.githubUsername )
-							);
-							setError( 'Unable to load repository data.' );
-							setDetailsUnavailable( true );
-						} );
+						setRepos( [] );
+						setSource( 'fallback-error' );
+						setError( 'Unable to load repository data.' );
+						setDetailsUnavailable( true );
+					} );
 
 				return function () {
 					cancelled = true;
@@ -2915,6 +2997,49 @@
 			[ config, view, visibleGitHubRepoFingerprint, visibleGitHubRepoNames ]
 		);
 
+		useEffect(
+			function () {
+				let cancelled = false;
+
+				if ( loading || view !== 'grid' || ! visibleGitHubRepoFingerprint ) {
+					setCIStatusByRepoName( {} );
+					return function () {
+						cancelled = true;
+					};
+				}
+
+				loadCIStatus( config, visibleGitHubRepoNames ).then( function ( data ) {
+					if ( cancelled ) {
+						return;
+					}
+
+					setCIStatusByRepoName( data.ciStatusByRepo );
+				} );
+
+				return function () {
+					cancelled = true;
+				};
+			},
+			[ config, loading, view, visibleGitHubRepoFingerprint, visibleGitHubRepoNames ]
+		);
+
+		useEffect(
+			function () {
+				if ( loading || error ) {
+					return undefined;
+				}
+
+				const frameId = window.requestAnimationFrame( function () {
+					initRevealObserver();
+				} );
+
+				return function () {
+					window.cancelAnimationFrame( frameId );
+				};
+			},
+			[ loading, error, page, view, activeFilter ]
+		);
+
 		function handleFilterChange( value ) {
 			if (
 				value === activeFilter ||
@@ -2993,7 +3118,10 @@
 			{ className: 'hdc-work-app' },
 			h(
 				'section',
-				{ className: 'hdc-work-page-hero ember-surface' },
+				{
+					className: classNames( 'hdc-work-page-hero', 'ember-surface', 'hdc-reveal', 'is-soft' ),
+					style: { '--reveal-index': 0 },
+				},
 				h(
 					'div',
 					{ className: 'app-container hdc-work-page-hero__inner' },
@@ -3021,7 +3149,7 @@
 			h(
 				'div',
 				{ className: 'app-container hdc-work-page-body' },
-				loading ? h( 'p', { className: 'hdc-work-status' }, 'Loading repositories…' ) : null,
+				loading ? h( LoadingSkeleton ) : null,
 				! loading && error ? h( 'p', { className: 'hdc-work-status is-error' }, error ) : null,
 				! loading && ! error
 					? h(
@@ -3045,14 +3173,9 @@
 							? h( SignalsPanel, {
 								activeLanguageLabel: activeLanguageLabel,
 								activeLanguages: activeLanguages,
-								analyzedRepoCount: languageSummary.analyzedRepoCount,
 								activityBuckets: activityBuckets,
-								byteDataIncomplete: languageSummary.byteDataIncomplete,
-								languageByteTotals: languageSummary.languageByteTotals,
-								languageSummarySource: languageSummary.source,
 								recentRepoPreview: recentRepoPreview,
 								recentlyUpdatedCount: recentlyUpdatedRepos.length,
-								repoLanguageCounts: languageSummary.repoLanguageCounts,
 								showActivitySparkline: config.showActivitySparkline,
 								sparklineWeeks: config.sparklineWeeks,
 							} )
@@ -3088,6 +3211,7 @@
 								view === 'timeline' ? h( BuildTimeline, { repos: shippedTimeline } ) : null,
 								h( RepositoryLibrary, {
 									compareSelection: compareSelection,
+									ciStatusByRepoName: ciStatusByRepoName,
 									describedRepos: describedRepos,
 									onNextPage: function () {
 										setPage( function ( current ) {

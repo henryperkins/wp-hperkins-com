@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/icon/components/index.js"],
+  "sourcesContent": ["export { default as CustomInserterModal } from './custom-inserter';\n"],
+  "mappings": ";AAAA,SAAoB,WAAXA,gBAAsC;",
+  "names": ["default"]
+}

@@ -1,0 +1,30 @@
+// packages/block-editor/src/components/block-tools/zoom-out-mode-inserter-button.js
+import clsx from "clsx";
+import { Button } from "@wordpress/components";
+import { plus } from "@wordpress/icons";
+import { _x } from "@wordpress/i18n";
+import { jsx } from "react/jsx-runtime";
+function ZoomOutModeInserterButton({ onClick }) {
+  return /* @__PURE__ */ jsx(
+    Button,
+    {
+      variant: "primary",
+      icon: plus,
+      size: "compact",
+      className: clsx(
+        "block-editor-button-pattern-inserter__button",
+        "block-editor-block-tools__zoom-out-mode-inserter-button"
+      ),
+      onClick,
+      label: _x(
+        "Add pattern",
+        "Generic label for pattern inserter button"
+      )
+    }
+  );
+}
+var zoom_out_mode_inserter_button_default = ZoomOutModeInserterButton;
+export {
+  zoom_out_mode_inserter_button_default as default
+};
+//# sourceMappingURL=zoom-out-mode-inserter-button.mjs.map

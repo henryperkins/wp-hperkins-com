@@ -1,0 +1,44 @@
+// packages/block-editor/src/hooks/use-zoom-out.js
+import { useSelect, useDispatch } from "@wordpress/data";
+import { useEffect, useRef } from "@wordpress/element";
+import { store as blockEditorStore } from "../store/index.mjs";
+import { unlock } from "../lock-unlock.mjs";
+function useZoomOut(enabled = true) {
+  const { setZoomLevel, resetZoomLevel } = unlock(
+    useDispatch(blockEditorStore)
+  );
+  const { isZoomedOut, isZoomOut } = useSelect((select) => {
+    const { isZoomOut: _isZoomOut } = unlock(select(blockEditorStore));
+    return {
+      isZoomedOut: _isZoomOut(),
+      isZoomOut: _isZoomOut
+    };
+  }, []);
+  const controlZoomLevelRef = useRef(false);
+  const isEnabledRef = useRef(enabled);
+  useEffect(() => {
+    if (isZoomedOut !== isEnabledRef.current) {
+      controlZoomLevelRef.current = false;
+    }
+  }, [isZoomedOut]);
+  useEffect(() => {
+    isEnabledRef.current = enabled;
+    if (enabled !== isZoomOut()) {
+      controlZoomLevelRef.current = true;
+      if (enabled) {
+        setZoomLevel("auto-scaled");
+      } else {
+        resetZoomLevel();
+      }
+    }
+    return () => {
+      if (controlZoomLevelRef.current && isZoomOut()) {
+        resetZoomLevel();
+      }
+    };
+  }, [enabled, isZoomOut, resetZoomLevel, setZoomLevel]);
+}
+export {
+  useZoomOut
+};
+//# sourceMappingURL=use-zoom-out.mjs.map

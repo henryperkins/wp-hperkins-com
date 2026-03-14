@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/fields/slug/utils.ts"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { cleanForSlug } from '@wordpress/url';\n/**\n * Internal dependencies\n */\nimport type { BasePost } from '../../types';\nimport { getItemTitle } from '../../actions/utils';\n\nexport const getSlug = ( item: BasePost ): string => {\n\tif ( typeof item !== 'object' ) {\n\t\treturn '';\n\t}\n\n\treturn (\n\t\titem.slug || cleanForSlug( getItemTitle( item ) ) || item.id.toString()\n\t);\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,iBAA6B;AAK7B,mBAA6B;AAEtB,IAAM,UAAU,CAAE,SAA4B;AACpD,MAAK,OAAO,SAAS,UAAW;AAC/B,WAAO;AAAA,EACR;AAEA,SACC,KAAK,YAAQ,6BAAc,2BAAc,IAAK,CAAE,KAAK,KAAK,GAAG,SAAS;AAExE;",
+  "names": []
+}

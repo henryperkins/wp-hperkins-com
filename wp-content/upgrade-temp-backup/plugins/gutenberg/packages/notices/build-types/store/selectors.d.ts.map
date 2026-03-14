@@ -1,0 +1,1 @@
+{"version":3,"file":"selectors.d.ts","sourceRoot":"","sources":["../../src/store/selectors.ts"],"names":[],"mappings":"AAIA,OAAO,KAAK,EAAE,MAAM,EAAE,MAAM,SAAS,CAAC;AAYtC;;;;;;;;;;;;;;;;;;;;;;;;;;GA0BG;AACH,wBAAgB,UAAU,CACzB,KAAK,EAAE,MAAM,CAAE,MAAM,EAAE,KAAK,CAAE,MAAM,CAAE,CAAE,EACxC,OAAO,GAAE,MAAwB,YAGjC"}

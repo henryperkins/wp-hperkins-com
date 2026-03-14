@@ -1,0 +1,58 @@
+// packages/block-library/src/query-pagination/query-pagination-arrow-controls.js
+import { __, _x } from "@wordpress/i18n";
+import {
+  __experimentalToggleGroupControl as ToggleGroupControl,
+  __experimentalToggleGroupControlOption as ToggleGroupControlOption
+} from "@wordpress/components";
+import { jsx, jsxs } from "react/jsx-runtime";
+function QueryPaginationArrowControls({ value, onChange }) {
+  return /* @__PURE__ */ jsxs(
+    ToggleGroupControl,
+    {
+      __next40pxDefaultSize: true,
+      label: __("Arrow"),
+      value,
+      onChange,
+      help: __(
+        "A decorative arrow appended to the next and previous page link."
+      ),
+      isBlock: true,
+      children: [
+        /* @__PURE__ */ jsx(
+          ToggleGroupControlOption,
+          {
+            value: "none",
+            label: _x(
+              "None",
+              "Arrow option for Query Pagination Next/Previous blocks"
+            )
+          }
+        ),
+        /* @__PURE__ */ jsx(
+          ToggleGroupControlOption,
+          {
+            value: "arrow",
+            label: _x(
+              "Arrow",
+              "Arrow option for Query Pagination Next/Previous blocks"
+            )
+          }
+        ),
+        /* @__PURE__ */ jsx(
+          ToggleGroupControlOption,
+          {
+            value: "chevron",
+            label: _x(
+              "Chevron",
+              "Arrow option for Query Pagination Next/Previous blocks"
+            )
+          }
+        )
+      ]
+    }
+  );
+}
+export {
+  QueryPaginationArrowControls
+};
+//# sourceMappingURL=query-pagination-arrow-controls.mjs.map

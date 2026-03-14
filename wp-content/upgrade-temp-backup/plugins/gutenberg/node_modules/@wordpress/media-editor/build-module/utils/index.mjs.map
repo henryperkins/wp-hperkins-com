@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/utils/index.ts"],
+  "sourcesContent": ["export { getMediaTypeFromMimeType } from './get-media-type';\nexport type { MediaType } from './get-media-type';\n"],
+  "mappings": ";AAAA,SAAS,gCAAgC;",
+  "names": []
+}

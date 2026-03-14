@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/migrations/preferences-package-data/convert-complementary-areas.js"],
+  "sourcesContent": ["export default function convertComplementaryAreas( state ) {\n\treturn Object.keys( state ).reduce( ( stateAccumulator, scope ) => {\n\t\tconst scopeData = state[ scope ];\n\n\t\t// If a complementary area is truthy, convert it to the `isComplementaryAreaVisible` boolean.\n\t\tif ( scopeData?.complementaryArea ) {\n\t\t\tconst updatedScopeData = { ...scopeData };\n\t\t\tdelete updatedScopeData.complementaryArea;\n\t\t\tupdatedScopeData.isComplementaryAreaVisible = true;\n\t\t\tstateAccumulator[ scope ] = updatedScopeData;\n\t\t\treturn stateAccumulator;\n\t\t}\n\n\t\treturn stateAccumulator;\n\t}, state );\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAe,SAAR,0BAA4C,OAAQ;AAC1D,SAAO,OAAO,KAAM,KAAM,EAAE,OAAQ,CAAE,kBAAkB,UAAW;AAClE,UAAM,YAAY,MAAO,KAAM;AAG/B,QAAK,WAAW,mBAAoB;AACnC,YAAM,mBAAmB,EAAE,GAAG,UAAU;AACxC,aAAO,iBAAiB;AACxB,uBAAiB,6BAA6B;AAC9C,uBAAkB,KAAM,IAAI;AAC5B,aAAO;AAAA,IACR;AAEA,WAAO;AAAA,EACR,GAAG,KAAM;AACV;",
+  "names": []
+}

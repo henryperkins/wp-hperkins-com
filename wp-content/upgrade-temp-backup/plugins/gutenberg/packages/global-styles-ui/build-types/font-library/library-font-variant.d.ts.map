@@ -1,0 +1,1 @@
+{"version":3,"file":"library-font-variant.d.ts","sourceRoot":"","sources":["../../src/font-library/library-font-variant.tsx"],"names":[],"mappings":"AAKA,OAAO,KAAK,EAAE,QAAQ,EAAE,UAAU,EAAE,MAAM,sBAAsB,CAAC;AASjE,iBAAS,kBAAkB,CAAE,EAC5B,IAAI,EACJ,IAAI,GACJ,EAAE;IACF,IAAI,EAAE,QAAQ,CAAC;IACf,IAAI,EAAE,UAAU,CAAC;CACjB,+BA2CA;AAED,eAAe,kBAAkB,CAAC"}

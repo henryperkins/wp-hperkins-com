@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/screen-layout.tsx"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __ } from '@wordpress/i18n';\n// @ts-expect-error: Not typed yet.\nimport { privateApis as blockEditorPrivateApis } from '@wordpress/block-editor';\nimport type { GlobalStylesSettings } from '@wordpress/global-styles-engine';\n\n/**\n * Internal dependencies\n */\nimport { ScreenHeader } from './screen-header';\nimport DimensionsPanel from './dimensions-panel';\nimport { useSetting } from './hooks';\nimport { unlock } from './lock-unlock';\n\nconst { useHasDimensionsPanel, useSettingsForBlockElement } = unlock(\n\tblockEditorPrivateApis\n);\n\nfunction ScreenLayout() {\n\tconst [ rawSettings ] = useSetting< GlobalStylesSettings >( '' );\n\tconst settings = useSettingsForBlockElement( rawSettings );\n\tconst hasDimensionsPanel = useHasDimensionsPanel( settings );\n\n\treturn (\n\t\t<>\n\t\t\t<ScreenHeader title={ __( 'Layout' ) } />\n\t\t\t{ hasDimensionsPanel && <DimensionsPanel /> }\n\t\t</>\n\t);\n}\n\nexport default ScreenLayout;\n"],
+  "mappings": ";AAGA,SAAS,UAAU;AAEnB,SAAS,eAAe,8BAA8B;AAMtD,SAAS,oBAAoB;AAC7B,OAAO,qBAAqB;AAC5B,SAAS,kBAAkB;AAC3B,SAAS,cAAc;AAYrB,mBACC,KADD;AAVF,IAAM,EAAE,uBAAuB,2BAA2B,IAAI;AAAA,EAC7D;AACD;AAEA,SAAS,eAAe;AACvB,QAAM,CAAE,WAAY,IAAI,WAAoC,EAAG;AAC/D,QAAM,WAAW,2BAA4B,WAAY;AACzD,QAAM,qBAAqB,sBAAuB,QAAS;AAE3D,SACC,iCACC;AAAA,wBAAC,gBAAa,OAAQ,GAAI,QAAS,GAAI;AAAA,IACrC,sBAAsB,oBAAC,mBAAgB;AAAA,KAC1C;AAEF;AAEA,IAAO,wBAAQ;",
+  "names": []
+}

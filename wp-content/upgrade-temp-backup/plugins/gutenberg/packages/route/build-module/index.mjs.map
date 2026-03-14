@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/index.ts"],
+  "sourcesContent": ["/**\n * External dependencies\n */\nimport { useRouter } from '@tanstack/react-router';\nexport {\n\tLink,\n\tnotFound,\n\tredirect,\n\tuseLinkProps,\n\tuseNavigate,\n\tuseParams,\n\tuseSearch,\n} from '@tanstack/react-router';\nexport type {\n\tAnyRoute,\n\tLinkProps,\n\tNavigateOptions,\n\tRouteOptions,\n\tRouterOptions,\n\tToOptions,\n\tUseNavigateResult,\n} from '@tanstack/react-router';\n\n/**\n * Internal dependencies\n */\nexport { privateApis } from './private-apis';\n\n/**\n * Hook to invalidate the router cache and trigger a re-render.\n * This is useful when you want to refetch data without changing the URL.\n *\n * @example\n * ```tsx\n * function MyComponent() {\n *   const invalidate = useInvalidate();\n *\n *   const handleRefresh = () => {\n *     invalidate();\n *   };\n *\n *   return <button onClick={handleRefresh}>Refresh</button>;\n * }\n * ```\n *\n * @return A function to invalidate the router.\n */\nexport function useInvalidate() {\n\tconst router = useRouter();\n\treturn () => router.invalidate();\n}\n"],
+  "mappings": ";AAGA,SAAS,iBAAiB;AAC1B;AAAA,EACC;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,OACM;AAcP,SAAS,mBAAmB;AAqBrB,SAAS,gBAAgB;AAC/B,QAAM,SAAS,UAAU;AACzB,SAAO,MAAM,OAAO,WAAW;AAChC;",
+  "names": []
+}

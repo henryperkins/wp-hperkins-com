@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/utils/url.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { cleanForSlug as urlCleanForSlug } from '@wordpress/url';\nimport deprecated from '@wordpress/deprecated';\n\n/**\n * Performs some basic cleanup of a string for use as a post slug\n *\n * This replicates some of what sanitize_title() does in WordPress core, but\n * is only designed to approximate what the slug will be.\n *\n * Converts Latin-1 Supplement and Latin Extended-A letters to basic Latin letters.\n * Removes combining diacritical marks. Converts whitespace, periods,\n * and forward slashes to hyphens. Removes any remaining non-word characters\n * except hyphens and underscores. Converts remaining string to lowercase.\n * It does not account for octets, HTML entities, or other encoded characters.\n *\n * @param {string} string Title or slug to be processed\n *\n * @return {string} Processed string\n */\nexport function cleanForSlug( string ) {\n\tdeprecated( 'wp.editor.cleanForSlug', {\n\t\tsince: '12.7',\n\t\tplugin: 'Gutenberg',\n\t\talternative: 'wp.url.cleanForSlug',\n\t} );\n\treturn urlCleanForSlug( string );\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,iBAAgD;AAChD,wBAAuB;AAkBhB,SAAS,aAAc,QAAS;AACtC,wBAAAA,SAAY,0BAA0B;AAAA,IACrC,OAAO;AAAA,IACP,QAAQ;AAAA,IACR,aAAa;AAAA,EACd,CAAE;AACF,aAAO,WAAAC,cAAiB,MAAO;AAChC;",
+  "names": ["deprecated", "urlCleanForSlug"]
+}

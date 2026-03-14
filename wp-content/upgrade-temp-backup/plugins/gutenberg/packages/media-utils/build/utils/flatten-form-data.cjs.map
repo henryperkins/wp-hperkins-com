@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/utils/flatten-form-data.ts"],
+  "sourcesContent": ["/**\n * Determines whether the passed argument appears to be a plain object.\n *\n * @param data The object to inspect.\n */\nfunction isPlainObject( data: unknown ): data is Record< string, unknown > {\n\treturn (\n\t\tdata !== null &&\n\t\ttypeof data === 'object' &&\n\t\tObject.getPrototypeOf( data ) === Object.prototype\n\t);\n}\n\n/**\n * Recursively flatten data passed to form data, to allow using multi-level objects.\n *\n * @param {FormData}      formData Form data object.\n * @param {string}        key      Key to amend to form data object\n * @param {string|Object} data     Data to be amended to form data.\n */\nexport function flattenFormData(\n\tformData: FormData,\n\tkey: string,\n\tdata: string | undefined | Record< string, string >\n) {\n\tif ( isPlainObject( data ) ) {\n\t\tfor ( const [ name, value ] of Object.entries( data ) ) {\n\t\t\tflattenFormData( formData, `${ key }[${ name }]`, value );\n\t\t}\n\t} else if ( data !== undefined ) {\n\t\tformData.append( key, String( data ) );\n\t}\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAKA,SAAS,cAAe,MAAmD;AAC1E,SACC,SAAS,QACT,OAAO,SAAS,YAChB,OAAO,eAAgB,IAAK,MAAM,OAAO;AAE3C;AASO,SAAS,gBACf,UACA,KACA,MACC;AACD,MAAK,cAAe,IAAK,GAAI;AAC5B,eAAY,CAAE,MAAM,KAAM,KAAK,OAAO,QAAS,IAAK,GAAI;AACvD,sBAAiB,UAAU,GAAI,GAAI,IAAK,IAAK,KAAK,KAAM;AAAA,IACzD;AAAA,EACD,WAAY,SAAS,QAAY;AAChC,aAAS,OAAQ,KAAK,OAAQ,IAAK,CAAE;AAAA,EACtC;AACD;",
+  "names": []
+}

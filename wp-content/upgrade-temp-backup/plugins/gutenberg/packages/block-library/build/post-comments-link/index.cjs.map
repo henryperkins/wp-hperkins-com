@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/post-comments-link/index.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { postCommentsCount as icon } from '@wordpress/icons';\n\n/**\n * Internal dependencies\n */\nimport initBlock from '../utils/init-block';\nimport metadata from './block.json';\nimport edit from './edit';\nimport transforms from './transforms';\nimport deprecated from './deprecated';\n\nconst { name } = metadata;\nexport { metadata, name };\n\nexport const settings = {\n\tedit,\n\ticon,\n\ttransforms,\n\tdeprecated,\n};\n\nexport const init = () => initBlock( { name, metadata, settings } );\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA,+BAAAA;AAAA,EAAA;AAAA;AAAA;AAAA;AAGA,mBAA0C;AAK1C,wBAAsB;AACtB,mBAAqB;AACrB,kBAAiB;AACjB,wBAAuB;AACvB,wBAAuB;AAEvB,IAAM,EAAE,KAAK,IAAI,aAAAA;AAGV,IAAM,WAAW;AAAA,EACvB,kBAAAC;AAAA,EACA,mBAAAC;AAAA,EACA,8BAAAC;AAAA,EACA,8BAAAC;AACD;AAEO,IAAM,OAAO,UAAM,kBAAAC,SAAW,EAAE,MAAM,uBAAAC,SAAU,SAAS,CAAE;",
+  "names": ["metadata", "edit", "icon", "transforms", "deprecated", "initBlock", "metadata"]
+}

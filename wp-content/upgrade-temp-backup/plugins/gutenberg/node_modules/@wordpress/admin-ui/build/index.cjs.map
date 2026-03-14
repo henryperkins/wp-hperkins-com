@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/index.ts"],
+  "sourcesContent": ["export { default as Breadcrumbs } from './breadcrumbs';\nexport { default as NavigableRegion } from './navigable-region';\nexport { default as Page } from './page';\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,yBAAuC;AACvC,8BAA2C;AAC3C,kBAAgC;",
+  "names": []
+}

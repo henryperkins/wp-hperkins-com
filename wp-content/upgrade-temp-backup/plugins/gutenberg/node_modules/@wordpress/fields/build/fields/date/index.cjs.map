@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/fields/date/index.tsx"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { Field } from '@wordpress/dataviews';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport type { BasePost } from '../../types';\nimport DateView from './date-view';\n\nconst dateField: Field< BasePost > = {\n\tid: 'date',\n\ttype: 'datetime',\n\tlabel: __( 'Date' ),\n\trender: DateView,\n\tfilterBy: {\n\t\toperators: [ 'before', 'after' ],\n\t},\n};\n\n/**\n * Date field for BasePost.\n */\nexport default dateField;\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAIA,kBAAmB;AAMnB,uBAAqB;AAErB,IAAM,YAA+B;AAAA,EACpC,IAAI;AAAA,EACJ,MAAM;AAAA,EACN,WAAO,gBAAI,MAAO;AAAA,EAClB,QAAQ,iBAAAA;AAAA,EACR,UAAU;AAAA,IACT,WAAW,CAAE,UAAU,OAAQ;AAAA,EAChC;AACD;AAKA,IAAO,eAAQ;",
+  "names": ["DateView"]
+}

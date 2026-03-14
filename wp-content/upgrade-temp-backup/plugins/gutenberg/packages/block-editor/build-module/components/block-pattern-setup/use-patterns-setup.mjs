@@ -1,0 +1,27 @@
+// packages/block-editor/src/components/block-pattern-setup/use-patterns-setup.js
+import { useSelect } from "@wordpress/data";
+import { store as blockEditorStore } from "../../store/index.mjs";
+function usePatternsSetup(clientId, blockName, filterPatternsFn) {
+  return useSelect(
+    (select) => {
+      const {
+        getBlockRootClientId,
+        getPatternsByBlockTypes,
+        __experimentalGetAllowedPatterns
+      } = select(blockEditorStore);
+      const rootClientId = getBlockRootClientId(clientId);
+      if (filterPatternsFn) {
+        return __experimentalGetAllowedPatterns(rootClientId).filter(
+          filterPatternsFn
+        );
+      }
+      return getPatternsByBlockTypes(blockName, rootClientId);
+    },
+    [clientId, blockName, filterPatternsFn]
+  );
+}
+var use_patterns_setup_default = usePatternsSetup;
+export {
+  use_patterns_setup_default as default
+};
+//# sourceMappingURL=use-patterns-setup.mjs.map

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/store/controls.ts"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { speak } from '@wordpress/a11y';\n\nexport default {\n\tSPEAK( action: { message: string; ariaLive?: 'polite' | 'assertive' } ) {\n\t\tspeak( action.message, action.ariaLive || 'assertive' );\n\t},\n};\n"],
+  "mappings": ";AAGA,SAAS,aAAa;AAEtB,IAAO,mBAAQ;AAAA,EACd,MAAO,QAAiE;AACvE,UAAO,OAAO,SAAS,OAAO,YAAY,WAAY;AAAA,EACvD;AACD;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/index.ts"],
+  "sourcesContent": ["export { default as altTextField } from './alt_text';\nexport { default as attachedToField } from './attached_to';\nexport { default as authorField } from './author';\nexport { default as captionField } from './caption';\nexport { default as dateAddedField } from './date_added';\nexport { default as dateModifiedField } from './date_modified';\nexport { default as descriptionField } from './description';\nexport { default as filenameField } from './filename';\nexport { default as filesizeField } from './filesize';\nexport { default as mediaDimensionsField } from './media_dimensions';\nexport { default as mediaThumbnailField } from './media_thumbnail';\nexport { default as mimeTypeField } from './mime_type';\n\nexport type {\n\tMediaItem,\n\tMediaKind,\n\tMediaType,\n\tMediaItemUpdatable,\n} from './types';\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,sBAAwC;AACxC,yBAA2C;AAC3C,oBAAuC;AACvC,qBAAwC;AACxC,wBAA0C;AAC1C,2BAA6C;AAC7C,yBAA4C;AAC5C,sBAAyC;AACzC,sBAAyC;AACzC,8BAAgD;AAChD,6BAA+C;AAC/C,uBAAyC;",
+  "names": []
+}

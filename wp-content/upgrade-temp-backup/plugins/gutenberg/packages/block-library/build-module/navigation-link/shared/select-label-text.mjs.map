@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/navigation-link/shared/select-label-text.js"],
+  "sourcesContent": ["/**\n * Focus the Link label text and select it.\n *\n * @param {Object} ref React ref object pointing to the label element.\n */\nexport function selectLabelText( ref ) {\n\tref.current.focus();\n\tconst { ownerDocument } = ref.current;\n\tconst { defaultView } = ownerDocument;\n\tconst selection = defaultView.getSelection();\n\tconst range = ownerDocument.createRange();\n\t// Get the range of the current ref contents so we can add this range to the selection.\n\trange.selectNodeContents( ref.current );\n\tselection.removeAllRanges();\n\tselection.addRange( range );\n}\n"],
+  "mappings": ";AAKO,SAAS,gBAAiB,KAAM;AACtC,MAAI,QAAQ,MAAM;AAClB,QAAM,EAAE,cAAc,IAAI,IAAI;AAC9B,QAAM,EAAE,YAAY,IAAI;AACxB,QAAM,YAAY,YAAY,aAAa;AAC3C,QAAM,QAAQ,cAAc,YAAY;AAExC,QAAM,mBAAoB,IAAI,OAAQ;AACtC,YAAU,gBAAgB;AAC1B,YAAU,SAAU,KAAM;AAC3B;",
+  "names": []
+}

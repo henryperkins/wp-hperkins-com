@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/editor-notices/index.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport deprecated from '@wordpress/deprecated';\nimport { InlineNotices } from '@wordpress/notices';\n\n/**\n * Internal dependencies\n */\nimport TemplateValidationNotice from '../template-validation-notice';\n\n/**\n * @deprecated since 7.0, use `wp.notices.InlineNotices` instead.\n */\nexport function EditorNotices() {\n\tdeprecated( 'wp.editor.EditorNotices', {\n\t\tsince: '7.0',\n\t\tversion: '7.2',\n\t\talternative: 'wp.notices.InlineNotices',\n\t} );\n\n\treturn (\n\t\t<InlineNotices\n\t\t\tpinnedNoticesClassName=\"components-editor-notices__pinned\"\n\t\t\tdismissibleNoticesClassName=\"components-editor-notices__dismissible\"\n\t\t>\n\t\t\t<TemplateValidationNotice />\n\t\t</InlineNotices>\n\t);\n}\n\nexport default EditorNotices;\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,wBAAuB;AACvB,qBAA8B;AAK9B,wCAAqC;AAiBlC;AAZI,SAAS,gBAAgB;AAC/B,wBAAAA,SAAY,2BAA2B;AAAA,IACtC,OAAO;AAAA,IACP,SAAS;AAAA,IACT,aAAa;AAAA,EACd,CAAE;AAEF,SACC;AAAA,IAAC;AAAA;AAAA,MACA,wBAAuB;AAAA,MACvB,6BAA4B;AAAA,MAE5B,sDAAC,kCAAAC,SAAA,EAAyB;AAAA;AAAA,EAC3B;AAEF;AAEA,IAAO,yBAAQ;",
+  "names": ["deprecated", "TemplateValidationNotice"]
+}

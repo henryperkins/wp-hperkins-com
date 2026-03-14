@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/downloadable-block-icon/index.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { BlockIcon } from '@wordpress/block-editor';\n\nfunction DownloadableBlockIcon( { icon } ) {\n\tconst className = 'block-directory-downloadable-block-icon';\n\treturn icon.match( /\\.(jpeg|jpg|gif|png|svg)(?:\\?.*)?$/ ) !== null ? (\n\t\t<img className={ className } src={ icon } alt=\"\" />\n\t) : (\n\t\t<BlockIcon className={ className } icon={ icon } showColors />\n\t);\n}\n\nexport default DownloadableBlockIcon;\n"],
+  "mappings": ";AAGA,SAAS,iBAAiB;AAKxB;AAHF,SAAS,sBAAuB,EAAE,KAAK,GAAI;AAC1C,QAAM,YAAY;AAClB,SAAO,KAAK,MAAO,oCAAqC,MAAM,OAC7D,oBAAC,SAAI,WAAwB,KAAM,MAAO,KAAI,IAAG,IAEjD,oBAAC,aAAU,WAAwB,MAAc,YAAU,MAAC;AAE9D;AAEA,IAAO,kCAAQ;",
+  "names": []
+}

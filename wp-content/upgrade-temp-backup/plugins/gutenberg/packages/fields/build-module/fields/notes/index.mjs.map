@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/fields/notes/index.tsx"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { Field } from '@wordpress/dataviews';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport type { BasePost } from '../../types';\n\ninterface PostWithNotesCount extends BasePost {\n\tnotesCount?: number;\n}\n\nconst notesField: Field< PostWithNotesCount > = {\n\tid: 'notesCount',\n\tlabel: __( 'Notes' ),\n\ttype: 'integer',\n\tenableSorting: false,\n\tfilterBy: false,\n};\n\n/**\n * Notes count field for post types that support editor.notes.\n */\nexport default notesField;\n"],
+  "mappings": ";AAIA,SAAS,UAAU;AAWnB,IAAM,aAA0C;AAAA,EAC/C,IAAI;AAAA,EACJ,OAAO,GAAI,OAAQ;AAAA,EACnB,MAAM;AAAA,EACN,eAAe;AAAA,EACf,UAAU;AACX;AAKA,IAAO,gBAAQ;",
+  "names": []
+}

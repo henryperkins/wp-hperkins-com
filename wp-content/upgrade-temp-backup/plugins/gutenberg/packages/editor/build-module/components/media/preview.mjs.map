@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/media/preview.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport {\n\tMediaEditorProvider,\n\tMediaPreview as BaseMediaPreview,\n} from '@wordpress/media-editor';\nimport { useSelect } from '@wordpress/data';\n\n/**\n * Internal dependencies\n */\nimport { store as editorStore } from '../../store';\n\n/**\n * Media preview component for the editor.\n * Connects the base MediaPreview component to the editor store.\n *\n * @param {Object} props - Additional props to spread on MediaPreview.\n * @return {Element} The MediaPreview component.\n */\nexport default function MediaPreview( props ) {\n\tconst { media } = useSelect( ( select ) => {\n\t\tconst currentPost = select( editorStore ).getCurrentPost();\n\t\treturn {\n\t\t\tmedia: currentPost,\n\t\t};\n\t}, [] );\n\n\treturn (\n\t\t<MediaEditorProvider value={ media }>\n\t\t\t<BaseMediaPreview { ...props } />\n\t\t</MediaEditorProvider>\n\t);\n}\n"],
+  "mappings": ";AAGA;AAAA,EACC;AAAA,EACA,gBAAgB;AAAA,OACV;AACP,SAAS,iBAAiB;AAK1B,SAAS,SAAS,mBAAmB;AAmBlC;AAVY,SAAR,aAA+B,OAAQ;AAC7C,QAAM,EAAE,MAAM,IAAI,UAAW,CAAE,WAAY;AAC1C,UAAM,cAAc,OAAQ,WAAY,EAAE,eAAe;AACzD,WAAO;AAAA,MACN,OAAO;AAAA,IACR;AAAA,EACD,GAAG,CAAC,CAAE;AAEN,SACC,oBAAC,uBAAoB,OAAQ,OAC5B,8BAAC,oBAAmB,GAAG,OAAQ,GAChC;AAEF;",
+  "names": []
+}

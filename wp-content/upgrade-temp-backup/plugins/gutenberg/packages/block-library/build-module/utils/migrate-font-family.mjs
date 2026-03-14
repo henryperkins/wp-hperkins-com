@@ -1,0 +1,22 @@
+// packages/block-library/src/utils/migrate-font-family.js
+import { privateApis as blockEditorPrivateApis } from "@wordpress/block-editor";
+import { unlock } from "../lock-unlock.mjs";
+var { cleanEmptyObject } = unlock(blockEditorPrivateApis);
+function migrate_font_family_default(attributes) {
+  if (!attributes?.style?.typography?.fontFamily) {
+    return attributes;
+  }
+  const { fontFamily, ...typography } = attributes.style.typography;
+  return {
+    ...attributes,
+    style: cleanEmptyObject({
+      ...attributes.style,
+      typography
+    }),
+    fontFamily: fontFamily.split("|").pop()
+  };
+}
+export {
+  migrate_font_family_default as default
+};
+//# sourceMappingURL=migrate-font-family.mjs.map

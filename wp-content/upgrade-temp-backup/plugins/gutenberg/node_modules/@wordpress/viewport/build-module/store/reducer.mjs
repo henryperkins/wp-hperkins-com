@@ -1,0 +1,13 @@
+// packages/viewport/src/store/reducer.js
+function reducer(state = {}, action) {
+  switch (action.type) {
+    case "SET_IS_MATCHING":
+      return action.values;
+  }
+  return state;
+}
+var reducer_default = reducer;
+export {
+  reducer_default as default
+};
+//# sourceMappingURL=reducer.mjs.map

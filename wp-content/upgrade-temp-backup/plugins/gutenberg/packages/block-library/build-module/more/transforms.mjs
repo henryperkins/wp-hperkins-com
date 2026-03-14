@@ -1,0 +1,29 @@
+// packages/block-library/src/more/transforms.js
+import { createBlock } from "@wordpress/blocks";
+var transforms = {
+  from: [
+    {
+      type: "raw",
+      schema: {
+        "wp-block": { attributes: ["data-block"] }
+      },
+      isMatch: (node) => node.dataset && node.dataset.block === "core/more",
+      transform(node) {
+        const { customText, noTeaser } = node.dataset;
+        const attrs = {};
+        if (customText) {
+          attrs.customText = customText;
+        }
+        if (noTeaser === "") {
+          attrs.noTeaser = true;
+        }
+        return createBlock("core/more", attrs);
+      }
+    }
+  ]
+};
+var transforms_default = transforms;
+export {
+  transforms_default as default
+};
+//# sourceMappingURL=transforms.mjs.map

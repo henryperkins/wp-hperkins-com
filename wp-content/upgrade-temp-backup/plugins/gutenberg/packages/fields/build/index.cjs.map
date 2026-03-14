@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/index.ts"],
+  "sourcesContent": ["export * from './fields';\nexport * from './actions';\nexport { default as CreateTemplatePartModal } from './components/create-template-part-modal';\nexport { default as MediaEdit } from './components/media-edit';\nexport type {\n\tBasePostWithEmbeddedAuthor,\n\tBasePost,\n\tMediaEditProps,\n\tPostType,\n\tPattern,\n} from './types';\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAAc,+BAAd;AACA,0BAAc,gCADd;AAEA,wCAAmD;AACnD,wBAAqC;",
+  "names": []
+}

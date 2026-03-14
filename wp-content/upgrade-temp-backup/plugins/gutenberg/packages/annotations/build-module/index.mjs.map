@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/index.js"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport './format';\nimport './block';\n\nexport { store } from './store';\n"],
+  "mappings": ";AAGA,OAAO;AACP,OAAO;AAEP,SAAS,aAAa;",
+  "names": []
+}

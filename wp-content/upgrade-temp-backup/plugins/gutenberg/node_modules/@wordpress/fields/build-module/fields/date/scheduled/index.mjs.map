@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../src/fields/date/scheduled/index.tsx"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { Field } from '@wordpress/dataviews';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport type { BasePost } from '../../../types';\n\nconst scheduledDateField: Field< BasePost > = {\n\tid: 'scheduled_date',\n\ttype: 'datetime',\n\tlabel: __( 'Scheduled Date' ),\n\tgetValue: ( { item } ) => item.date,\n\tsetValue: ( { value } ) => ( { date: value } ),\n\tisVisible: ( item ) => item.status === 'future',\n\tenableHiding: false,\n\tenableSorting: false,\n\tfilterBy: false,\n};\n\n/**\n * ScheduledDate Field.\n */\nexport default scheduledDateField;\n"],
+  "mappings": ";AAIA,SAAS,UAAU;AAOnB,IAAM,qBAAwC;AAAA,EAC7C,IAAI;AAAA,EACJ,MAAM;AAAA,EACN,OAAO,GAAI,gBAAiB;AAAA,EAC5B,UAAU,CAAE,EAAE,KAAK,MAAO,KAAK;AAAA,EAC/B,UAAU,CAAE,EAAE,MAAM,OAAS,EAAE,MAAM,MAAM;AAAA,EAC3C,WAAW,CAAE,SAAU,KAAK,WAAW;AAAA,EACvC,cAAc;AAAA,EACd,eAAe;AAAA,EACf,UAAU;AACX;AAKA,IAAO,oBAAQ;",
+  "names": []
+}

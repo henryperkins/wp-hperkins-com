@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/sidebar-navigation-screen-templates-browse/index.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport SidebarNavigationScreen from '../sidebar-navigation-screen';\nimport DataviewsTemplatesSidebarContent from './content';\nimport DataviewsTemplatesSidebarContentLegacy from './content-legacy';\n\nexport default function SidebarNavigationScreenTemplatesBrowse( { backPath } ) {\n\treturn (\n\t\t<SidebarNavigationScreen\n\t\t\ttitle={ __( 'Templates' ) }\n\t\t\tdescription={ __(\n\t\t\t\t'Create new templates, or reset any customizations made to the templates supplied by your theme.'\n\t\t\t) }\n\t\t\tbackPath={ backPath }\n\t\t\tcontent={\n\t\t\t\twindow?.__experimentalTemplateActivate ? (\n\t\t\t\t\t<DataviewsTemplatesSidebarContent />\n\t\t\t\t) : (\n\t\t\t\t\t<DataviewsTemplatesSidebarContentLegacy />\n\t\t\t\t)\n\t\t\t}\n\t\t/>\n\t);\n}\n"],
+  "mappings": ";AAGA,SAAS,UAAU;AAKnB,OAAO,6BAA6B;AACpC,OAAO,sCAAsC;AAC7C,OAAO,4CAA4C;AAY9C;AAVU,SAAR,uCAAyD,EAAE,SAAS,GAAI;AAC9E,SACC;AAAA,IAAC;AAAA;AAAA,MACA,OAAQ,GAAI,WAAY;AAAA,MACxB,aAAc;AAAA,QACb;AAAA,MACD;AAAA,MACA;AAAA,MACA,SACC,QAAQ,iCACP,oBAAC,oCAAiC,IAElC,oBAAC,0CAAuC;AAAA;AAAA,EAG3C;AAEF;",
+  "names": []
+}

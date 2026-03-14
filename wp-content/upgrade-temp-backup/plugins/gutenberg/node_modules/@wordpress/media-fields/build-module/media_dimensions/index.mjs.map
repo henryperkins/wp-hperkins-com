@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/media_dimensions/index.ts"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __, _x, sprintf } from '@wordpress/i18n';\nimport type { Attachment, Updatable } from '@wordpress/core-data';\nimport type { Field } from '@wordpress/dataviews';\n\nconst mediaDimensionsField: Partial< Field< Updatable< Attachment > > > = {\n\tid: 'media_dimensions',\n\ttype: 'text',\n\tlabel: __( 'Dimensions' ),\n\tgetValue: ( { item } ) =>\n\t\titem?.media_details?.width && item?.media_details?.height\n\t\t\t? sprintf(\n\t\t\t\t\t// translators: 1: Width. 2: Height.\n\t\t\t\t\t_x( '%1$s \u00D7 %2$s', 'image dimensions' ),\n\t\t\t\t\titem?.media_details?.width?.toString(),\n\t\t\t\t\titem?.media_details?.height?.toString()\n\t\t\t  )\n\t\t\t: '',\n\tisVisible: ( item ) => {\n\t\treturn !! ( item?.media_details?.width && item?.media_details?.height );\n\t},\n\tenableSorting: false,\n\tfilterBy: false,\n\treadOnly: true,\n};\n\nexport default mediaDimensionsField;\n"],
+  "mappings": ";AAGA,SAAS,IAAI,IAAI,eAAe;AAIhC,IAAM,uBAAoE;AAAA,EACzE,IAAI;AAAA,EACJ,MAAM;AAAA,EACN,OAAO,GAAI,YAAa;AAAA,EACxB,UAAU,CAAE,EAAE,KAAK,MAClB,MAAM,eAAe,SAAS,MAAM,eAAe,SAChD;AAAA;AAAA,IAEA,GAAI,kBAAe,kBAAmB;AAAA,IACtC,MAAM,eAAe,OAAO,SAAS;AAAA,IACrC,MAAM,eAAe,QAAQ,SAAS;AAAA,EACtC,IACA;AAAA,EACJ,WAAW,CAAE,SAAU;AACtB,WAAO,CAAC,EAAI,MAAM,eAAe,SAAS,MAAM,eAAe;AAAA,EAChE;AAAA,EACA,eAAe;AAAA,EACf,UAAU;AAAA,EACV,UAAU;AACX;AAEA,IAAO,2BAAQ;",
+  "names": []
+}

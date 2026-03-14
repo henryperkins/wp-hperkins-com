@@ -1,0 +1,70 @@
+// packages/block-library/src/audio/deprecated.js
+import { RichText } from "@wordpress/block-editor";
+import { jsx, jsxs } from "react/jsx-runtime";
+var deprecated_default = [
+  {
+    attributes: {
+      src: {
+        type: "string",
+        source: "attribute",
+        selector: "audio",
+        attribute: "src"
+      },
+      caption: {
+        type: "string",
+        source: "html",
+        selector: "figcaption"
+      },
+      id: {
+        type: "number"
+      },
+      autoplay: {
+        type: "boolean",
+        source: "attribute",
+        selector: "audio",
+        attribute: "autoplay"
+      },
+      loop: {
+        type: "boolean",
+        source: "attribute",
+        selector: "audio",
+        attribute: "loop"
+      },
+      preload: {
+        type: "string",
+        source: "attribute",
+        selector: "audio",
+        attribute: "preload"
+      }
+    },
+    supports: {
+      align: true
+    },
+    save({ attributes }) {
+      const { autoplay, caption, loop, preload, src } = attributes;
+      return /* @__PURE__ */ jsxs("figure", { children: [
+        /* @__PURE__ */ jsx(
+          "audio",
+          {
+            controls: "controls",
+            src,
+            autoPlay: autoplay,
+            loop,
+            preload
+          }
+        ),
+        !RichText.isEmpty(caption) && /* @__PURE__ */ jsx(
+          RichText.Content,
+          {
+            tagName: "figcaption",
+            value: caption
+          }
+        )
+      ] });
+    }
+  }
+];
+export {
+  deprecated_default as default
+};
+//# sourceMappingURL=deprecated.mjs.map

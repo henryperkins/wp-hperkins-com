@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/store/private-keys.js"],
+  "sourcesContent": ["export const globalStylesDataKey = Symbol( 'globalStylesDataKey' );\nexport const globalStylesLinksDataKey = Symbol( 'globalStylesLinks' );\nexport const selectBlockPatternsKey = Symbol( 'selectBlockPatternsKey' );\nexport const reusableBlocksSelectKey = Symbol( 'reusableBlocksSelect' );\nexport const sectionRootClientIdKey = Symbol( 'sectionRootClientIdKey' );\nexport const mediaEditKey = Symbol( 'mediaEditKey' );\nexport const getMediaSelectKey = Symbol( 'getMediaSelect' );\nexport const isIsolatedEditorKey = Symbol( 'isIsolatedEditor' );\nexport const deviceTypeKey = Symbol( 'deviceTypeKey' );\nexport const isNavigationOverlayContextKey = Symbol(\n\t'isNavigationOverlayContext'\n);\nexport const mediaUploadOnSuccessKey = Symbol( 'mediaUploadOnSuccess' );\n"],
+  "mappings": ";AAAO,IAAM,sBAAsB,uBAAQ,qBAAsB;AAC1D,IAAM,2BAA2B,uBAAQ,mBAAoB;AAC7D,IAAM,yBAAyB,uBAAQ,wBAAyB;AAChE,IAAM,0BAA0B,uBAAQ,sBAAuB;AAC/D,IAAM,yBAAyB,uBAAQ,wBAAyB;AAChE,IAAM,eAAe,uBAAQ,cAAe;AAC5C,IAAM,oBAAoB,uBAAQ,gBAAiB;AACnD,IAAM,sBAAsB,uBAAQ,kBAAmB;AACvD,IAAM,gBAAgB,uBAAQ,eAAgB;AAC9C,IAAM,gCAAgC;AAAA,EAC5C;AACD;AACO,IAAM,0BAA0B,uBAAQ,sBAAuB;",
+  "names": []
+}

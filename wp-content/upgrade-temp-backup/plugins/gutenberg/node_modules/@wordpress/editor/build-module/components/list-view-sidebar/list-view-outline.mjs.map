@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/list-view-sidebar/list-view-outline.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __experimentalText as Text } from '@wordpress/components';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport CharacterCount from '../character-count';\nimport WordCount from '../word-count';\nimport TimeToRead from '../time-to-read';\nimport DocumentOutline from '../document-outline';\n\nexport default function ListViewOutline() {\n\treturn (\n\t\t<>\n\t\t\t<div className=\"editor-list-view-sidebar__outline\">\n\t\t\t\t<div>\n\t\t\t\t\t<Text>{ __( 'Characters:' ) }</Text>\n\t\t\t\t\t<Text>\n\t\t\t\t\t\t<CharacterCount />\n\t\t\t\t\t</Text>\n\t\t\t\t</div>\n\t\t\t\t<div>\n\t\t\t\t\t<Text>{ __( 'Words:' ) }</Text>\n\t\t\t\t\t<WordCount />\n\t\t\t\t</div>\n\t\t\t\t<div>\n\t\t\t\t\t<Text>{ __( 'Time to read:' ) }</Text>\n\t\t\t\t\t<TimeToRead />\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<DocumentOutline />\n\t\t</>\n\t);\n}\n"],
+  "mappings": ";AAGA,SAAS,sBAAsB,YAAY;AAC3C,SAAS,UAAU;AAKnB,OAAO,oBAAoB;AAC3B,OAAO,eAAe;AACtB,OAAO,gBAAgB;AACvB,OAAO,qBAAqB;AAI1B,mBAGG,KADD,YAFF;AAFa,SAAR,kBAAmC;AACzC,SACC,iCACC;AAAA,yBAAC,SAAI,WAAU,qCACd;AAAA,2BAAC,SACA;AAAA,4BAAC,QAAO,aAAI,aAAc,GAAG;AAAA,QAC7B,oBAAC,QACA,8BAAC,kBAAe,GACjB;AAAA,SACD;AAAA,MACA,qBAAC,SACA;AAAA,4BAAC,QAAO,aAAI,QAAS,GAAG;AAAA,QACxB,oBAAC,aAAU;AAAA,SACZ;AAAA,MACA,qBAAC,SACA;AAAA,4BAAC,QAAO,aAAI,eAAgB,GAAG;AAAA,QAC/B,oBAAC,cAAW;AAAA,SACb;AAAA,OACD;AAAA,IACA,oBAAC,mBAAgB;AAAA,KAClB;AAEF;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/post-title/use-post-title.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { useSelect, useDispatch } from '@wordpress/data';\n/**\n * Internal dependencies\n */\nimport { store as editorStore } from '../../store';\n\n/**\n * Custom hook for managing the post title in the editor.\n *\n * @return {Object} An object containing the current title and a function to update the title.\n */\nexport default function usePostTitle() {\n\tconst { editPost } = useDispatch( editorStore );\n\tconst { title } = useSelect( ( select ) => {\n\t\tconst { getEditedPostAttribute } = select( editorStore );\n\n\t\treturn {\n\t\t\ttitle: getEditedPostAttribute( 'title' ),\n\t\t};\n\t}, [] );\n\n\tfunction updateTitle( newTitle ) {\n\t\teditPost( { title: newTitle } );\n\t}\n\n\treturn { title, setTitle: updateTitle };\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,kBAAuC;AAIvC,mBAAqC;AAOtB,SAAR,eAAgC;AACtC,QAAM,EAAE,SAAS,QAAI,yBAAa,aAAAA,KAAY;AAC9C,QAAM,EAAE,MAAM,QAAI,uBAAW,CAAE,WAAY;AAC1C,UAAM,EAAE,uBAAuB,IAAI,OAAQ,aAAAA,KAAY;AAEvD,WAAO;AAAA,MACN,OAAO,uBAAwB,OAAQ;AAAA,IACxC;AAAA,EACD,GAAG,CAAC,CAAE;AAEN,WAAS,YAAa,UAAW;AAChC,aAAU,EAAE,OAAO,SAAS,CAAE;AAAA,EAC/B;AAEA,SAAO,EAAE,OAAO,UAAU,YAAY;AACvC;",
+  "names": ["editorStore"]
+}

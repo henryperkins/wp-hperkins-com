@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/y-utilities/y-multidoc-undomanager.d.ts"],
+  "sourcesContent": ["import { type Observable } from 'lib0/observable';\nimport { type UndoManager, type Doc, type AbstractType } from 'yjs';\n\nexport class YMultiDocUndoManager extends Observable< string > {\n\tdocs: Map< Doc, UndoManager >;\n\ttrackedOrigins: Set< unknown >;\n\tundoStack: Array< UndoManager >;\n\tredoStack: Array< UndoManager >;\n\n\tconstructor(\n\t\ttypeScope?: AbstractType< any > | Array< AbstractType< any > >,\n\t\topts?: NonNullable< ConstructorParameters< typeof UndoManager >[ 1 ] >\n\t);\n\n\taddToScope(\n\t\tytypes: Array< AbstractType< any > > | AbstractType< any >\n\t): void;\n\taddTrackedOrigin( origin: unknown ): void;\n\tremoveTrackedOrigin( origin: unknown ): void;\n\tundo(): unknown;\n\tredo(): unknown;\n\tclear( clearUndoStack?: boolean, clearRedoStack?: boolean ): void;\n\tstopCapturing(): void;\n\tcanUndo(): boolean;\n\tcanRedo(): boolean;\n\tdestroy(): void;\n}\n\n/**\n * @deprecated Use YMultiDocUndoManager instead\n */\nexport { YMultiDocUndoManager as MultiDocUndoManager };\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAGO,IAAM,uBAAN,cAAmC,WAAqB;AAAA,EAC9D;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAmBD;",
+  "names": []
+}

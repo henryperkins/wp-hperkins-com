@@ -1,0 +1,44 @@
+// packages/block-editor/src/components/block-tools/use-selected-block-tool-props.js
+import { useSelect } from "@wordpress/data";
+import { store as blockEditorStore } from "../../store/index.mjs";
+function useSelectedBlockToolProps(clientId) {
+  const selectedBlockProps = useSelect(
+    (select) => {
+      const {
+        getBlockRootClientId,
+        getBlockParents,
+        __experimentalGetBlockListSettingsForBlocks,
+        isBlockInsertionPointVisible,
+        getBlockInsertionPoint,
+        getBlockOrder,
+        hasMultiSelection,
+        getLastMultiSelectedBlockClientId
+      } = select(blockEditorStore);
+      const blockParentsClientIds = getBlockParents(clientId);
+      const parentBlockListSettings = __experimentalGetBlockListSettingsForBlocks(
+        blockParentsClientIds
+      );
+      const capturingClientId = blockParentsClientIds.find(
+        (parentClientId) => parentBlockListSettings[parentClientId]?.__experimentalCaptureToolbars
+      );
+      let isInsertionPointVisible = false;
+      if (isBlockInsertionPointVisible()) {
+        const insertionPoint = getBlockInsertionPoint();
+        const order = getBlockOrder(insertionPoint.rootClientId);
+        isInsertionPointVisible = order[insertionPoint.index] === clientId;
+      }
+      return {
+        capturingClientId,
+        isInsertionPointVisible,
+        lastClientId: hasMultiSelection() ? getLastMultiSelectedBlockClientId() : null,
+        rootClientId: getBlockRootClientId(clientId)
+      };
+    },
+    [clientId]
+  );
+  return selectedBlockProps;
+}
+export {
+  useSelectedBlockToolProps as default
+};
+//# sourceMappingURL=use-selected-block-tool-props.mjs.map

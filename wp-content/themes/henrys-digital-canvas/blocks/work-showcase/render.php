@@ -12,16 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 $defaults = array(
 	'heading'                => 'Work',
 	'description'            => 'Selected repositories and client case studies focused on problem framing, implementation decisions, and shipped outcomes.',
-	'githubUsername'         => hdc_get_configured_github_owner(),
 	'repoCount'              => 100,
 	'compareLimit'           => 2,
 	'includeForks'           => false,
 	'includeArchived'        => false,
 	'openInNewTab'           => true,
 	'showSignalsPanel'       => true,
-	'showActivitySparkline' => true,
-	'sparklineWeeks'        => 8,
-	'languageSummaryMaxRepos' => 80,
+	'showActivitySparkline'  => true,
+	'sparklineWeeks'         => 8,
 );
 
 $attrs = wp_parse_args( $attributes, $defaults );
@@ -39,9 +37,8 @@ $config = array(
 	'showActivitySparkline' => (bool) $attrs['showActivitySparkline'],
 	'sparklineWeeks'  => max( 4, min( 16, (int) $attrs['sparklineWeeks'] ) ),
 	'githubProxyUrl'  => '/api/github/repos',
-	'githubLanguageSummaryProxyUrl' => '/api/github/language-summary',
 	'githubRepoProofsProxyUrl' => '/api/github/repo-proofs',
-	'languageSummaryMaxRepos' => max( 1, min( 80, (int) $attrs['languageSummaryMaxRepos'] ) ),
+	'githubCIStatusProxyUrl' => '/api/github/ci-status',
 	'localReposUrl'   => esc_url_raw( get_theme_file_uri( 'blocks/work-showcase/data/repos.json' ) ),
 	'repoCaseStudyDetailsUrl' => esc_url_raw( get_theme_file_uri( 'blocks/work-showcase/data/repo-case-study-details.json' ) ),
 );

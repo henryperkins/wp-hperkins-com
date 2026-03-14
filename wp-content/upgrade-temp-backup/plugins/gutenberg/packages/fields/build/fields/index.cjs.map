@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/fields/index.ts"],
+  "sourcesContent": ["export { default as slugField } from './slug';\nexport { default as titleField } from './title';\nexport { default as pageTitleField } from './page-title';\nexport { default as templateTitleField } from './template-title';\nexport { default as patternTitleField } from './pattern-title';\nexport { default as orderField } from './order';\nexport { default as featuredImageField } from './featured-image';\nexport { default as templateField } from './template';\nexport { default as parentField } from './parent';\nexport { default as passwordField } from './password';\nexport { default as statusField } from './status';\nexport { default as commentStatusField } from './comment-status';\nexport { default as pingStatusField } from './ping-status';\nexport { default as discussionField } from './discussion';\nexport { default as dateField } from './date';\nexport { default as scheduledDateField } from './date/scheduled';\nexport { default as authorField } from './author';\nexport { default as notesField } from './notes';\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,kBAAqC;AACrC,mBAAsC;AACtC,wBAA0C;AAC1C,4BAA8C;AAC9C,2BAA6C;AAC7C,mBAAsC;AACtC,4BAA8C;AAC9C,sBAAyC;AACzC,oBAAuC;AACvC,sBAAyC;AACzC,oBAAuC;AACvC,4BAA8C;AAC9C,yBAA2C;AAC3C,wBAA2C;AAC3C,kBAAqC;AACrC,uBAA8C;AAC9C,oBAAuC;AACvC,mBAAsC;",
+  "names": []
+}

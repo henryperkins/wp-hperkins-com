@@ -1,0 +1,17 @@
+// packages/blocks/src/api/raw-handling/slack-paragraph-corrector.js
+function slackParagraphCorrector(node) {
+  if (node.nodeName !== "SPAN") {
+    return;
+  }
+  if (node.getAttribute("data-stringify-type") !== "paragraph-break") {
+    return;
+  }
+  const { parentNode } = node;
+  parentNode.insertBefore(node.ownerDocument.createElement("br"), node);
+  parentNode.insertBefore(node.ownerDocument.createElement("br"), node);
+  parentNode.removeChild(node);
+}
+export {
+  slackParagraphCorrector as default
+};
+//# sourceMappingURL=slack-paragraph-corrector.mjs.map

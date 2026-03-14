@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/private-apis.js"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport { default as BlockKeyboardShortcuts } from './block-keyboard-shortcuts';\nimport { NAVIGATION_OVERLAY_TEMPLATE_PART_AREA } from './navigation/constants';\nimport { NavigationLinkUI } from './navigation/edit/navigation-link-ui';\nimport { lock } from './lock-unlock';\n\n/**\n * @private\n */\nexport const privateApis = {};\nlock( privateApis, {\n\tBlockKeyboardShortcuts,\n\tNAVIGATION_OVERLAY_TEMPLATE_PART_AREA,\n\tNavigationLinkUI,\n} );\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,sCAAkD;AAClD,uBAAsD;AACtD,gCAAiC;AACjC,yBAAqB;AAKd,IAAM,cAAc,CAAC;AAAA,IAC5B,yBAAM,aAAa;AAAA,EAClB,wDAAAA;AAAA,EACA;AAAA,EACA;AACD,CAAE;",
+  "names": ["BlockKeyboardShortcuts"]
+}

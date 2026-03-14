@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/comment-reply-link/edit.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __ } from '@wordpress/i18n';\nimport { useBlockProps } from '@wordpress/block-editor';\n\n/**\n * Internal dependencies\n */\nimport useDeprecatedTextAlign from '../utils/deprecated-text-align-attributes';\n\nfunction Edit( props ) {\n\tuseDeprecatedTextAlign( props );\n\tconst blockProps = useBlockProps();\n\n\treturn (\n\t\t<>\n\t\t\t<div { ...blockProps }>\n\t\t\t\t<a\n\t\t\t\t\thref=\"#comment-reply-pseudo-link\"\n\t\t\t\t\tonClick={ ( event ) => event.preventDefault() }\n\t\t\t\t>\n\t\t\t\t\t{ __( 'Reply' ) }\n\t\t\t\t</a>\n\t\t\t</div>\n\t\t</>\n\t);\n}\n\nexport default Edit;\n"],
+  "mappings": ";AAGA,SAAS,UAAU;AACnB,SAAS,qBAAqB;AAK9B,OAAO,4BAA4B;AAOjC,mBAEE,WAFF;AALF,SAAS,KAAM,OAAQ;AACtB,yBAAwB,KAAM;AAC9B,QAAM,aAAa,cAAc;AAEjC,SACC,gCACC,8BAAC,SAAM,GAAG,YACT;AAAA,IAAC;AAAA;AAAA,MACA,MAAK;AAAA,MACL,SAAU,CAAE,UAAW,MAAM,eAAe;AAAA,MAE1C,aAAI,OAAQ;AAAA;AAAA,EACf,GACD,GACD;AAEF;AAEA,IAAO,eAAQ;",
+  "names": []
+}

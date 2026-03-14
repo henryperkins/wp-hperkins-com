@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/more-menu/index.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { privateApis as editorPrivateApis } from '@wordpress/editor';\n\n/**\n * Internal dependencies\n */\nimport SiteExport from './site-export';\nimport WelcomeGuideMenuItem from './welcome-guide-menu-item';\nimport { unlock } from '../../lock-unlock';\n\nconst { ToolsMoreMenuGroup, PreferencesModal } = unlock( editorPrivateApis );\n\nexport default function MoreMenu() {\n\treturn (\n\t\t<>\n\t\t\t<ToolsMoreMenuGroup>\n\t\t\t\t<SiteExport />\n\t\t\t\t<WelcomeGuideMenuItem />\n\t\t\t</ToolsMoreMenuGroup>\n\t\t\t<PreferencesModal />\n\t\t</>\n\t);\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,oBAAiD;AAKjD,yBAAuB;AACvB,qCAAiC;AACjC,yBAAuB;AAMrB;AAJF,IAAM,EAAE,oBAAoB,iBAAiB,QAAI,2BAAQ,cAAAA,WAAkB;AAE5D,SAAR,WAA4B;AAClC,SACC,4EACC;AAAA,iDAAC,sBACA;AAAA,kDAAC,mBAAAC,SAAA,EAAW;AAAA,MACZ,4CAAC,+BAAAC,SAAA,EAAqB;AAAA,OACvB;AAAA,IACA,4CAAC,oBAAiB;AAAA,KACnB;AAEF;",
+  "names": ["editorPrivateApis", "SiteExport", "WelcomeGuideMenuItem"]
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/confirm-reset-shadow-dialog.tsx"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __experimentalConfirmDialog as ConfirmDialog } from '@wordpress/components';\nimport { __ } from '@wordpress/i18n';\n\ninterface ConfirmResetShadowDialogProps {\n\ttext: string;\n\tconfirmButtonText: string;\n\tisOpen: boolean;\n\ttoggleOpen: () => void;\n\tonConfirm: () => void;\n}\n\nfunction ConfirmResetShadowDialog( {\n\ttext,\n\tconfirmButtonText,\n\tisOpen,\n\ttoggleOpen,\n\tonConfirm,\n}: ConfirmResetShadowDialogProps ) {\n\tconst handleConfirm = async () => {\n\t\ttoggleOpen();\n\t\tonConfirm();\n\t};\n\n\tconst handleCancel = () => {\n\t\ttoggleOpen();\n\t};\n\n\treturn (\n\t\t<ConfirmDialog\n\t\t\tisOpen={ isOpen }\n\t\t\tcancelButtonText={ __( 'Cancel' ) }\n\t\t\tconfirmButtonText={ confirmButtonText }\n\t\t\tonCancel={ handleCancel }\n\t\t\tonConfirm={ handleConfirm }\n\t\t\tsize=\"medium\"\n\t\t>\n\t\t\t{ text }\n\t\t</ConfirmDialog>\n\t);\n}\n\nexport default ConfirmResetShadowDialog;\n"],
+  "mappings": ";AAGA,SAAS,+BAA+B,qBAAqB;AAC7D,SAAS,UAAU;AA2BjB;AAjBF,SAAS,yBAA0B;AAAA,EAClC;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AACD,GAAmC;AAClC,QAAM,gBAAgB,YAAY;AACjC,eAAW;AACX,cAAU;AAAA,EACX;AAEA,QAAM,eAAe,MAAM;AAC1B,eAAW;AAAA,EACZ;AAEA,SACC;AAAA,IAAC;AAAA;AAAA,MACA;AAAA,MACA,kBAAmB,GAAI,QAAS;AAAA,MAChC;AAAA,MACA,UAAW;AAAA,MACX,WAAY;AAAA,MACZ,MAAK;AAAA,MAEH;AAAA;AAAA,EACH;AAEF;AAEA,IAAO,sCAAQ;",
+  "names": []
+}

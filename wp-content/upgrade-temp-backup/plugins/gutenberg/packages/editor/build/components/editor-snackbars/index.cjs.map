@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/editor-snackbars/index.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport deprecated from '@wordpress/deprecated';\nimport { SnackbarNotices } from '@wordpress/notices';\n\n/**\n * @deprecated since 7.0, use `wp.notices.SnackbarNotices` instead.\n */\nexport default function EditorSnackbars() {\n\tdeprecated( 'wp.editor.EditorSnackbars', {\n\t\tsince: '7.0',\n\t\tversion: '7.2',\n\t\talternative: 'wp.notices.SnackbarNotices',\n\t} );\n\n\treturn <SnackbarNotices className=\"components-editor-notices__snackbar\" />;\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,wBAAuB;AACvB,qBAAgC;AAYxB;AAPO,SAAR,kBAAmC;AACzC,wBAAAA,SAAY,6BAA6B;AAAA,IACxC,OAAO;AAAA,IACP,SAAS;AAAA,IACT,aAAa;AAAA,EACd,CAAE;AAEF,SAAO,4CAAC,kCAAgB,WAAU,uCAAsC;AACzE;",
+  "names": ["deprecated"]
+}

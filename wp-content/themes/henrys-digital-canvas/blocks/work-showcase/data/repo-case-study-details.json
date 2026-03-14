@@ -1,5 +1,6 @@
 {
   "henry-s-digital-canvas": {
+    "displayName": "HPerkins.com",
     "role": "Craft",
     "whyItMatters": "This portfolio is the delivery surface for the consulting work itself, so the content model and operational layer both need to survive constant iteration.",
     "problem": [
@@ -664,6 +665,7 @@
     "learned": "What mattered most here was decomposition: once provider choice, process management, and templating were separated, the rest of the experimentation became much cheaper."
   },
   "ai-prompt-pro": {
+    "displayName": "Prompt Forge",
     "role": "Craft",
     "whyItMatters": "Shows how prompt authoring becomes a real product surface when builder UX, shared heuristics, and a provider-backed agent service are treated as one system.",
     "problem": [
@@ -734,6 +736,7 @@
     "learned": "Blending lightweight inference in the UI with a guarded backend agent service made prompt tooling feel fast without hiding the system's real complexity."
   },
   "ai-cli-web-funnel": {
+    "displayName": "Forge",
     "role": "Systems",
     "whyItMatters": "Turns fragmented CLI addon installation into a governed product flow that spans catalog discovery, retrieval, install policy, and runtime verification.",
     "problem": [
@@ -804,6 +807,7 @@
     "learned": "Separating control-plane APIs from ranking and catalog packages kept a complex install workflow understandable and testable as the system grew."
   },
   "web-fetch": {
+    "displayName": "Web Fetch MCP",
     "role": "Craft",
     "whyItMatters": "Clean web extraction is a prerequisite for retrieval and AI pipelines, and the hard part is normalizing real pages rather than issuing HTTP requests.",
     "problem": [
@@ -1006,6 +1010,7 @@
     "learned": "The memorable part of a creative AI app is often the pacing around the response, not the raw model call."
   },
   "dj-judas": {
+    "displayName": "The Voices of Judah",
     "role": "Product",
     "whyItMatters": "Shows how a performer brand can be translated into a production web experience that combines storytelling, booking, and commerce rather than a static promo site.",
     "problem": [
@@ -1076,6 +1081,7 @@
     "learned": "Combining artist storytelling, inquiry capture, and storefront behavior in one product highlighted where content design and operational UX need to meet."
   },
   "image-studio": {
+    "displayName": "Image Studio",
     "role": "Product",
     "whyItMatters": "Shows how one product can wrap multiple modern media-model workflows, from image generation and edits to vision analysis and Sora prompt creation.",
     "problem": [
@@ -1413,6 +1419,7 @@
     "learned": "Instrumentation was as valuable as the generation logic itself because it exposed where the pipeline was actually spending time and failing."
   },
   "wp-hperkins-com": {
+    "displayName": "WordPress Portfolio",
     "role": "Craft",
     "whyItMatters": "Shows WordPress used as a deliberate product surface, with a custom child theme, structured block outputs, shared data contracts, and live smoke checks behind a consulting site.",
     "problem": [

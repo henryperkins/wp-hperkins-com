@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/utils/get-rendered-content.ts"],
+  "sourcesContent": ["/**\n * Utility function to extract rendered content from either a string or an object\n * containing raw and rendered properties.\n *\n * This handles the inconsistency in WordPress REST API responses where\n * some fields like caption and description can be either:\n * - A simple string\n * - An object with { raw: string, rendered: string }\n *\n * @param content - The content to extract raw value from\n * @return The rendered content string, falling back to raw or empty string if content is falsy\n */\nexport function getRenderedContent(\n\tcontent: string | { raw: string; rendered: string } | undefined | null\n): string {\n\tif ( ! content ) {\n\t\treturn '';\n\t}\n\n\t// If it's a string, return it directly\n\tif ( typeof content === 'string' ) {\n\t\treturn content;\n\t}\n\n\t// If it's an object with raw property, return the raw value\n\tif ( typeof content === 'object' ) {\n\t\treturn content.rendered || content.raw || '';\n\t}\n\n\t// Fallback to empty string\n\treturn '';\n}\n"],
+  "mappings": ";AAYO,SAAS,mBACf,SACS;AACT,MAAK,CAAE,SAAU;AAChB,WAAO;AAAA,EACR;AAGA,MAAK,OAAO,YAAY,UAAW;AAClC,WAAO;AAAA,EACR;AAGA,MAAK,OAAO,YAAY,UAAW;AAClC,WAAO,QAAQ,YAAY,QAAQ,OAAO;AAAA,EAC3C;AAGA,SAAO;AACR;",
+  "names": []
+}

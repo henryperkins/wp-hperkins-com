@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/format/index.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { registerFormatType } from '@wordpress/rich-text';\n\n/**\n * Internal dependencies\n */\nimport { annotation } from './annotation';\n\nconst { name, ...settings } = annotation;\n\nregisterFormatType( name, settings );\n"],
+  "mappings": ";AAGA,SAAS,0BAA0B;AAKnC,SAAS,kBAAkB;AAE3B,IAAM,EAAE,MAAM,GAAG,SAAS,IAAI;AAE9B,mBAAoB,MAAM,QAAS;",
+  "names": []
+}

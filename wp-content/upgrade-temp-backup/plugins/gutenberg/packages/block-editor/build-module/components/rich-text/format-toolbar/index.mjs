@@ -1,0 +1,57 @@
+// packages/block-editor/src/components/rich-text/format-toolbar/index.js
+import clsx from "clsx";
+import { __ } from "@wordpress/i18n";
+import { ToolbarItem, DropdownMenu, Slot } from "@wordpress/components";
+import { chevronDown } from "@wordpress/icons";
+import { orderBy } from "../../../utils/sorting.mjs";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+var POPOVER_PROPS = {
+  placement: "bottom-start"
+};
+var FormatToolbar = () => {
+  return /* @__PURE__ */ jsxs(Fragment, { children: [
+    ["bold", "italic", "link", "unknown"].map((format) => /* @__PURE__ */ jsx(
+      Slot,
+      {
+        name: `RichText.ToolbarControls.${format}`
+      },
+      format
+    )),
+    /* @__PURE__ */ jsx(Slot, { name: "RichText.ToolbarControls", children: (fills) => {
+      if (!fills.length) {
+        return null;
+      }
+      const allProps = fills.map(([{ props }]) => props);
+      const hasActive = allProps.some(
+        ({ isActive }) => isActive
+      );
+      return /* @__PURE__ */ jsx(ToolbarItem, { children: (toggleProps) => /* @__PURE__ */ jsx(
+        DropdownMenu,
+        {
+          icon: chevronDown,
+          label: __("More"),
+          toggleProps: {
+            ...toggleProps,
+            className: clsx(
+              toggleProps.className,
+              { "is-pressed": hasActive }
+            ),
+            description: __(
+              "Displays more block tools"
+            )
+          },
+          controls: orderBy(
+            fills.map(([{ props }]) => props),
+            "title"
+          ),
+          popoverProps: POPOVER_PROPS
+        }
+      ) });
+    } })
+  ] });
+};
+var format_toolbar_default = FormatToolbar;
+export {
+  format_toolbar_default as default
+};
+//# sourceMappingURL=index.mjs.map

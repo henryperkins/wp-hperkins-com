@@ -1,0 +1,1 @@
+{"version":3,"file":"permanently-delete-post.d.ts","sourceRoot":"","sources":["../../src/actions/permanently-delete-post.tsx"],"names":[],"mappings":"AAMA,OAAO,KAAK,EAAE,MAAM,EAAE,MAAM,sBAAsB,CAAC;AAgBnD,OAAO,KAAK,EAAiB,mBAAmB,EAAE,MAAM,UAAU,CAAC;AAEnE,QAAA,MAAM,qBAAqB,EAAE,MAAM,CAAE,mBAAmB,CAmKvD,CAAC;AAEF;;GAEG;AACH,eAAe,qBAAqB,CAAC"}

@@ -2189,7 +2189,7 @@ var wp;
   var import_data22 = __toESM(require_data(), 1);
   var import_blocks2 = __toESM(require_blocks(), 1);
   var import_block_editor = __toESM(require_block_editor(), 1);
-  var isGutenbergPlugin = false ? true : false;
+  var isGutenbergPlugin = true ? true : false;
   function useShouldIframe() {
     return (0, import_data22.useSelect)((select3) => {
       const { getCurrentPostType, getDeviceType } = select3(import_editor15.store);
@@ -2893,7 +2893,8 @@ var wp;
       showIconLabels: false,
       showListViewByDefault: false,
       enableChoosePatternModal: true,
-      isPublishSidebarEnabled: true
+      isPublishSidebarEnabled: true,
+      showCollaborationCursor: false
     });
     if (window.__clientSideMediaProcessing) {
       (0, import_data26.dispatch)(import_preferences11.store).setDefaults("core/media", {
@@ -2909,7 +2910,7 @@ var wp;
     registerCoreBlockBindingsSources();
     (0, import_widgets.registerLegacyWidgetBlock)({ inserter: false });
     (0, import_widgets.registerWidgetGroupBlock)({ inserter: false });
-    if (false) {
+    if (true) {
       (0, import_block_library2.__experimentalRegisterExperimentalCoreBlocks)({
         enableFSEBlocks: settings.__unstableEnableFullSiteEditingBlocks
       });

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/block-bindings/index.js"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nexport { default as BlockBindingsAttributeControl } from './attribute-control';\nexport { default as BlockBindingsSourceFieldsList } from './source-fields-list';\nexport { default as useBlockBindingsUtils } from './use-block-bindings-utils';\n"],
+  "mappings": ";AAGA,SAAoB,WAAXA,gBAAgD;AACzD,SAAoB,WAAXA,gBAAgD;AACzD,SAAoB,WAAXA,gBAAwC;",
+  "names": ["default"]
+}

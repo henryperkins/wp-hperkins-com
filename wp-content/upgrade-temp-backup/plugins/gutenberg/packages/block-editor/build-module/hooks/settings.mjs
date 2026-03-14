@@ -1,0 +1,24 @@
+// packages/block-editor/src/hooks/settings.js
+import { addFilter } from "@wordpress/hooks";
+import { hasBlockSupport } from "@wordpress/blocks";
+var hasSettingsSupport = (blockType) => hasBlockSupport(blockType, "__experimentalSettings", false);
+function addAttribute(settings) {
+  if (!hasSettingsSupport(settings)) {
+    return settings;
+  }
+  if (!settings?.attributes?.settings) {
+    settings.attributes = {
+      ...settings.attributes,
+      settings: {
+        type: "object"
+      }
+    };
+  }
+  return settings;
+}
+addFilter(
+  "blocks.registerBlockType",
+  "core/settings/addAttribute",
+  addAttribute
+);
+//# sourceMappingURL=settings.mjs.map

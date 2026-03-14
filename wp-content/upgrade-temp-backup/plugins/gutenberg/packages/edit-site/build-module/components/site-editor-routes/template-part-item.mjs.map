@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/site-editor-routes/template-part-item.js"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport Editor from '../editor';\nimport SidebarNavigationScreenPatterns from '../sidebar-navigation-screen-patterns';\n\nexport const templatePartItemRoute = {\n\tname: 'template-part-item',\n\tpath: '/wp_template_part/*postId',\n\tareas: {\n\t\tsidebar: <SidebarNavigationScreenPatterns backPath=\"/\" />,\n\t\tmobile: <Editor />,\n\t\tpreview: <Editor />,\n\t},\n};\n"],
+  "mappings": ";AAGA,OAAO,YAAY;AACnB,OAAO,qCAAqC;AAMjC;AAJJ,IAAM,wBAAwB;AAAA,EACpC,MAAM;AAAA,EACN,MAAM;AAAA,EACN,OAAO;AAAA,IACN,SAAS,oBAAC,mCAAgC,UAAS,KAAI;AAAA,IACvD,QAAQ,oBAAC,UAAO;AAAA,IAChB,SAAS,oBAAC,UAAO;AAAA,EAClB;AACD;",
+  "names": []
+}

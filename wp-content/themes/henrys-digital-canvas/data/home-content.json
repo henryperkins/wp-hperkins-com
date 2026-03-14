@@ -1,13 +1,32 @@
 {
-  "pageTitle": "Henry Perkins — Technical Portfolio",
+  "pageTitle": "Henry Perkins \u2014 AI Agents, WordPress, and Technical Delivery",
+  "metadata": {
+    "title": "Henry Perkins \u2014 AI Agents, WordPress, and Technical Delivery",
+    "description": "Henry Perkins builds AI agents, prompt workflows, WordPress platforms, and cloud integrations shaped by years in retail, operations, and developer communities.",
+    "canonical": "/",
+    "openGraph": {
+      "title": "Henry Perkins \u2014 AI Agents, WordPress, and Technical Delivery",
+      "description": "Henry Perkins builds AI agents, prompt workflows, WordPress platforms, and cloud integrations shaped by years in retail, operations, and developer communities.",
+      "type": "website",
+      "url": "/",
+      "image": "/images/hero-piano-ide.png",
+      "imageAlt": "Henry Perkins portfolio site hero showing a workspace with piano and code editor"
+    },
+    "twitter": {
+      "card": "summary_large_image",
+      "title": "Henry Perkins \u2014 AI Agents, WordPress, and Technical Delivery",
+      "description": "Henry Perkins builds AI agents, prompt workflows, WordPress platforms, and cloud integrations shaped by years in retail, operations, and developer communities.",
+      "image": "/images/hero-piano-ide.png"
+    }
+  },
   "hero": {
-    "eyebrow": "Technical consultant for customer-facing teams",
-    "title": "Henry T. Perkins",
-    "description": "I help support and product teams ship clearer customer experiences through API integrations, documentation, and AI-assisted workflows.",
-    "primaryCtaLabel": "Work with me",
-    "primaryCtaHref": "/contact/",
-    "secondaryCtaLabel": "View case studies",
-    "secondaryCtaHref": "/work/"
+    "eyebrow": "",
+    "title": "Retail floors. WordPress themes. Cloud platforms. Agentic AI.",
+    "description": "I\u2019ve been learning to talk to machines since 2007 \u2014 now they\u2019re starting to talk back.",
+    "primaryCtaLabel": "Explore Prompt Forge",
+    "primaryCtaHref": "/work/ai-prompt-pro/",
+    "secondaryCtaLabel": "Work With Me",
+    "secondaryCtaHref": "/contact/"
   },
   "selectedWork": {
     "title": "Selected Work",
@@ -20,23 +39,37 @@
     "emptyDescriptionLive": "Featured work is being refreshed for the homepage. Use View all work to browse the full project library.",
     "emptyDescriptionFallback": "Featured work is not available in this snapshot. Use View all work to browse the full project library."
   },
+  "throughline": {
+    "title": "From the floor to the frontier.",
+    "paragraphs": [
+      "In 2007, I was coaching high school students in Chicago on how to tell a story clearly. By 2009, I was troubleshooting hardware on a retail floor at Micro Center. By 2012, I was managing a developer community at PageLines and supporting WordPress.com users at Automattic \u2014 the company behind WordPress itself.",
+      "Then I ran coffee operations. Starbucks, Sodexo \u2014 high-volume, high-stakes, no-margin-for-error environments where the system either works at 6 AM or it doesn\u2019t. I learned more about process, escalation, and team coaching on those shifts than in any technical role I\u2019ve ever held.",
+      "Now I build AI agents and intelligent workflows. I design prompt systems. I ship React apps on Cloudflare. And I consult for teams that need someone who can scope the project, write the code, document the process, and explain it to a stakeholder who doesn\u2019t care about the stack \u2014 they just need it to work.",
+      "The tools have changed five times over. The instinct hasn\u2019t."
+    ],
+    "quote": {
+      "text": "He\u2019s always there when his community needs him.",
+      "attribution": "PageLines recommendation",
+      "eyebrow": "A former colleague"
+    }
+  },
   "resumeSnapshot": {
     "title": "Resume Snapshot",
     "actionLabel": "Interactive resume",
     "actionHref": "/resume/",
     "positioningEyebrow": "Positioning",
-    "label": "Public projects",
+    "label": "Public proof of work",
     "items": [
-      "AI Prompt Pro",
-      "Henry's Digital Canvas",
+      "Prompt Forge",
+      "HPerkins.com",
       "wp-hperkins-com"
     ],
     "bestFitEyebrow": "Best fit",
-    "bestFitTitle": "Where I plug in fastest",
+    "bestFitTitle": "Where I contribute fastest",
     "focusAreas": [
-      "Escalation triage, onboarding, and customer enablement",
-      "API integrations, debugging, and technical documentation",
-      "AI workflow prototypes with safe handoff and support guardrails"
+      "Customer-facing implementation, onboarding, and technical support flows",
+      "API integrations, debugging, and documentation that reduce support friction",
+      "AI workflow prototypes grounded in WordPress and durable web delivery"
     ],
     "actionLinks": [
       {
@@ -44,7 +77,7 @@
         "href": "/resume/"
       },
       {
-        "label": "ATS one-page",
+        "label": "ATS / recruiter view",
         "href": "/resume/ats/"
       }
     ]
@@ -54,12 +87,12 @@
     "actionLabel": "All posts",
     "actionHref": "/blog/",
     "emptyTitle": "Recent writing is updating",
-    "emptyDescription": "Recent posts are not available in the homepage feed right now. Use All posts to check the full writing index."
+    "emptyDescription": "Recent posts aren\u2019t available in the homepage feed. Visit All posts to browse the full index."
   },
   "contactCta": {
     "eyebrow": "Need a technical partner?",
     "title": "Bring me in where support, product, and implementation overlap.",
-    "description": "I work best on customer-facing systems that need clearer workflows, stronger documentation, and a steadier path from issue to outcome.",
+    "description": "I help teams turn customer issues into shipped fixes \u2014 integrations, documentation, and AI-assisted triage \u2014 so delivery stays calm and outcomes are measurable.",
     "primaryCtaLabel": "Work with me",
     "primaryCtaHref": "/contact/",
     "secondaryCtaLabel": "View resume",

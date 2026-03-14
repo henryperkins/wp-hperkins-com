@@ -1,0 +1,55 @@
+"use strict";
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// packages/block-editor/src/components/inserter/media-tab/media-list.js
+var media_list_exports = {};
+__export(media_list_exports, {
+  default: () => media_list_default
+});
+module.exports = __toCommonJS(media_list_exports);
+var import_components = require("@wordpress/components");
+var import_i18n = require("@wordpress/i18n");
+var import_media_preview = require("./media-preview.cjs");
+var import_jsx_runtime = require("react/jsx-runtime");
+function MediaList({
+  mediaList,
+  category,
+  onClick,
+  label = (0, import_i18n.__)("Media List")
+}) {
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+    import_components.Composite,
+    {
+      role: "listbox",
+      className: "block-editor-inserter__media-list",
+      "aria-label": label,
+      children: mediaList.map((media, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        import_media_preview.MediaPreview,
+        {
+          media,
+          category,
+          onClick
+        },
+        media.id || media.sourceId || index
+      ))
+    }
+  );
+}
+var media_list_default = MediaList;
+//# sourceMappingURL=media-list.cjs.map

@@ -15,7 +15,6 @@ $defaults = array(
 	'showRepos'      => true,
 	'blogCount'      => 3,
 	'repoCount'      => 3,
-	'githubUsername'  => 'henryperkins',
 	'postsEndpoint'  => '',
 	'openInNewTab'   => false,
 );

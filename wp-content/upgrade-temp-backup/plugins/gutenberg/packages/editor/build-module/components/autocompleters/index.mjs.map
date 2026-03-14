@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/autocompleters/index.js"],
+  "sourcesContent": ["export { default as userAutocompleter } from './user';\n"],
+  "mappings": ";AAAA,SAAoB,WAAXA,gBAAoC;",
+  "names": ["default"]
+}

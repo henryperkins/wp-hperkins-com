@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/store/actions.js"],
+  "sourcesContent": ["/**\n * Returns an action object that, when dispatched, presents a guide that takes\n * the user through a series of tips step by step.\n *\n * @param {string[]} tipIds Which tips to show in the guide.\n *\n * @return {Object} Action object.\n */\nexport function triggerGuide( tipIds ) {\n\treturn {\n\t\ttype: 'TRIGGER_GUIDE',\n\t\ttipIds,\n\t};\n}\n\n/**\n * Returns an action object that, when dispatched, dismisses the given tip. A\n * dismissed tip will not show again.\n *\n * @param {string} id The tip to dismiss.\n *\n * @return {Object} Action object.\n */\nexport function dismissTip( id ) {\n\treturn {\n\t\ttype: 'DISMISS_TIP',\n\t\tid,\n\t};\n}\n\n/**\n * Returns an action object that, when dispatched, prevents all tips from\n * showing again.\n *\n * @return {Object} Action object.\n */\nexport function disableTips() {\n\treturn {\n\t\ttype: 'DISABLE_TIPS',\n\t};\n}\n\n/**\n * Returns an action object that, when dispatched, makes all tips show again.\n *\n * @return {Object} Action object.\n */\nexport function enableTips() {\n\treturn {\n\t\ttype: 'ENABLE_TIPS',\n\t};\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAQO,SAAS,aAAc,QAAS;AACtC,SAAO;AAAA,IACN,MAAM;AAAA,IACN;AAAA,EACD;AACD;AAUO,SAAS,WAAY,IAAK;AAChC,SAAO;AAAA,IACN,MAAM;AAAA,IACN;AAAA,EACD;AACD;AAQO,SAAS,cAAc;AAC7B,SAAO;AAAA,IACN,MAAM;AAAA,EACP;AACD;AAOO,SAAS,aAAa;AAC5B,SAAO;AAAA,IACN,MAAM;AAAA,EACP;AACD;",
+  "names": []
+}

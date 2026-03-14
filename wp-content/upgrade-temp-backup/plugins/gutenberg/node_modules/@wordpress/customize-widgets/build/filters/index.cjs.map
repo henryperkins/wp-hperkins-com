@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/filters/index.js"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport './move-to-sidebar';\nimport './replace-media-upload';\nimport './wide-widget-display';\n"],
+  "mappings": ";AAGA,6BAAO;AACP,kCAAO;AACP,iCAAO;",
+  "names": []
+}

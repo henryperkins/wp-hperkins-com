@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/index.ts"],
+  "sourcesContent": ["export { default as ImageCropper } from './components/image-cropper';\nexport { useImageCropper, default as ImageCropperProvider } from './provider';\nexport type * from './types';\nexport { normalizeRotation } from './utils';\n"],
+  "mappings": ";AAAA,SAAoB,WAAXA,gBAA+B;AACxC,SAAS,iBAA4B,WAAXA,gBAAuC;AAEjE,SAAS,yBAAyB;",
+  "names": ["default"]
+}

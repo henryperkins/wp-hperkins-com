@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/post-comments-form/edit.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { useBlockProps } from '@wordpress/block-editor';\nimport { VisuallyHidden } from '@wordpress/components';\nimport { useInstanceId } from '@wordpress/compose';\nimport { __, sprintf } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport CommentsForm from './form';\n\nexport default function PostCommentsFormEdit( { context } ) {\n\tconst { postId, postType } = context;\n\n\tconst instanceId = useInstanceId( PostCommentsFormEdit );\n\tconst instanceIdDesc = sprintf( 'comments-form-edit-%d-desc', instanceId );\n\n\tconst blockProps = useBlockProps( {\n\t\t'aria-describedby': instanceIdDesc,\n\t} );\n\n\treturn (\n\t\t<div { ...blockProps }>\n\t\t\t<CommentsForm postId={ postId } postType={ postType } />\n\t\t\t<VisuallyHidden id={ instanceIdDesc }>\n\t\t\t\t{ __( 'Comments form disabled in editor.' ) }\n\t\t\t</VisuallyHidden>\n\t\t</div>\n\t);\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,0BAA8B;AAC9B,wBAA+B;AAC/B,qBAA8B;AAC9B,kBAA4B;AAK5B,kBAAyB;AAavB;AAXa,SAAR,qBAAuC,EAAE,QAAQ,GAAI;AAC3D,QAAM,EAAE,QAAQ,SAAS,IAAI;AAE7B,QAAM,iBAAa,8BAAe,oBAAqB;AACvD,QAAM,qBAAiB,qBAAS,8BAA8B,UAAW;AAEzE,QAAM,iBAAa,mCAAe;AAAA,IACjC,oBAAoB;AAAA,EACrB,CAAE;AAEF,SACC,6CAAC,SAAM,GAAG,YACT;AAAA,gDAAC,YAAAA,SAAA,EAAa,QAAkB,UAAsB;AAAA,IACtD,4CAAC,oCAAe,IAAK,gBAClB,8BAAI,mCAAoC,GAC3C;AAAA,KACD;AAEF;",
+  "names": ["CommentsForm"]
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/more-menu/welcome-guide-menu-item.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __ } from '@wordpress/i18n';\nimport { useDispatch } from '@wordpress/data';\nimport { MenuItem } from '@wordpress/components';\nimport { store as preferencesStore } from '@wordpress/preferences';\n\nexport default function WelcomeGuideMenuItem() {\n\tconst { toggle } = useDispatch( preferencesStore );\n\n\treturn (\n\t\t<MenuItem onClick={ () => toggle( 'core/edit-site', 'welcomeGuide' ) }>\n\t\t\t{ __( 'Welcome Guide' ) }\n\t\t</MenuItem>\n\t);\n}\n"],
+  "mappings": ";AAGA,SAAS,UAAU;AACnB,SAAS,mBAAmB;AAC5B,SAAS,gBAAgB;AACzB,SAAS,SAAS,wBAAwB;AAMxC;AAJa,SAAR,uBAAwC;AAC9C,QAAM,EAAE,OAAO,IAAI,YAAa,gBAAiB;AAEjD,SACC,oBAAC,YAAS,SAAU,MAAM,OAAQ,kBAAkB,cAAe,GAChE,aAAI,eAAgB,GACvB;AAEF;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/site-editor-routes/utils.js"],
+  "sourcesContent": ["/**\n * Check if the classic theme supports the stylebook.\n *\n * @param {Object} siteData - The site data provided by the site editor route area resolvers.\n * @return {boolean} True if the stylebook is supported, false otherwise.\n */\nexport function isClassicThemeWithStyleBookSupport( siteData ) {\n\tconst isBlockTheme = siteData.currentTheme?.is_block_theme;\n\tconst supportsEditorStyles =\n\t\tsiteData.currentTheme?.theme_supports[ 'editor-styles' ];\n\t// This is a temp solution until the has_theme_json value is available for the current theme.\n\tconst hasThemeJson = siteData.editorSettings?.supportsLayout;\n\treturn ! isBlockTheme && ( supportsEditorStyles || hasThemeJson );\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAMO,SAAS,mCAAoC,UAAW;AAC9D,QAAM,eAAe,SAAS,cAAc;AAC5C,QAAM,uBACL,SAAS,cAAc,eAAgB,eAAgB;AAExD,QAAM,eAAe,SAAS,gBAAgB;AAC9C,SAAO,CAAE,iBAAkB,wBAAwB;AACpD;",
+  "names": []
+}

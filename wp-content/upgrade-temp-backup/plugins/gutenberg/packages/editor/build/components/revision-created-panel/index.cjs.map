@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/revision-created-panel/index.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __experimentalText as Text } from '@wordpress/components';\nimport { useSelect } from '@wordpress/data';\nimport { __, sprintf } from '@wordpress/i18n';\nimport { humanTimeDiff } from '@wordpress/date';\n\n/**\n * Internal dependencies\n */\nimport { store as editorStore } from '../../store';\nimport { unlock } from '../../lock-unlock';\n\nexport default function RevisionCreatedPanel() {\n\tconst date = useSelect( ( select ) => {\n\t\tconst { getCurrentRevision } = unlock( select( editorStore ) );\n\t\treturn getCurrentRevision()?.date;\n\t}, [] );\n\n\tif ( ! date ) {\n\t\treturn null;\n\t}\n\n\treturn (\n\t\t<div className=\"editor-post-last-edited-panel\">\n\t\t\t<Text>\n\t\t\t\t{ sprintf(\n\t\t\t\t\t// translators: %s: Human-readable time difference, e.g. \"2 days ago\".\n\t\t\t\t\t__( 'Created %s.' ),\n\t\t\t\t\thumanTimeDiff( date )\n\t\t\t\t) }\n\t\t\t</Text>\n\t\t</div>\n\t);\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,wBAA2C;AAC3C,kBAA0B;AAC1B,kBAA4B;AAC5B,kBAA8B;AAK9B,mBAAqC;AACrC,yBAAuB;AAcpB;AAZY,SAAR,uBAAwC;AAC9C,QAAM,WAAO,uBAAW,CAAE,WAAY;AACrC,UAAM,EAAE,mBAAmB,QAAI,2BAAQ,OAAQ,aAAAA,KAAY,CAAE;AAC7D,WAAO,mBAAmB,GAAG;AAAA,EAC9B,GAAG,CAAC,CAAE;AAEN,MAAK,CAAE,MAAO;AACb,WAAO;AAAA,EACR;AAEA,SACC,4CAAC,SAAI,WAAU,iCACd,sDAAC,kBAAAC,oBAAA,EACE;AAAA;AAAA,QAED,gBAAI,aAAc;AAAA,QAClB,2BAAe,IAAK;AAAA,EACrB,GACD,GACD;AAEF;",
+  "names": ["editorStore", "Text"]
+}

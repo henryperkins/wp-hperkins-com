@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/block-visibility/index.js"],
+  "sourcesContent": ["export { default as BlockVisibilityModal } from './modal';\nexport { default as useBlockVisibility } from './use-block-visibility';\nexport { default as ViewportVisibilityToolbar } from './viewport-toolbar';\nexport { default as BlockVisibilityViewportMenuItem } from './viewport-menu-item';\nexport { default as ViewportVisibilityInfo } from './viewport-visibility-info';\nexport { getBlockVisibilityLabel } from './utils';\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,mBAAgD;AAChD,kCAA8C;AAC9C,8BAAqD;AACrD,gCAA2D;AAC3D,sCAAkD;AAClD,mBAAwC;",
+  "names": []
+}

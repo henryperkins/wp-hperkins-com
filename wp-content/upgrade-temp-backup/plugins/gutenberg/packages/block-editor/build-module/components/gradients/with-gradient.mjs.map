@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/gradients/with-gradient.js"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport { __experimentalUseGradient } from './use-gradient';\n\nexport const withGradient = ( WrappedComponent ) =>\n\tfunction WithGradient( props ) {\n\t\tconst { gradientValue } = __experimentalUseGradient();\n\t\treturn (\n\t\t\t<WrappedComponent { ...props } gradientValue={ gradientValue } />\n\t\t);\n\t};\n"],
+  "mappings": ";AAGA,SAAS,iCAAiC;AAMvC;AAJI,IAAM,eAAe,CAAE,qBAC7B,SAAS,aAAc,OAAQ;AAC9B,QAAM,EAAE,cAAc,IAAI,0BAA0B;AACpD,SACC,oBAAC,oBAAmB,GAAG,OAAQ,eAAgC;AAEjE;",
+  "names": []
+}

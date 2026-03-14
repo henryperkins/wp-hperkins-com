@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/blocks/widget-group/save.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { InnerBlocks, RichText } from '@wordpress/block-editor';\n\nexport default function save( { attributes } ) {\n\treturn (\n\t\t<>\n\t\t\t<RichText.Content\n\t\t\t\ttagName=\"h2\"\n\t\t\t\tclassName=\"widget-title\"\n\t\t\t\tvalue={ attributes.title }\n\t\t\t/>\n\t\t\t<div className=\"wp-widget-group__inner-blocks\">\n\t\t\t\t<InnerBlocks.Content />\n\t\t\t</div>\n\t\t</>\n\t);\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,0BAAsC;AAIpC;AAFa,SAAR,KAAuB,EAAE,WAAW,GAAI;AAC9C,SACC,4EACC;AAAA;AAAA,MAAC,6BAAS;AAAA,MAAT;AAAA,QACA,SAAQ;AAAA,QACR,WAAU;AAAA,QACV,OAAQ,WAAW;AAAA;AAAA,IACpB;AAAA,IACA,4CAAC,SAAI,WAAU,iCACd,sDAAC,gCAAY,SAAZ,EAAoB,GACtB;AAAA,KACD;AAEF;",
+  "names": []
+}

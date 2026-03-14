@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/dataviews/store/private-selectors.ts"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport type { State } from './reducer';\n\nconst EMPTY_ARRAY = [] as [];\n\nexport function getEntityActions( state: State, kind: string, name: string ) {\n\treturn state.actions[ kind ]?.[ name ] ?? EMPTY_ARRAY;\n}\n\nexport function getEntityFields( state: State, kind: string, name: string ) {\n\treturn state.fields[ kind ]?.[ name ] ?? EMPTY_ARRAY;\n}\n\nexport function isEntityReady( state: State, kind: string, name: string ) {\n\treturn state.isReady[ kind ]?.[ name ];\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAKA,IAAM,cAAc,CAAC;AAEd,SAAS,iBAAkB,OAAc,MAAc,MAAe;AAC5E,SAAO,MAAM,QAAS,IAAK,IAAK,IAAK,KAAK;AAC3C;AAEO,SAAS,gBAAiB,OAAc,MAAc,MAAe;AAC3E,SAAO,MAAM,OAAQ,IAAK,IAAK,IAAK,KAAK;AAC1C;AAEO,SAAS,cAAe,OAAc,MAAc,MAAe;AACzE,SAAO,MAAM,QAAS,IAAK,IAAK,IAAK;AACtC;",
+  "names": []
+}

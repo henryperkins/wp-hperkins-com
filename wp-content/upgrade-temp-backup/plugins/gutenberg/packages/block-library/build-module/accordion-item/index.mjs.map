@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/accordion-item/index.js"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { accordionItem as icon } from '@wordpress/icons';\n\n/**\n * Internal dependencies\n */\nimport edit from './edit';\nimport save from './save';\nimport metadata from './block.json';\nimport initBlock from '../utils/init-block';\n\nconst { name } = metadata;\n\nexport { metadata, name };\n\nexport const settings = {\n\ticon,\n\tedit,\n\tsave,\n};\n\nexport const init = () => initBlock( { name, metadata, settings } );\n"],
+  "mappings": ";AAGA,SAAS,iBAAiB,YAAY;AAKtC,OAAO,UAAU;AACjB,OAAO,UAAU;AACjB,OAAO,cAAc;AACrB,OAAO,eAAe;AAEtB,IAAM,EAAE,KAAK,IAAI;AAIV,IAAM,WAAW;AAAA,EACvB;AAAA,EACA;AAAA,EACA;AACD;AAEO,IAAM,OAAO,MAAM,UAAW,EAAE,MAAM,UAAU,SAAS,CAAE;",
+  "names": []
+}

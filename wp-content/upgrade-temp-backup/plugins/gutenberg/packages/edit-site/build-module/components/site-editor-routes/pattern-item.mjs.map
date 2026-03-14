@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/site-editor-routes/pattern-item.js"],
+  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport Editor from '../editor';\nimport SidebarNavigationScreenPatterns from '../sidebar-navigation-screen-patterns';\nimport { isClassicThemeWithStyleBookSupport } from './utils';\n\nexport const patternItemRoute = {\n\tname: 'pattern-item',\n\tpath: '/wp_block/:postId',\n\tareas: {\n\t\tsidebar( { siteData } ) {\n\t\t\tconst isBlockTheme = siteData.currentTheme?.is_block_theme;\n\t\t\tconst backPath =\n\t\t\t\tisBlockTheme || isClassicThemeWithStyleBookSupport( siteData )\n\t\t\t\t\t? '/'\n\t\t\t\t\t: undefined;\n\t\t\treturn <SidebarNavigationScreenPatterns backPath={ backPath } />;\n\t\t},\n\t\tmobile: <Editor />,\n\t\tpreview: <Editor />,\n\t},\n};\n"],
+  "mappings": ";AAGA,OAAO,YAAY;AACnB,OAAO,qCAAqC;AAC5C,SAAS,0CAA0C;AAYzC;AAVH,IAAM,mBAAmB;AAAA,EAC/B,MAAM;AAAA,EACN,MAAM;AAAA,EACN,OAAO;AAAA,IACN,QAAS,EAAE,SAAS,GAAI;AACvB,YAAM,eAAe,SAAS,cAAc;AAC5C,YAAM,WACL,gBAAgB,mCAAoC,QAAS,IAC1D,MACA;AACJ,aAAO,oBAAC,mCAAgC,UAAsB;AAAA,IAC/D;AAAA,IACA,QAAQ,oBAAC,UAAO;AAAA,IAChB,SAAS,oBAAC,UAAO;AAAA,EAClB;AACD;",
+  "names": []
+}

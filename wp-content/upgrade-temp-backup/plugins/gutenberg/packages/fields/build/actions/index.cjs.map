@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/actions/index.ts"],
+  "sourcesContent": ["export { default as viewPost } from './view-post';\nexport { default as reorderPage } from './reorder-page';\nexport { default as duplicatePost } from './duplicate-post';\nexport { default as renamePost } from './rename-post';\nexport { default as resetPost } from './reset-post';\nexport { default as duplicatePattern } from './duplicate-pattern';\nexport { default as exportPattern } from './export-pattern';\nexport { default as viewPostRevisions } from './view-post-revisions';\nexport { default as permanentlyDeletePost } from './permanently-delete-post';\nexport { default as restorePost } from './restore-post';\nexport { default as trashPost } from './trash-post';\nexport { default as deletePost } from './delete-post';\nexport { default as duplicateTemplatePart } from './duplicate-template-part';\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,uBAAoC;AACpC,0BAAuC;AACvC,4BAAyC;AACzC,yBAAsC;AACtC,wBAAqC;AACrC,+BAA4C;AAC5C,4BAAyC;AACzC,iCAA6C;AAC7C,qCAAiD;AACjD,0BAAuC;AACvC,wBAAqC;AACrC,yBAAsC;AACtC,qCAAiD;",
+  "names": []
+}

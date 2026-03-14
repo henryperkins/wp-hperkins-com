@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/collapsible-card/index.ts"],
+  "sourcesContent": ["import { Root } from './root';\nimport { Header } from './header';\nimport { Content } from './content';\n\nexport { Root, Header, Content };\n"],
+  "mappings": ";AAAA,SAAS,YAAY;AACrB,SAAS,cAAc;AACvB,SAAS,eAAe;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../src/dataviews/fields/content-preview/index.tsx"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { Field } from '@wordpress/dataviews';\nimport type { BasePost } from '@wordpress/fields';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport PostPreviewView from './content-preview-view';\n\nconst postPreviewField: Field< BasePost > = {\n\ttype: 'media',\n\tid: 'content-preview',\n\tlabel: __( 'Content preview' ),\n\trender: PostPreviewView,\n\tenableSorting: false,\n};\n\nexport default postPreviewField;\n"],
+  "mappings": ";AAKA,SAAS,UAAU;AAKnB,OAAO,qBAAqB;AAE5B,IAAM,mBAAsC;AAAA,EAC3C,MAAM;AAAA,EACN,IAAI;AAAA,EACJ,OAAO,GAAI,iBAAkB;AAAA,EAC7B,QAAQ;AAAA,EACR,eAAe;AAChB;AAEA,IAAO,0BAAQ;",
+  "names": []
+}

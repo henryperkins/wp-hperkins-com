@@ -1,0 +1,48 @@
+// packages/block-editor/src/components/block-types-list/index.js
+import { getBlockMenuDefaultClassName } from "@wordpress/blocks";
+import { useInstanceId } from "@wordpress/compose";
+import InserterListItem from "../inserter-list-item/index.mjs";
+import { InserterListboxGroup, InserterListboxRow } from "../inserter-listbox/index.mjs";
+import { jsx, jsxs } from "react/jsx-runtime";
+function chunk(array, size) {
+  const chunks = [];
+  for (let i = 0, j = array.length; i < j; i += size) {
+    chunks.push(array.slice(i, i + size));
+  }
+  return chunks;
+}
+function BlockTypesList({
+  items = [],
+  onSelect,
+  onHover = () => {
+  },
+  children,
+  label,
+  isDraggable = true
+}) {
+  const className = "block-editor-block-types-list";
+  const listId = useInstanceId(BlockTypesList, className);
+  return /* @__PURE__ */ jsxs(InserterListboxGroup, { className, "aria-label": label, children: [
+    chunk(items, 3).map((row, i) => /* @__PURE__ */ jsx(InserterListboxRow, { children: row.map((item, j) => /* @__PURE__ */ jsx(
+      InserterListItem,
+      {
+        item,
+        className: getBlockMenuDefaultClassName(
+          item.id
+        ),
+        onSelect,
+        onHover,
+        isDraggable: isDraggable && !item.isDisabled,
+        isFirst: i === 0 && j === 0,
+        rowId: `${listId}-${i}`
+      },
+      item.id
+    )) }, i)),
+    children
+  ] });
+}
+var block_types_list_default = BlockTypesList;
+export {
+  block_types_list_default as default
+};
+//# sourceMappingURL=index.mjs.map

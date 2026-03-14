@@ -1,0 +1,16 @@
+// packages/latex-to-mathml/src/index.ts
+import temml from "temml";
+function latexToMathML(latex, { displayMode = true } = {}) {
+  const mathML = temml.renderToString(latex, {
+    displayMode,
+    annotate: true,
+    throwOnError: true
+  });
+  const doc = document.implementation.createHTMLDocument("");
+  doc.body.innerHTML = mathML;
+  return doc.body.querySelector("math")?.innerHTML ?? "";
+}
+export {
+  latexToMathML as default
+};
+//# sourceMappingURL=index.mjs.map

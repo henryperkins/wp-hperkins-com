@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/components/plugin-error-boundary/index.tsx"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { Component } from '@wordpress/element';\n\n/**\n * Internal dependencies\n */\nimport type {\n\tPluginErrorBoundaryProps as Props,\n\tPluginErrorBoundaryState as State,\n} from '../../types';\n\nexport class PluginErrorBoundary extends Component< Props, State > {\n\tconstructor( props: Props ) {\n\t\tsuper( props );\n\t\tthis.state = {\n\t\t\thasError: false,\n\t\t};\n\t}\n\n\tstatic getDerivedStateFromError(): State {\n\t\treturn { hasError: true };\n\t}\n\n\tcomponentDidCatch( error: Error ): void {\n\t\tconst { name, onError } = this.props;\n\t\tif ( onError ) {\n\t\t\tonError( name, error );\n\t\t}\n\t}\n\n\trender(): React.ReactNode {\n\t\tif ( ! this.state.hasError ) {\n\t\t\treturn this.props.children;\n\t\t}\n\n\t\treturn null;\n\t}\n}\n"],
+  "mappings": ";AAGA,SAAS,iBAAiB;AAUnB,IAAM,sBAAN,cAAkC,UAA0B;AAAA,EAClE,YAAa,OAAe;AAC3B,UAAO,KAAM;AACb,SAAK,QAAQ;AAAA,MACZ,UAAU;AAAA,IACX;AAAA,EACD;AAAA,EAEA,OAAO,2BAAkC;AACxC,WAAO,EAAE,UAAU,KAAK;AAAA,EACzB;AAAA,EAEA,kBAAmB,OAAqB;AACvC,UAAM,EAAE,MAAM,QAAQ,IAAI,KAAK;AAC/B,QAAK,SAAU;AACd,cAAS,MAAM,KAAM;AAAA,IACtB;AAAA,EACD;AAAA,EAEA,SAA0B;AACzB,QAAK,CAAE,KAAK,MAAM,UAAW;AAC5B,aAAO,KAAK,MAAM;AAAA,IACnB;AAEA,WAAO;AAAA,EACR;AACD;",
+  "names": []
+}

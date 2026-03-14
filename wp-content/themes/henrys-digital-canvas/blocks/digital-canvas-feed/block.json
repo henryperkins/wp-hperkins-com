@@ -35,10 +35,6 @@
 			"type": "number",
 			"default": 3
 		},
-		"githubUsername": {
-			"type": "string",
-			"default": "henryperkins"
-		},
 		"postsEndpoint": {
 			"type": "string",
 			"default": ""

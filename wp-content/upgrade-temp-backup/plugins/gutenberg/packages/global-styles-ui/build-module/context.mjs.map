@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/context.ts"],
+  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { createContext } from '@wordpress/element';\nimport type { GlobalStylesConfig } from '@wordpress/global-styles-engine';\n\nexport interface GlobalStylesContextType {\n\tuser: GlobalStylesConfig;\n\tbase: GlobalStylesConfig;\n\tmerged: GlobalStylesConfig;\n\tonChange: ( newValue: GlobalStylesConfig ) => void;\n\tfontLibraryEnabled?: boolean;\n}\n\nexport const GlobalStylesContext = createContext< GlobalStylesContextType >( {\n\tuser: { styles: {}, settings: {} },\n\tbase: { styles: {}, settings: {} },\n\tmerged: { styles: {}, settings: {} },\n\tonChange: () => {},\n\tfontLibraryEnabled: false,\n} );\n"],
+  "mappings": ";AAGA,SAAS,qBAAqB;AAWvB,IAAM,sBAAsB,cAA0C;AAAA,EAC5E,MAAM,EAAE,QAAQ,CAAC,GAAG,UAAU,CAAC,EAAE;AAAA,EACjC,MAAM,EAAE,QAAQ,CAAC,GAAG,UAAU,CAAC,EAAE;AAAA,EACjC,QAAQ,EAAE,QAAQ,CAAC,GAAG,UAAU,CAAC,EAAE;AAAA,EACnC,UAAU,MAAM;AAAA,EAAC;AAAA,EACjB,oBAAoB;AACrB,CAAE;",
+  "names": []
+}
