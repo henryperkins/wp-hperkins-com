@@ -181,6 +181,12 @@
 		return title + ' featured image';
 	}
 
+	function hideBrokenImage( event ) {
+		if ( event && event.target ) {
+			event.target.style.display = 'none';
+		}
+	}
+
 	function BlogIndexApp( props ) {
 		const config = props.config;
 		const [ state, setState ] = useState( {
@@ -198,7 +204,7 @@
 		}, [ config ] );
 
 		useEffect( function () {
-			document.title = 'Blog — Henry Perkins';
+			document.title = 'Blog \u2014 Henry Perkins';
 		}, [] );
 
 		useEffect(
@@ -334,7 +340,7 @@
 		);
 
 		if ( state.loading ) {
-			return h( 'p', { className: 'hdc-blog-index__status' }, 'Loading posts…' );
+			return h( 'p', { className: 'hdc-blog-index__status' }, 'Loading posts\u2026' );
 		}
 
 		if ( state.error ) {
@@ -414,6 +420,7 @@
 									alt: buildImageAlt( featured ),
 									loading: 'eager',
 									decoding: 'async',
+									onError: hideBrokenImage,
 								} )
 							)
 							: null,
@@ -422,9 +429,19 @@
 						h(
 							'div',
 							{ className: 'hdc-blog-index__featured-meta' },
+							utils.renderLucideIcon
+								? utils.renderLucideIcon( h, 'clock', { size: 12 } )
+								: null,
 							h( 'time', { dateTime: featured.date }, formatDateLabel( featured.date ) ),
 							h( 'span', {}, featured.readingTime || '' ),
-							h( 'span', { className: 'hdc-blog-index__featured-read' }, 'Read →' )
+							h(
+								'span',
+								{ className: 'hdc-blog-index__featured-read' },
+								'Read ',
+								utils.renderLucideIcon
+									? utils.renderLucideIcon( h, 'arrow-right', { size: 14 } )
+									: null
+							)
 						)
 					)
 					: null,
@@ -436,16 +453,23 @@
 				h(
 					'div',
 					{ className: 'hdc-blog-index__filters' },
-					h( 'input', {
-						type: 'search',
-						className: 'hdc-blog-index__search',
-						placeholder: 'Search posts…',
-						value: search,
-						onChange: function ( event ) {
-							setSearch( ensureString( event.target.value, '' ) );
-						},
-						'aria-label': 'Search blog posts',
-					} ),
+					h(
+						'div',
+						{ className: 'hdc-blog-index__search-wrap' },
+						utils.renderLucideIcon
+							? utils.renderLucideIcon( h, 'search', { size: 16, className: 'hdc-blog-index__search-icon' } )
+							: null,
+						h( 'input', {
+							type: 'search',
+							className: 'hdc-blog-index__search',
+							placeholder: 'Search posts\u2026',
+							value: search,
+							onChange: function ( event ) {
+								setSearch( ensureString( event.target.value, '' ) );
+							},
+							'aria-label': 'Search blog posts',
+						} )
+					),
 					h(
 						'div',
 						{
@@ -484,10 +508,17 @@
 					? h(
 						'div',
 						{ className: 'hdc-blog-index__empty-state' },
-						h( 'h4', { className: 'hdc-blog-index__empty-title' }, 'No posts found' ),
+						h(
+							'div',
+							{ className: 'hdc-blog-index__empty-icon-badge' },
+							utils.renderLucideIcon
+								? utils.renderLucideIcon( h, 'inbox', { size: 20 } )
+								: null
+						),
+						h( 'h2', { className: 'hdc-blog-index__empty-title' }, 'No posts found' ),
 						h(
 							'p',
-							{ className: 'hdc-blog-index__empty' },
+							{ className: 'hdc-blog-index__empty-description' },
 							'Try a different keyword or clear active filters.'
 						)
 					)
@@ -514,6 +545,7 @@
 											alt: buildImageAlt( post ),
 											loading: 'lazy',
 											decoding: 'async',
+											onError: hideBrokenImage,
 										} )
 									)
 									: null,
@@ -547,7 +579,7 @@
 						h(
 							'p',
 							{ className: 'hdc-blog-index__cta-description' },
-							'I do not run a newsletter yet. The best way to catch new posts is to follow me on LinkedIn.'
+							'Follow me on LinkedIn for new posts and project updates.'
 						),
 						h(
 							'div',

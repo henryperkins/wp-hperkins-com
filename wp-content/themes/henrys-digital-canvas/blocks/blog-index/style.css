@@ -61,14 +61,33 @@
 
 .hdc-blog-index__empty-state {
   border: 1px solid hsl(var(--border));
-  border-radius: var(--radius-control);
+  border-radius: var(--radius-surface);
   margin-top: 0.7rem;
-  padding: 0.72rem;
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.hdc-blog-index__empty-icon-badge {
+  align-items: center;
+  background: hsl(var(--secondary));
+  border-radius: 9999px;
+  color: hsl(var(--text-meta));
+  display: inline-flex;
+  height: 3rem;
+  justify-content: center;
+  margin: 0 auto 0.75rem;
+  width: 3rem;
 }
 
 .hdc-blog-index__empty-title {
   color: hsl(var(--foreground));
-  font-size: 1rem;
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+}
+
+.hdc-blog-index__empty-description {
+  color: hsl(var(--text-body));
+  font-size: 0.9rem;
   margin: 0;
 }
 
@@ -144,6 +163,7 @@
 }
 
 .hdc-blog-index__featured-meta {
+  align-items: center;
   color: hsl(var(--text-meta));
   display: flex;
   flex-wrap: wrap;
@@ -153,8 +173,11 @@
 }
 
 .hdc-blog-index__featured-read {
-  color: hsl(var(--link));
+  align-items: center;
+  color: hsl(var(--text-accent));
+  display: inline-flex;
   font-weight: 700;
+  gap: 0.25rem;
 }
 
 .hdc-blog-index__header-row {
@@ -176,14 +199,28 @@
   margin: 0.85rem 0 1rem;
 }
 
+.hdc-blog-index__search-wrap {
+  max-width: 560px;
+  position: relative;
+  width: 100%;
+}
+
+.hdc-blog-index__search-icon {
+  color: hsl(var(--text-meta));
+  left: 0.75rem;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 .hdc-blog-index__search {
   background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius-control);
   color: hsl(var(--foreground));
   font-size: 0.9rem;
-  max-width: 560px;
-  padding: 0.62rem 0.72rem;
+  padding: 0.62rem 0.72rem 0.62rem 2.25rem;
   width: 100%;
 }
 
@@ -269,10 +306,20 @@
 }
 
 .hdc-blog-index__card-excerpt {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
   color: hsl(var(--text-body));
+  display: -webkit-box;
   font-size: 0.9rem;
   line-height: 1.6;
   margin: 0.35rem 0 0;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .hdc-blog-index__card-excerpt {
+    -webkit-line-clamp: 2;
+  }
 }
 
 .hdc-blog-index__tags {

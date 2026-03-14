@@ -21,7 +21,7 @@
 		},
 		"description": {
 			"type": "string",
-			"default": "Notes on engineering systems, product craft, and learning in public."
+			"default": "Writing on customer-facing engineering, AI workflows, WordPress delivery, and support-to-implementation systems."
 		},
 		"showNewsletterCta": {
 			"type": "boolean",
