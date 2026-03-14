@@ -422,7 +422,7 @@
 						h(
 							'div',
 							{ className: 'hdc-blog-index__featured-meta' },
-							h( 'span', {}, formatDateLabel( featured.date ) ),
+							h( 'time', { dateTime: featured.date }, formatDateLabel( featured.date ) ),
 							h( 'span', {}, featured.readingTime || '' ),
 							h( 'span', { className: 'hdc-blog-index__featured-read' }, 'Read →' )
 						)
@@ -533,7 +533,7 @@
 								h(
 									'div',
 									{ className: 'hdc-blog-index__card-meta' },
-									h( 'span', {}, formatDateLabel( post.date ) ),
+									h( 'time', { dateTime: post.date }, formatDateLabel( post.date ) ),
 									h( 'span', {}, post.readingTime || '' )
 								)
 							);
