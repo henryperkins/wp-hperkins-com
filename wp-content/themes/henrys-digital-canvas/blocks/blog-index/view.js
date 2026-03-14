@@ -187,6 +187,49 @@
 		}
 	}
 
+	var blogRevealObserver = null;
+
+	function initBlogReveals() {
+		if ( blogRevealObserver ) {
+			blogRevealObserver.disconnect();
+			blogRevealObserver = null;
+		}
+
+		var elements = document.querySelectorAll( '.hdc-blog-reveal:not(.is-visible)' );
+		if ( ! elements.length ) {
+			return;
+		}
+
+		if ( typeof IntersectionObserver === 'undefined' ) {
+			elements.forEach( function ( el ) {
+				el.classList.add( 'is-visible' );
+			} );
+			return;
+		}
+
+		blogRevealObserver = new IntersectionObserver(
+			function ( entries ) {
+				entries.forEach( function ( entry ) {
+					if ( entry.isIntersecting ) {
+						entry.target.classList.add( 'is-visible' );
+						blogRevealObserver.unobserve( entry.target );
+					}
+				} );
+			},
+			{ threshold: 0.1 }
+		);
+
+		elements.forEach( function ( el ) {
+			var rect = el.getBoundingClientRect();
+			var isAboveFold = rect.top < window.innerHeight && rect.bottom > 0;
+			if ( isAboveFold ) {
+				el.classList.add( 'is-visible' );
+			} else {
+				blogRevealObserver.observe( el );
+			}
+		} );
+	}
+
 	function BlogIndexApp( props ) {
 		const config = props.config;
 		const [ state, setState ] = useState( {
@@ -317,6 +360,14 @@
 			[ allTags, activeTag ]
 		);
 
+		useEffect( function () {
+			if ( ! state.loading && state.posts.length > 0 ) {
+				requestAnimationFrame( function () {
+					initBlogReveals();
+				} );
+			}
+		}, [ state.loading, state.posts.length ] );
+
 		const filtered = useMemo(
 			function () {
 				const normalizedSearch = search.trim().toLowerCase();
@@ -384,7 +435,7 @@
 			{},
 			h(
 				'section',
-				{ className: 'hdc-blog-index__hero ember-surface' },
+				{ className: 'hdc-blog-index__hero ember-surface hdc-blog-reveal hdc-blog-reveal--fade-up-soft', style: { '--reveal-index': 0 } },
 				h(
 					'div',
 					{ className: 'hdc-blog-index__hero-inner' },
@@ -404,8 +455,9 @@
 					? h(
 						'a',
 						{
-							className: 'hdc-blog-index__featured ember-surface focus-ring',
+							className: 'hdc-blog-index__featured ember-surface focus-ring hdc-blog-reveal',
 							href: buildPostUrl( featured, config ),
+							style: { '--reveal-index': 0 },
 						},
 						h( 'span', { className: 'hdc-blog-index__featured-pill' }, 'Featured' ),
 						featured.featuredImageUrl
@@ -447,7 +499,7 @@
 					: null,
 				h(
 					'div',
-					{ className: 'hdc-blog-index__header-row' },
+					{ className: 'hdc-blog-index__header-row hdc-blog-reveal', style: { '--reveal-index': 0 } },
 					h( 'h3', { className: 'hdc-blog-index__section-title' }, 'All Posts' )
 				),
 				h(
@@ -525,13 +577,14 @@
 					: h(
 						'div',
 						{ className: 'hdc-blog-index__list' },
-						filtered.map( function ( post ) {
+						filtered.map( function ( post, postIndex ) {
 							return h(
 								'a',
 								{
-									className: 'hdc-blog-index__card focus-ring' + ( post.featuredImageUrl ? ' has-thumbnail' : '' ),
+									className: 'hdc-blog-index__card focus-ring hdc-blog-reveal hdc-blog-reveal--fade-up-soft' + ( post.featuredImageUrl ? ' has-thumbnail' : '' ),
 									href: buildPostUrl( post, config ),
 									key: post.slug,
+									style: { '--reveal-index': postIndex },
 								},
 								post.featuredImageUrl
 									? h(

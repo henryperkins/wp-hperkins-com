@@ -434,6 +434,53 @@
   margin-top: 0.45rem;
 }
 
+/* ── Reveal animations ── */
+
+@keyframes hdc-blog-reveal-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hdc-blog-reveal-fade-up-soft {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hdc-blog-reveal {
+  opacity: 0;
+}
+
+.hdc-blog-reveal.is-visible {
+  animation: hdc-blog-reveal-fade-up var(--motion-duration-medium, 260ms) var(--motion-ease-standard, cubic-bezier(0.2, 0.8, 0.2, 1)) forwards;
+  animation-delay: calc(var(--reveal-index, 0) * calc(var(--motion-duration-fast, 160ms) / 3));
+}
+
+.hdc-blog-reveal.hdc-blog-reveal--fade-up-soft.is-visible {
+  animation-name: hdc-blog-reveal-fade-up-soft;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hdc-blog-reveal {
+    opacity: 1;
+  }
+
+  .hdc-blog-reveal.is-visible {
+    animation: none;
+  }
+}
+
 @media (min-width: 900px) {
   .hdc-blog-index__card:not(.has-thumbnail) {
     grid-template-columns: minmax(0, 1fr) auto;
