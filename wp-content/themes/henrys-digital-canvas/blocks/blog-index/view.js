@@ -8,6 +8,7 @@
 	const useEffect = element.useEffect;
 	const useMemo = element.useMemo;
 	const useState = element.useState;
+	const useRef = element.useRef;
 	const createRoot = element.createRoot;
 	const legacyRender = element.render;
 
@@ -190,6 +191,7 @@
 		} );
 		const [ search, setSearch ] = useState( '' );
 		const [ activeTag, setActiveTag ] = useState( 'All' );
+		const chipRefs = useRef( [] );
 
 		const signature = useMemo( function () {
 			return JSON.stringify( config );
@@ -339,6 +341,29 @@
 			return h( 'p', { className: 'hdc-blog-index__error' }, state.error );
 		}
 
+		function handleChipKeyDown( event, index, options ) {
+			var next = -1;
+			if ( event.key === 'ArrowRight' || event.key === 'ArrowDown' ) {
+				event.preventDefault();
+				next = ( index + 1 ) % options.length;
+			} else if ( event.key === 'ArrowLeft' || event.key === 'ArrowUp' ) {
+				event.preventDefault();
+				next = ( index - 1 + options.length ) % options.length;
+			} else if ( event.key === 'Home' ) {
+				event.preventDefault();
+				next = 0;
+			} else if ( event.key === 'End' ) {
+				event.preventDefault();
+				next = options.length - 1;
+			}
+			if ( next >= 0 ) {
+				setActiveTag( options[ next ] );
+				if ( chipRefs.current[ next ] ) {
+					chipRefs.current[ next ].focus();
+				}
+			}
+		}
+
 		if ( state.posts.length === 0 ) {
 			return h(
 				'div',
@@ -423,16 +448,30 @@
 					} ),
 					h(
 						'div',
-						{ className: 'hdc-blog-index__chips' },
-						allTags.map( function ( tag ) {
+						{
+							className: 'hdc-blog-index__chips',
+							role: 'radiogroup',
+							'aria-label': 'Filter blog posts by tag',
+						},
+						allTags.map( function ( tag, tagIndex ) {
 							const isActive = tag === activeTag;
 							return h(
 								'button',
 								{
 									type: 'button',
+									role: 'radio',
+									'aria-checked': isActive,
+									'data-state': isActive ? 'on' : 'off',
+									tabIndex: isActive ? 0 : -1,
 									className: 'hdc-blog-index__chip' + ( isActive ? ' is-active' : '' ),
 									onClick: function () {
 										setActiveTag( tag );
+									},
+									onKeyDown: function ( event ) {
+										handleChipKeyDown( event, tagIndex, allTags );
+									},
+									ref: function ( node ) {
+										chipRefs.current[ tagIndex ] = node;
 									},
 									key: 'tag-' + tag,
 								},
