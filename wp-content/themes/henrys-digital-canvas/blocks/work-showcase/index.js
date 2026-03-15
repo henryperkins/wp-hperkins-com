@@ -56,15 +56,6 @@
 							min: 1,
 							max: 100,
 						} ),
-						el( RangeControl, {
-							label: __( 'Comparison limit', 'henrys-digital-canvas' ),
-							value: attrs.compareLimit,
-							onChange: function ( compareLimit ) {
-								setAttributes( { compareLimit: compareLimit || 2 } );
-							},
-							min: 2,
-							max: 6,
-						} ),
 						el( ToggleControl, {
 							label: __( 'Include forked repositories', 'henrys-digital-canvas' ),
 							checked: !! attrs.includeForks,

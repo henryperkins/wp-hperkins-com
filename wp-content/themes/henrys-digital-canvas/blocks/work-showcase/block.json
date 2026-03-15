@@ -5,7 +5,7 @@
 	"title": "Work Showcase",
 	"category": "widgets",
 	"icon": "portfolio",
-	"description": "React-powered work showcase with GitHub sync, fallback data, compare sheet, and timeline/grid views.",
+	"description": "React-powered work showcase with GitHub sync, fallback data, and timeline/grid views.",
 	"textdomain": "henrys-digital-canvas",
 	"supports": {
 		"html": false,
@@ -26,10 +26,6 @@
 		"repoCount": {
 			"type": "number",
 			"default": 100
-		},
-		"compareLimit": {
-			"type": "number",
-			"default": 2
 		},
 		"includeForks": {
 			"type": "boolean",

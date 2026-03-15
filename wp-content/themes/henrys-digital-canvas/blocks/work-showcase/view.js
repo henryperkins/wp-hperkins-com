@@ -469,7 +469,6 @@
 			),
 			githubUsername: sanitizeString( parsed.githubUsername, 'henryperkins' ),
 			repoCount: clamp( Number.parseInt( parsed.repoCount, 10 ) || 100, 1, 100 ),
-			compareLimit: clamp( Number.parseInt( parsed.compareLimit, 10 ) || 2, 2, 6 ),
 			includeForks: !! parsed.includeForks,
 			includeArchived: !! parsed.includeArchived,
 			openInNewTab: !! parsed.openInNewTab,
@@ -1357,34 +1356,6 @@
 						{ className: 'hdc-work-control' },
 						h( 'span', { className: 'hdc-work-control-label' }, 'Sort' ),
 						h( 'p', { className: 'hdc-work-control-note' }, 'Timeline is always newest-first.' )
-					),
-				props.view === 'grid'
-					? h(
-						'div',
-						{ className: 'hdc-work-control' },
-						h( 'span', { className: 'hdc-work-control-label' }, 'Compare' ),
-						h(
-							'button',
-							{
-								type: 'button',
-								className: 'hdc-work-button',
-								onClick: props.onOpenCompare,
-								disabled: props.compareSelectionVisibleCount === 0,
-							},
-							'Compare (',
-							String( props.compareSelectionVisibleCount ),
-							')'
-						)
-					)
-					: h(
-						'div',
-						{ className: 'hdc-work-control' },
-						h( 'span', { className: 'hdc-work-control-label' }, 'Compare' ),
-						h(
-							'p',
-							{ className: 'hdc-work-control-note' },
-							'Comparison selection is available in Grid view.'
-						)
 					)
 			),
 			props.showDetailsUnavailableMessage
@@ -1933,20 +1904,6 @@
 							repo.name
 						)
 					)
-				),
-				h(
-					'label',
-					{ className: 'hdc-work-compare-check' },
-					h( 'input', {
-						type: 'checkbox',
-						checked: props.compareSelected,
-						onChange: function () {
-							props.onToggleCompare( repo.name );
-						},
-						'aria-label': props.compareSelected
-							? 'Remove ' + repo.name + ' from comparison'
-							: 'Add ' + repo.name + ' to comparison',
-					} )
 				)
 			),
 			h( 'p', { className: 'hdc-work-repo-description' }, repo.description ),
@@ -2155,8 +2112,6 @@
 								repo: repo,
 								repoProof: props.repoProofsByRepoName[ repo.name ] || props.repoProofsByRepoName[ String( repo.name ).toLowerCase() ] || null,
 								ciStatus: props.ciStatusByRepoName[ repo.name ] || props.ciStatusByRepoName[ String( repo.name ).toLowerCase() ] || null,
-								compareSelected: props.compareSelection.indexOf( repo.name ) !== -1,
-								onToggleCompare: props.onToggleCompareRepo,
 								openInNewTab: props.openInNewTab,
 								revealIndex: index,
 							} );
@@ -2300,170 +2255,7 @@
 		);
 	}
 
-	function CompareBar( props ) {
-		if ( props.count === 0 ) {
-			return null;
-		}
 
-		return h(
-			'div',
-			{ className: 'hdc-work-compare-bar' },
-			h(
-				'div',
-				{ className: 'hdc-work-compare-bar-inner' },
-				h(
-					'span',
-					{ className: 'hdc-work-compare-bar-text' },
-					String( props.count ),
-					props.count === 1 ? ' repo selected' : ' repos selected'
-				),
-				h(
-					'button',
-					{ type: 'button', className: 'hdc-work-button', onClick: props.onOpen },
-					'Compare'
-				),
-				h(
-					'button',
-					{ type: 'button', className: 'hdc-work-button is-ghost', onClick: props.onClear },
-					'Clear'
-				)
-			)
-		);
-	}
-
-	function CompareSheet( props ) {
-		if ( ! props.isOpen ) {
-			return null;
-		}
-
-		return h(
-			'div',
-			{ className: 'hdc-work-sheet-overlay', role: 'dialog', 'aria-modal': 'true' },
-			h( 'button', {
-				type: 'button',
-				className: 'hdc-work-sheet-backdrop',
-				onClick: props.onClose,
-				'aria-label': 'Close comparison sheet',
-			} ),
-			h(
-				'aside',
-				{ className: 'hdc-work-sheet' },
-				h(
-					'div',
-					{ className: 'hdc-work-sheet-header' },
-					h( 'h3', { className: 'hdc-work-sheet-title' }, 'Compare Repositories' ),
-					h(
-						'button',
-						{ type: 'button', className: 'hdc-work-button is-ghost', onClick: props.onClose },
-						'Close'
-					)
-				),
-				h(
-					'p',
-					{ className: 'hdc-work-sheet-description' },
-					'Compare repositories across language, signals, topics, and delivery notes.'
-				),
-				props.comparedRepos.length === 0
-					? h(
-						'p',
-						{ className: 'hdc-work-empty-description' },
-						'Select repositories from the library using the compare checkbox.'
-					)
-					: h(
-						'div',
-						{ className: 'hdc-work-compare-grid' },
-						props.comparedRepos.map( function ( repo ) {
-							const signals = getSignalBadges( repo );
-
-							return h(
-								'article',
-								{ key: 'compare-' + repo.name, className: 'hdc-work-compare-card' },
-								h(
-									'div',
-									{ className: 'hdc-work-compare-card-head' },
-									h( 'h4', { className: 'hdc-work-repo-title' }, repo.name ),
-									repo.role ? h( Badge, { variant: 'secondary' }, repo.role ) : null
-								),
-								h(
-									'p',
-									{ className: 'hdc-work-compare-summary' },
-									repo.whyItMatters || repo.description
-								),
-								h(
-									'dl',
-									{ className: 'hdc-work-detail-grid' },
-									h( 'dt', { className: 'hdc-work-label' }, 'Language' ),
-									h( 'dd', { className: 'hdc-work-detail-value' }, repo.language ),
-									h( 'dt', { className: 'hdc-work-label' }, 'Signals' ),
-									h(
-										'dd',
-										{ className: 'hdc-work-detail-value' },
-										signals.length
-											? h(
-												'div',
-												{ className: 'hdc-work-badge-row' },
-												signals.map( function ( signal ) {
-													return h(
-														Badge,
-														{ key: repo.name + '-compare-signal-' + signal, variant: 'outline' },
-														SIGNAL_LABEL_MAP[ signal ] || signal
-													);
-												} )
-											)
-											: 'No explicit signals'
-									),
-									h( 'dt', { className: 'hdc-work-label' }, 'Topics' ),
-									h(
-										'dd',
-										{ className: 'hdc-work-detail-value' },
-										repo.topics.length
-											? h(
-												'div',
-												{ className: 'hdc-work-badge-row' },
-												repo.topics.slice( 0, 6 ).map( function ( topic ) {
-													return h(
-														Badge,
-														{ key: repo.name + '-compare-topic-' + topic, variant: 'secondary' },
-														topic
-													);
-												} )
-											)
-											: 'No topics'
-									)
-								),
-								repo.receipts && repo.receipts.length > 0
-									? h(
-										'div',
-										{ className: 'hdc-work-compare-section' },
-										h( 'p', { className: 'hdc-work-label' }, 'Receipts' ),
-										h(
-											'ul',
-											{ className: 'hdc-work-bullet-list' },
-											repo.receipts.slice( 0, 2 ).map( function ( receipt ) {
-												return h(
-													'li',
-													{ key: repo.name + '-receipt-' + receipt.label },
-													h( 'strong', null, receipt.label + ': ' ),
-													receipt.value
-												);
-											} )
-										)
-									)
-									: null,
-								repo.learned
-									? h(
-										'div',
-										{ className: 'hdc-work-compare-section' },
-										h( 'p', { className: 'hdc-work-label' }, 'What I Learned' ),
-										h( 'p', { className: 'hdc-work-detail-value' }, repo.learned )
-									)
-									: null
-							);
-						} )
-					)
-			)
-		);
-	}
 
 	function WorkShowcaseApp( props ) {
 		const config = props.config;
@@ -2485,14 +2277,6 @@
 		const [ view, setView ] = useState( initialState.view );
 		const [ page, setPage ] = useState( initialState.page );
 		const [ showPendingRepos, setShowPendingRepos ] = useState( false );
-		const [ isCompareOpen, setIsCompareOpen ] = useState( false );
-		const compareSheetTriggerRef = useRef( null );
-		const [ compareSelection, setCompareSelection ] = useState( [] );
-		const [ compareToast, setCompareToast ] = useState( '' );
-
-		useEffect( function () {
-			document.title = 'Work — Henry Perkins';
-		}, [] );
 
 		useEffect( function () {
 			function handleVisibility() {
@@ -2544,93 +2328,6 @@
 			[ config ]
 		);
 
-		useEffect(
-			function () {
-				if ( ! isCompareOpen ) {
-					return undefined;
-				}
-
-				// Save the element that triggered the sheet so focus can be restored.
-				compareSheetTriggerRef.current = document.activeElement;
-
-				// Lock background scroll.
-				var prevOverflow = document.body.style.overflow;
-				document.body.style.overflow = 'hidden';
-
-				// Move focus into the sheet after render.
-				requestAnimationFrame( function () {
-					var overlay = document.querySelector( '.hdc-work-sheet-overlay' );
-					if ( overlay ) {
-						var firstFocusable = overlay.querySelector( 'button, [href], input, [tabindex]:not([tabindex="-1"])' );
-						if ( firstFocusable ) {
-							firstFocusable.focus();
-						}
-					}
-				} );
-
-				var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
-				function handleKeydown( event ) {
-					if ( event.key === 'Escape' ) {
-						setIsCompareOpen( false );
-						return;
-					}
-
-					// Focus trap: keep Tab cycling within the compare sheet overlay.
-					if ( event.key === 'Tab' ) {
-						var overlay = document.querySelector( '.hdc-work-sheet-overlay' );
-						if ( ! overlay ) {
-							return;
-						}
-						var focusable = Array.prototype.slice.call( overlay.querySelectorAll( FOCUSABLE ) ).filter( function ( el ) {
-							return el.getClientRects().length > 0;
-						} );
-						if ( focusable.length === 0 ) {
-							event.preventDefault();
-							return;
-						}
-						var first = focusable[ 0 ];
-						var last = focusable[ focusable.length - 1 ];
-						if ( event.shiftKey && document.activeElement === first ) {
-							event.preventDefault();
-							last.focus();
-						} else if ( ! event.shiftKey && document.activeElement === last ) {
-							event.preventDefault();
-							first.focus();
-						}
-					}
-				}
-
-				document.addEventListener( 'keydown', handleKeydown );
-				return function () {
-					document.removeEventListener( 'keydown', handleKeydown );
-					document.body.style.overflow = prevOverflow;
-					// Restore focus to the element that opened the sheet.
-					if ( compareSheetTriggerRef.current && typeof compareSheetTriggerRef.current.focus === 'function' ) {
-						compareSheetTriggerRef.current.focus();
-					}
-				};
-			},
-			[ isCompareOpen ]
-		);
-
-		useEffect(
-			function () {
-				if ( ! compareToast ) {
-					return undefined;
-				}
-
-				const timeoutId = window.setTimeout( function () {
-					setCompareToast( '' );
-				}, 2400 );
-
-				return function () {
-					window.clearTimeout( timeoutId );
-				};
-			},
-			[ compareToast ]
-		);
-
 		const sourceLabel = source === 'live' ? 'Synced directly from GitHub.' : 'Cached project snapshot.';
 		const sourceWarning =
 			source === 'fallback-ratelimit'
@@ -2674,19 +2371,6 @@
 				}
 			},
 			[ activeFilter, filter ]
-		);
-
-		useEffect(
-			function () {
-				setCompareSelection( function ( current ) {
-					return current.filter( function ( repoName ) {
-						return repos.some( function ( repo ) {
-							return repo.name === repoName;
-						} );
-					} );
-				} );
-			},
-			[ repos ]
 		);
 
 		const filtered = useMemo(
@@ -2871,30 +2555,6 @@
 			[ visibleGitHubRepoNames ]
 		);
 
-		const comparedRepos = useMemo(
-			function () {
-				return compareSelection
-					.map( function ( repoName ) {
-						return repos.find( function ( repo ) {
-							return repo.name === repoName;
-						} );
-					} )
-					.filter( Boolean );
-			},
-			[ compareSelection, repos ]
-		);
-
-		const compareSelectionVisibleCount = useMemo(
-			function () {
-				return compareSelection.filter( function ( repoName ) {
-					return repos.some( function ( repo ) {
-						return repo.name === repoName;
-					} );
-				} ).length;
-			},
-			[ compareSelection, repos ]
-		);
-
 		const activityBuckets = useMemo(
 			function () {
 				const bucketCount = config.sparklineWeeks;
@@ -3075,42 +2735,6 @@
 			setView( nextView );
 			setPage( 1 );
 			setShowPendingRepos( false );
-			if ( nextView === 'timeline' ) {
-				setIsCompareOpen( false );
-			}
-		}
-
-		function handleToggleCompareRepo( repoName ) {
-			setCompareSelection( function ( current ) {
-				if ( current.indexOf( repoName ) !== -1 ) {
-					setCompareToast( '' );
-					return current.filter( function ( name ) {
-						return name !== repoName;
-					} );
-				}
-
-				if (
-					! repos.some( function ( repo ) {
-						return repo.name === repoName;
-					} )
-				) {
-					return current;
-				}
-
-				if ( current.length >= config.compareLimit ) {
-					const evicted = current[ 0 ];
-					setCompareToast( 'Replaced ' + evicted + ' in comparison.' );
-					return current.slice( 1 ).concat( [ repoName ] );
-				}
-
-				setCompareToast( '' );
-				return current.concat( [ repoName ] );
-			} );
-		}
-
-		function handleClearCompare() {
-			setCompareSelection( [] );
-			setCompareToast( '' );
 		}
 
 		return h(
@@ -3156,12 +2780,8 @@
 						Fragment,
 						null,
 						h( FiltersBar, {
-							compareSelectionVisibleCount: compareSelectionVisibleCount,
 							languages: languages,
 							onFilterChange: handleFilterChange,
-							onOpenCompare: function () {
-								setIsCompareOpen( true );
-							},
 							onSortChange: handleSortChange,
 							onViewChange: handleViewChange,
 							showDetailsUnavailableMessage: detailsUnavailable,
@@ -3210,7 +2830,6 @@
 									: null,
 								view === 'timeline' ? h( BuildTimeline, { repos: shippedTimeline } ) : null,
 								h( RepositoryLibrary, {
-									compareSelection: compareSelection,
 									ciStatusByRepoName: ciStatusByRepoName,
 									describedRepos: describedRepos,
 									onNextPage: function () {
@@ -3223,7 +2842,6 @@
 											return Math.max( 1, current - 1 );
 										} );
 									},
-									onToggleCompareRepo: handleToggleCompareRepo,
 									paginatedRepos: paginatedRepos,
 									repoProofsByRepoName: repoProofsByRepoName,
 									safePage: safePage,
@@ -3243,40 +2861,11 @@
 										},
 										pendingPreview: pendingPreview,
 									} )
-									: null,
-								compareToast
-									? h(
-										'p',
-										{
-											className: 'hdc-work-toast',
-											role: 'status',
-											'aria-live': 'polite',
-										},
-										compareToast
-									)
 									: null
 							)
 					)
 					: null
-			),
-			! loading && ! error && view === 'grid'
-				? h( CompareBar, {
-					count: compareSelectionVisibleCount,
-					onClear: handleClearCompare,
-					onOpen: function () {
-						setIsCompareOpen( true );
-					},
-				} )
-				: null,
-			! loading && ! error && view === 'grid'
-				? h( CompareSheet, {
-					isOpen: isCompareOpen,
-					onClose: function () {
-						setIsCompareOpen( false );
-					},
-					comparedRepos: comparedRepos,
-				} )
-				: null
+			)
 		);
 	}
 
