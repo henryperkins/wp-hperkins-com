@@ -17,11 +17,13 @@
 	"attributes": {
 		"heading": {
 			"type": "string",
-			"default": "Resume"
+			"default": "Resume",
+			"role": "content"
 		},
 		"intro": {
 			"type": "string",
-			"default": ""
+			"default": "",
+			"role": "content"
 		},
 		"showAtsLink": {
 			"type": "boolean",

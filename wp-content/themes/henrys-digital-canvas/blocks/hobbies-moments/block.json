@@ -17,11 +17,13 @@
 	"attributes": {
 		"heading": {
 			"type": "string",
-			"default": "Hobbies"
+			"default": "Hobbies",
+			"role": "content"
 		},
 		"description": {
 			"type": "string",
-			"default": "Outside work, I spend time building small tools, making music, and tracking what I am learning now, recently, and next."
+			"default": "Outside work, I spend time building small tools, making music, and tracking what I am learning now, recently, and next.",
+			"role": "content"
 		}
 	},
 	"editorScript": "file:./index.js",

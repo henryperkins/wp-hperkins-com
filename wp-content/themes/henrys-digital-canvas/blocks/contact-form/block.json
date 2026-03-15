@@ -17,11 +17,13 @@
 	"attributes": {
 		"heading": {
 			"type": "string",
-			"default": "Contact"
+			"default": "Contact",
+			"role": "content"
 		},
 		"description": {
 			"type": "string",
-			"default": "Open to US remote opportunities and consulting engagements. Reach out if you want help with customer-facing technical workflows, web delivery, or AI integrations."
+			"default": "Open to US remote opportunities and consulting engagements. Reach out if you want help with customer-facing technical workflows, web delivery, or AI integrations.",
+			"role": "content"
 		},
 		"showSocialLinks": {
 			"type": "boolean",
@@ -29,11 +31,13 @@
 		},
 		"submitLabel": {
 			"type": "string",
-			"default": "Send Message"
+			"default": "Send Message",
+			"role": "content"
 		},
 		"submittingLabel": {
 			"type": "string",
-			"default": "Sending…"
+			"default": "Sending…",
+			"role": "content"
 		}
 	},
 	"editorScript": "file:./build/index.js",

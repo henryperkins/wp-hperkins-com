@@ -17,11 +17,13 @@
 	"attributes": {
 		"heading": {
 			"type": "string",
-			"default": "Blog"
+			"default": "Blog",
+			"role": "content"
 		},
 		"description": {
 			"type": "string",
-			"default": "Writing on customer-facing engineering, AI workflows, WordPress delivery, and support-to-implementation systems."
+			"default": "Writing on customer-facing engineering, AI workflows, WordPress delivery, and support-to-implementation systems.",
+			"role": "content"
 		},
 		"showNewsletterCta": {
 			"type": "boolean",

@@ -17,7 +17,8 @@
 	"attributes": {
 		"siteTitle": {
 			"type": "string",
-			"default": "Henry Perkins"
+			"default": "Henry Perkins",
+			"role": "content"
 		},
 		"showCommandLauncher": {
 			"type": "boolean",

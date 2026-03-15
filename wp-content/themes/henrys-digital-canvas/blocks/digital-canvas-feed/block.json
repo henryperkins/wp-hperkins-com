@@ -17,7 +17,8 @@
 	"attributes": {
 		"heading": {
 			"type": "string",
-			"default": "Featured Work and Recent Writing"
+			"default": "Featured Work and Recent Writing",
+			"role": "content"
 		},
 		"showBlog": {
 			"type": "boolean",

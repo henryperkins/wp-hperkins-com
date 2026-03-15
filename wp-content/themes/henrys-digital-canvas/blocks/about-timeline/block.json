@@ -15,10 +15,6 @@
 		]
 	},
 	"attributes": {
-		"heading": {
-			"type": "string",
-			"default": "About Henry Perkins"
-		},
 		"showValues": {
 			"type": "boolean",
 			"default": true

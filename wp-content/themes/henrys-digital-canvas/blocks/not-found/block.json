@@ -17,15 +17,18 @@
 	"attributes": {
 		"heading": {
 			"type": "string",
-			"default": "Page not found"
+			"default": "Page not found",
+			"role": "content"
 		},
 		"homeLabel": {
 			"type": "string",
-			"default": "Go Home"
+			"default": "Go Home",
+			"role": "content"
 		},
 		"backLabel": {
 			"type": "string",
-			"default": "Go Back"
+			"default": "Go Back",
+			"role": "content"
 		}
 	},
 	"editorScript": "file:./index.js",

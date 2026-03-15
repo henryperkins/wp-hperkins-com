@@ -17,39 +17,13 @@
 	"attributes": {
 		"heading": {
 			"type": "string",
-			"default": "Work"
+			"default": "Work",
+			"role": "content"
 		},
 		"description": {
 			"type": "string",
-			"default": "Selected repositories and client case studies focused on problem framing, implementation decisions, and shipped outcomes."
-		},
-		"repoCount": {
-			"type": "number",
-			"default": 100
-		},
-		"includeForks": {
-			"type": "boolean",
-			"default": false
-		},
-		"includeArchived": {
-			"type": "boolean",
-			"default": false
-		},
-		"openInNewTab": {
-			"type": "boolean",
-			"default": true
-		},
-		"showSignalsPanel": {
-			"type": "boolean",
-			"default": true
-		},
-		"showActivitySparkline": {
-			"type": "boolean",
-			"default": true
-		},
-		"sparklineWeeks": {
-			"type": "number",
-			"default": 8
+			"default": "Selected repositories and client case studies focused on problem framing, implementation decisions, and shipped outcomes.",
+			"role": "content"
 		}
 	},
 	"editorScript": "file:./index.js",
