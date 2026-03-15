@@ -24,6 +24,9 @@
 	const FEATURED_CASE_STUDY_LIMIT = 3;
 	const SIGNAL_ACTIVITY_WINDOW_DAYS = 30;
 	const SIGNAL_LANGUAGE_WINDOW_DAYS = 90;
+	var COMMIT_SPARKLINE_WINDOW_WEEKS = 12;
+	var COMMIT_TOTAL_WINDOW_WEEKS = 52;
+	var LANGUAGE_FALLBACK_MIN_REPO_SIZE_KB = 50;
 	const DEFAULT_FILTER = 'All';
 	const DEFAULT_SORT = 'stars';
 	const DEFAULT_VIEW = 'grid';
@@ -80,6 +83,8 @@
 	const repoRateLimitCooldownByQueryKey = new Map();
 	const repoProofRateLimitCooldownByQueryKey = new Map();
 	const ciStatusRateLimitCooldownByQueryKey = new Map();
+	var contributorStatsRateLimitCooldownByQueryKey = new Map();
+	var languageSummaryRateLimitCooldownByQueryKey = new Map();
 	let revealObserver = null;
 
 	function initRevealObserver() {
@@ -537,6 +542,14 @@
 				parsed.githubCIStatusProxyUrl,
 				'/api/github/ci-status'
 			),
+			githubContributorStatsProxyUrl: sanitizeString(
+				parsed.githubContributorStatsProxyUrl,
+				'/api/github/contributor-stats'
+			),
+			githubLanguageSummaryProxyUrl: sanitizeString(
+				parsed.githubLanguageSummaryProxyUrl,
+				'/api/github/language-summary'
+			),
 			localReposUrl: sanitizeString( parsed.localReposUrl, '' ),
 			repoCaseStudyDetailsUrl: sanitizeString( parsed.repoCaseStudyDetailsUrl, '' ),
 		};
@@ -978,6 +991,23 @@
 		return payload;
 	}
 
+	function formatNumber( num ) {
+		if ( num >= 1000 ) {
+			return ( num / 1000 ).toFixed( 1 ).replace( /\.0$/, '' ) + 'k';
+		}
+		return String( num );
+	}
+
+	function deduplicateAndSortStrings( strings ) {
+		return Array.from(
+			new Set(
+				strings
+					.map( function ( s ) { return sanitizeString( s, '' ); } )
+					.filter( Boolean )
+			)
+		).sort( function ( a, b ) { return a.localeCompare( b ); } );
+	}
+
 	async function loadRepoProofs( config, repoNames ) {
 		const normalizedRepoNames = Array.from(
 			new Set(
@@ -1155,6 +1185,98 @@
 				ciStatusByRepo: {},
 				source: 'fallback-error',
 			};
+		}
+	}
+
+	async function loadContributorStats( config, repoNames ) {
+		var normalizedRepoNames = deduplicateAndSortStrings( repoNames );
+		if ( normalizedRepoNames.length === 0 || ! config.githubContributorStatsProxyUrl ) {
+			return { contributorStatsByRepo: {}, source: 'live' };
+		}
+
+		var username = sanitizeString( config.githubUsername, 'unknown' );
+		var cooldownKey = 'github-contributor-stats:' + username + ':' + concatTextParts( normalizedRepoNames, '|' );
+
+		if ( getRemainingRateLimitCooldownMs( contributorStatsRateLimitCooldownByQueryKey, cooldownKey ) > 0 ) {
+			return { contributorStatsByRepo: {}, source: 'fallback-ratelimit' };
+		}
+
+		try {
+			var requestUrl = new URL( resolveRequestUrl( config.githubContributorStatsProxyUrl ) );
+			requestUrl.searchParams.set( 'username', username );
+			normalizedRepoNames.forEach( function ( name ) {
+				requestUrl.searchParams.append( 'repo', name );
+			} );
+
+			var response = await fetch( requestUrl.toString() );
+			if ( ! response.ok ) {
+				if ( response.status === 429 || response.status === 403 ) {
+					setRateLimitCooldown( contributorStatsRateLimitCooldownByQueryKey, cooldownKey, { retryAfterSeconds: parseRetryAfterSeconds( response.headers.get( 'Retry-After' ) ) } );
+					return { contributorStatsByRepo: {}, source: 'fallback-ratelimit' };
+				}
+				return { contributorStatsByRepo: {}, source: 'fallback-error' };
+			}
+
+			var payload = await response.json();
+			var map = {};
+			( Array.isArray( payload.stats ) ? payload.stats : [] ).forEach( function ( entry ) {
+				if ( entry && entry.repo ) {
+					map[ entry.repo ] = entry;
+					map[ entry.repo.toLowerCase() ] = entry;
+				}
+			} );
+
+			return { contributorStatsByRepo: map, source: 'live' };
+		} catch ( error ) {
+			if ( isOfflineError( error ) ) {
+				return { contributorStatsByRepo: {}, source: 'fallback-offline' };
+			}
+			return { contributorStatsByRepo: {}, source: 'fallback-error' };
+		}
+	}
+
+	async function loadLanguageSummary( config, repoNames ) {
+		var normalizedRepoNames = deduplicateAndSortStrings( repoNames );
+		if ( normalizedRepoNames.length === 0 || ! config.githubLanguageSummaryProxyUrl ) {
+			return { languageByteTotals: [], analyzedRepoCount: 0, byteDataIncomplete: false, failedLanguageRequestCount: 0, source: 'live' };
+		}
+
+		var username = sanitizeString( config.githubUsername, 'unknown' );
+		var cooldownKey = 'github-language-summary:' + username + ':' + concatTextParts( normalizedRepoNames, '|' );
+
+		if ( getRemainingRateLimitCooldownMs( languageSummaryRateLimitCooldownByQueryKey, cooldownKey ) > 0 ) {
+			return { languageByteTotals: [], analyzedRepoCount: 0, byteDataIncomplete: false, failedLanguageRequestCount: 0, source: 'fallback-ratelimit' };
+		}
+
+		try {
+			var requestUrl = new URL( resolveRequestUrl( config.githubLanguageSummaryProxyUrl ) );
+			requestUrl.searchParams.set( 'username', username );
+			normalizedRepoNames.forEach( function ( name ) {
+				requestUrl.searchParams.append( 'repo', name );
+			} );
+
+			var response = await fetch( requestUrl.toString() );
+			if ( ! response.ok ) {
+				if ( response.status === 429 || response.status === 403 ) {
+					setRateLimitCooldown( languageSummaryRateLimitCooldownByQueryKey, cooldownKey, { retryAfterSeconds: parseRetryAfterSeconds( response.headers.get( 'Retry-After' ) ) } );
+					return { languageByteTotals: [], analyzedRepoCount: 0, byteDataIncomplete: false, failedLanguageRequestCount: 0, source: 'fallback-ratelimit' };
+				}
+				return { languageByteTotals: [], analyzedRepoCount: 0, byteDataIncomplete: false, failedLanguageRequestCount: 0, source: 'fallback-error' };
+			}
+
+			var payload = await response.json();
+			return {
+				languageByteTotals: Array.isArray( payload.languageByteTotals ) ? payload.languageByteTotals : [],
+				analyzedRepoCount: typeof payload.analyzedRepoCount === 'number' ? payload.analyzedRepoCount : 0,
+				byteDataIncomplete: !! payload.byteDataIncomplete,
+				failedLanguageRequestCount: typeof payload.failedLanguageRequestCount === 'number' ? payload.failedLanguageRequestCount : 0,
+				source: 'live',
+			};
+		} catch ( error ) {
+			if ( isOfflineError( error ) ) {
+				return { languageByteTotals: [], analyzedRepoCount: 0, byteDataIncomplete: false, failedLanguageRequestCount: 0, source: 'fallback-offline' };
+			}
+			return { languageByteTotals: [], analyzedRepoCount: 0, byteDataIncomplete: false, failedLanguageRequestCount: 0, source: 'fallback-error' };
 		}
 	}
 
@@ -1431,14 +1553,16 @@
 	}
 
 	function SignalsPanel( props ) {
-		const totalActivity = props.activityBuckets.reduce( function ( sum, bucket ) {
-			return sum + bucket.count;
-		}, 0 );
-		const recentRepoPreviewLabel = concatTextParts(
+		var hasData = props.recentlyUpdatedCount > 0 || props.signalRepoCount > 0 || props.analyzedRepoCount > 0;
+		if ( ! hasData ) {
+			return null;
+		}
+
+		var recentRepoPreviewLabel = concatTextParts(
 			props.recentRepoPreview.map( function ( repo ) {
 				return getRepoDisplayName( repo );
 			} ),
-			' • '
+			' \u2022 '
 		);
 
 		return h(
@@ -1455,41 +1579,78 @@
 			h(
 				'div',
 				{ className: 'hdc-work-stats-grid' },
+
+				// Card 1: Recently updated
 				h(
 					StatCard,
 					{ label: 'Recently updated (30 days)', value: String( props.recentlyUpdatedCount ) },
 					props.recentRepoPreview.length > 0
-						? h(
-							'p',
-							{ className: 'hdc-work-stat-meta' },
-							recentRepoPreviewLabel
-						)
+						? h( 'p', { className: 'hdc-work-stat-meta' }, recentRepoPreviewLabel )
 						: h( 'p', { className: 'hdc-work-stat-meta' }, 'No repositories updated in this window.' )
 				),
+
+				// Card 2: Top language by code volume
 				h(
 					StatCard,
-					{ label: 'Most active language (90 days)', value: props.activeLanguageLabel },
-					props.activeLanguages.length > 0
+					{
+						label: 'Top language by code volume',
+						value: props.languageSummary.top3.length > 0
+							? props.languageSummary.top3[ 0 ].language + ' ' + props.languageSummary.top3[ 0 ].percentage + '%'
+							: props.languageSummarySource === 'loading' ? 'Loading\u2026' : 'N/A',
+					},
+					props.languageSummary.top3.length > 0
 						? h(
-							'div',
-							{ className: 'hdc-work-badge-row' },
-							props.activeLanguages.slice( 0, 3 ).map( function ( item ) {
-								return h(
-									Badge,
-									{
-										key: 'language-' + item[ 0 ],
-										variant: 'secondary',
-									},
-									item[ 0 ] + ' · ' + item[ 1 ]
-								);
-							} )
+							Fragment,
+							null,
+							h(
+								'div',
+								{ className: 'hdc-work-lang-bar' },
+								props.languageSummary.top3.map( function ( item ) {
+									return h( 'div', {
+										key: 'lang-seg-' + item.language,
+										className: classNames( 'hdc-work-lang-segment', 'is-' + item.language.toLowerCase() ),
+										style: { width: item.percentage + '%' },
+									} );
+								} ),
+								props.languageSummary.otherPercentage > 0
+									? h( 'div', {
+										className: 'hdc-work-lang-segment is-other',
+										style: { width: props.languageSummary.otherPercentage + '%' },
+									} )
+									: null
+							),
+							h(
+								'div',
+								{ className: 'hdc-work-lang-legend' },
+								props.languageSummary.top3.map( function ( item ) {
+									return h(
+										'span',
+										{ key: 'lang-legend-' + item.language, className: 'hdc-work-lang-legend-item' },
+										h( LanguageBadge, { language: item.language } ),
+										' ' + item.percentage + '%'
+									);
+								} )
+							),
+							h(
+								'p',
+								{ className: 'hdc-work-stat-meta' },
+								props.analyzedRepoCount + ' repos analyzed',
+								props.languageSummary.source === 'metadata' ? ' (metadata fallback)' : ''
+							)
 						)
-						: h( 'p', { className: 'hdc-work-stat-meta' }, 'No recent language data.' )
+						: h( 'p', { className: 'hdc-work-stat-meta' }, 'No language data available.' )
 				),
+
+				// Card 3: Commit activity
 				h(
 					StatCard,
-					{ label: 'Weekly activity trend', value: String( totalActivity ) + ' updates' },
-					props.showActivitySparkline
+					{
+						label: 'Commit activity (52 weeks)',
+						value: props.commitSummary.yearlyCommits > 0
+							? formatNumber( props.commitSummary.yearlyCommits ) + ' commits'
+							: props.contributorStatsSource === 'loading' ? 'Loading\u2026' : 'N/A',
+					},
+					props.showActivitySparkline && props.commitSummary.sparklineData.length > 0
 						? h(
 							Fragment,
 							null,
@@ -1498,35 +1659,87 @@
 								{
 									className: 'hdc-work-sparkline',
 									role: 'img',
-									'aria-label':
-										'Recent repository activity sparkline over ' +
-										String( props.sparklineWeeks ) +
-										' weeks',
+									'aria-label': 'Commit activity sparkline over ' + COMMIT_SPARKLINE_WINDOW_WEEKS + ' weeks',
 								},
-								props.activityBuckets.map( function ( bucket ) {
+								props.commitSummary.sparklineData.map( function ( value, index ) {
+									var peak = Math.max.apply( null, [ 1 ].concat( props.commitSummary.sparklineData ) );
 									return h( 'span', {
-										key: 'bucket-' + bucket.label,
+										key: 'spark-' + index,
 										className: 'hdc-work-sparkline-bar',
-										title: bucket.label + ': ' + bucket.count + ' updates',
-										style: { height: bucket.height + 'px' },
+										title: 'Week ' + ( index + 1 ) + ': ' + value + ' commits',
+										style: { height: Math.max( 4, Math.round( ( value / peak ) * 56 ) ) + 'px' },
 									} );
 								} )
 							),
 							h(
+								'div',
+								{ className: 'hdc-work-stat-line' },
+								h( 'span', { className: 'hdc-work-stat-additions' }, '+' + formatNumber( props.commitSummary.yearlyAdditions ) ),
+								' ',
+								h( 'span', { className: 'hdc-work-stat-deletions' }, '-' + formatNumber( props.commitSummary.yearlyDeletions ) ),
+								' \u00B7 ',
+								formatNumber( props.commitSummary.lifetimeCommits ) + ' lifetime'
+							),
+							h(
 								'p',
 								{ className: 'hdc-work-stat-meta' },
-								String( props.sparklineWeeks ) +
-									'-week sparkline based on repository update dates.'
+								props.commitSummary.readyCount + '/' + props.signalRepoCount + ' repos',
+								props.commitSummary.computingCount > 0 ? ', ' + props.commitSummary.computingCount + ' computing' : ''
 							)
 						)
-						: h(
-							'p',
-							{ className: 'hdc-work-stat-meta' },
-							'Sparkline graph is hidden for this block instance.'
-						)
+						: h( 'p', { className: 'hdc-work-stat-meta' }, 'No commit data available.' )
+				),
+
+				// Card 4: Delivery health
+				h(
+					StatCard,
+					{
+						label: 'Delivery health',
+						value: props.ciSummary.tracked > 0
+							? props.ciSummary.passing + '/' + props.ciSummary.tracked + ' passing'
+							: props.communitySummary.avgHealth !== null
+								? props.communitySummary.avgHealth + '% avg health'
+								: props.ciStatusSource === 'loading' ? 'Loading\u2026' : 'N/A',
+					},
+					h(
+						Fragment,
+						null,
+						props.ciSummary.tracked > 0
+							? h(
+								'div',
+								{ className: 'hdc-work-stat-line' },
+								props.ciSummary.failing > 0 ? h( 'span', { className: 'hdc-work-stat-failing' }, props.ciSummary.failing + ' failing' ) : null,
+								props.ciSummary.running > 0 ? h( 'span', { className: 'hdc-work-stat-running' }, props.ciSummary.running + ' running' ) : null,
+								props.ciSummary.failing === 0 && props.ciSummary.running === 0
+									? h( 'span', { className: 'hdc-work-stat-passing' }, 'All tracked workflows passing' )
+									: null
+							)
+							: null,
+						props.communitySummary.avgHealth !== null
+							? h(
+								'p',
+								{ className: 'hdc-work-stat-meta' },
+								props.communitySummary.avgHealth + '% avg health',
+								props.communitySummary.coreDocsCount > 0 ? ' \u00B7 ' + props.communitySummary.coreDocsCount + ' with core docs' : '',
+								props.communitySummary.releaseCount > 0 ? ' \u00B7 ' + props.communitySummary.releaseCount + ' released' : ''
+							)
+							: null,
+						props.communitySummary.latestRelease
+							? h(
+								'p',
+								{ className: 'hdc-work-stat-meta' },
+								'Latest: ',
+								h( 'strong', null, getRepoDisplayName( { name: props.communitySummary.latestRelease.repo } ) ),
+								' ',
+								props.communitySummary.latestRelease.tagName,
+								' \u00B7 ',
+								formatDateLabel( props.communitySummary.latestRelease.publishedAt )
+							)
+							: null
 					)
 				)
-			);
+			)
+		);
 	}
 
 	function FeaturedCaseStudies( props ) {
@@ -2358,6 +2571,17 @@
 		const [ view, setView ] = useState( initialState.view );
 		const [ page, setPage ] = useState( initialState.page );
 		const [ showPendingRepos, setShowPendingRepos ] = useState( false );
+		var [ contributorStatsByRepo, setContributorStatsByRepo ] = useState( {} );
+		var [ contributorStatsSource, setContributorStatsSource ] = useState( 'loading' );
+		var [ languageByteTotals, setLanguageByteTotals ] = useState( [] );
+		var [ analyzedRepoCount, setAnalyzedRepoCount ] = useState( 0 );
+		var [ byteDataIncomplete, setByteDataIncomplete ] = useState( false );
+		var [ failedLanguageRequestCount, setFailedLanguageRequestCount ] = useState( 0 );
+		var [ languageSummarySource, setLanguageSummarySource ] = useState( 'loading' );
+		var [ ciStatusAllByRepo, setCIStatusAllByRepo ] = useState( {} );
+		var [ ciStatusAllSource, setCIStatusAllSource ] = useState( 'loading' );
+		var [ repoProofsAllByRepo, setRepoProofsAllByRepo ] = useState( {} );
+		var [ repoProofsAllSource, setRepoProofsAllSource ] = useState( 'loading' );
 
 		useEffect( function () {
 			function handleVisibility() {
@@ -2587,29 +2811,6 @@
 			[ repos, now ]
 		);
 
-		const activeLanguages = useMemo(
-			function () {
-				const recentRepos = repos.filter( function ( repo ) {
-					return isUpdatedWithin( repo, SIGNAL_LANGUAGE_WINDOW_DAYS, now );
-				} );
-				const counts = new Map();
-
-				recentRepos.forEach( function ( repo ) {
-					const language = repo.language || 'Unknown';
-					counts.set( language, ( counts.get( language ) || 0 ) + 1 );
-				} );
-
-				return Array.from( counts.entries() )
-					.sort( function ( a, b ) {
-						return b[ 1 ] - a[ 1 ];
-					} )
-					.slice( 0, 5 );
-			},
-			[ repos, now ]
-		);
-
-		const activeLanguageLabel = activeLanguages[ 0 ] ? activeLanguages[ 0 ][ 0 ] : 'N/A';
-
 		const timelineRepos = useMemo(
 			function () {
 				return describedRepos.slice().sort( compareReposByUpdatedAtDesc );
@@ -2642,57 +2843,146 @@
 			[ visibleGitHubRepoNames ]
 		);
 
-		const activityBuckets = useMemo(
-			function () {
-				const bucketCount = config.sparklineWeeks;
-				const bucketMs = 7 * 24 * 60 * 60 * 1000;
-				const buckets = Array.from( { length: bucketCount }, function ( _unused, index ) {
-					return {
-						count: 0,
-						label: getActivityBucketLabel( index, bucketCount ),
-					};
-				} );
-
-				repos.forEach( function ( repo ) {
-					const timestamp = getRepoUpdatedTimestamp( repo );
-					if ( ! Number.isFinite( timestamp ) ) {
-						return;
-					}
-
-					const age = now - timestamp;
-					if ( age < 0 ) {
-						return;
-					}
-
-					const bucketIndex = bucketCount - 1 - Math.floor( age / bucketMs );
-					if ( bucketIndex < 0 || bucketIndex >= bucketCount ) {
-						return;
-					}
-
-					buckets[ bucketIndex ].count += 1;
-				} );
-
-				const peak = Math.max.apply(
-					undefined,
-					[ 1 ].concat(
-						buckets.map( function ( bucket ) {
-							return bucket.count;
-						} )
-					)
-				);
-
-				return buckets.map( function ( bucket ) {
-					return {
-						count: bucket.count,
-						label: bucket.label,
-						height: Math.max( 14, Math.round( ( bucket.count / peak ) * 56 ) ),
-					};
-				} );
-			},
-			[ repos, now, config.sparklineWeeks ]
-		);
-
 		const recentRepoPreview = recentlyUpdatedRepos.slice( 0, 3 );
+
+		var signalRepos = useMemo( function () {
+			return repos.filter( function ( repo ) {
+				return repo.origin === 'github' && repo.access !== 'private';
+			} );
+		}, [ repos ] );
+
+		var signalRepoNames = useMemo( function () {
+			return signalRepos.map( function ( repo ) { return repo.name; } );
+		}, [ signalRepos ] );
+
+		var commitSummary = useMemo( function () {
+			var weeklyBuckets = {};
+			var lifetimeCommits = 0;
+			var yearlyCommits = 0;
+			var yearlyAdditions = 0;
+			var yearlyDeletions = 0;
+			var readyCount = 0;
+			var computingCount = 0;
+			var missingCount = 0;
+
+			signalRepos.forEach( function ( repo ) {
+				var stats = contributorStatsByRepo[ repo.name ] || contributorStatsByRepo[ repo.name.toLowerCase() ];
+				if ( ! stats ) { missingCount++; return; }
+				if ( stats.status === 'computing' ) { computingCount++; return; }
+				if ( stats.status !== 'ready' || ! stats.contributorStats ) { missingCount++; return; }
+				readyCount++;
+
+				var cs = stats.contributorStats;
+				lifetimeCommits += cs.totalCommits || 0;
+				yearlyCommits += cs.lastYearCommits || 0;
+				yearlyAdditions += cs.lastYearAdditions || 0;
+				yearlyDeletions += cs.lastYearDeletions || 0;
+
+				( cs.weeks || [] ).forEach( function ( week ) {
+					var key = week.weekStart;
+					if ( ! key ) { return; }
+					if ( ! weeklyBuckets[ key ] ) { weeklyBuckets[ key ] = 0; }
+					weeklyBuckets[ key ] += week.commits || 0;
+				} );
+			} );
+
+			var sortedWeeks = Object.keys( weeklyBuckets ).sort();
+			var sparklineWeeks = sortedWeeks.slice( -COMMIT_SPARKLINE_WINDOW_WEEKS );
+			var sparklineData = sparklineWeeks.map( function ( key ) { return weeklyBuckets[ key ]; } );
+			var activeWeeks = sortedWeeks.filter( function ( key ) { return weeklyBuckets[ key ] > 0; } ).length;
+			var totalWeeksInWindow = Math.min( sortedWeeks.length, COMMIT_TOTAL_WINDOW_WEEKS );
+
+			return {
+				sparklineData: sparklineData,
+				lifetimeCommits: lifetimeCommits,
+				yearlyCommits: yearlyCommits,
+				yearlyAdditions: yearlyAdditions,
+				yearlyDeletions: yearlyDeletions,
+				readyCount: readyCount,
+				computingCount: computingCount,
+				missingCount: missingCount,
+				activeWeeks: activeWeeks,
+				totalWeeksInWindow: totalWeeksInWindow,
+			};
+		}, [ signalRepos, contributorStatsByRepo ] );
+
+		var ciSummary = useMemo( function () {
+			var passing = 0;
+			var failing = 0;
+			var running = 0;
+			var none = 0;
+
+			signalRepos.forEach( function ( repo ) {
+				var status = ciStatusAllByRepo[ repo.name ] || ciStatusAllByRepo[ repo.name.toLowerCase() ];
+				if ( ! status ) { none++; return; }
+				var ciStatus = typeof status === 'string' ? status : status.ciStatus;
+				switch ( ciStatus ) {
+					case 'passing': passing++; break;
+					case 'failing': failing++; break;
+					case 'running': running++; break;
+					default: none++; break;
+				}
+			} );
+
+			var tracked = passing + failing + running;
+			return { passing: passing, failing: failing, running: running, none: none, tracked: tracked };
+		}, [ signalRepos, ciStatusAllByRepo ] );
+
+		var languageSummary = useMemo( function () {
+			if ( languageByteTotals.length > 0 ) {
+				var sorted = languageByteTotals.slice().sort( function ( a, b ) { return b.bytes - a.bytes; } );
+				var totalBytes = sorted.reduce( function ( sum, item ) { return sum + item.bytes; }, 0 );
+				var top3 = sorted.slice( 0, 3 ).map( function ( item ) {
+					return { language: item.language, percentage: totalBytes > 0 ? Math.round( ( item.bytes / totalBytes ) * 100 ) : 0 };
+				} );
+				var otherPercentage = 100 - top3.reduce( function ( sum, item ) { return sum + item.percentage; }, 0 );
+				return { top3: top3, otherPercentage: Math.max( 0, otherPercentage ), source: 'bytes' };
+			}
+
+			var eligibleRepos = signalRepos.filter( function ( repo ) { return repo.sizeKb >= LANGUAGE_FALLBACK_MIN_REPO_SIZE_KB; } );
+			var langWeights = {};
+			var totalWeight = 0;
+			eligibleRepos.forEach( function ( repo ) {
+				var lang = repo.language || 'Unknown';
+				langWeights[ lang ] = ( langWeights[ lang ] || 0 ) + repo.sizeKb;
+				totalWeight += repo.sizeKb;
+			} );
+			var sorted2 = Object.entries( langWeights ).sort( function ( a, b ) { return b[ 1 ] - a[ 1 ]; } );
+			var top3fb = sorted2.slice( 0, 3 ).map( function ( entry ) {
+				return { language: entry[ 0 ], percentage: totalWeight > 0 ? Math.round( ( entry[ 1 ] / totalWeight ) * 100 ) : 0 };
+			} );
+			var otherFb = 100 - top3fb.reduce( function ( sum, item ) { return sum + item.percentage; }, 0 );
+			return { top3: top3fb, otherPercentage: Math.max( 0, otherFb ), source: 'metadata' };
+		}, [ languageByteTotals, signalRepos ] );
+
+		var communitySummary = useMemo( function () {
+			var healthScores = [];
+			var coreDocsCount = 0;
+			var releaseCount = 0;
+			var latestRelease = null;
+
+			signalRepos.forEach( function ( repo ) {
+				var proof = repoProofsAllByRepo[ repo.name ] || repoProofsAllByRepo[ repo.name.toLowerCase() ];
+				if ( ! proof ) { return; }
+
+				if ( proof.communityHealth && typeof proof.communityHealth.healthPercentage === 'number' ) {
+					healthScores.push( proof.communityHealth.healthPercentage );
+					var files = proof.communityHealth.files || {};
+					if ( files.hasReadme && files.hasLicense && files.hasContributing ) {
+						coreDocsCount++;
+					}
+				}
+				if ( proof.releaseStatus === 'published' && proof.latestRelease ) {
+					releaseCount++;
+					if ( ! latestRelease || ( proof.latestRelease.publishedAt > latestRelease.publishedAt ) ) {
+						latestRelease = { repo: repo.name, tagName: proof.latestRelease.tagName, publishedAt: proof.latestRelease.publishedAt };
+					}
+				}
+			} );
+
+			var avgHealth = healthScores.length > 0 ? Math.round( healthScores.reduce( function ( sum, s ) { return sum + s; }, 0 ) / healthScores.length ) : null;
+			return { avgHealth: avgHealth, coreDocsCount: coreDocsCount, releaseCount: releaseCount, latestRelease: latestRelease };
+		}, [ signalRepos, repoProofsAllByRepo ] );
 
 		useEffect(
 			function () {
@@ -2769,6 +3059,61 @@
 			},
 			[ config, loading, view, visibleGitHubRepoFingerprint, visibleGitHubRepoNames ]
 		);
+
+		useEffect( function () {
+			var cancelled = false;
+			if ( loading || signalRepoNames.length === 0 ) {
+				return function () { cancelled = true; };
+			}
+			loadContributorStats( config, signalRepoNames ).then( function ( data ) {
+				if ( cancelled ) { return; }
+				setContributorStatsByRepo( data.contributorStatsByRepo );
+				setContributorStatsSource( data.source );
+			} );
+			return function () { cancelled = true; };
+		}, [ config, loading, signalRepoNames ] );
+
+		useEffect( function () {
+			var cancelled = false;
+			if ( loading || signalRepoNames.length === 0 ) {
+				return function () { cancelled = true; };
+			}
+			loadLanguageSummary( config, signalRepoNames ).then( function ( data ) {
+				if ( cancelled ) { return; }
+				setLanguageByteTotals( data.languageByteTotals );
+				setAnalyzedRepoCount( data.analyzedRepoCount );
+				setByteDataIncomplete( data.byteDataIncomplete );
+				setFailedLanguageRequestCount( data.failedLanguageRequestCount );
+				setLanguageSummarySource( data.source );
+			} );
+			return function () { cancelled = true; };
+		}, [ config, loading, signalRepoNames ] );
+
+		useEffect( function () {
+			var cancelled = false;
+			if ( loading || signalRepoNames.length === 0 ) {
+				return function () { cancelled = true; };
+			}
+			loadCIStatus( config, signalRepoNames ).then( function ( data ) {
+				if ( cancelled ) { return; }
+				setCIStatusAllByRepo( data.ciStatusByRepo );
+				setCIStatusAllSource( data.source );
+			} );
+			return function () { cancelled = true; };
+		}, [ config, loading, signalRepoNames ] );
+
+		useEffect( function () {
+			var cancelled = false;
+			if ( loading || signalRepoNames.length === 0 ) {
+				return function () { cancelled = true; };
+			}
+			loadRepoProofs( config, signalRepoNames ).then( function ( data ) {
+				if ( cancelled ) { return; }
+				setRepoProofsAllByRepo( data.proofsByRepoName );
+				setRepoProofsAllSource( data.source );
+			} );
+			return function () { cancelled = true; };
+		}, [ config, loading, signalRepoNames ] );
 
 		useEffect(
 			function () {
@@ -2885,11 +3230,20 @@
 						} ),
 						config.showSignalsPanel
 							? h( SignalsPanel, {
-								activeLanguageLabel: activeLanguageLabel,
-								activeLanguages: activeLanguages,
-								activityBuckets: activityBuckets,
-								recentRepoPreview: recentRepoPreview,
 								recentlyUpdatedCount: recentlyUpdatedRepos.length,
+								recentRepoPreview: recentRepoPreview,
+								commitSummary: commitSummary,
+								contributorStatsSource: contributorStatsSource,
+								ciSummary: ciSummary,
+								ciStatusSource: ciStatusAllSource,
+								languageSummary: languageSummary,
+								analyzedRepoCount: analyzedRepoCount,
+								byteDataIncomplete: byteDataIncomplete,
+								failedLanguageRequestCount: failedLanguageRequestCount,
+								languageSummarySource: languageSummarySource,
+								communitySummary: communitySummary,
+								repoProofsSource: repoProofsAllSource,
+								signalRepoCount: signalRepos.length,
 								showActivitySparkline: config.showActivitySparkline,
 								sparklineWeeks: config.sparklineWeeks,
 							} )

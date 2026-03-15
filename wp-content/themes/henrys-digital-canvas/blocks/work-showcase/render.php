@@ -37,6 +37,8 @@ $config = array(
 	'githubProxyUrl'  => '/api/github/repos',
 	'githubRepoProofsProxyUrl' => '/api/github/repo-proofs',
 	'githubCIStatusProxyUrl' => '/api/github/ci-status',
+	'githubContributorStatsProxyUrl' => '/api/github/contributor-stats',
+	'githubLanguageSummaryProxyUrl' => '/api/github/language-summary',
 	'localReposUrl'   => esc_url_raw( get_theme_file_uri( 'blocks/work-showcase/data/repos.json' ) ),
 	'repoCaseStudyDetailsUrl' => esc_url_raw( get_theme_file_uri( 'blocks/work-showcase/data/repo-case-study-details.json' ) ),
 );
