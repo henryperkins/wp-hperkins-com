@@ -21,7 +21,7 @@
 	const PAGE_SIZE = 6;
 	const PLACEHOLDER_DESCRIPTION = 'Description coming soon.';
 	const PENDING_DESCRIPTION_PREVIEW_COUNT = 8;
-	const FEATURED_CASE_STUDY_LIMIT = 6;
+	const FEATURED_CASE_STUDY_LIMIT = 3;
 	const SIGNAL_ACTIVITY_WINDOW_DAYS = 30;
 	const SIGNAL_LANGUAGE_WINDOW_DAYS = 90;
 	const DEFAULT_FILTER = 'All';
@@ -307,6 +307,7 @@
 
 		return withUpdatedAtTimestamp( {
 			name: sanitizeString( repo.name, 'unknown-repository' ),
+			displayName: sanitizeString( repo.displayName || repo.display_name, '' ),
 			description: sanitizeString( repo.description, PLACEHOLDER_DESCRIPTION ),
 			language: sanitizeString( repo.language, 'Unknown' ),
 			stars: Number.isFinite( Number( repo.stars ) ) ? Number( repo.stars ) : 0,
@@ -320,10 +321,12 @@
 			defaultBranch: sanitizeString( repo.defaultBranch, '' ),
 			topics: normalizedTopics,
 			featured: !! repo.featured,
+			featuredPriority: typeof repo.featuredPriority === 'number' ? repo.featuredPriority : 999,
 			demoUrl: sanitizeString( repo.demoUrl, '' ),
 			learned: sanitizeString( repo.learned, '' ),
 			origin: repo.origin === 'github' ? 'github' : 'curated',
 			access: repo.access === 'private' ? 'private' : 'public',
+			sizeKb: Number.isFinite( Number( repo.sizeKb || repo.size ) ) ? Number( repo.sizeKb || repo.size ) : 0,
 			accessNote: sanitizeString( repo.accessNote, '' ),
 			role: ROLE_ORDER.indexOf( repo.role ) !== -1 ? repo.role : undefined,
 			whyItMatters: sanitizeString( repo.whyItMatters, '' ),
@@ -375,6 +378,21 @@
 					}
 					: undefined,
 		} );
+	}
+
+	function getRepoDisplayName( repo ) {
+		if ( repo.displayName ) {
+			return repo.displayName;
+		}
+		return repo.name
+			.split( /[-_]/ )
+			.map( function ( token ) {
+				if ( token.length <= 3 ) {
+					return token.toUpperCase();
+				}
+				return token.charAt( 0 ).toUpperCase() + token.slice( 1 );
+			} )
+			.join( ' ' );
 	}
 
 	function hasCuratedDescription( description ) {
@@ -1374,7 +1392,7 @@
 		}, 0 );
 		const recentRepoPreviewLabel = concatTextParts(
 			props.recentRepoPreview.map( function ( repo ) {
-				return repo.name;
+				return getRepoDisplayName( repo );
 			} ),
 			' • '
 		);
@@ -1506,7 +1524,7 @@
 								formatDateLabel( repo.updatedAt )
 							)
 						),
-						h( 'h4', { className: 'hdc-work-featured-title' }, repo.name ),
+						h( 'h4', { className: 'hdc-work-featured-title' }, getRepoDisplayName( repo ) ),
 						h(
 							'p',
 							{ className: 'hdc-work-featured-summary' },
@@ -1724,7 +1742,7 @@
 													event.stopPropagation();
 												},
 											},
-											repo.name
+											getRepoDisplayName( repo )
 										);
 									} ).concat(
 										! isExpanded && hiddenPreviewCount > 0
@@ -1813,7 +1831,7 @@
 										className: 'hdc-work-timeline-title hdc-work-inline-link',
 										href: getWorkDetailUrl( repo.name ),
 									},
-									repo.name
+									getRepoDisplayName( repo )
 								),
 								h(
 									'div',
@@ -1901,7 +1919,7 @@
 								className: 'hdc-work-inline-link',
 								href: getWorkDetailUrl( repo.name ),
 							},
-							repo.name
+							getRepoDisplayName( repo )
 						)
 					)
 				)
@@ -2138,7 +2156,7 @@
 											className: 'hdc-work-timeline-title hdc-work-inline-link',
 											href: getWorkDetailUrl( repo.name ),
 										},
-										repo.name
+										getRepoDisplayName( repo )
 									),
 									h(
 										'div',
@@ -2230,7 +2248,7 @@
 								h(
 									'div',
 									{ className: 'hdc-work-list-item-main' },
-									h( 'p', { className: 'hdc-work-list-item-title' }, repo.name ),
+									h( 'p', { className: 'hdc-work-list-item-title' }, getRepoDisplayName( repo ) ),
 									h( 'p', { className: 'hdc-work-list-item-text' }, repo.language )
 								),
 								h(
@@ -2453,6 +2471,12 @@
 							repo.result &&
 							repo.result.length
 						);
+					} )
+					.sort( function ( a, b ) {
+						if ( a.featuredPriority !== b.featuredPriority ) {
+							return a.featuredPriority - b.featuredPriority;
+						}
+						return compareReposByUpdatedAtDesc( a, b );
 					} )
 					.slice( 0, FEATURED_CASE_STUDY_LIMIT );
 			},
