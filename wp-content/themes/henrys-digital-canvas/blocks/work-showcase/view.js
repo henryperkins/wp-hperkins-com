@@ -68,6 +68,15 @@
 		'dashboard',
 		'app',
 	] );
+	var WORK_VISUALS = null;
+
+	function getRepoVisualSet( repoName ) {
+		if ( ! WORK_VISUALS || ! repoName ) {
+			return undefined;
+		}
+		return WORK_VISUALS[ repoName.toLowerCase() ];
+	}
+
 	const repoRateLimitCooldownByQueryKey = new Map();
 	const repoProofRateLimitCooldownByQueryKey = new Map();
 	const ciStatusRateLimitCooldownByQueryKey = new Map();
@@ -393,6 +402,28 @@
 				return token.charAt( 0 ).toUpperCase() + token.slice( 1 );
 			} )
 			.join( ' ' );
+	}
+
+	var LANGUAGE_COLOR_MAP = {
+		TypeScript: '--language-typescript',
+		Python: '--language-python',
+		JavaScript: '--language-javascript',
+		PHP: '--language-php',
+		Markdown: '--language-markdown',
+	};
+
+	function LanguageBadge( props ) {
+		var colorVar = LANGUAGE_COLOR_MAP[ props.language ] || '--border';
+		return h(
+			'span',
+			{ className: 'hdc-work-lang-badge' },
+			h( 'span', {
+				className: 'hdc-work-lang-dot',
+				'aria-hidden': 'true',
+				style: { background: 'hsl(var(' + colorVar + '))' },
+			} ),
+			props.language
+		);
 	}
 
 	function hasCuratedDescription( description ) {
@@ -1187,6 +1218,19 @@
 			return withUpdatedAtTimestamp( normalizeRepo( repo ) );
 		} );
 
+		try {
+			var visualsUrl = config.repoCaseStudyDetailsUrl.replace(
+				'repo-case-study-details.json',
+				'work-visuals.json'
+			);
+			var visualsResponse = await fetch( visualsUrl );
+			if ( visualsResponse.ok ) {
+				WORK_VISUALS = await visualsResponse.json();
+			}
+		} catch ( _unused ) {
+			// Visual data is optional.
+		}
+
 		return {
 			repos: repos,
 			source: source,
@@ -1524,6 +1568,20 @@
 								formatDateLabel( repo.updatedAt )
 							)
 						),
+						( function () {
+							var visuals = getRepoVisualSet( repo.name );
+							if ( ! visuals || ! visuals.cover ) {
+								return null;
+							}
+							return h( 'img', {
+								className: 'hdc-work-featured-cover',
+								src: visuals.cover.src,
+								srcSet: visuals.cover.srcSet,
+								alt: visuals.cover.alt,
+								loading: 'lazy',
+								sizes: '(max-width: 720px) 100vw, 33vw',
+							} );
+						} )(),
 						h( 'h4', { className: 'hdc-work-featured-title' }, getRepoDisplayName( repo ) ),
 						h(
 							'p',
@@ -1684,7 +1742,8 @@
 							{ className: 'hdc-work-role-proportion' },
 							h( 'div', {
 								className: 'hdc-work-role-proportion-fill',
-								style: { width: proportionPercent + '%' },
+								style: { width: '0%' },
+								'data-target-width': String( proportionPercent ),
 							} )
 						),
 						h(
@@ -1906,7 +1965,7 @@
 								{ className: 'hdc-work-repo-origin-icon-svg', size: 14 }
 							)
 						),
-						h( Badge, { variant: 'secondary' }, repo.language ),
+						h( Badge, { variant: 'secondary' }, h( LanguageBadge, { language: repo.language } ) ),
 						repo.featured ? h( Badge, { variant: 'default' }, 'Featured' ) : null,
 						repo.access === 'private' ? h( Badge, { variant: 'secondary' }, 'Private' ) : null
 					),
@@ -1995,6 +2054,7 @@
 							h(
 								'span',
 								{ className: 'hdc-work-repo-meta-item' },
+								h( 'span', { className: 'screen-reader-text' }, 'Stars:' ),
 								h(
 									'span',
 									{ className: 'hdc-work-repo-meta-icon', 'aria-hidden': 'true' },
@@ -2005,6 +2065,7 @@
 							h(
 								'span',
 								{ className: 'hdc-work-repo-meta-item' },
+								h( 'span', { className: 'screen-reader-text' }, 'Forks:' ),
 								h(
 									'span',
 									{ className: 'hdc-work-repo-meta-icon', 'aria-hidden': 'true' },
@@ -2016,6 +2077,7 @@
 								? h(
 									'span',
 									{ className: 'hdc-work-repo-meta-item' },
+									h( 'span', { className: 'screen-reader-text' }, 'Open issues:' ),
 									h(
 										'span',
 										{ className: 'hdc-work-repo-meta-icon', 'aria-hidden': 'true' },
@@ -2029,6 +2091,7 @@
 					h(
 						'span',
 						{ className: 'hdc-work-repo-meta-item' },
+						h( 'span', { className: 'screen-reader-text' }, 'Last updated:' ),
 						h(
 							'span',
 							{ className: 'hdc-work-repo-meta-icon', 'aria-hidden': 'true' },
@@ -2099,7 +2162,7 @@
 										disabled: props.safePage <= 1,
 										'aria-label': 'Previous page',
 									},
-									'Previous'
+									renderLucideIcon( h, 'chevron-left', { size: 16 } )
 								),
 								h(
 									'button',
@@ -2110,7 +2173,7 @@
 										disabled: props.safePage >= props.totalPages,
 										'aria-label': 'Next page',
 									},
-									'Next'
+									renderLucideIcon( h, 'chevron-right', { size: 16 } )
 								)
 							)
 						)
@@ -2715,6 +2778,13 @@
 
 				const frameId = window.requestAnimationFrame( function () {
 					initRevealObserver();
+					requestAnimationFrame( function () {
+						requestAnimationFrame( function () {
+							document.querySelectorAll( '.hdc-work-role-proportion-fill[data-target-width]' ).forEach( function ( el ) {
+								el.style.width = el.getAttribute( 'data-target-width' ) + '%';
+							} );
+						} );
+					} );
 				} );
 
 				return function () {

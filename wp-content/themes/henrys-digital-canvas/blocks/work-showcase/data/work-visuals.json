@@ -1,0 +1,30 @@
+{
+  "ai-cli-web-funnel": {
+    "cover": {
+      "alt": "Forge case study cover showing a governed install pipeline with trust gates and amber signal paths",
+      "src": "/images/work/case-studies/forge-cli-cover.webp",
+      "srcSet": "/images/work/case-studies/forge-cli-cover-960.webp 960w, /images/work/case-studies/forge-cli-cover.webp 1536w"
+    }
+  },
+  "ai-prompt-pro": {
+    "cover": {
+      "alt": "Prompt Forge case study cover showing builder blocks, streaming prompt refinement, and community pathways",
+      "src": "/images/work/case-studies/promptforge-cover.webp",
+      "srcSet": "/images/work/case-studies/promptforge-cover-960.webp 960w, /images/work/case-studies/promptforge-cover.webp 1536w"
+    }
+  },
+  "henry-s-digital-canvas": {
+    "cover": {
+      "alt": "HPerkins.com case study cover showing editorial content panels, linked runtime nodes, and a square framing motif",
+      "src": "/images/work/case-studies/digital-canvas-cover.webp",
+      "srcSet": "/images/work/case-studies/digital-canvas-cover-960.webp 960w, /images/work/case-studies/digital-canvas-cover.webp 1536w"
+    }
+  },
+  "tarot": {
+    "cover": {
+      "alt": "Tableu case study cover showing a three-card spread, celestial orbit lines, and position-aware interpretation glow",
+      "src": "/images/work/case-studies/tarot-cover.webp",
+      "srcSet": "/images/work/case-studies/tarot-cover-960.webp 960w, /images/work/case-studies/tarot-cover.webp 1536w"
+    }
+  }
+}

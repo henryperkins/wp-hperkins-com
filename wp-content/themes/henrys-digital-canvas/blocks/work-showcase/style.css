@@ -321,6 +321,29 @@
 	padding: 0.85rem;
 }
 
+.hdc-work-featured-cover {
+	aspect-ratio: 16 / 9;
+	width: 100%;
+	object-fit: cover;
+	border-radius: var(--radius-control);
+	margin-bottom: var(--wpds-space-sm, 0.75rem);
+}
+
+.hdc-work-lang-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.375rem;
+	font-size: 0.75rem;
+	color: hsl(var(--text-meta));
+}
+
+.hdc-work-lang-dot {
+	width: 0.625rem;
+	height: 0.625rem;
+	border-radius: 50%;
+	flex-shrink: 0;
+}
+
 .hdc-work-featured-top,
 .hdc-work-repo-top,
 .hdc-work-repo-title-row,
