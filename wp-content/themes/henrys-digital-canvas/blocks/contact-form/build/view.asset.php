@@ -1,1 +1,1 @@
-<?php return array('dependencies' => array('hdc-shared-utils', 'react-jsx-runtime', 'wp-element'), 'version' => 'c55d27b0a91e5d53a712');
+<?php return array('dependencies' => array('hdc-shared-utils', 'react-jsx-runtime', 'wp-element'), 'version' => '4b922e3980d0d13c3f60');

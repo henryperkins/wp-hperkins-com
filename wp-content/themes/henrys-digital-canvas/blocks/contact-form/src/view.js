@@ -136,10 +136,7 @@ function parseConfig( section ) {
 				parsed.submittingLabel || form.submittingLabel,
 				'Sending…'
 			),
-			successTitle: ensureString(
-				form.successTitle,
-				'Message sent!'
-			),
+			successTitle: ensureString( form.successTitle, 'Message sent!' ),
 			successMessage: ensureString(
 				form.successMessage,
 				"Thanks for reaching out. I'll get back to you soon."
@@ -240,9 +237,7 @@ function loadTurnstileScript() {
 		resolve,
 		reject
 	) {
-		const existingScript = document.getElementById(
-			TURNSTILE_SCRIPT_ID
-		);
+		const existingScript = document.getElementById( TURNSTILE_SCRIPT_ID );
 		if ( existingScript ) {
 			existingScript.addEventListener( 'load', resolve, {
 				once: true,
@@ -273,34 +268,44 @@ function loadTurnstileScript() {
 }
 
 function TurnstileWidget( props ) {
+	const {
+		controlRef,
+		onTokenChange,
+		siteKey,
+		action,
+		onError,
+		ariaDescribedBy,
+		ariaLabelledBy,
+		invalid,
+	} = props;
 	const groupRef = useRef( null );
 	const containerRef = useRef( null );
 	const widgetIdRef = useRef( null );
 
 	useEffect(
 		function () {
-			props.controlRef.current = {
-				focus: function () {
+			controlRef.current = {
+				focus() {
 					if ( groupRef.current ) {
 						groupRef.current.focus();
 					}
 				},
-				reset: function () {
+				reset() {
 					if ( widgetIdRef.current && window.turnstile ) {
 						window.turnstile.reset( widgetIdRef.current );
 					}
-					props.onTokenChange( '' );
+					onTokenChange( '' );
 				},
 			};
 
 			return function () {
-				props.controlRef.current = {
-					focus: function () {},
-					reset: function () {},
+				controlRef.current = {
+					focus() {},
+					reset() {},
 				};
 			};
 		},
-		[ props.controlRef, props.onTokenChange ]
+		[ controlRef, onTokenChange ]
 	);
 
 	useEffect(
@@ -321,25 +326,25 @@ function TurnstileWidget( props ) {
 					widgetIdRef.current = window.turnstile.render(
 						containerRef.current,
 						{
-							sitekey: props.siteKey,
+							sitekey: siteKey,
 							theme: 'auto',
 							size: 'flexible',
-							action: props.action,
-							callback: function ( token ) {
-								props.onTokenChange( token );
+							action,
+							callback( token ) {
+								onTokenChange( token );
 							},
-							'expired-callback': function () {
-								props.onTokenChange( '' );
+							'expired-callback'() {
+								onTokenChange( '' );
 							},
-							'error-callback': function () {
-								props.onTokenChange( '' );
-								props.onError();
+							'error-callback'() {
+								onTokenChange( '' );
+								onError();
 							},
 						}
 					);
 				} catch ( error ) {
-					props.onTokenChange( '' );
-					props.onError();
+					onTokenChange( '' );
+					onError();
 				}
 			}
 
@@ -353,14 +358,15 @@ function TurnstileWidget( props ) {
 				widgetIdRef.current = null;
 			};
 		},
-		[ props.action, props.onError, props.onTokenChange, props.siteKey ]
+		[ action, onError, onTokenChange, siteKey ]
 	);
 
 	return (
+		// eslint-disable-next-line jsx-a11y/role-supports-aria-props -- intentional: aria-invalid + aria-required on role="group" for Turnstile verification shell
 		<div
-			aria-describedby={ props.ariaDescribedBy }
-			aria-invalid={ props.invalid ? 'true' : undefined }
-			aria-labelledby={ props.ariaLabelledBy }
+			aria-describedby={ ariaDescribedBy }
+			aria-invalid={ invalid ? 'true' : undefined }
+			aria-labelledby={ ariaLabelledBy }
 			aria-required="true"
 			className="hdc-contact-form__verification-shell"
 			ref={ groupRef }
@@ -416,8 +422,8 @@ function submitContact( endpoint, payload ) {
 function ContactFormApp( props ) {
 	const config = props.config;
 	const turnstileControlRef = useRef( {
-		focus: function () {},
-		reset: function () {},
+		focus() {},
+		reset() {},
 	} );
 	const [ formData, setFormData ] = useState( {
 		name: '',
@@ -537,7 +543,6 @@ function ContactFormApp( props ) {
 		try {
 			await submitContact( config.endpoint, payload );
 			setStatus( 'success' );
-			return;
 		} catch ( primaryError ) {
 			const shouldTryRest =
 				primaryError &&
@@ -564,8 +569,7 @@ function ContactFormApp( props ) {
 
 					if (
 						fallbackError &&
-						fallbackError.message ===
-							config.turnstile.requiredError
+						fallbackError.message === config.turnstile.requiredError
 					) {
 						setTurnstileError( fallbackError.message );
 						setStatus( 'idle' );
@@ -689,16 +693,15 @@ function ContactFormApp( props ) {
 							{ config.guidance.focusAreasHeading }
 						</h3>
 						<ul className="hdc-contact-form__list">
-							{ config.guidance.focusAreas.map( function (
-								item,
-								index
-							) {
-								return (
-									<li key={ 'focus-' + String( index ) }>
-										{ item }
-									</li>
-								);
-							} ) }
+							{ config.guidance.focusAreas.map(
+								function ( item, index ) {
+									return (
+										<li key={ 'focus-' + String( index ) }>
+											{ item }
+										</li>
+									);
+								}
+							) }
 						</ul>
 					</div>
 					<div className="hdc-contact-form__guidance-block">
@@ -706,20 +709,19 @@ function ContactFormApp( props ) {
 							{ config.guidance.briefingHeading }
 						</h3>
 						<ul className="hdc-contact-form__list">
-							{ config.guidance.briefingItems.map( function (
-								item,
-								index
-							) {
-								return (
-									<li
-										key={
-											'briefing-' + String( index )
-										}
-									>
-										{ item }
-									</li>
-								);
-							} ) }
+							{ config.guidance.briefingItems.map(
+								function ( item, index ) {
+									return (
+										<li
+											key={
+												'briefing-' + String( index )
+											}
+										>
+											{ item }
+										</li>
+									);
+								}
+							) }
 						</ul>
 					</div>
 					{ config.guidance.timingNote ? (
@@ -800,9 +802,7 @@ function ContactFormApp( props ) {
 								name="name"
 								onBlur={ onBlur }
 								onChange={ onChange }
-								placeholder={
-									config.form.placeholders.name
-								}
+								placeholder={ config.form.placeholders.name }
 								required
 								type="text"
 								value={ formData.name }
@@ -829,9 +829,7 @@ function ContactFormApp( props ) {
 								name="email"
 								onBlur={ onBlur }
 								onChange={ onChange }
-								placeholder={
-									config.form.placeholders.email
-								}
+								placeholder={ config.form.placeholders.email }
 								required
 								type="email"
 								value={ formData.email }
@@ -850,9 +848,7 @@ function ContactFormApp( props ) {
 									'message'
 								) }
 								aria-invalid={
-									fieldErrors.message
-										? 'true'
-										: undefined
+									fieldErrors.message ? 'true' : undefined
 								}
 								className="hdc-contact-form__input hdc-contact-form__textarea"
 								disabled={ status === 'submitting' }
@@ -860,9 +856,7 @@ function ContactFormApp( props ) {
 								name="message"
 								onBlur={ onBlur }
 								onChange={ onChange }
-								placeholder={
-									config.form.placeholders.message
-								}
+								placeholder={ config.form.placeholders.message }
 								required
 								rows={ 5 }
 								value={ formData.message }
@@ -879,17 +873,14 @@ function ContactFormApp( props ) {
 							{ config.turnstile.siteKey ? (
 								<TurnstileWidget
 									action={ config.turnstile.action }
-									ariaDescribedBy={
-										turnstileDescribedBy
-									}
+									ariaDescribedBy={ turnstileDescribedBy }
 									ariaLabelledBy={ TURNSTILE_LABEL_ID }
 									controlRef={ turnstileControlRef }
 									invalid={ !! turnstileError }
 									onError={ function () {
 										setTurnstileToken( '' );
 										setTurnstileError(
-											config.turnstile
-												.unavailableError
+											config.turnstile.unavailableError
 										);
 										turnstileControlRef.current.focus();
 									} }
@@ -902,14 +893,11 @@ function ContactFormApp( props ) {
 									siteKey={ config.turnstile.siteKey }
 								/>
 							) : (
+								// eslint-disable-next-line jsx-a11y/role-supports-aria-props -- intentional: aria-invalid + aria-required on role="group" for Turnstile unavailable shell
 								<div
-									aria-describedby={
-										TURNSTILE_ERROR_ID
-									}
+									aria-describedby={ TURNSTILE_ERROR_ID }
 									aria-invalid="true"
-									aria-labelledby={
-										TURNSTILE_LABEL_ID
-									}
+									aria-labelledby={ TURNSTILE_LABEL_ID }
 									aria-required="true"
 									className="hdc-contact-form__verification-shell"
 									role="group"
@@ -920,10 +908,7 @@ function ContactFormApp( props ) {
 										id={ TURNSTILE_ERROR_ID }
 										role="alert"
 									>
-										{
-											config.turnstile
-												.unavailableError
-										}
+										{ config.turnstile.unavailableError }
 									</p>
 								</div>
 							) }
@@ -940,21 +925,15 @@ function ContactFormApp( props ) {
 											: TURNSTILE_HINT_ID
 									}
 									role={
-										turnstileError
-											? 'alert'
-											: undefined
+										turnstileError ? 'alert' : undefined
 									}
 								>
-									{ turnstileError ||
-										config.turnstile.hint }
+									{ turnstileError || config.turnstile.hint }
 								</p>
 							) : null }
 						</div>
 						{ status === 'error' && errorMsg ? (
-							<p
-								className="hdc-contact-form__error"
-								role="alert"
-							>
+							<p className="hdc-contact-form__error" role="alert">
 								{ errorMsg }
 							</p>
 						) : null }
@@ -970,15 +949,11 @@ function ContactFormApp( props ) {
 								aria-hidden="true"
 								className="hdc-contact-form__submit-icon"
 							>
-								{ renderLucideIcon(
-									createElement,
-									'send',
-									{
-										className:
-											'hdc-contact-form__submit-icon-svg',
-										size: 16,
-									}
-								) }
+								{ renderLucideIcon( createElement, 'send', {
+									className:
+										'hdc-contact-form__submit-icon-svg',
+									size: 16,
+								} ) }
 							</span>
 							{ status === 'submitting'
 								? config.form.submittingLabel
@@ -992,9 +967,7 @@ function ContactFormApp( props ) {
 }
 
 document.querySelectorAll( '.hdc-contact-form' ).forEach( ( section ) => {
-	const rootNode = section.querySelector(
-		'[data-hdc-contact-form-root]'
-	);
+	const rootNode = section.querySelector( '[data-hdc-contact-form-root]' );
 	if ( ! rootNode ) {
 		return;
 	}
