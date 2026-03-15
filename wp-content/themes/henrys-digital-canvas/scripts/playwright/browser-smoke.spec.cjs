@@ -1,6 +1,8 @@
 const { test, expect } = require('@playwright/test');
 
 const BLOG_SLUG = process.env.BLOG_SLUG || 'wordpress-ai-use-cases-developers-admins';
+const BLOG_CODE_SLUG = process.env.BLOG_CODE_SLUG || 'github-copilot-cli-a-practical-guide-to-using-copilot-in-your-terminal';
+const BLOG_MISSING_SLUG = process.env.BLOG_MISSING_SLUG || 'this-slug-should-not-exist';
 const WORK_DETAIL_REPO = process.env.WORK_DETAIL_REPO || 'henry-s-digital-canvas';
 
 const ROUTES = [
@@ -20,26 +22,22 @@ const ROUTES = [
 test.describe('Henrys Digital Canvas browser smoke', () => {
 	test('route matrix renders expected blocks', async ({ page }) => {
 		for ( const route of ROUTES ) {
-			const response = await page.goto(route.path, { waitUntil: 'networkidle' });
+			const response = await page.goto(route.path, { waitUntil: 'domcontentloaded' });
 			expect(response && response.status()).toBe(route.status);
 			await expect(page.locator(route.selector)).toHaveCount(1, { timeout: 20000 });
 		}
 	});
 
-	test('work compare flow', async ({ page }) => {
-		await page.goto('/work/', { waitUntil: 'networkidle' });
+	test('work signals panel renders stat cards', async ({ page }) => {
+		await page.goto('/work/', { waitUntil: 'domcontentloaded' });
 
-		const compareInputs = page.locator('.hdc-work-compare-check input[type="checkbox"]');
+		const signalsSection = page.locator('.hdc-work-signals');
+		await expect(signalsSection).toHaveCount(1, { timeout: 30000 });
+
+		const statCards = signalsSection.locator('.hdc-work-stat-card');
 		await expect
-			.poll(async () => compareInputs.count(), { timeout: 20000 })
-			.toBeGreaterThan(1);
-
-		await compareInputs.nth(0).click();
-		await compareInputs.nth(1).click();
-
-		await expect(page.locator('.hdc-work-compare-bar-text')).toContainText('2 repos selected', {
-			timeout: 10000,
-		});
+			.poll(async () => statCards.count(), { timeout: 30000 })
+			.toBeGreaterThanOrEqual(1);
 	});
 
 	test('hobbies filters update querystring', async ({ page }) => {
@@ -101,6 +99,44 @@ test.describe('Henrys Digital Canvas browser smoke', () => {
 		await expect
 			.poll(async () => page.evaluate(() => Math.round(window.scrollY)), { timeout: 8000 })
 			.toBeLessThan(40);
+	});
+
+	test('blog detail missing-post route renders the enhanced state card', async ({ page }) => {
+		await page.goto(`/blog/${ BLOG_MISSING_SLUG }/`, { waitUntil: 'networkidle' });
+
+		await expect(page.locator('.hdc-blog-post__state-card')).toHaveCount(1, { timeout: 10000 });
+		await expect(page.getByRole('heading', { level: 2, name: 'Post not found' })).toBeVisible();
+		await expect(page.getByRole('link', { name: 'Back to Blog' })).toBeVisible();
+	});
+
+	test('blog detail enhances HTML code blocks with a toolbar and copy affordance', async ({ page }) => {
+		await page.goto(`/blog/${ BLOG_CODE_SLUG }/`, { waitUntil: 'networkidle' });
+
+		await expect
+			.poll(async () => page.locator('.hdc-blog-post__code-toolbar').count(), { timeout: 10000 })
+			.toBeGreaterThan(0);
+		await expect(page.locator('.hdc-blog-post__code-copy').first()).toHaveCount(1);
+		await expect(page.locator('.hdc-blog-post__code-language').first()).not.toHaveText('');
+	});
+
+	test('blog detail renders metadata, share, discussion, and canonical route metadata', async ({ page }) => {
+		const htmlResponse = await page.request.get('/blog/clarity-is-a-technical-skill/');
+		expect(htmlResponse.ok()).toBeTruthy();
+		const html = await htmlResponse.text();
+
+		await page.goto('/blog/clarity-is-a-technical-skill/', { waitUntil: 'networkidle' });
+
+		await expect(page.getByRole('heading', { level: 3, name: 'Metadata, source, and discussion' })).toBeVisible();
+		await expect(page.locator('.hdc-blog-post__detail-label')).toContainText(['Author', 'Published']);
+		await expect(page.getByRole('link', { name: 'Open original on WordPress' })).toBeVisible();
+		await expect(page.getByRole('button', { name: 'Copy article link' })).toBeVisible();
+		await expect(page.getByRole('link', { name: 'Share on LinkedIn' })).toBeVisible();
+		await expect(page.getByRole('link', { name: /Comment on WordPress|Open original post/ })).toBeVisible();
+
+		expect(html).toContain('<link rel="canonical" href="https://hperkins.com/blog/clarity-is-a-technical-skill" />');
+		expect(html).toContain('<meta property="og:type" content="article" />');
+		expect(html).toContain('<meta property="og:url" content="https://hperkins.com/blog/clarity-is-a-technical-skill" />');
+		expect(html).toContain('<meta name="twitter:title" content="Why Clarity Is a Critical Engineering Skill — Henry Perkins" />');
 	});
 
 	test('blog and home media surfaces follow blog media contract', async ({ page }) => {
