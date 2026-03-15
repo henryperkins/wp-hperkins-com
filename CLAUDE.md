@@ -15,7 +15,7 @@ Personal technical portfolio site for Henry Perkins, migrated from a React SPA t
 | `wp-content/themes/henrys-digital-canvas/` | Custom child theme (all active development) |
 | `theme.json` (in theme dir) | Global settings/styles — uses WPDS-backed token values |
 | `assets/css/design-system.css` | Token system + utility classes (WPDS semantic adapter) |
-| `blocks/` | 13 custom Gutenberg blocks (each has `block.json` + `render.php` + `view.js`) |
+| `blocks/` | 13 custom Gutenberg blocks (`block.json` + `render.php` + `view.js`). Converted blocks have `src/` (JSX source) and `build/` (compiled output). |
 | `templates/` | Block theme templates (`front-page.html`, `page-*.html`, `404.html`, etc.) |
 | `parts/` | Template parts (`header.html`, `footer.html`) |
 | `inc/data-contracts.php` | Data contract functions for REST endpoints |
@@ -48,6 +48,13 @@ All blocks are registered via `register_block_type_from_metadata()` from `blocks
 | `site-shell` | *(shared shell — maps to `App.tsx` layout/nav/theme switcher)* |
 
 When modifying any block, always compare against the source TSX to maintain parity.
+
+### Block Categories
+
+- **createElement blocks** (11): Use `wp.element.createElement` — candidates for JSX conversion via wp-scripts
+- **DOM-only blocks** (2): `site-shell` and `not-found` use pure DOM manipulation — stay as hand-written JS
+
+Converted blocks use `*.asset.php` content hashes for cache-busting. Unconverted blocks use WordPress core's `filemtime()`.
 
 ## Source React App Reference
 
@@ -173,7 +180,15 @@ wp --path=/home/hperkins-wp/htdocs/wp.hperkins.com <command>
 cd wp-content/themes/henrys-digital-canvas && npm install
 ```
 
-No build step — blocks use server-side rendering with vanilla JS `view.js` files.
+Blocks use server-side rendering. Converted blocks (those with a `src/` directory) use `@wordpress/scripts` to compile JSX source to production JS:
+
+```bash
+cd wp-content/themes/henrys-digital-canvas && npm run build   # production build
+cd wp-content/themes/henrys-digital-canvas && npm run start   # dev watcher
+```
+
+Unconverted blocks still use hand-written vanilla JS `view.js` files with no build step.
+Build artifacts (`blocks/*/build/`) are committed to git — there is no CI/CD pipeline.
 
 ## Page Ownership Model
 
