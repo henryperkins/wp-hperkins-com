@@ -95,7 +95,11 @@ For each fix (grouped by severity, medium first, then low):
 3. **After all fixes**, validate syntax and run smoke tests:
 
 ```bash
-# Validate JS syntax
+# For converted blocks (have src/ directory):
+cd <theme> && npm run build
+cd <theme> && npm run lint:js -- blocks/<block>/src/
+
+# For unconverted blocks (no src/ directory):
 node -c <theme>/blocks/<block>/view.js
 
 # Validate JSON files
@@ -153,3 +157,41 @@ print(json.dumps(list(d.keys()), indent=2))
 - All theme functions prefixed `hdc_`
 - Blocks use `henrys-digital-canvas/<block-name>` namespace
 - Cache-bust via `hdc_asset_version()` which uses `filemtime()`
+
+## Build Pipeline (wp-scripts)
+
+The theme uses `@wordpress/scripts` for blocks that have been converted to JSX. Converted blocks have a `src/` directory; unconverted blocks do not.
+
+### Detecting block state
+
+- **Converted block**: `blocks/<name>/src/` directory exists. Source is JSX in `src/`, compiled output in `build/`.
+- **Unconverted createElement block**: No `src/` directory, `view.js` uses `wp.element.createElement` in an IIFE.
+- **DOM-only block** (`site-shell`, `not-found`): No `src/` directory, `view.js` uses pure DOM manipulation, no `wp.element`.
+
+### When fixing a converted block
+
+1. Edit JSX source in `blocks/<name>/src/view.js` or `src/index.js`
+2. Run `npm run build` from the theme directory
+3. Run `npm run lint:js -- blocks/<name>/src/` to validate
+4. Commit both `src/` and `build/` files
+
+### When converting an unconverted createElement block
+
+1. Create `blocks/<name>/src/` directory
+2. Convert `view.js` from createElement to JSX → `src/view.js`
+   - Replace IIFE + `window.wp.*` globals with `@wordpress/element` imports (do NOT import `createElement` — Babel handles it)
+   - Replace `window.hdcSharedUtils.*` with `import { ... } from 'hdc-shared-utils'`
+   - Drop the `legacyRender` / `element.render` fallback (WP 7.0-beta has `createRoot`)
+   - Convert all `h(tag, props, children)` calls to JSX tags
+   - Preserve the existing mount selector pattern (check `render.php` for the actual root element)
+3. Convert `index.js` from createElement to JSX → `src/index.js`
+   - Replace `window.wp.blocks`/etc. with `@wordpress/blocks`, `@wordpress/block-editor` imports
+4. Update `block.json`: `editorScript` → `file:./build/index.js`, `viewScript` → `file:./build/view.js`
+5. Run `npm run build`
+6. Run `npm run lint:js -- blocks/<name>/src/`
+7. Remove old root-level `view.js`, `index.js`, `view.asset.php`, and `index.asset.php`
+8. Commit `src/`, `build/`, updated `block.json`, and removed files
+
+### When fixing a DOM-only block
+
+Keep working with the hand-written `view.js` in the block root. Only convert if the fix requires substantial new React component logic (treat as a rewrite requiring a full plan).
