@@ -113,7 +113,7 @@ plugins.push(
   new DependencyExtractionWebpackPlugin( {
     requestToExternal( request ) {
       if ( request === 'hdc-shared-utils' ) {
-        return 'window.hdcSharedUtils';
+        return 'hdcSharedUtils';
       }
     },
     requestToHandle( request ) {
@@ -138,7 +138,7 @@ module.exports = {
 The key challenge is the output path: `@wordpress/scripts` default config outputs to a single `./build/` directory, but this config encodes the per-block path into the entry point name so each block gets its own `build/` directory.
 
 The custom `DependencyExtractionWebpackPlugin` instance maps `import { renderLucideIcon } from 'hdc-shared-utils'` so that:
-- The import is excluded from the bundle (resolved to `window.hdcSharedUtils` at runtime)
+- The import is excluded from the bundle (resolved to `hdcSharedUtils` global at runtime)
 - The `hdc-shared-utils` handle is written into `*.asset.php` dependencies, guaranteeing WordPress enqueues it before the block script
 
 ## block.json Changes
@@ -228,7 +228,7 @@ import { renderLucideIcon } from 'hdc-shared-utils';
 ```
 
 The custom `DependencyExtractionWebpackPlugin` in `webpack.config.js` (see skeleton config above) handles this import by:
-1. **Excluding it from the bundle** — resolved to `window.hdcSharedUtils` at runtime
+1. **Excluding it from the bundle** — resolved to `hdcSharedUtils` global at runtime
 2. **Writing `'hdc-shared-utils'` into `*.asset.php`** — WordPress automatically enqueues the shared-utils script before the block script
 
 No PHP filter is needed. The dependency extraction plugin handles both bundling and load order in one place.
