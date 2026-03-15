@@ -78,11 +78,13 @@
   --focus-ring-offset: var(--wpds-focus-ring-offset);
   --overlay-blur-soft: 8px;
   --overlay-blur-subtle: 2px;
+  --overlay-blur-glass: 12px;
   --touch-target-size: 44px;
   --layout-header-height: 3.5rem;
   --layout-admin-bar-offset: 0px;
   --layout-header-start: var(--layout-admin-bar-offset);
   --layout-header-end: calc(var(--layout-admin-bar-offset) + var(--layout-header-height));
+  --scroll-margin-anchor: calc(var(--layout-header-height) + 2.5rem);
 
   --layer-base: 0;
   --layer-content: 1;
@@ -103,6 +105,7 @@
   --radius-emphasis: var(--wpds-radius-emphasis);
   --radius-pill: var(--wpds-radius-pill);
   --radius-floating: var(--wpds-radius-floating);
+  --radius-indicator: calc(var(--radius) - 8px);
 
   --font-serif: var(--wpds-font-serif);
   --font-sans: var(--wpds-font-sans);
@@ -178,6 +181,8 @@
   --color-language-javascript: hsl(var(--language-javascript));
   --color-language-php: hsl(var(--language-php));
   --color-language-markdown: hsl(var(--language-markdown));
+  --color-text-danger: hsl(var(--text-danger));
+  --color-brand-linkedin: hsl(var(--brand-linkedin));
   --color-sidebar: hsl(var(--sidebar-background));
   --color-sidebar-foreground: hsl(var(--sidebar-foreground));
   --color-sidebar-primary: hsl(var(--sidebar-primary));
@@ -217,6 +222,7 @@
   --text-subtle: var(--wpds-color-text-muted);
   --text-meta: var(--wpds-color-text-meta);
   --text-accent: 38 92% 32%;
+  --text-danger: 0 72% 42%;
   --link: var(--wpds-color-link);
   --link-hover: var(--wpds-color-link-hover);
 
@@ -253,6 +259,7 @@
   --language-javascript: 50 90% 55%;
   --language-php: 250 52% 58%;
   --language-markdown: 160 60% 45%;
+  --brand-linkedin: 210 82% 40%;
 
   --text-size-eyebrow: 0.625rem;
   --text-size-meta: 0.6875rem;
@@ -365,11 +372,13 @@ body.is-dark-theme,
   --focus-ring-offset: var(--wpds-focus-ring-offset);
   --overlay-blur-soft: 8px;
   --overlay-blur-subtle: 2px;
+  --overlay-blur-glass: 12px;
   --touch-target-size: 44px;
   --layout-header-height: 3.5rem;
   --layout-admin-bar-offset: 0px;
   --layout-header-start: var(--layout-admin-bar-offset);
   --layout-header-end: calc(var(--layout-admin-bar-offset) + var(--layout-header-height));
+  --scroll-margin-anchor: calc(var(--layout-header-height) + 2.5rem);
   --layer-base: 0;
   --layer-content: 1;
   --layer-sticky: 40;
@@ -410,6 +419,7 @@ body.is-dark-theme,
   --text-subtle: var(--wpds-color-text-muted);
   --text-meta: var(--wpds-color-text-meta);
   --text-accent: 38 92% 58%;
+  --text-danger: 2 85% 74%;
   --link: var(--wpds-color-link);
   --link-hover: var(--wpds-color-link-hover);
 
@@ -443,6 +453,7 @@ body.is-dark-theme,
   --language-javascript: 50 94% 62%;
   --language-php: 250 58% 67%;
   --language-markdown: 160 64% 58%;
+  --brand-linkedin: 210 82% 52%;
   --text-size-eyebrow: 0.625rem;
   --text-size-meta: 0.6875rem;
   --tracking-eyebrow: 0.08em;
@@ -483,6 +494,16 @@ body.is-dark-theme,
     linear-gradient(135deg, hsl(22 16% 16%) 0%, hsl(20 10% 10%) 100%);
 
   color-scheme: dark;
+}
+
+@media (min-width: 768px) {
+  :root,
+  :root[data-theme="dark"],
+  .dark,
+  body.dark,
+  body.is-dark-theme {
+    --layout-header-height: 4rem;
+  }
 }
 
 @keyframes accordion-down {
@@ -642,6 +663,7 @@ pre {
 .rounded-emphasis { border-radius: var(--radius-emphasis); }
 .rounded-pill { border-radius: var(--radius-pill); }
 .rounded-floating { border-radius: var(--radius-floating); }
+.rounded-indicator { border-radius: var(--radius-indicator); }
 
 .shadow-surface { box-shadow: var(--shadow-surface-1); }
 .shadow-emphasis { box-shadow: var(--shadow-emphasis); }
@@ -649,6 +671,7 @@ pre {
 .shadow-glow { box-shadow: var(--shadow-glow); }
 .shadow-cta-hero { box-shadow: var(--shadow-cta-hero); }
 .shadow-floating { box-shadow: var(--shadow-floating); }
+.shadow-control { box-shadow: var(--shadow-control); }
 
 .touch-target {
   min-width: var(--touch-target-size);
@@ -660,6 +683,7 @@ pre {
 .top-layout-rail { top: calc(var(--layout-header-end) + 2rem); }
 .pt-layout-header { padding-top: var(--layout-header-height); }
 .pb-safe-area-bottom { padding-bottom: var(--space-safe-area-bottom); }
+.scroll-mt-anchor { scroll-margin-top: var(--scroll-margin-anchor); }
 
 body.admin-bar {
   --layout-admin-bar-offset: 32px;
@@ -836,6 +860,50 @@ body.admin-bar {
   color: hsl(var(--foreground));
 }
 
+.text-heading-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.text-heading-accent {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  color: hsl(var(--text-accent));
+}
+
+.text-accent-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: hsl(var(--text-accent));
+}
+
+.text-card-title-compact {
+  font-size: 1rem;
+  line-height: 1.25;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.text-stat-value {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.text-stat-compact {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: -0.025em;
+  color: hsl(var(--foreground));
+}
+
 .text-year-label {
   font-size: 0.75rem;
   line-height: 1rem;
@@ -928,7 +996,7 @@ body.admin-bar {
 }
 
 .glass {
-  backdrop-filter: blur(12px) saturate(1.2);
+  backdrop-filter: blur(var(--overlay-blur-glass)) saturate(1.2);
   background: hsl(var(--card) / 0.7);
 }
 
@@ -1015,6 +1083,13 @@ body.is-dark-theme .ember-surface::after,
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius-surface);
   background-color: hsl(var(--surface-tint-strong));
+}
+
+@media (min-width: 640px) {
+  .text-card-title-compact {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
 }
 
 @media (min-width: 768px) {
@@ -1214,7 +1289,16 @@ body.is-dark-theme .ember-surface::after,
   .hero-backdrop-overlay,
   .footer-backdrop,
   .footer-backdrop-overlay,
-  .footer-cinematic::after {
+  .footer-cinematic::after,
+  .hero-backdrop-editorial-amber,
+  .hero-backdrop-resume-profile,
+  .footer-backdrop-editorial-network,
+  .surface-library-ember-veil::before,
+  .surface-library-ember-topography::before,
+  .surface-library-dev-signal::before,
+  .surface-library-music-harmonics::before,
+  .surface-library-learning-paper::before,
+  .resume-capability-surface::before {
     display: none !important;
   }
 

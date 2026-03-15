@@ -1,0 +1,346 @@
+/* Background library — named backdrop and surface classes.
+   Ported from React source src/styles/background-library.css.
+   Loaded after design-system.css (depends on its tokens). */
+
+.hero-backdrop-editorial-amber {
+  background:
+    linear-gradient(112deg, hsl(var(--overlay-scrim-medium)) 0%, hsl(var(--overlay-scrim-strong)) 100%),
+    url("../images/backgrounds/theme-hero-editorial-amber.webp");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.hero-backdrop-resume-profile {
+  background:
+    linear-gradient(112deg, hsl(var(--overlay-scrim-medium)) 0%, hsl(var(--overlay-scrim-strong)) 100%),
+    url("../images/backgrounds/theme-hero-resume-profile.webp");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.footer-backdrop-editorial-network {
+  background:
+    linear-gradient(180deg, hsl(var(--overlay-scrim-medium)) 0%, hsl(var(--overlay-scrim-strong)) 100%),
+    url("../images/backgrounds/theme-footer-editorial-network.webp");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.surface-library-ember-veil,
+.surface-library-ember-topography,
+.surface-library-dev-signal,
+.surface-library-music-harmonics,
+.surface-library-learning-paper {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.surface-library-ember-veil > *,
+.surface-library-ember-topography > *,
+.surface-library-dev-signal > *,
+.surface-library-music-harmonics > *,
+.surface-library-learning-paper > * {
+  position: relative;
+  z-index: 1;
+}
+
+.surface-library-ember-veil::before,
+.surface-library-ember-topography::before,
+.surface-library-dev-signal::before,
+.surface-library-music-harmonics::before,
+.surface-library-learning-paper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.surface-library-ember-veil {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border-emphasis));
+  box-shadow: var(--shadow-surface-strong);
+}
+
+.surface-library-ember-veil::before {
+  background:
+    linear-gradient(154deg, hsl(var(--overlay-ember-surface-start)) 0%, hsl(var(--overlay-ember-surface-end)) 100%),
+    url("../images/backgrounds/theme-surface-ember-veil.webp");
+}
+
+.surface-library-ember-topography {
+  background-color: hsl(var(--card));
+}
+
+.surface-library-ember-topography::before {
+  background:
+    linear-gradient(154deg, hsl(var(--overlay-ember-surface-start)) 0%, hsl(var(--overlay-ember-surface-end)) 100%),
+    url("../images/backgrounds/theme-surface-ember-topography.webp");
+  background-position: center center, 28% center;
+}
+
+.surface-library-dev-signal {
+  background-color: hsl(var(--inverse-background));
+}
+
+.surface-library-dev-signal::before {
+  background:
+    linear-gradient(180deg, hsl(var(--inverse-background) / 0.94) 0%, hsl(var(--card) / 0.82) 100%),
+    radial-gradient(68% 60% at 18% 18%, hsl(var(--info) / 0.16), transparent 60%),
+    url("../images/backgrounds/theme-surface-dev-signal-grid.webp");
+  background-blend-mode: normal, screen, normal;
+}
+
+body.dark .surface-library-dev-signal::before,
+body.is-dark-theme .surface-library-dev-signal::before,
+:root[data-theme="dark"] .surface-library-dev-signal::before {
+  background:
+    linear-gradient(180deg, hsl(var(--inverse-background) / 0.97) 0%, hsl(var(--background) / 0.9) 100%),
+    radial-gradient(68% 60% at 18% 18%, hsl(var(--info) / 0.18), transparent 62%),
+    url("../images/backgrounds/theme-surface-dev-signal-grid.webp");
+  background-blend-mode: normal, screen, normal;
+}
+
+.surface-library-music-harmonics {
+  background-color: hsl(var(--inverse-background));
+}
+
+.surface-library-music-harmonics::before {
+  background:
+    linear-gradient(180deg, hsl(var(--overlay-scrim-medium)) 0%, hsl(var(--overlay-scrim-strong)) 100%),
+    radial-gradient(68% 58% at 78% 34%, hsl(var(--overlay-brand-amber)), transparent 62%),
+    url("../images/backgrounds/theme-surface-music-harmonics.webp");
+  background-blend-mode: normal, screen, normal;
+}
+
+.surface-library-learning-paper {
+  background-color: hsl(var(--surface-1));
+}
+
+.surface-library-learning-paper::before {
+  background:
+    linear-gradient(180deg, hsl(var(--surface-1) / 0.94) 0%, hsl(var(--surface-2) / 0.9) 100%),
+    radial-gradient(72% 56% at 84% 20%, hsl(var(--warning) / 0.12), transparent 60%),
+    url("../images/backgrounds/theme-surface-learning-paper.webp");
+  background-blend-mode: normal, multiply, normal;
+}
+
+body.dark .surface-library-learning-paper::before,
+body.is-dark-theme .surface-library-learning-paper::before,
+:root[data-theme="dark"] .surface-library-learning-paper::before {
+  background:
+    linear-gradient(180deg, hsl(var(--background) / 0.94) 0%, hsl(var(--surface-2) / 0.9) 100%),
+    radial-gradient(72% 56% at 84% 20%, hsl(var(--warning) / 0.08), transparent 60%),
+    url("../images/backgrounds/theme-surface-learning-paper.webp");
+  background-blend-mode: normal, screen, normal;
+  filter: saturate(0.82) brightness(0.5);
+}
+
+/* Resume capability surfaces */
+
+.resume-capability-surface {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.resume-capability-surface > * {
+  position: relative;
+  z-index: 1;
+}
+
+.resume-capability-surface::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.resume-capability-customer::before {
+  background:
+    linear-gradient(180deg, hsl(var(--surface-1) / 0.96) 0%, hsl(var(--surface-2) / 0.92) 100%),
+    radial-gradient(72% 56% at 86% 18%, hsl(var(--warning) / 0.12), transparent 60%),
+    url("../images/resume/capabilities/capability-customer-outcomes.webp");
+  background-blend-mode: normal, multiply, normal;
+}
+
+body.dark .resume-capability-customer::before,
+body.is-dark-theme .resume-capability-customer::before,
+:root[data-theme="dark"] .resume-capability-customer::before {
+  background:
+    linear-gradient(180deg, hsl(var(--background) / 0.95) 0%, hsl(var(--surface-2) / 0.92) 100%),
+    radial-gradient(72% 56% at 86% 18%, hsl(var(--warning) / 0.08), transparent 60%),
+    url("../images/resume/capabilities/capability-customer-outcomes.webp");
+  background-blend-mode: normal, screen, normal;
+  filter: saturate(0.86) brightness(0.62);
+}
+
+.resume-capability-technical::before {
+  background:
+    linear-gradient(180deg, hsl(var(--surface-1) / 0.96) 0%, hsl(var(--surface-2) / 0.92) 100%),
+    radial-gradient(72% 56% at 86% 18%, hsl(var(--info) / 0.12), transparent 60%),
+    url("../images/resume/capabilities/capability-technical-delivery.webp");
+  background-blend-mode: normal, multiply, normal;
+}
+
+body.dark .resume-capability-technical::before,
+body.is-dark-theme .resume-capability-technical::before,
+:root[data-theme="dark"] .resume-capability-technical::before {
+  background:
+    linear-gradient(180deg, hsl(var(--background) / 0.95) 0%, hsl(var(--surface-2) / 0.92) 100%),
+    radial-gradient(72% 56% at 86% 18%, hsl(var(--info) / 0.1), transparent 60%),
+    url("../images/resume/capabilities/capability-technical-delivery.webp");
+  background-blend-mode: normal, screen, normal;
+  filter: saturate(0.86) brightness(0.62);
+}
+
+.resume-capability-operations::before {
+  background:
+    linear-gradient(180deg, hsl(var(--surface-1) / 0.96) 0%, hsl(var(--surface-2) / 0.92) 100%),
+    radial-gradient(72% 56% at 86% 18%, hsl(var(--accent) / 0.12), transparent 60%),
+    url("../images/resume/capabilities/capability-operations-leadership.webp");
+  background-blend-mode: normal, multiply, normal;
+}
+
+body.dark .resume-capability-operations::before,
+body.is-dark-theme .resume-capability-operations::before,
+:root[data-theme="dark"] .resume-capability-operations::before {
+  background:
+    linear-gradient(180deg, hsl(var(--background) / 0.95) 0%, hsl(var(--surface-2) / 0.92) 100%),
+    radial-gradient(72% 56% at 86% 18%, hsl(var(--accent) / 0.09), transparent 60%),
+    url("../images/resume/capabilities/capability-operations-leadership.webp");
+  background-blend-mode: normal, screen, normal;
+  filter: saturate(0.86) brightness(0.62);
+}
+
+/* Responsive: swap to smaller images on mobile */
+
+@media (max-width: 768px) {
+  .hero-backdrop-editorial-amber {
+    background-image:
+      linear-gradient(112deg, hsl(var(--overlay-scrim-medium)) 0%, hsl(var(--overlay-scrim-strong)) 100%),
+      url("../images/backgrounds/theme-hero-editorial-amber-960.webp");
+  }
+
+  .hero-backdrop-resume-profile {
+    background-image:
+      linear-gradient(112deg, hsl(var(--overlay-scrim-medium)) 0%, hsl(var(--overlay-scrim-strong)) 100%),
+      url("../images/backgrounds/theme-hero-resume-profile-960.webp");
+  }
+
+  .footer-backdrop-editorial-network {
+    background-image:
+      linear-gradient(180deg, hsl(var(--overlay-scrim-medium)) 0%, hsl(var(--overlay-scrim-strong)) 100%),
+      url("../images/backgrounds/theme-footer-editorial-network-960.webp");
+  }
+
+  .surface-library-ember-veil::before {
+    background-image:
+      linear-gradient(154deg, hsl(var(--overlay-ember-surface-start)) 0%, hsl(var(--overlay-ember-surface-end)) 100%),
+      url("../images/backgrounds/theme-surface-ember-veil-960.webp");
+  }
+
+  .surface-library-ember-topography::before {
+    background-image:
+      linear-gradient(154deg, hsl(var(--overlay-ember-surface-start)) 0%, hsl(var(--overlay-ember-surface-end)) 100%),
+      url("../images/backgrounds/theme-surface-ember-topography-960.webp");
+  }
+
+  .surface-library-dev-signal::before {
+    background-image:
+      linear-gradient(180deg, hsl(var(--inverse-background) / 0.94) 0%, hsl(var(--card) / 0.82) 100%),
+      radial-gradient(68% 60% at 18% 18%, hsl(var(--info) / 0.16), transparent 60%),
+      url("../images/backgrounds/theme-surface-dev-signal-grid-960.webp");
+  }
+
+  body.dark .surface-library-dev-signal::before,
+  body.is-dark-theme .surface-library-dev-signal::before,
+  :root[data-theme="dark"] .surface-library-dev-signal::before {
+    background-image:
+      linear-gradient(180deg, hsl(var(--inverse-background) / 0.97) 0%, hsl(var(--background) / 0.9) 100%),
+      radial-gradient(68% 60% at 18% 18%, hsl(var(--info) / 0.18), transparent 62%),
+      url("../images/backgrounds/theme-surface-dev-signal-grid-960.webp");
+  }
+
+  .surface-library-music-harmonics::before {
+    background-image:
+      linear-gradient(180deg, hsl(var(--overlay-scrim-medium)) 0%, hsl(var(--overlay-scrim-strong)) 100%),
+      radial-gradient(68% 58% at 78% 34%, hsl(var(--overlay-brand-amber)), transparent 62%),
+      url("../images/backgrounds/theme-surface-music-harmonics-960.webp");
+  }
+
+  .surface-library-learning-paper::before {
+    background-image:
+      linear-gradient(180deg, hsl(var(--surface-1) / 0.94) 0%, hsl(var(--surface-2) / 0.9) 100%),
+      radial-gradient(72% 56% at 84% 20%, hsl(var(--warning) / 0.12), transparent 60%),
+      url("../images/backgrounds/theme-surface-learning-paper-960.webp");
+  }
+
+  body.dark .surface-library-learning-paper::before,
+  body.is-dark-theme .surface-library-learning-paper::before,
+  :root[data-theme="dark"] .surface-library-learning-paper::before {
+    background-image:
+      linear-gradient(180deg, hsl(var(--background) / 0.94) 0%, hsl(var(--surface-2) / 0.9) 100%),
+      radial-gradient(72% 56% at 84% 20%, hsl(var(--warning) / 0.08), transparent 60%),
+      url("../images/backgrounds/theme-surface-learning-paper-960.webp");
+  }
+
+  .resume-capability-customer::before {
+    background-image:
+      linear-gradient(180deg, hsl(var(--surface-1) / 0.96) 0%, hsl(var(--surface-2) / 0.92) 100%),
+      radial-gradient(72% 56% at 86% 18%, hsl(var(--warning) / 0.12), transparent 60%),
+      url("../images/resume/capabilities/capability-customer-outcomes-960.webp");
+  }
+
+  body.dark .resume-capability-customer::before,
+  body.is-dark-theme .resume-capability-customer::before,
+  :root[data-theme="dark"] .resume-capability-customer::before {
+    background-image:
+      linear-gradient(180deg, hsl(var(--background) / 0.95) 0%, hsl(var(--surface-2) / 0.92) 100%),
+      radial-gradient(72% 56% at 86% 18%, hsl(var(--warning) / 0.08), transparent 60%),
+      url("../images/resume/capabilities/capability-customer-outcomes-960.webp");
+  }
+
+  .resume-capability-technical::before {
+    background-image:
+      linear-gradient(180deg, hsl(var(--surface-1) / 0.96) 0%, hsl(var(--surface-2) / 0.92) 100%),
+      radial-gradient(72% 56% at 86% 18%, hsl(var(--info) / 0.12), transparent 60%),
+      url("../images/resume/capabilities/capability-technical-delivery-960.webp");
+  }
+
+  body.dark .resume-capability-technical::before,
+  body.is-dark-theme .resume-capability-technical::before,
+  :root[data-theme="dark"] .resume-capability-technical::before {
+    background-image:
+      linear-gradient(180deg, hsl(var(--background) / 0.95) 0%, hsl(var(--surface-2) / 0.92) 100%),
+      radial-gradient(72% 56% at 86% 18%, hsl(var(--info) / 0.1), transparent 60%),
+      url("../images/resume/capabilities/capability-technical-delivery-960.webp");
+  }
+
+  .resume-capability-operations::before {
+    background-image:
+      linear-gradient(180deg, hsl(var(--surface-1) / 0.96) 0%, hsl(var(--surface-2) / 0.92) 100%),
+      radial-gradient(72% 56% at 86% 18%, hsl(var(--accent) / 0.12), transparent 60%),
+      url("../images/resume/capabilities/capability-operations-leadership-960.webp");
+  }
+
+  body.dark .resume-capability-operations::before,
+  body.is-dark-theme .resume-capability-operations::before,
+  :root[data-theme="dark"] .resume-capability-operations::before {
+    background-image:
+      linear-gradient(180deg, hsl(var(--background) / 0.95) 0%, hsl(var(--surface-2) / 0.92) 100%),
+      radial-gradient(72% 56% at 86% 18%, hsl(var(--accent) / 0.09), transparent 60%),
+      url("../images/resume/capabilities/capability-operations-leadership-960.webp");
+  }
+}

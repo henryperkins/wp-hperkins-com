@@ -59,6 +59,13 @@ function hdc_enqueue_frontend_styles() {
 		hdc_asset_version( '/assets/css/design-system.css' )
 	);
 
+	wp_enqueue_style(
+		'hdc-background-library',
+		get_stylesheet_directory_uri() . '/assets/css/background-library.css',
+		array( 'hdc-design-system' ),
+		hdc_asset_version( '/assets/css/background-library.css' )
+	);
+
 	wp_enqueue_script(
 		'hdc-shared-utils',
 		get_stylesheet_directory_uri() . '/assets/js/hdc-shared-utils.js',
@@ -209,6 +216,25 @@ function hdc_get_resolved_detail_route() {
 }
 
 /**
+ * Resolve the current blog detail entity, falling back to the raw slug query var.
+ *
+ * @return array|null
+ */
+function hdc_get_current_blog_detail_entity() {
+	$route = hdc_get_resolved_detail_route();
+	if ( 'blog' === $route['type'] && is_array( $route['entity'] ) && ! empty( $route['entity']['slug'] ) ) {
+		return $route['entity'];
+	}
+
+	$blog_slug = sanitize_title( (string) get_query_var( 'hdc_blog_slug' ) );
+	if ( '' === $blog_slug ) {
+		return null;
+	}
+
+	return hdc_get_blog_post_by_slug_data_contract( $blog_slug );
+}
+
+/**
  * Mark unresolved dynamic detail routes as 404 before template selection.
  *
  * @return void
@@ -259,7 +285,7 @@ add_filter( 'template_include', 'hdc_maybe_use_work_detail_template' );
  */
 function hdc_maybe_use_blog_detail_template( $template ) {
 	$route = hdc_get_resolved_detail_route();
-	if ( 'blog' !== $route['type'] || ! $route['exists'] ) {
+	if ( 'blog' !== $route['type'] ) {
 		return $template;
 	}
 
@@ -303,10 +329,6 @@ function hdc_get_route_document_title() {
 		return '';
 	}
 
-	if ( is_404() ) {
-		return 'Page Not Found — Henry Perkins';
-	}
-
 	$route = hdc_get_resolved_detail_route();
 	if ( 'work' === $route['type'] && $route['exists'] && is_array( $route['entity'] ) ) {
 		if ( ! empty( $route['entity']['name'] ) ) {
@@ -314,10 +336,20 @@ function hdc_get_route_document_title() {
 		}
 	}
 
-	if ( 'blog' === $route['type'] && $route['exists'] && is_array( $route['entity'] ) ) {
-		if ( ! empty( $route['entity']['title'] ) ) {
-			return wp_strip_all_tags( (string) $route['entity']['title'] ) . ' — Henry Perkins';
+	$blog_entity = hdc_get_current_blog_detail_entity();
+	if ( is_array( $blog_entity ) ) {
+		$title = ! empty( $blog_entity['seoTitle'] ) ? (string) $blog_entity['seoTitle'] : (string) ( $blog_entity['title'] ?? '' );
+		if ( '' !== trim( $title ) ) {
+			return wp_strip_all_tags( $title ) . ' — Henry Perkins';
 		}
+	}
+
+	if ( 'blog' === $route['type'] ) {
+		return 'Post Not Found — Henry Perkins';
+	}
+
+	if ( is_404() ) {
+		return 'Page Not Found — Henry Perkins';
 	}
 
 	if ( is_front_page() ) {
@@ -371,6 +403,28 @@ function hdc_override_document_title( $pre_title ) {
 add_filter( 'pre_get_document_title', 'hdc_override_document_title', 20 );
 
 /**
+ * Disable default canonical and Jetpack OG tags for custom metadata routes.
+ *
+ * @return void
+ */
+function hdc_configure_custom_metadata_head_tags() {
+	if ( is_page( 'about' ) ) {
+		remove_action( 'wp_head', 'rel_canonical' );
+		add_filter( 'jetpack_enable_open_graph', '__return_false', 99 );
+		return;
+	}
+
+	$blog_slug = sanitize_title( (string) get_query_var( 'hdc_blog_slug' ) );
+	if ( '' === $blog_slug ) {
+		return;
+	}
+
+	remove_action( 'wp_head', 'rel_canonical' );
+	add_filter( 'jetpack_enable_open_graph', '__return_false', 99 );
+}
+add_action( 'template_redirect', 'hdc_configure_custom_metadata_head_tags', 1 );
+
+/**
  * Normalize a route-relative metadata URL into an absolute site URL.
  *
  * @param string $value Raw metadata URL.
@@ -395,24 +449,20 @@ function hdc_get_absolute_metadata_url( $value ) {
 }
 
 /**
- * Output homepage metadata that mirrors the React HOME_METADATA contract.
+ * Output standard route metadata from a JSON data contract.
  *
+ * @param array  $metadata          Route metadata contract.
+ * @param string $default_canonical Default canonical path.
  * @return void
  */
-function hdc_output_homepage_metadata() {
-	if ( ! is_front_page() || is_admin() || is_feed() ) {
-		return;
-	}
-
-	$home_contract = hdc_get_home_content_data_contract();
-	$metadata      = isset( $home_contract['metadata'] ) && is_array( $home_contract['metadata'] ) ? $home_contract['metadata'] : array();
-	if ( empty( $metadata ) ) {
+function hdc_output_standard_route_metadata( $metadata, $default_canonical = '/' ) {
+	if ( ! is_array( $metadata ) || empty( $metadata ) ) {
 		return;
 	}
 
 	$title       = wp_strip_all_tags( (string) ( $metadata['title'] ?? '' ) );
 	$description = wp_strip_all_tags( (string) ( $metadata['description'] ?? '' ) );
-	$canonical   = hdc_get_absolute_metadata_url( (string) ( $metadata['canonical'] ?? '/' ) );
+	$canonical   = hdc_get_absolute_metadata_url( (string) ( $metadata['canonical'] ?? $default_canonical ) );
 	$open_graph  = isset( $metadata['openGraph'] ) && is_array( $metadata['openGraph'] ) ? $metadata['openGraph'] : array();
 	$twitter     = isset( $metadata['twitter'] ) && is_array( $metadata['twitter'] ) ? $metadata['twitter'] : array();
 
@@ -427,7 +477,7 @@ function hdc_output_homepage_metadata() {
 	$og_title       = wp_strip_all_tags( (string) ( $open_graph['title'] ?? $title ) );
 	$og_description = wp_strip_all_tags( (string) ( $open_graph['description'] ?? $description ) );
 	$og_type        = sanitize_text_field( (string) ( $open_graph['type'] ?? 'website' ) );
-	$og_url         = hdc_get_absolute_metadata_url( (string) ( $open_graph['url'] ?? '/' ) );
+	$og_url         = hdc_get_absolute_metadata_url( (string) ( $open_graph['url'] ?? $default_canonical ) );
 	$og_image       = hdc_get_absolute_metadata_url( (string) ( $open_graph['image'] ?? '' ) );
 	$og_image_alt   = wp_strip_all_tags( (string) ( $open_graph['imageAlt'] ?? '' ) );
 
@@ -468,7 +518,93 @@ function hdc_output_homepage_metadata() {
 		printf( '<meta name="twitter:image" content="%s" />' . "\n", esc_url( $twitter_image ) );
 	}
 }
+
+/**
+ * Output homepage metadata that mirrors the React HOME_METADATA contract.
+ *
+ * @return void
+ */
+function hdc_output_homepage_metadata() {
+	if ( ! is_front_page() || is_admin() || is_feed() ) {
+		return;
+	}
+
+	$home_contract = hdc_get_home_content_data_contract();
+	$metadata      = isset( $home_contract['metadata'] ) && is_array( $home_contract['metadata'] ) ? $home_contract['metadata'] : array();
+	hdc_output_standard_route_metadata( $metadata, '/' );
+}
 add_action( 'wp_head', 'hdc_output_homepage_metadata', 5 );
+
+/**
+ * Output About page metadata aligned with the React route metadata.
+ *
+ * @return void
+ */
+function hdc_output_aboutpage_metadata() {
+	if ( ! is_page( 'about' ) || is_admin() || is_feed() ) {
+		return;
+	}
+
+	$about_contract = hdc_get_about_content_data_contract();
+	$metadata       = isset( $about_contract['metadata'] ) && is_array( $about_contract['metadata'] ) ? $about_contract['metadata'] : array();
+
+	hdc_output_standard_route_metadata( $metadata, '/about' );
+}
+add_action( 'wp_head', 'hdc_output_aboutpage_metadata', 5 );
+
+/**
+ * Output blog detail metadata aligned with the React route metadata.
+ *
+ * @return void
+ */
+function hdc_output_blog_detail_metadata() {
+	if ( is_admin() || is_feed() ) {
+		return;
+	}
+
+	$post = hdc_get_current_blog_detail_entity();
+	if ( ! is_array( $post ) || empty( $post['slug'] ) ) {
+		return;
+	}
+
+	$seo_title = wp_strip_all_tags( (string) ( $post['seoTitle'] ?? '' ) );
+	$title     = '' !== trim( $seo_title )
+		? $seo_title
+		: wp_strip_all_tags( (string) ( $post['title'] ?? '' ) );
+	if ( '' === $title ) {
+		$title = 'Post Not Found';
+	}
+
+	if ( ! preg_match( '/henry perkins/i', $title ) ) {
+		$title .= ' — Henry Perkins';
+	}
+
+	$seo_description = wp_strip_all_tags( (string) ( $post['seoDescription'] ?? '' ) );
+	$description     = '' !== trim( $seo_description )
+		? $seo_description
+		: wp_strip_all_tags( (string) ( $post['excerpt'] ?? '' ) );
+	if ( '' === $description ) {
+		$description = 'Blog post from Henry Perkins.';
+	}
+
+	$canonical   = hdc_get_portfolio_blog_detail_url( (string) ( $post['slug'] ?? '' ) );
+	$og_image    = hdc_get_absolute_metadata_url( (string) ( $post['featuredImageUrl'] ?? '/images/hero-piano-ide.png' ) );
+	$og_alt      = wp_strip_all_tags( (string) ( $post['featuredImageAlt'] ?? 'Henry Perkins blog post' ) );
+
+	printf( '<meta name="description" content="%s" />' . "\n", esc_attr( $description ) );
+	printf( '<link rel="canonical" href="%s" />' . "\n", esc_url( $canonical ) );
+	printf( '<meta property="og:title" content="%s" />' . "\n", esc_attr( $title ) );
+	printf( '<meta property="og:description" content="%s" />' . "\n", esc_attr( $description ) );
+	printf( '<meta property="og:type" content="article" />' . "\n" );
+	printf( '<meta property="og:url" content="%s" />' . "\n", esc_url( $canonical ) );
+	printf( '<meta property="og:image" content="%s" />' . "\n", esc_url( $og_image ) );
+	printf( '<meta property="og:image:alt" content="%s" />' . "\n", esc_attr( $og_alt ) );
+	printf( '<meta name="twitter:card" content="summary_large_image" />' . "\n" );
+	printf( '<meta name="twitter:title" content="%s" />' . "\n", esc_attr( $title ) );
+	printf( '<meta name="twitter:description" content="%s" />' . "\n", esc_attr( $description ) );
+	printf( '<meta name="twitter:image" content="%s" />' . "\n", esc_url( $og_image ) );
+}
+add_action( 'wp_head', 'hdc_output_blog_detail_metadata', 5 );
 
 /**
  * Output fallback favicon links when no Site Icon is configured.
