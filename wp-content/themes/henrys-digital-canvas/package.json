@@ -4,6 +4,10 @@
   "version": "0.1.0",
   "description": "Operational smoke checks for Henry's Digital Canvas WordPress child theme",
   "scripts": {
+    "build": "wp-scripts build",
+    "start": "wp-scripts start",
+    "lint:js": "wp-scripts lint-js",
+    "format:js": "wp-scripts format",
     "sync:pages": "./scripts/sync_page_sources.sh",
     "smoke:route": "./scripts/route_smoke.sh",
     "smoke:api": "./scripts/api_smoke.sh",
@@ -13,6 +17,7 @@
     "smoke:history": "./scripts/smoke_history_tail.sh 10"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.2"
+    "@playwright/test": "^1.58.2",
+    "@wordpress/scripts": "^31.6.0"
   }
 }
