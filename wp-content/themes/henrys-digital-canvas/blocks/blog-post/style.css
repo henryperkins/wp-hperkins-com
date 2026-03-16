@@ -5,7 +5,7 @@
 .hdc-blog-post__shell {
   margin: 0 auto;
   max-width: 1180px;
-  padding: 2rem 1rem;
+  padding: 2rem;
 }
 
 .hdc-blog-post__state-card {
@@ -152,6 +152,7 @@
 .hdc-blog-post__layout {
   display: grid;
   gap: 1.5rem;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .hdc-blog-post__content-shell {
@@ -245,6 +246,7 @@
 
 .hdc-blog-post__content {
   color: hsl(var(--text-body));
+  overflow-wrap: break-word;
 }
 
 .hdc-blog-post__content p {
@@ -799,6 +801,10 @@
 }
 
 @media (max-width: 640px) {
+  .hdc-blog-post__shell {
+    padding-inline: 1rem;
+  }
+
   .hdc-blog-post__progress-track {
     top: calc(var(--layout-header-end) + 0.05rem);
   }
