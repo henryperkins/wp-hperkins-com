@@ -240,15 +240,13 @@
 		} );
 		const [ search, setSearch ] = useState( '' );
 		const [ activeTag, setActiveTag ] = useState( 'All' );
+		const [ visibleCount, setVisibleCount ] = useState( 6 );
+		const [ retryCount, setRetryCount ] = useState( 0 );
 		const chipRefs = useRef( [] );
 
 		const signature = useMemo( function () {
 			return JSON.stringify( config );
 		}, [ config ] );
-
-		useEffect( function () {
-			document.title = 'Blog \u2014 Henry Perkins';
-		}, [] );
 
 		useEffect(
 			function () {
@@ -319,7 +317,7 @@
 					cancelled = true;
 				};
 			},
-			[ signature ]
+			[ signature, retryCount ]
 		);
 
 		const featured = useMemo(
@@ -366,7 +364,7 @@
 					initBlogReveals();
 				} );
 			}
-		}, [ state.loading, state.posts.length ] );
+		}, [ state.loading, state.posts.length, visibleCount ] );
 
 		const filtered = useMemo(
 			function () {
@@ -395,7 +393,22 @@
 		}
 
 		if ( state.error ) {
-			return h( 'p', { className: 'hdc-blog-index__error' }, state.error );
+			return h(
+				'div',
+				{ className: 'hdc-blog-index__error' },
+				h( 'p', {}, state.error ),
+				h(
+					'button',
+					{
+						type: 'button',
+						className: 'hdc-blog-index__retry',
+						onClick: function () {
+							setRetryCount( function ( c ) { return c + 1; } );
+						},
+					},
+					'Try again'
+				)
+			);
 		}
 
 		function handleChipKeyDown( event, index, options ) {
@@ -517,6 +530,7 @@
 							placeholder: 'Search posts\u2026',
 							value: search,
 							onChange: function ( event ) {
+								setVisibleCount( 6 );
 								setSearch( ensureString( event.target.value, '' ) );
 							},
 							'aria-label': 'Search blog posts',
@@ -541,6 +555,7 @@
 									tabIndex: isActive ? 0 : -1,
 									className: 'hdc-blog-index__chip' + ( isActive ? ' is-active' : '' ),
 									onClick: function () {
+										setVisibleCount( 6 );
 										setActiveTag( tag );
 									},
 									onKeyDown: function ( event ) {
@@ -576,53 +591,76 @@
 					)
 					: h(
 						'div',
-						{ className: 'hdc-blog-index__list' },
-						filtered.map( function ( post, postIndex ) {
-							return h(
-								'a',
-								{
-									className: 'hdc-blog-index__card focus-ring hdc-blog-reveal hdc-blog-reveal--fade-up-soft' + ( post.featuredImageUrl ? ' has-thumbnail' : '' ),
-									href: buildPostUrl( post, config ),
-									key: post.slug,
-									style: { '--reveal-index': postIndex },
-								},
-								post.featuredImageUrl
-									? h(
-										'div',
-										{ className: 'hdc-blog-index__card-thumb-wrap' },
-										h( 'img', {
-											className: 'hdc-blog-index__card-thumb',
-											src: post.featuredImageUrl,
-											srcSet: post.featuredImageSrcSet || undefined,
-											sizes: '(max-width: 900px) 100vw, 180px',
-											alt: buildImageAlt( post ),
-											loading: 'lazy',
-											decoding: 'async',
-											onError: hideBrokenImage,
-										} )
-									)
-									: null,
-								h(
-									'div',
-									{ className: 'hdc-blog-index__card-main' },
-									h( 'h4', { className: 'hdc-blog-index__card-title' }, post.title ),
-									h( 'p', { className: 'hdc-blog-index__card-excerpt' }, post.excerpt ),
+						{},
+						h(
+							'div',
+							{ className: 'hdc-blog-index__list' },
+							filtered.slice( 0, visibleCount ).map( function ( post, postIndex ) {
+								return h(
+									'a',
+									{
+										className: 'hdc-blog-index__card focus-ring hdc-blog-reveal hdc-blog-reveal--fade-up-soft' + ( post.featuredImageUrl ? ' has-thumbnail' : '' ),
+										href: buildPostUrl( post, config ),
+										key: post.slug,
+										style: { '--reveal-index': postIndex },
+									},
+									post.featuredImageUrl
+										? h(
+											'div',
+											{ className: 'hdc-blog-index__card-thumb-wrap' },
+											h( 'img', {
+												className: 'hdc-blog-index__card-thumb',
+												src: post.featuredImageUrl,
+												srcSet: post.featuredImageSrcSet || undefined,
+												sizes: '(max-width: 900px) 100vw, 180px',
+												alt: buildImageAlt( post ),
+												loading: 'lazy',
+												decoding: 'async',
+												onError: hideBrokenImage,
+											} )
+										)
+										: null,
 									h(
 										'div',
-										{ className: 'hdc-blog-index__tags' },
-										post.tags.map( function ( tag ) {
-											return h( 'span', { className: 'hdc-blog-index__tag', key: post.slug + '-tag-' + tag }, tag );
-										} )
+										{ className: 'hdc-blog-index__card-main' },
+										h( 'h4', { className: 'hdc-blog-index__card-title' }, post.title ),
+										h( 'p', { className: 'hdc-blog-index__card-excerpt' }, post.excerpt ),
+										h(
+											'div',
+											{ className: 'hdc-blog-index__tags' },
+											post.tags.map( function ( tag ) {
+												return h( 'span', { className: 'hdc-blog-index__tag', key: post.slug + '-tag-' + tag }, tag );
+											} )
+										)
+									),
+									h(
+										'div',
+										{ className: 'hdc-blog-index__card-meta' },
+										h( 'time', { dateTime: post.date }, formatDateLabel( post.date ) ),
+										h( 'span', {}, post.readingTime || '' )
 									)
-								),
+								);
+							} )
+						),
+						filtered.length > visibleCount
+							? h(
+								'div',
+								{ className: 'hdc-blog-index__load-more' },
 								h(
-									'div',
-									{ className: 'hdc-blog-index__card-meta' },
-									h( 'time', { dateTime: post.date }, formatDateLabel( post.date ) ),
-									h( 'span', {}, post.readingTime || '' )
+									'button',
+									{
+										type: 'button',
+										className: 'hdc-blog-index__load-more-btn',
+										onClick: function () {
+											setVisibleCount( function ( current ) {
+												return Math.min( current + 6, filtered.length );
+											} );
+										},
+									},
+									'Load more'
 								)
-							);
-						} )
+							)
+							: null
 					),
 				config.showNewsletterCta
 					? h(

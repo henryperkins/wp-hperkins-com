@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $defaults = array(
 	'heading'           => 'Blog',
-	'description'       => 'Notes on engineering systems, product craft, and learning in public.',
+	'description'       => 'Writing on customer-facing engineering, AI workflows, WordPress delivery, and support-to-implementation systems.',
 	'showNewsletterCta' => true,
 );
 

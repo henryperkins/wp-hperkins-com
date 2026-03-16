@@ -27,7 +27,7 @@
     "seoTitle": "Building an AI-Powered Content Pipeline from Scratch",
     "seoDescription": "How I designed and built an automated content processing workflow using NLP, careful evaluation, and a lot of edge-case handling.",
     "shareMessage": "A practical walkthrough of building an AI-assisted content pipeline that can survive real-world edge cases.",
-    "featuredImageUrl": "/images/hero-piano-ide.png",
+    "featuredImageUrl": "/wp-content/themes/henrys-digital-canvas/assets/images/hero-piano-ide.png",
     "featuredImageAlt": "Hands on a piano keyboard beside an IDE dashboard",
     "featuredImageSrcSet": ""
   },
@@ -58,7 +58,7 @@
     "seoTitle": "Design Systems That Actually Work",
     "seoDescription": "Lessons from building and maintaining design systems across different teams. Spoiler: the hard part isn't components.",
     "shareMessage": "Good design systems succeed when tokens, workflow fit, and decision clarity all line up.",
-    "featuredImageUrl": "/images/amber-pattern.png",
+    "featuredImageUrl": "/wp-content/themes/henrys-digital-canvas/assets/images/amber-pattern.png",
     "featuredImageAlt": "Abstract amber geometric pattern",
     "featuredImageSrcSet": ""
   },

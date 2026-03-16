@@ -553,6 +553,69 @@ function hdc_output_aboutpage_metadata() {
 add_action( 'wp_head', 'hdc_output_aboutpage_metadata', 5 );
 
 /**
+ * Output blog index metadata aligned with the React BLOG_METADATA contract.
+ *
+ * @return void
+ */
+function hdc_output_blog_index_metadata() {
+	if ( ! is_page( 'blog' ) || is_admin() || is_feed() ) {
+		return;
+	}
+
+	$blog_slug = sanitize_title( (string) get_query_var( 'hdc_blog_slug' ) );
+	if ( '' !== $blog_slug ) {
+		return;
+	}
+
+	$description = 'Writing on customer-facing engineering, AI workflows, WordPress delivery, and support-to-implementation systems.';
+	$og_image    = hdc_get_absolute_metadata_url( '/images/hero-piano-ide.png' );
+
+	hdc_output_standard_route_metadata(
+		array(
+			'title'       => 'Blog — Henry Perkins',
+			'description' => $description,
+			'canonical'   => '/blog',
+			'openGraph'   => array(
+				'title'       => 'Blog — Henry Perkins',
+				'description' => $description,
+				'type'        => 'website',
+				'url'         => '/blog',
+				'image'       => $og_image,
+				'imageAlt'    => 'Henry Perkins blog and writing',
+			),
+			'twitter'     => array(
+				'card'        => 'summary_large_image',
+				'title'       => 'Blog — Henry Perkins',
+				'description' => $description,
+				'image'       => $og_image,
+			),
+		),
+		'/blog'
+	);
+}
+add_action( 'wp_head', 'hdc_output_blog_index_metadata', 5 );
+
+/**
+ * Disable default Jetpack OG tags on blog index page so custom ones take precedence.
+ *
+ * @return void
+ */
+function hdc_configure_blog_index_metadata_head_tags() {
+	if ( ! is_page( 'blog' ) || is_admin() || is_feed() ) {
+		return;
+	}
+
+	$blog_slug = sanitize_title( (string) get_query_var( 'hdc_blog_slug' ) );
+	if ( '' !== $blog_slug ) {
+		return;
+	}
+
+	remove_action( 'wp_head', 'rel_canonical' );
+	add_filter( 'jetpack_enable_open_graph', '__return_false', 99 );
+}
+add_action( 'template_redirect', 'hdc_configure_blog_index_metadata_head_tags', 1 );
+
+/**
  * Output blog detail metadata aligned with the React route metadata.
  *
  * @return void
@@ -656,3 +719,31 @@ function hdc_flush_rewrite_rules_after_switch() {
 	flush_rewrite_rules();
 }
 add_action( 'after_switch_theme', 'hdc_flush_rewrite_rules_after_switch' );
+
+/**
+ * Disable Jetpack sharing and likes on custom block pages that are not blog posts.
+ *
+ * Pages like blog index, work, resume, etc. render custom blocks, not editorial
+ * content, so the sharing/likes widgets are inappropriate.
+ *
+ * @return void
+ */
+function hdc_disable_jetpack_sharing_on_block_pages() {
+	if ( is_admin() || ! is_page() ) {
+		return;
+	}
+
+	$block_pages = array( 'blog', 'work', 'resume', 'ats', 'resume-ats', 'hobbies', 'about', 'contact' );
+	foreach ( $block_pages as $slug ) {
+		if ( is_page( $slug ) ) {
+			add_filter( 'sharing_show', '__return_false' );
+			remove_filter( 'the_content', 'sharing_display', 19 );
+			remove_filter( 'the_excerpt', 'sharing_display', 19 );
+			if ( class_exists( 'Jetpack_Likes' ) ) {
+				remove_filter( 'the_content', array( Jetpack_Likes::init(), 'post_likes' ), 30 );
+			}
+			return;
+		}
+	}
+}
+add_action( 'template_redirect', 'hdc_disable_jetpack_sharing_on_block_pages' );
