@@ -24,7 +24,7 @@ $config = array(
 	'endpoint'    => esc_url_raw( rest_url( 'henrys-digital-canvas/v1/resume' ) ),
 	'fallbackUrl' => esc_url_raw( get_theme_file_uri( 'data/resume.json' ) ),
 	'atsUrl'      => esc_url_raw( home_url( '/resume/ats/' ) ),
-	'portfolioUrl' => esc_url_raw( 'https://hperkins.com' ),
+	'themeUri'    => esc_url_raw( get_stylesheet_directory_uri() ),
 );
 
 $inline_payload_path = get_theme_file_path( 'data/resume.json' );

@@ -23,13 +23,21 @@ Define what "WPDS remediation" means for this WordPress child theme so parity wo
 | Foundation role | Transitional alias(es) | WPDS semantic source |
 | --- | --- | --- |
 | Surface backgrounds | `--background`, `--card`, `--popover`, `--secondary`, `--muted` | `--wpds-color-surface-canvas`, `--wpds-color-surface-card`, `--wpds-color-surface-popover`, `--wpds-color-surface-subtle`, `--wpds-color-surface-muted` |
+| Surface scale | `--surface-1`, `--surface-2`, `--surface-3` | `--wpds-color-bg-surface-neutral`, `--wpds-color-bg-surface-neutral-weak`, `--wpds-color-bg-surface-neutral-strong` |
 | Content foregrounds | `--foreground`, `--text-strong`, `--text-body`, `--text-subtle`, `--text-meta` | `--wpds-color-text-primary`, `--wpds-color-text-secondary`, `--wpds-color-text-muted`, `--wpds-color-text-meta` |
 | Muted foreground alias | `--muted-foreground` | `--wpds-color-text-muted-foreground` |
+| Content status foregrounds | `--text-danger` | `--wpds-color-fg-content-error` |
+| Interactive foregrounds | `--text-accent`, `--interactive-nav-active-foreground`, `--interactive-nav-hover-foreground` | `--wpds-color-fg-interactive-brand`, `--wpds-color-fg-interactive-brand-active`, `--wpds-color-fg-interactive-neutral` |
 | Interactive fills and strokes | `--primary`, `--accent`, `--link`, `--link-hover`, `--border`, `--input` | `--wpds-color-accent`, `--wpds-color-accent-strong`, `--wpds-color-link`, `--wpds-color-link-hover`, `--wpds-color-border-subtle` |
+| Interactive backgrounds | `--interactive-surface-hover`, `--interactive-surface-active`, `--interactive-nav-hover-surface`, `--interactive-nav-active-surface` | `--wpds-color-bg-interactive-neutral-weak[-active]`, `--wpds-color-bg-interactive-brand-weak[-active]` |
+| Interactive strokes | `--interactive-border-hover`, `--interactive-border-active`, `--border-emphasis` | `--wpds-color-stroke-interactive-brand[-active]`, `--wpds-color-stroke-surface-brand` |
 | Focus ring | `--ring`, `--focus-ring-width`, `--focus-ring-offset` | `--wpds-color-focus-ring`, `--wpds-focus-ring-width`, `--wpds-focus-ring-offset` |
 | Border radius | `--radius`, `--radius-control`, `--radius-surface`, `--radius-emphasis`, `--radius-pill`, `--radius-floating` | `--wpds-radius-base`, `--wpds-radius-control`, `--wpds-radius-surface`, `--wpds-radius-emphasis`, `--wpds-radius-pill`, `--wpds-radius-floating` |
 | Spacing scale | `--wp--preset--spacing--{2xs,xs,sm,md,lg,xl,2xl}` | `--wpds-space-{2xs,xs,sm,md,lg,xl,2xl}` |
-| Typography stack | `--font-serif`, `--font-sans`, `--font-mono`, corresponding `theme.json` font-family presets | `--wpds-font-serif`, `--wpds-font-sans`, `--wpds-font-mono` |
+| Typography stack | `--font-serif`, `--font-sans`, `--font-mono` | `--wpds-font-serif`, `--wpds-font-sans`, `--wpds-font-mono` |
+| Typography scale | *(consumed by utility classes)* | `--wpds-font-size-{xs..2xl}`, `--wpds-font-line-height-{xs..2xl}`, `--wpds-font-weight-regular`, `--wpds-font-weight-medium` |
+| Elevation | `--shadow-surface-1`, `--shadow-surface-2`, `--shadow-floating`, `--shadow-overlay` | `--wpds-elevation-xs`, `--wpds-elevation-sm`, `--wpds-elevation-md`, `--wpds-elevation-lg` |
+| Cursor | *(consumed by interactive controls)* | `--wpds-cursor-control` |
 
 ### 2. Theme-level integration requirements
 

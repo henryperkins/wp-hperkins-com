@@ -23,6 +23,28 @@
   --wpds-color-warning: 36 94% 46%;
   --wpds-color-info: 213 90% 52%;
 
+  /* Surface background scale (WPDS bg-surface). */
+  --wpds-color-bg-surface-neutral: 0 0% 100%;
+  --wpds-color-bg-surface-neutral-weak: 36 25% 95%;
+  --wpds-color-bg-surface-neutral-strong: 36 20% 92%;
+
+  /* Interactive backgrounds (WPDS bg-interactive). */
+  --wpds-color-bg-interactive-neutral-weak: 36 28% 91%;
+  --wpds-color-bg-interactive-neutral-weak-active: 36 30% 88%;
+  --wpds-color-bg-interactive-brand-weak: 36 26% 94%;
+  --wpds-color-bg-interactive-brand-weak-active: 36 30% 90%;
+
+  /* Content and interactive foregrounds (WPDS fg). */
+  --wpds-color-fg-content-error: 0 72% 42%;
+  --wpds-color-fg-interactive-brand: 38 92% 32%;
+  --wpds-color-fg-interactive-brand-active: 38 92% 29%;
+  --wpds-color-fg-interactive-neutral: 20 16% 14%;
+
+  /* Interactive and surface strokes (WPDS stroke). */
+  --wpds-color-stroke-interactive-brand: 38 72% 56%;
+  --wpds-color-stroke-interactive-brand-active: 38 82% 50%;
+  --wpds-color-stroke-surface-brand: 35 84% 44% / 0.32;
+
   --wpds-radius-base: 0.75rem;
   --wpds-radius-control: calc(var(--wpds-radius-base) - 2px);
   --wpds-radius-surface: calc(var(--wpds-radius-base) + 0.125rem);
@@ -42,8 +64,33 @@
   --wpds-font-sans: "Source Serif 4", Georgia, serif;
   --wpds-font-mono: "JetBrains Mono", monospace;
 
+  /* Typography scale (WPDS font). */
+  --wpds-font-size-xs: 0.75rem;
+  --wpds-font-size-sm: 0.875rem;
+  --wpds-font-size-md: 1rem;
+  --wpds-font-size-lg: 1.125rem;
+  --wpds-font-size-xl: 1.25rem;
+  --wpds-font-size-2xl: 1.5rem;
+  --wpds-font-line-height-xs: 1rem;
+  --wpds-font-line-height-sm: 1.25rem;
+  --wpds-font-line-height-md: 1.5rem;
+  --wpds-font-line-height-lg: 1.75rem;
+  --wpds-font-line-height-xl: 1.75rem;
+  --wpds-font-line-height-2xl: 2rem;
+  --wpds-font-weight-regular: 400;
+  --wpds-font-weight-medium: 500;
+
   --wpds-focus-ring-width: 3px;
   --wpds-focus-ring-offset: 2px;
+
+  /* Elevation (WPDS elevation). */
+  --wpds-elevation-xs: 0 4px 24px -4px hsl(20 20% 15% / 0.08);
+  --wpds-elevation-sm: 0 12px 32px -14px hsl(20 20% 15% / 0.2);
+  --wpds-elevation-md: 0 18px 38px -20px hsl(20 20% 12% / 0.34);
+  --wpds-elevation-lg: 0 24px 48px -20px hsl(20 20% 10% / 0.5);
+
+  /* Cursor (WPDS cursor). */
+  --wpds-cursor-control: pointer;
 
   --background: var(--wpds-color-surface-canvas);
   --foreground: var(--wpds-color-text-primary);
@@ -148,6 +195,7 @@
   --color-surface-hover: hsl(var(--surface-hover));
   --color-surface-active: hsl(var(--surface-active));
   --color-text-strong: hsl(var(--text-strong));
+  --color-text-accent: hsl(var(--text-accent));
   --color-text-body: hsl(var(--text-body));
   --color-text-subtle: hsl(var(--text-subtle));
   --color-text-meta: hsl(var(--text-meta));
@@ -211,29 +259,29 @@
   --inverse-surface: 0 0% 0% / 0.24;
   --inverse-surface-hover: 0 0% 0% / 0.4;
 
-  --surface-1: 0 0% 100%;
-  --surface-2: 36 25% 95%;
-  --surface-3: 36 20% 92%;
-  --surface-hover: 36 26% 94%;
-  --surface-active: 36 30% 90%;
+  --surface-1: var(--wpds-color-bg-surface-neutral);
+  --surface-2: var(--wpds-color-bg-surface-neutral-weak);
+  --surface-3: var(--wpds-color-bg-surface-neutral-strong);
+  --surface-hover: 36 26% 94%; /* No canonical WPDS equivalent. */
+  --surface-active: 36 30% 90%; /* No canonical WPDS equivalent. */
 
   --text-strong: var(--wpds-color-text-primary);
   --text-body: var(--wpds-color-text-secondary);
   --text-subtle: var(--wpds-color-text-muted);
   --text-meta: var(--wpds-color-text-meta);
-  --text-accent: 38 92% 32%;
-  --text-danger: 0 72% 42%;
+  --text-accent: var(--wpds-color-fg-interactive-brand);
+  --text-danger: var(--wpds-color-fg-content-error);
   --link: var(--wpds-color-link);
   --link-hover: var(--wpds-color-link-hover);
 
-  --interactive-border-hover: 38 72% 56%;
-  --interactive-border-active: 38 82% 50%;
-  --interactive-surface-hover: 36 28% 91%;
-  --interactive-surface-active: 36 30% 88%;
-  --interactive-nav-active-surface: 36 30% 90%;
-  --interactive-nav-active-foreground: 38 92% 29%;
-  --interactive-nav-hover-surface: 36 26% 94%;
-  --interactive-nav-hover-foreground: 20 16% 14%;
+  --interactive-border-hover: var(--wpds-color-stroke-interactive-brand);
+  --interactive-border-active: var(--wpds-color-stroke-interactive-brand-active);
+  --interactive-surface-hover: var(--wpds-color-bg-interactive-neutral-weak);
+  --interactive-surface-active: var(--wpds-color-bg-interactive-neutral-weak-active);
+  --interactive-nav-active-surface: var(--wpds-color-bg-interactive-brand-weak-active);
+  --interactive-nav-active-foreground: var(--wpds-color-fg-interactive-brand-active);
+  --interactive-nav-hover-surface: var(--wpds-color-bg-interactive-brand-weak);
+  --interactive-nav-hover-foreground: var(--wpds-color-fg-interactive-neutral);
   --surface-tint-soft: 36 20% 92% / 0.3;
   --surface-tint-strong: 0 0% 100% / 0.7;
   --data-viz-bar: 38 92% 50% / 0.7;
@@ -288,18 +336,18 @@
   --gradient-card: var(--gradient-surface-card);
   --gradient-accent: var(--gradient-surface-emphasis);
 
-  --shadow-surface-1: 0 4px 24px -4px hsl(20 20% 15% / 0.08);
-  --shadow-surface-2: 0 12px 32px -14px hsl(20 20% 15% / 0.2);
-  --shadow-overlay: 0 24px 48px -20px hsl(20 20% 10% / 0.5);
-  --shadow-emphasis: 0 0 40px -10px hsl(38 92% 50% / 0.15);
-  --shadow-surface-strong: 0 26px 46px -26px hsl(26 86% 30% / 0.42), inset 0 1px 0 hsl(42 88% 86% / 0.2);
+  --shadow-surface-1: var(--wpds-elevation-xs);
+  --shadow-surface-2: var(--wpds-elevation-sm);
+  --shadow-overlay: var(--wpds-elevation-lg);
+  --shadow-emphasis: 0 0 40px -10px hsl(38 92% 50% / 0.15); /* Glow — no WPDS equivalent. */
+  --shadow-surface-strong: 0 26px 46px -26px hsl(26 86% 30% / 0.42), inset 0 1px 0 hsl(42 88% 86% / 0.2); /* Composite — no WPDS equivalent. */
   --shadow-card: var(--shadow-surface-1);
   --shadow-glow: var(--shadow-emphasis);
-  --shadow-cta-hero: 0 18px 38px hsl(0 0% 0% / 0.45);
-  --shadow-floating: 0 18px 38px -20px hsl(20 20% 12% / 0.34);
-  --shadow-control: 0 1px 2px hsl(20 20% 15% / 0.12);
+  --shadow-cta-hero: 0 18px 38px hsl(0 0% 0% / 0.45); /* CTA-specific — no WPDS equivalent. */
+  --shadow-floating: var(--wpds-elevation-md);
+  --shadow-control: 0 1px 2px hsl(20 20% 15% / 0.12); /* Control-specific — no WPDS equivalent. */
 
-  --border-emphasis: 35 84% 44% / 0.32;
+  --border-emphasis: var(--wpds-color-stroke-surface-brand);
   --text-shadow-hero-title: 0 14px 28px hsl(0 0% 0% / 0.8);
   --text-shadow-hero-body: 0 8px 18px hsl(0 0% 0% / 0.75);
   --text-shadow-inverse-strong: 0 10px 18px hsl(0 0% 0% / 0.7);
@@ -339,6 +387,25 @@ body.is-dark-theme,
   --wpds-color-success: 152 62% 45%;
   --wpds-color-warning: 40 96% 56%;
   --wpds-color-info: 213 95% 64%;
+
+  --wpds-color-bg-surface-neutral: 20 10% 8%;
+  --wpds-color-bg-surface-neutral-weak: 20 10% 10%;
+  --wpds-color-bg-surface-neutral-strong: 20 9% 13%;
+  --wpds-color-bg-interactive-neutral-weak: 20 11% 16%;
+  --wpds-color-bg-interactive-neutral-weak-active: 20 12% 18%;
+  --wpds-color-bg-interactive-brand-weak: 20 10% 14%;
+  --wpds-color-bg-interactive-brand-weak-active: 20 11% 17%;
+  --wpds-color-fg-content-error: 2 85% 74%;
+  --wpds-color-fg-interactive-brand: 38 92% 58%;
+  --wpds-color-fg-interactive-brand-active: 38 92% 58%;
+  --wpds-color-fg-interactive-neutral: 36 33% 92%;
+  --wpds-color-stroke-interactive-brand: 38 76% 62%;
+  --wpds-color-stroke-interactive-brand-active: 38 88% 58%;
+  --wpds-color-stroke-surface-brand: 35 90% 52% / 0.34;
+  --wpds-elevation-xs: 0 4px 24px -4px hsl(0 0% 0% / 0.3);
+  --wpds-elevation-sm: 0 12px 32px -14px hsl(0 0% 0% / 0.46);
+  --wpds-elevation-md: 0 20px 40px -20px hsl(0 0% 0% / 0.66);
+  --wpds-elevation-lg: 0 24px 48px -20px hsl(0 0% 0% / 0.72);
 
   --background: var(--wpds-color-surface-canvas);
   --foreground: var(--wpds-color-text-primary);
@@ -408,29 +475,29 @@ body.is-dark-theme,
   --inverse-surface: 0 0% 0% / 0.34;
   --inverse-surface-hover: 0 0% 0% / 0.5;
 
-  --surface-1: 20 10% 8%;
-  --surface-2: 20 10% 10%;
-  --surface-3: 20 9% 13%;
-  --surface-hover: 20 10% 14%;
-  --surface-active: 20 11% 17%;
+  --surface-1: var(--wpds-color-bg-surface-neutral);
+  --surface-2: var(--wpds-color-bg-surface-neutral-weak);
+  --surface-3: var(--wpds-color-bg-surface-neutral-strong);
+  --surface-hover: 20 10% 14%; /* No canonical WPDS equivalent. */
+  --surface-active: 20 11% 17%; /* No canonical WPDS equivalent. */
 
   --text-strong: var(--wpds-color-text-primary);
   --text-body: var(--wpds-color-text-secondary);
   --text-subtle: var(--wpds-color-text-muted);
   --text-meta: var(--wpds-color-text-meta);
-  --text-accent: 38 92% 58%;
-  --text-danger: 2 85% 74%;
+  --text-accent: var(--wpds-color-fg-interactive-brand);
+  --text-danger: var(--wpds-color-fg-content-error);
   --link: var(--wpds-color-link);
   --link-hover: var(--wpds-color-link-hover);
 
-  --interactive-border-hover: 38 76% 62%;
-  --interactive-border-active: 38 88% 58%;
-  --interactive-surface-hover: 20 11% 16%;
-  --interactive-surface-active: 20 12% 18%;
-  --interactive-nav-active-surface: 20 11% 17%;
-  --interactive-nav-active-foreground: 38 92% 58%;
-  --interactive-nav-hover-surface: 20 10% 14%;
-  --interactive-nav-hover-foreground: 36 33% 92%;
+  --interactive-border-hover: var(--wpds-color-stroke-interactive-brand);
+  --interactive-border-active: var(--wpds-color-stroke-interactive-brand-active);
+  --interactive-surface-hover: var(--wpds-color-bg-interactive-neutral-weak);
+  --interactive-surface-active: var(--wpds-color-bg-interactive-neutral-weak-active);
+  --interactive-nav-active-surface: var(--wpds-color-bg-interactive-brand-weak-active);
+  --interactive-nav-active-foreground: var(--wpds-color-fg-interactive-brand-active);
+  --interactive-nav-hover-surface: var(--wpds-color-bg-interactive-brand-weak);
+  --interactive-nav-hover-foreground: var(--wpds-color-fg-interactive-neutral);
   --surface-tint-soft: 20 8% 12% / 0.3;
   --surface-tint-strong: 20 10% 8% / 0.72;
   --data-viz-bar: 38 92% 58% / 0.78;
@@ -474,17 +541,17 @@ body.is-dark-theme,
   --gradient-hero: var(--gradient-surface-hero);
   --gradient-card: var(--gradient-surface-card);
   --gradient-accent: var(--gradient-surface-emphasis);
-  --shadow-surface-1: 0 4px 24px -4px hsl(0 0% 0% / 0.3);
-  --shadow-surface-2: 0 12px 32px -14px hsl(0 0% 0% / 0.46);
-  --shadow-overlay: 0 24px 48px -20px hsl(0 0% 0% / 0.72);
+  --shadow-surface-1: var(--wpds-elevation-xs);
+  --shadow-surface-2: var(--wpds-elevation-sm);
+  --shadow-overlay: var(--wpds-elevation-lg);
   --shadow-emphasis: 0 0 40px -10px hsl(38 92% 50% / 0.15);
   --shadow-surface-strong: 0 34px 54px -30px hsl(26 86% 28% / 0.56), inset 0 1px 0 hsl(34 86% 72% / 0.22);
   --shadow-card: var(--shadow-surface-1);
   --shadow-glow: var(--shadow-emphasis);
   --shadow-cta-hero: 0 18px 38px hsl(0 0% 0% / 0.52);
-  --shadow-floating: 0 20px 40px -20px hsl(0 0% 0% / 0.66);
+  --shadow-floating: var(--wpds-elevation-md);
   --shadow-control: 0 1px 2px hsl(0 0% 0% / 0.36);
-  --border-emphasis: 35 90% 52% / 0.34;
+  --border-emphasis: var(--wpds-color-stroke-surface-brand);
   --text-shadow-hero-title: 0 14px 28px hsl(0 0% 0% / 0.82);
   --text-shadow-hero-body: 0 8px 18px hsl(0 0% 0% / 0.78);
   --text-shadow-inverse-strong: 0 10px 18px hsl(0 0% 0% / 0.72);

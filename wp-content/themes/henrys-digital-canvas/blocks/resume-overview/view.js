@@ -21,15 +21,52 @@
 			};
 
 	const SECTION_ICONS = {
-		'Impact at a Glance': 'trending-up',
 		'Capability Map': 'layers',
 		'Experience': 'briefcase',
 		'Signature Work': 'folder-open',
 		'Education': 'graduation-cap',
 		'What Makes This Profile Different': 'sparkles',
-		'Skills': 'wrench',
 		'Certifications': 'award',
 	};
+
+	const RESUME_CAPABILITY_SKILL_GROUPS = {
+		'Customer Outcomes': [ 'Support & Enablement' ],
+		'Technical Delivery': [ 'Languages & Frontend', 'AI & Automation', 'WordPress & Web Delivery' ],
+		'Operations & Leadership': [ 'Tools & Workflow', 'Leadership & Operations' ],
+	};
+
+	const CAPABILITY_SURFACE_CLASSES = {
+		'Customer Outcomes': 'resume-capability-surface resume-capability-customer',
+		'Technical Delivery': 'resume-capability-surface resume-capability-technical',
+		'Operations & Leadership': 'resume-capability-surface resume-capability-operations',
+	};
+
+	const PROJECT_VISUAL_PATHS = {
+		'Prompt Forge': {
+			alt: 'Prompt Forge signature work cover showing structured builder flows and routed signal lines',
+			path: '/assets/images/work/case-studies/promptforge-cover',
+		},
+		'HPerkins.com': {
+			alt: 'HPerkins.com signature work cover showing editorial panels and linked runtime structure',
+			path: '/assets/images/work/case-studies/digital-canvas-cover',
+		},
+		'WordPress Portfolio (wp-hperkins-com)': {
+			alt: 'WordPress Portfolio signature work cover showing structured publishing panels and content-delivery pathways',
+			path: '/assets/images/resume/signature-work/wordpress-portfolio-cover',
+		},
+	};
+
+	function getProjectVisual( name, themeUri ) {
+		const entry = PROJECT_VISUAL_PATHS[ name ];
+		if ( ! entry || ! themeUri ) {
+			return null;
+		}
+		return {
+			alt: entry.alt,
+			src: themeUri + entry.path + '.webp',
+			srcSet: themeUri + entry.path + '-960.webp 960w, ' + themeUri + entry.path + '.webp 1536w',
+		};
+	}
 
 	function sectionTitle( title ) {
 		const iconName = SECTION_ICONS[ title ] || '';
@@ -68,6 +105,30 @@
 		return trimmed || fallback;
 	}
 
+	const MONTHS = {
+		jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+		jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11,
+	};
+
+	function parsePeriodStart( period ) {
+		const start = ( period || '' ).split( '-' )[ 0 ].trim();
+		const monthYear = start.match( /^([A-Za-z]{3})\s+(\d{4})$/ );
+		if ( monthYear ) {
+			return Number( monthYear[ 2 ] ) * 12 + ( MONTHS[ monthYear[ 1 ].toLowerCase() ] || 0 );
+		}
+		const yearOnly = start.match( /^(\d{4})$/ );
+		if ( yearOnly ) {
+			return Number( yearOnly[ 1 ] ) * 12;
+		}
+		return 0;
+	}
+
+	function sortExperienceDescending( entries ) {
+		return entries.slice().sort( function ( a, b ) {
+			return parsePeriodStart( b.period ) - parsePeriodStart( a.period );
+		} );
+	}
+
 	function parseJsonAttribute( section, attributeName ) {
 		const raw = section.getAttribute( attributeName );
 		if ( ! raw ) {
@@ -91,7 +152,7 @@
 			endpoint: ensureString( parsed.endpoint, '' ),
 			fallbackUrl: ensureString( parsed.fallbackUrl, '' ),
 			atsUrl: ensureString( parsed.atsUrl, '/resume/ats/' ),
-			portfolioUrl: ensureString( parsed.portfolioUrl, 'https://hperkins.com' ),
+			themeUri: ensureString( parsed.themeUri, '' ),
 			inlinePayload: resolveInlineData( parseJsonAttribute( section, 'data-inline-payload' ) ),
 		};
 	}
@@ -162,7 +223,60 @@
 	}
 
 	function SectionJumpNav( props ) {
-		if ( ! props.items.length ) {
+		const items = props.items;
+		const initialHref = items.length ? items[ 0 ].href : '';
+		const activeState = useState( function () {
+			return window.location.hash || initialHref;
+		} );
+		const activeHref = activeState[ 0 ];
+		const setActiveHref = activeState[ 1 ];
+
+		useEffect( function () {
+			if ( typeof IntersectionObserver === 'undefined' || ! items.length ) {
+				return undefined;
+			}
+
+			const headingEls = [];
+			items.forEach( function ( item ) {
+				const id = item.href.replace( /^#/, '' );
+				const el = document.getElementById( id );
+				if ( el ) {
+					headingEls.push( el );
+				}
+			} );
+
+			if ( ! headingEls.length ) {
+				return undefined;
+			}
+
+			const observer = new IntersectionObserver(
+				function ( entries ) {
+					entries.forEach( function ( entry ) {
+						if ( entry.isIntersecting ) {
+							setActiveHref( '#' + entry.target.id );
+						}
+					} );
+				},
+				{ rootMargin: '-100px 0px -66% 0px', threshold: 0 }
+			);
+
+			headingEls.forEach( function ( el ) {
+				observer.observe( el );
+			} );
+
+			function onHashChange() {
+				setActiveHref( window.location.hash || initialHref );
+			}
+
+			window.addEventListener( 'hashchange', onHashChange );
+
+			return function () {
+				observer.disconnect();
+				window.removeEventListener( 'hashchange', onHashChange );
+			};
+		}, [ items ] );
+
+		if ( ! items.length ) {
 			return null;
 		}
 
@@ -180,13 +294,18 @@
 					h(
 						'ul',
 						{ className: 'hdc-resume-overview__jump-nav-list' },
-						props.items.map( function ( item ) {
+						items.map( function ( item ) {
+							const isActive = activeHref === item.href;
 							return h(
 								'li',
 								{ className: 'hdc-resume-overview__jump-nav-item', key: item.href },
 								h(
 									'a',
-									{ className: 'hdc-resume-overview__jump-nav-link', href: item.href },
+									{
+										className: 'hdc-resume-overview__jump-nav-link' + ( isActive ? ' hdc-resume-overview__jump-nav-link--active' : '' ),
+										href: item.href,
+										'aria-current': isActive ? 'true' : undefined,
+									},
 									item.label
 								)
 							);
@@ -273,17 +392,29 @@
 		const targetRoles = ensureArray( data.targetRoles );
 		const impactStrip = ensureArray( data.impactStrip );
 		const capabilityMap = ensureArray( data.capabilityMap );
-		const experience = ensureArray( data.experience );
+		const experience = sortExperienceDescending( ensureArray( data.experience ) );
 		const education = ensureArray( data.education );
 		const projects = ensureArray( data.projects );
 		const skills = ensureArray( data.skills );
 		const certifications = ensureArray( data.certifications );
 		const differentiator = ensureString( data.differentiator, '' );
 
+		const skillsByCategory = {};
+		skills.forEach( function ( cat ) {
+			skillsByCategory[ cat.category ] = cat;
+		} );
+		const combinedCapabilityCards = capabilityMap.map( function ( column ) {
+			const groupNames = RESUME_CAPABILITY_SKILL_GROUPS[ column.category ] || [];
+			return {
+				category: column.category,
+				items: ensureArray( column.items ),
+				skillGroups: groupNames
+					.map( function ( name ) { return skillsByCategory[ name ]; } )
+					.filter( Boolean ),
+			};
+		} );
+
 		const sectionLinks = [];
-		if ( impactStrip.length ) {
-			sectionLinks.push( { href: '#resume-impact', label: 'Impact' } );
-		}
 		sectionLinks.push( { href: '#resume-summary', label: 'Summary' } );
 		if ( capabilityMap.length ) {
 			sectionLinks.push( { href: '#resume-capability-map', label: 'Capability Map' } );
@@ -300,9 +431,6 @@
 		if ( differentiator ) {
 			sectionLinks.push( { href: '#resume-differentiator', label: 'Difference' } );
 		}
-		if ( skills.length ) {
-			sectionLinks.push( { href: '#resume-skills', label: 'Skills' } );
-		}
 		if ( certifications.length ) {
 			sectionLinks.push( { href: '#resume-certifications', label: 'Certifications' } );
 		}
@@ -311,51 +439,53 @@
 			'div',
 			{},
 			h(
-				'header',
-				{ className: 'hdc-resume-overview__hero' },
+				'section',
+				{ className: 'hdc-resume-overview__hero noise' },
 				h(
 					'div',
-					{ className: 'hdc-resume-overview__hero-copy' },
-					h( 'p', { className: 'hdc-resume-overview__eyebrow' }, config.heading || 'Resume' ),
-					h( 'h1', { className: 'hdc-resume-overview__title' }, ensureString( data.headline, 'Resume' ) ),
-					h( 'p', { className: 'hdc-resume-overview__subtitle' }, ensureString( data.subheadline, '' ) ),
-					config.intro ? h( 'p', { className: 'hdc-resume-overview__legacy-intro' }, config.intro ) : null,
-					targetRoles.length
-						? h(
-							'div',
-							{ className: 'hdc-resume-overview__roles' },
-							targetRoles.map( function ( role ) {
-								return h( 'span', { className: 'hdc-resume-overview__badge', key: role }, role );
-							} )
-						)
-						: null
+					{ className: 'hero-backdrop-resume-profile', 'aria-hidden': 'true' },
+					h( 'div', { className: 'hero-backdrop-overlay' } )
 				),
+				h( 'div', { className: 'hdc-resume-overview__hero-gradient hero-gradient-layer', 'aria-hidden': 'true' } ),
 				h(
 					'div',
-					{ className: 'hdc-resume-overview__actions' },
-					config.showAtsLink
-						? h( 'a', { className: 'hdc-resume-overview__action', href: config.atsUrl }, 'ATS one-page' )
-						: null,
-					config.portfolioUrl
-						? h(
-							'a',
-							{
-								className: 'hdc-resume-overview__action hdc-resume-overview__action--secondary group',
-								href: config.portfolioUrl,
-								target: '_blank',
-								rel: 'noopener noreferrer',
-							},
-							'Portfolio',
-							h(
-								'span',
-								{ className: 'hdc-resume-overview__action-icon', 'aria-hidden': 'true' },
-								renderLucideIcon( h, 'external-link', {
-									className: 'hdc-resume-overview__action-icon-svg icon-link-hover',
-									size: 12,
+					{ className: 'hdc-resume-overview__hero-shell' },
+					h(
+						'div',
+						{ className: 'hdc-resume-overview__hero-content' },
+						h( 'p', { className: 'hdc-resume-overview__eyebrow' }, config.heading || 'Resume' ),
+						h( 'h1', { className: 'hdc-resume-overview__title' }, ensureString( data.headline, 'Resume' ) ),
+						h( 'p', { className: 'hdc-resume-overview__subtitle' }, ensureString( data.subheadline, '' ) ),
+						targetRoles.length
+							? h(
+								'div',
+								{ className: 'hdc-resume-overview__roles' },
+								targetRoles.map( function ( role ) {
+									return h( 'span', { className: 'hdc-resume-overview__badge', key: role }, role );
 								} )
 							)
-						)
-						: null
+							: null
+					),
+					h(
+						'div',
+						{ className: 'hdc-resume-overview__actions' },
+						config.showAtsLink
+							? h( 'a', { className: 'hdc-resume-overview__action hdc-resume-overview__action--inverse-glass', href: config.atsUrl }, 'ATS Resume' )
+							: null,
+						h(
+							'a',
+							{
+								className: 'hdc-resume-overview__action hdc-resume-overview__action--inverse-glass hdc-resume-overview__action--icon-only',
+								href: '/documents/henry-perkins-ats-resume.pdf',
+								target: '_blank',
+								rel: 'noopener noreferrer',
+								'aria-label': 'Open ATS Resume PDF',
+								title: 'Open ATS Resume PDF',
+							},
+							renderLucideIcon( h, 'printer', { className: 'hdc-resume-overview__action-icon-svg', size: 16 } )
+						),
+						h( 'a', { className: 'hdc-resume-overview__action hdc-resume-overview__action--primary', href: '/contact/' }, 'Contact' )
+					)
 				)
 			),
 			h(
@@ -372,27 +502,6 @@
 				h(
 					'div',
 					{ className: 'hdc-resume-overview__content' },
-					impactStrip.length
-						? h(
-							'section',
-							{ className: 'hdc-resume-overview__section', id: 'resume-impact' },
-							sectionTitle( 'Impact at a Glance' ),
-							h(
-								'div',
-								{ className: 'hdc-resume-overview__metrics' },
-								impactStrip.map( function ( metric, index ) {
-									const value = ensureString( metric && metric.value, '' );
-									const label = ensureString( metric && metric.label, '' );
-									return h(
-										'article',
-										{ className: 'hdc-resume-overview__card hdc-resume-overview__card--soft', key: value + '-' + String( index ) },
-										h( 'span', { className: 'hdc-resume-overview__metric-value' }, value ),
-										h( 'span', { className: 'hdc-resume-overview__metric-label' }, label )
-									);
-								} )
-							)
-						)
-						: null,
 					h(
 						'section',
 						{
@@ -402,30 +511,51 @@
 						h( 'h2', { className: 'hdc-resume-overview__section-title' }, 'Professional Summary' ),
 						h( 'p', { className: 'hdc-resume-overview__text' }, ensureString( data.summary, '' ) )
 					),
-					capabilityMap.length
+					combinedCapabilityCards.length
 						? h(
 							'section',
 							{ className: 'hdc-resume-overview__section', id: 'resume-capability-map' },
 							sectionTitle( 'Capability Map' ),
+							h( 'span', { id: 'resume-skills', 'aria-hidden': 'true', className: 'hdc-resume-overview__skills-anchor' } ),
 							h(
 								'div',
 								{ className: 'hdc-resume-overview__capability' },
-								capabilityMap.map( function ( column, index ) {
-									const items = ensureArray( column && column.items );
+								combinedCapabilityCards.map( function ( column, index ) {
+									const surfaceClass = CAPABILITY_SURFACE_CLASSES[ column.category ] || '';
 									return h(
 										'article',
 										{
-											className: 'hdc-resume-overview__card hdc-resume-overview__card--soft',
-											key: ensureString( column && column.category, 'capability-' + String( index ) ),
+											className: 'hdc-resume-overview__card surface-inset-soft' + ( surfaceClass ? ' ' + surfaceClass : '' ),
+											key: column.category || 'capability-' + String( index ),
 										},
-										h( 'h3', { className: 'hdc-resume-overview__entry-title' }, ensureString( column && column.category, 'Capability' ) ),
+										h( 'h3', { className: 'hdc-resume-overview__entry-title' }, column.category || 'Capability' ),
 										h(
 											'ul',
 											{ className: 'hdc-resume-overview__list' },
-											items.map( function ( item, itemIndex ) {
+											column.items.map( function ( item, itemIndex ) {
 												return h( 'li', { key: String( item ) + '-' + String( itemIndex ) }, String( item ) );
 											} )
-										)
+										),
+										column.skillGroups.length
+											? h(
+												'div',
+												{ className: 'hdc-resume-overview__capability-skills' },
+												column.skillGroups.map( function ( group ) {
+													return h(
+														'div',
+														{ key: group.category, className: 'hdc-resume-overview__capability-skill-group' },
+														h( 'h4', { className: 'hdc-resume-overview__capability-skill-heading' }, group.category ),
+														h(
+															'div',
+															{ className: 'hdc-resume-overview__chips' },
+															ensureArray( group.items ).map( function ( item, itemIndex ) {
+																return h( 'span', { className: 'hdc-resume-overview__badge', key: String( item ) + '-' + String( itemIndex ) }, String( item ) );
+															} )
+														)
+													);
+												} )
+											)
+											: null
 									);
 								} )
 							)
@@ -479,49 +609,69 @@
 								{ className: 'hdc-resume-overview__timeline' },
 								projects.map( function ( project, index ) {
 									const tech = ensureArray( project && project.tech );
+									const projectName = ensureString( project && project.name, '' );
+									const projectVisual = getProjectVisual( projectName, config.themeUri );
 									return h(
 										'article',
 										{
-											className: 'hdc-resume-overview__card hdc-resume-overview__card--ember ember-surface',
-											key: ensureString( project && project.name, 'project-' + String( index ) ),
+											className: 'hdc-resume-overview__card hdc-resume-overview__card--ember hdc-resume-overview__card--project ember-surface',
+											key: projectName || 'project-' + String( index ),
 										},
+										projectVisual
+											? h( 'img', {
+												alt: projectVisual.alt,
+												className: 'hdc-resume-overview__project-cover',
+												decoding: 'async',
+												loading: 'lazy',
+												sizes: '(min-width: 1280px) 768px, 100vw',
+												src: projectVisual.src,
+												srcSet: projectVisual.srcSet,
+											} )
+											: null,
 										h(
 											'div',
-											{ className: 'hdc-resume-overview__project-header' },
-											h( 'h3', { className: 'hdc-resume-overview__entry-title' }, ensureString( project && project.name, 'Project' ) ),
-											ensureString( project && project.link, '' )
-												? h(
-													'a',
-													{
-														className: 'hdc-resume-overview__project-link group',
-														'aria-label': 'View ' + ensureString( project && project.name, 'project' ) + ' project',
-														href: ensureString( project && project.link, '' ),
-														target: '_blank',
-														rel: 'noopener noreferrer',
-													},
-													h( 'span', null, 'View' ),
-													h(
-														'span',
-														{ className: 'hdc-resume-overview__project-link-icon', 'aria-hidden': 'true' },
-														renderLucideIcon( h, 'external-link', {
-															className: 'hdc-resume-overview__project-link-icon-svg icon-link-hover',
-															size: 12,
-														} )
+											{ className: 'hdc-resume-overview__project-body' },
+											h(
+												'div',
+												{ className: 'hdc-resume-overview__project-header' },
+												h( 'h3', { className: 'hdc-resume-overview__entry-title' }, projectName || 'Project' ),
+												ensureString( project && project.link, '' )
+													? h(
+														'a',
+														{
+															className: 'hdc-resume-overview__project-link group',
+															'aria-label': 'View ' + ( projectName || 'project' ) + ' project',
+															href: ensureString( project && project.link, '' ),
+															target: '_blank',
+															rel: 'noopener noreferrer',
+														},
+														h( 'span', null, 'View' ),
+														h(
+															'span',
+															{ className: 'hdc-resume-overview__project-link-icon', 'aria-hidden': 'true' },
+															renderLucideIcon( h, 'external-link', {
+																className: 'hdc-resume-overview__project-link-icon-svg icon-link-hover',
+																size: 12,
+															} )
+														)
 													)
+													: null
+											),
+											h( 'p', { className: 'hdc-resume-overview__text' }, ensureString( project && project.description, '' ) ),
+											h( 'p', { className: 'hdc-resume-overview__text' },
+												h( 'span', { className: 'hdc-resume-overview__evidence-label' }, 'Evidence:' ),
+												' ' + ensureString( project && project.impact, '' )
+											),
+											tech.length
+												? h(
+													'div',
+													{ className: 'hdc-resume-overview__chips' },
+													tech.map( function ( item, itemIndex ) {
+														return h( 'span', { className: 'hdc-resume-overview__badge', key: String( item ) + '-' + String( itemIndex ) }, String( item ) );
+													} )
 												)
 												: null
-										),
-										h( 'p', { className: 'hdc-resume-overview__text' }, ensureString( project && project.description, '' ) ),
-										h( 'p', { className: 'hdc-resume-overview__text' }, 'Impact: ' + ensureString( project && project.impact, '' ) ),
-										tech.length
-											? h(
-												'div',
-												{ className: 'hdc-resume-overview__chips' },
-												tech.map( function ( item, itemIndex ) {
-													return h( 'span', { className: 'hdc-resume-overview__badge', key: String( item ) + '-' + String( itemIndex ) }, String( item ) );
-												} )
-											)
-											: null
+										)
 									);
 								} )
 							)
@@ -574,35 +724,6 @@
 							},
 							sectionTitle( 'What Makes This Profile Different' ),
 							h( 'p', { className: 'hdc-resume-overview__text' }, differentiator )
-						)
-						: null,
-					skills.length
-						? h(
-							'section',
-							{ className: 'hdc-resume-overview__section', id: 'resume-skills' },
-							sectionTitle( 'Skills' ),
-							h(
-								'div',
-								{ className: 'hdc-resume-overview__skills' },
-								skills.map( function ( category, index ) {
-									const items = ensureArray( category && category.items );
-									return h(
-										'article',
-										{
-											className: 'hdc-resume-overview__card hdc-resume-overview__card--soft',
-											key: ensureString( category && category.category, 'skills-' + String( index ) ),
-										},
-										h( 'h3', { className: 'hdc-resume-overview__entry-title' }, ensureString( category && category.category, 'Skills' ) ),
-										h(
-											'div',
-											{ className: 'hdc-resume-overview__chips' },
-											items.map( function ( item, itemIndex ) {
-												return h( 'span', { className: 'hdc-resume-overview__badge', key: String( item ) + '-' + String( itemIndex ) }, String( item ) );
-											} )
-										)
-									);
-								} )
-							)
 						)
 						: null,
 					certifications.length

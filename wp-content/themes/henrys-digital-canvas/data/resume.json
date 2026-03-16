@@ -8,60 +8,54 @@
   ],
   "impactStrip": [
     {
-      "value": "10+ Years",
-      "label": "Customer-facing technical and operations experience"
+      "value": "Since 2007",
+      "label": "Customer-facing technical, support, community, and operations work"
     },
     {
-      "value": "50+",
-      "label": "Developers supported in the PageLines ecosystem"
+      "value": "3 projects",
+      "label": "Live or public proof across AI, Cloudflare, and WordPress"
     },
     {
-      "value": "18%",
-      "label": "Year-over-year service speed improvement"
+      "value": "End-to-end",
+      "label": "Ownership from discovery and scoping through launch support"
     },
     {
-      "value": "$35K-$45K",
-      "label": "Weekly sales overseen in Starbucks operations"
+      "value": "Cross-team",
+      "label": "Support, product, engineering, documentation, and community coverage"
     },
     {
-      "value": "25+",
-      "label": "Team members managed and mentored in retail leadership roles"
+      "value": "WP + AI",
+      "label": "Workflow prototyping paired with durable web delivery"
     }
   ],
-  "summary": "Customer-facing technical professional based in Lisle, Illinois with experience across SaaS support, developer community management, web consulting, and high-volume operations leadership. I diagnose complex user issues, document repeatable solutions, and connect customer feedback to practical product and process improvements.",
-  "differentiator": "I bridge digital support and real-world operations: from developer ecosystems and technical troubleshooting to frontline team leadership, coaching, and customer experience execution under pressure.",
+  "summary": "Technical consultant focused on AI-assisted workflows, WordPress platforms, and customer-facing technical operations. I build integrations, documentation, and support workflows that reduce friction and make systems easier for teams and customers to use. Recent public work includes Prompt Forge, HPerkins.com, and the wp-hperkins-com WordPress portfolio stack.",
+  "differentiator": "I combine WordPress and TypeScript delivery with documentation, QA, and support habits \u2014 so teams ship systems that are easier to maintain, explain, and hand off after launch.",
   "capabilityMap": [
     {
-      "category": "Adoption & Retention",
+      "category": "Customer Outcomes",
       "items": [
-        "Technical onboarding and customer enablement",
-        "Escalation triage and root-cause analysis",
-        "Knowledge base and documentation improvement",
-        "Developer community growth and relationship management",
-        "Product feedback loops from support conversations"
+        "Reduce onboarding friction with enablement, support, and clearer documentation",
+        "Turn escalations into reproducible issues and actionable next steps",
+        "Translate customer conversations into product and service feedback loops",
+        "Support developer and partner communities with practical education"
       ]
     },
     {
-      "category": "Technical Execution",
+      "category": "Technical Delivery",
       "items": [
-        "Technical troubleshooting across web, DNS, and publishing workflows",
-        "REST API integration and debugging",
-        "WordPress and WooCommerce implementation",
-        "Cloudflare performance and reliability tuning",
-        "AI-assisted workflow prototyping",
-        "Technical writing, internal docs, and customer-facing guides"
+        "Ship WordPress, WooCommerce, and Cloudflare-backed web experiences",
+        "Prototype AI-assisted workflows with safe handoff and support guardrails",
+        "Integrate and debug REST APIs across publishing and support flows",
+        "Build reusable documentation that improves maintainability after launch"
       ]
     },
     {
-      "category": "Leadership & Operations",
+      "category": "Operations & Leadership",
       "items": [
-        "Cross-functional collaboration (Support, Engineering, Product)",
-        "Team leadership and performance coaching",
-        "Process and service-quality improvement",
-        "High-volume operations management",
-        "Mentoring and training program design",
-        "Stakeholder communication and reporting",
-        "Community event participation and facilitation"
+        "Lead high-volume teams while protecting service quality and execution standards",
+        "Coach teammates and standardize workflows so delivery stays consistent",
+        "Bridge support, product, engineering, and community stakeholders",
+        "Improve processes, reporting, and service quality across operational work"
       ]
     }
   ],
@@ -70,13 +64,12 @@
       "id": "lakefront-digital-consultant",
       "title": "Independent Technology Consultant",
       "company": "Lakefront Digital",
-      "location": "Greater Chicago Area, IL (Open to US Remote)",
+      "location": "Greater Chicago Area, IL (Open to US remote)",
       "period": "Oct 2022 - Present",
       "highlights": [
-        "Delivering consulting services across resume development, IT strategy, web development, and WordPress design.",
-        "Owning projects end-to-end from discovery and scoping through implementation and post-launch support.",
-        "Reducing manual workflows through API integrations, automation, and repeatable client handoff documentation.",
-        "Building support-focused web solutions with WordPress, WooCommerce, Cloudflare, and AI-assisted workflows."
+        "Scoped and delivered customer-facing workflow projects (WordPress builds, API integrations, documentation, and AI-assisted triage prototypes) from discovery through launch and post-launch support.",
+        "Built reusable documentation and API-connected automation that reduced manual handoffs and improved maintainability across client engagements.",
+        "Shipped WordPress, WooCommerce, and Cloudflare-backed web experiences with structured content models, smoke-check automation, and deployment workflows."
       ]
     },
     {
@@ -86,9 +79,9 @@
       "location": "Greater Chicago Area, IL",
       "period": "Apr 2019 - Sep 2022",
       "highlights": [
-        "Led teams in high-volume stores while enforcing service, safety, and operational standards.",
-        "Improved service speed by 18% year over year through coaching, workflow consistency, and escalation handling.",
-        "Sustained weekly sales in the $35K-$45K range while mentoring team members into leadership roles."
+        "Coordinated frontline teams across high-volume shifts, handling escalations and maintaining service, safety, and workflow standards during peak periods.",
+        "Coached baristas on repeatable operating routines so staffing changes and rush windows did not break service consistency.",
+        "Reduced customer-facing friction by standardizing handoff procedures and escalation paths during daily operations."
       ]
     },
     {
@@ -98,9 +91,9 @@
       "location": "Illinois",
       "period": "2018 - 2019",
       "highlights": [
-        "Managed daily operations for a Starbucks unit with food safety and quality control accountability.",
-        "Led approximately 25 baristas in scheduling, coaching, and service-quality execution.",
-        "Maintained high weekly sales performance while balancing staffing and customer experience goals."
+        "Ran daily operations for a Starbucks unit with accountability for food safety, service quality, staffing, and inventory.",
+        "Coached staff and standardized service execution to keep quality consistent across busy shifts.",
+        "Balanced staffing, stock, and customer-experience expectations in a high-volume environment."
       ]
     },
     {
@@ -110,8 +103,8 @@
       "location": "Illinois",
       "period": "2015 - 2017",
       "highlights": [
-        "Provided customer-facing product consulting, education, and recommendation support.",
-        "Applied sales and service best practices to build trust and repeat engagement."
+        "Provided customer-facing product consulting and education that helped shoppers choose appropriate skincare and cosmetics solutions.",
+        "Built repeat engagement through consultative service, clear recommendations, and trust-based communication."
       ]
     },
     {
@@ -121,9 +114,9 @@
       "location": "Remote",
       "period": "Oct 2012 - Nov 2012",
       "highlights": [
-        "Provided technical support across publishing, site configuration, billing, and domain/DNS setup.",
-        "Documented solutions and improved support guidance for common user issues.",
-        "Collaborated with product and engineering through clear bug reports and reproducible issue details."
+        "Resolved customer issues across WordPress.com publishing, site configuration, billing, and domain/DNS workflows \u2014 turning recurring problems into documentation, bug reports, and reproducible details for product and engineering.",
+        "Reduced confusion around account and site configuration by delivering clear written troubleshooting that addressed root causes, not just symptoms.",
+        "Contributed to internal knowledge-base improvements by identifying patterns in support volume and documenting reusable solutions for the team."
       ]
     },
     {
@@ -133,9 +126,9 @@
       "location": "Remote",
       "period": "May 2012 - Oct 2012",
       "highlights": [
-        "Built and supported a community of 50+ developers around the PageLines ecosystem.",
-        "Helped grow app marketplace participation through onboarding content, tutorials, and community engagement.",
-        "Managed developer relationships and translated user feedback into clearer product priorities."
+        "Supported a developer community around the PageLines ecosystem through onboarding content, tutorials, and day-to-day relationship management.",
+        "Helped marketplace participants get productive faster by pairing education with community support.",
+        "Translated community questions and feedback into clearer product priorities and developer guidance."
       ]
     },
     {
@@ -145,8 +138,8 @@
       "location": "Illinois",
       "period": "2009 - 2012",
       "highlights": [
-        "Delivered customer support in a fast-paced retail technology environment.",
-        "Contributed to loss prevention, internal communications, and inventory process improvements."
+        "Supported customers in a fast-paced retail technology environment where troubleshooting and clear communication directly affected satisfaction.",
+        "Contributed to loss prevention, internal communication, and inventory process improvements that kept store operations dependable."
       ]
     },
     {
@@ -156,46 +149,46 @@
       "location": "Chicago, IL",
       "period": "2007 - 2008",
       "highlights": [
-        "Facilitated writing and journalism workshops for Chicago-area students.",
-        "Edited student work and coached communication skills through structured feedback."
+        "Coached Chicago-area students through writing and journalism workshops that strengthened communication, editing, and storytelling skills.",
+        "Edited student work and turned feedback into clear next revisions."
       ]
     }
   ],
   "projects": [
     {
-      "name": "Meeting Transcript Summarizer",
-      "description": "Python workflow that transforms transcript files into concise, structured client summaries for delivery teams.",
-      "impact": "Reduced manual meeting-summary effort by around 80% and improved consistency across client updates.",
+      "name": "Prompt Forge",
+      "description": "Prompt platform for designing, iterating on, and organizing AI prompts.",
+      "impact": "Built a TypeScript-based prompt platform with a public repo, production deployment, and features for prompt building, storage, and community sharing.",
       "tech": [
-        "Python",
-        "OpenAI API",
-        "File I/O"
+        "TypeScript",
+        "React",
+        "Neon",
+        "AI"
       ],
-      "link": "https://github.com/henryperkins"
+      "link": "https://github.com/henryperkins/ai-prompt-pro"
     },
     {
-      "name": "AI-Powered FAQ Chatbot Prototype",
-      "description": "Client-facing FAQ assistant built with a custom knowledge base and prompt design tuned for support-style conversations.",
-      "impact": "Improved response consistency and created a reusable framework for AI-enabled customer self-service.",
+      "name": "HPerkins.com",
+      "description": "React + TypeScript portfolio app with GitHub-backed work data, case studies, and blog content.",
+      "impact": "Implemented a portfolio stack that combines React, TypeScript, GitHub-backed content, CI checks, and Cloudflare deployment workflows for hperkins.com.",
       "tech": [
-        "JavaScript",
-        "OpenAI API",
-        "HTML",
-        "CSS"
+        "React",
+        "TypeScript",
+        "Vite",
+        "Cloudflare Workers"
       ],
-      "link": "https://github.com/henryperkins"
+      "link": "https://hperkins.com"
     },
     {
-      "name": "Client E-commerce Implementation (NDA)",
-      "description": "Responsive e-commerce implementation with payment integration, conversion-oriented UX, and production hardening.",
-      "impact": "Enabled measurable online revenue growth while maintaining stable launch and post-launch operations.",
+      "name": "WordPress Portfolio (wp-hperkins-com)",
+      "description": "Public WordPress repository containing the custom henrys-digital-canvas theme used for the portfolio site.",
+      "impact": "Maintained a custom WordPress portfolio theme in a public repo with smoke-check automation for the WordPress stack.",
       "tech": [
         "WordPress",
         "PHP",
-        "Stripe API",
-        "Cloudflare"
+        "Theme Development"
       ],
-      "link": "https://hperkins.com"
+      "link": "https://github.com/henryperkins/wp-hperkins-com"
     }
   ],
   "education": [
@@ -226,63 +219,62 @@
   ],
   "skills": [
     {
-      "category": "Languages",
+      "category": "Languages & Frontend",
       "items": [
+        "TypeScript",
         "JavaScript",
         "Python",
         "PHP",
-        "SQL (basic)"
+        "React"
       ]
     },
     {
-      "category": "Customer & Support",
+      "category": "AI & Automation",
       "items": [
-        "Technical support",
-        "Escalation triage",
-        "Customer communication",
-        "Documentation",
-        "Community management"
+        "OpenAI API integrations",
+        "AI prompt design",
+        "AI-assisted workflow prototyping"
       ]
     },
     {
-      "category": "Web & Platform",
+      "category": "WordPress & Web Delivery",
       "items": [
         "WordPress.com",
         "WordPress.org",
         "WooCommerce",
-        "HTML/CSS",
-        "Cloudflare"
+        "Tailwind CSS",
+        "Cloudflare Workers",
+        "Vite"
       ]
     },
     {
-      "category": "APIs & Integration",
+      "category": "Support & Enablement",
       "items": [
-        "REST APIs",
-        "OpenAI API",
-        "Stripe API",
-        "Webhook configuration"
+        "Technical support",
+        "Escalation triage",
+        "Developer community management",
+        "Documentation",
+        "Customer enablement"
       ]
     },
     {
-      "category": "Tools",
+      "category": "Tools & Workflow",
       "items": [
         "Git",
         "GitHub",
+        "REST APIs",
+        "Webhook configuration",
         "Zendesk",
-        "Jira",
-        "Trello",
-        "Asana",
-        "Google Workspace",
-        "Microsoft 365"
+        "Jira"
       ]
     },
     {
-      "category": "Operations Leadership",
+      "category": "Leadership & Operations",
       "items": [
         "Team coaching",
-        "Staff scheduling",
-        "Service quality management",
-        "Food safety compliance"
+        "Cross-functional collaboration",
+        "Process improvement",
+        "Stakeholder communication"
       ]
     }
   ],
