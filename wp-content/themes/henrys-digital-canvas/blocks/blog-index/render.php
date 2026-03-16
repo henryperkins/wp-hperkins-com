@@ -10,17 +10,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $defaults = array(
-	'heading'           => 'Blog',
-	'description'       => 'Writing on customer-facing engineering, AI workflows, WordPress delivery, and support-to-implementation systems.',
-	'showNewsletterCta' => true,
+	'heading'     => 'Blog',
+	'description' => 'Writing on customer-facing engineering, AI workflows, WordPress delivery, and support-to-implementation systems.',
 );
 
 $attrs = wp_parse_args( $attributes, $defaults );
 
 $config = array(
-	'heading'           => sanitize_text_field( $attrs['heading'] ),
-	'description'       => sanitize_text_field( $attrs['description'] ),
-	'showNewsletterCta' => (bool) $attrs['showNewsletterCta'],
+	'heading'     => sanitize_text_field( $attrs['heading'] ),
+	'description' => sanitize_text_field( $attrs['description'] ),
 	'endpoint'          => esc_url_raw( add_query_arg( 'limit', 100, rest_url( 'henrys-digital-canvas/v1/blog' ) ) ),
 	'fallbackUrl'       => esc_url_raw( get_theme_file_uri( 'data/blog-posts-fallback.json' ) ),
 	'blogBaseUrl'       => esc_url_raw( home_url( '/blog/' ) ),

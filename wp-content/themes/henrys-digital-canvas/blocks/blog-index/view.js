@@ -48,7 +48,6 @@
 		return {
 			heading: ensureString( parsed.heading, 'Blog' ),
 			description: ensureString( parsed.description, '' ),
-			showNewsletterCta: !! parsed.showNewsletterCta,
 			endpoint: ensureString( parsed.endpoint, '' ),
 			fallbackUrl: ensureString( parsed.fallbackUrl, '' ),
 			blogBaseUrl: ensureString( parsed.blogBaseUrl, '/blog/' ),
@@ -230,6 +229,99 @@
 		} );
 	}
 
+	function BlogSharePanel( props ) {
+		const shareUrl = window.location.origin + ( props.blogUrl || '/blog/' );
+		const copyState = useState( 'idle' );
+		const copyLabel = copyState[ 0 ];
+		const setCopyLabel = copyState[ 1 ];
+
+		function handleCopy() {
+			if ( navigator.clipboard && navigator.clipboard.writeText ) {
+				navigator.clipboard.writeText( shareUrl ).then(
+					function () { setCopyLabel( 'success' ); },
+					function () { setCopyLabel( 'error' ); }
+				);
+			} else {
+				try {
+					const ta = document.createElement( 'textarea' );
+					ta.value = shareUrl;
+					ta.style.position = 'fixed';
+					ta.style.opacity = '0';
+					document.body.appendChild( ta );
+					ta.select();
+					document.execCommand( 'copy' );
+					document.body.removeChild( ta );
+					setCopyLabel( 'success' );
+				} catch ( err ) {
+					setCopyLabel( 'error' );
+				}
+			}
+			setTimeout( function () { setCopyLabel( 'idle' ); }, 2000 );
+		}
+
+		var buttonText = copyLabel === 'success' ? 'Blog link copied' : copyLabel === 'error' ? 'Copy failed' : 'Copy blog link';
+		var buttonIcon = copyLabel === 'success' ? 'check' : 'share-2';
+		var buttonClass = 'hdc-blog-index__share-copy-btn';
+		if ( copyLabel === 'success' ) {
+			buttonClass += ' hdc-blog-index__share-copy-btn--success';
+		} else if ( copyLabel === 'error' ) {
+			buttonClass += ' hdc-blog-index__share-copy-btn--error';
+		}
+
+		var linkedInShareUrl = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent( shareUrl );
+		var emailShareUrl = 'mailto:?subject=' + encodeURIComponent( 'Blog \u2014 Henry Perkins' ) + '&body=' + encodeURIComponent( 'Writing on customer-facing engineering, AI workflows, WordPress delivery, and support-to-implementation systems.\n\n' + shareUrl );
+
+		return h(
+			'div',
+			{ className: 'hdc-blog-index__share-panel' },
+			h( 'h3', { className: 'hdc-blog-index__cta-title' }, 'Share the blog' ),
+			h( 'p', { className: 'hdc-blog-index__cta-description' }, 'Share the main blog landing page on LinkedIn or by email.' ),
+			h(
+				'div',
+				{ className: 'hdc-blog-index__share-actions' },
+				h(
+					'button',
+					{
+						type: 'button',
+						className: buttonClass,
+						'aria-label': buttonText,
+						onClick: handleCopy,
+					},
+					utils.renderLucideIcon
+						? utils.renderLucideIcon( h, buttonIcon, { size: 14 } )
+						: null,
+					h( 'span', {}, buttonText )
+				),
+				h(
+					'a',
+					{
+						className: 'hdc-blog-index__cta-social-link',
+						href: linkedInShareUrl,
+						target: '_blank',
+						rel: 'noopener noreferrer',
+					},
+					utils.renderLucideIcon
+						? utils.renderLucideIcon( h, 'linkedin', { size: 16 } )
+						: null,
+					h( 'span', {}, 'Share on LinkedIn' )
+				),
+				h(
+					'a',
+					{
+						className: 'hdc-blog-index__cta-social-link',
+						href: emailShareUrl,
+						target: '_blank',
+						rel: 'noopener noreferrer',
+					},
+					utils.renderLucideIcon
+						? utils.renderLucideIcon( h, 'mail', { size: 16 } )
+						: null,
+					h( 'span', {}, 'Email blog' )
+				)
+			)
+		);
+	}
+
 	function BlogIndexApp( props ) {
 		const config = props.config;
 		const [ state, setState ] = useState( {
@@ -366,6 +458,39 @@
 			}
 		}, [ state.loading, state.posts.length, visibleCount ] );
 
+		useEffect( function () {
+			if ( state.loading || ! state.posts.length ) {
+				return;
+			}
+			var existing = document.getElementById( 'hdc-blog-jsonld' );
+			if ( existing ) {
+				existing.remove();
+			}
+			var items = state.posts.map( function ( post, index ) {
+				return {
+					'@type': 'ListItem',
+					position: index + 1,
+					url: window.location.origin + config.blogBaseUrl + post.slug + '/',
+				};
+			} );
+			var ld = {
+				'@context': 'https://schema.org',
+				'@type': 'ItemList',
+				itemListElement: items,
+			};
+			var script = document.createElement( 'script' );
+			script.type = 'application/ld+json';
+			script.id = 'hdc-blog-jsonld';
+			script.textContent = JSON.stringify( ld );
+			document.head.appendChild( script );
+			return function () {
+				var el = document.getElementById( 'hdc-blog-jsonld' );
+				if ( el ) {
+					el.remove();
+				}
+			};
+		}, [ state.posts, config.blogBaseUrl ] );
+
 		const filtered = useMemo(
 			function () {
 				const normalizedSearch = search.trim().toLowerCase();
@@ -389,14 +514,30 @@
 		);
 
 		if ( state.loading ) {
-			return h( 'p', { className: 'hdc-blog-index__status' }, 'Loading posts\u2026' );
+			return h(
+				'div',
+				{ className: 'hdc-blog-index__state-card' },
+				h(
+					'span',
+					{ className: 'hdc-blog-index__state-icon-badge', 'aria-hidden': 'true' },
+					utils.renderLucideIcon ? utils.renderLucideIcon( h, 'loader-2', { className: 'hdc-blog-index__state-icon hdc-blog-index__spin', size: 18 } ) : null
+				),
+				h( 'p', { className: 'hdc-blog-index__state-title' }, 'Loading posts' ),
+				h( 'p', { className: 'hdc-blog-index__state-description' }, 'Fetching the latest writing\u2026' )
+			);
 		}
 
 		if ( state.error ) {
 			return h(
 				'div',
-				{ className: 'hdc-blog-index__error' },
-				h( 'p', {}, state.error ),
+				{ className: 'hdc-blog-index__state-card' },
+				h(
+					'span',
+					{ className: 'hdc-blog-index__state-icon-badge', 'aria-hidden': 'true' },
+					utils.renderLucideIcon ? utils.renderLucideIcon( h, 'alert-circle', { className: 'hdc-blog-index__state-icon', size: 18 } ) : null
+				),
+				h( 'p', { className: 'hdc-blog-index__state-title' }, 'Could not load blog posts' ),
+				h( 'p', { className: 'hdc-blog-index__state-description' }, state.error ),
 				h(
 					'button',
 					{
@@ -489,7 +630,7 @@
 								} )
 							)
 							: null,
-						h( 'h3', { className: 'hdc-blog-index__featured-title' }, featured.title ),
+						h( 'h2', { className: 'hdc-blog-index__featured-title' }, featured.title ),
 						h( 'p', { className: 'hdc-blog-index__featured-excerpt' }, featured.excerpt ),
 						h(
 							'div',
@@ -623,7 +764,7 @@
 									h(
 										'div',
 										{ className: 'hdc-blog-index__card-main' },
-										h( 'h4', { className: 'hdc-blog-index__card-title' }, post.title ),
+										h( 'h3', { className: 'hdc-blog-index__card-title' }, post.title ),
 										h( 'p', { className: 'hdc-blog-index__card-excerpt' }, post.excerpt ),
 										h(
 											'div',
@@ -662,40 +803,63 @@
 							)
 							: null
 					),
-				config.showNewsletterCta
-					? h(
+				h(
 						'section',
-						{ className: 'hdc-blog-index__cta' },
-						h( 'h3', { className: 'hdc-blog-index__cta-title' }, 'Stay updated' ),
-						h(
-							'p',
-							{ className: 'hdc-blog-index__cta-description' },
-							'Follow me on LinkedIn for new posts and project updates.'
-						),
+						{ className: 'hdc-blog-index__cta ember-surface' },
 						h(
 							'div',
-							{ className: 'hdc-blog-index__cta-actions' },
+							{ className: 'hdc-blog-index__cta-grid' },
 							h(
-								'a',
-								{
-									className: 'hdc-blog-index__cta-primary',
-									href: config.linkedinUrl,
-									target: '_blank',
-									rel: 'noopener noreferrer',
-								},
-								'Follow on LinkedIn'
+								'div',
+								{ className: 'hdc-blog-index__cta-left' },
+								h( 'div', {},
+									h( 'h3', { className: 'hdc-blog-index__cta-title' }, 'Stay updated' ),
+									h( 'p', { className: 'hdc-blog-index__cta-description' },
+										'Follow the writing on LinkedIn, browse the work on GitHub, or reach out directly.'
+									)
+								),
+								h(
+									'div',
+									{ className: 'hdc-blog-index__cta-social' },
+									h(
+										'a',
+										{
+											className: 'hdc-blog-index__cta-social-link',
+											href: 'https://github.com/henryperkins',
+											target: '_blank',
+											rel: 'noopener noreferrer',
+										},
+										utils.renderLucideIcon
+											? utils.renderLucideIcon( h, 'github', { size: 16 } )
+											: null,
+										h( 'span', {}, 'GitHub' )
+									),
+									h(
+										'a',
+										{
+											className: 'hdc-blog-index__cta-social-link',
+											href: config.linkedinUrl,
+											target: '_blank',
+											rel: 'noopener noreferrer',
+										},
+										utils.renderLucideIcon
+											? utils.renderLucideIcon( h, 'linkedin', { size: 16 } )
+											: null,
+										h( 'span', {}, 'LinkedIn' )
+									)
+								),
+								h(
+									'a',
+									{
+										className: 'hdc-blog-index__cta-secondary',
+										href: config.contactUrl,
+									},
+									'Reach out'
+								)
 							),
-							h(
-								'a',
-								{
-									className: 'hdc-blog-index__cta-secondary',
-									href: config.contactUrl,
-								},
-								'Reach out'
-							)
+							h( BlogSharePanel, { blogUrl: config.blogBaseUrl } )
 						)
 					)
-					: null
 			)
 		);
 	}

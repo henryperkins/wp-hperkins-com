@@ -25,10 +25,6 @@
 			"default": "Writing on customer-facing engineering, AI workflows, WordPress delivery, and support-to-implementation systems.",
 			"role": "content"
 		},
-		"showNewsletterCta": {
-			"type": "boolean",
-			"default": true
-		}
 	},
 	"editorScript": "file:./index.js",
 	"viewScript": "file:./view.js",
