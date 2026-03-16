@@ -3,7 +3,7 @@ Contributors: wordpressdotorg
 Tags: ai, google, gemini, artificial-intelligence, connector
 Requires at least: 6.9
 Tested up to: 7.0
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -47,6 +47,10 @@ Visit the [Google AI Studio](https://aistudio.google.com/) to create an API key 
 No, this plugin requires the PHP AI Client plugin to be installed and activated. It provides the Google-specific implementation that the PHP AI Client uses.
 
 == Changelog ==
+
+= 1.0.3 =
+
+* Fix critical bug that prevent use of Gemini image models because of lacking file type support annotation.
 
 = 1.0.2 =
 

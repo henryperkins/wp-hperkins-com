@@ -75,7 +75,7 @@
 
 		return {
 			navItems: Array.isArray( parsed.navItems ) ? parsed.navItems : [],
-			extraPages: Array.isArray( parsed.extraPages ) ? parsed.extraPages : [],
+			commandPages: Array.isArray( parsed.commandPages ) ? parsed.commandPages : [],
 			showCommandLauncher: !! parsed.showCommandLauncher,
 			enableThemeToggle: !! parsed.enableThemeToggle,
 			themeStorageKey: typeof parsed.themeStorageKey === 'string' ? parsed.themeStorageKey : 'hdc-theme',
@@ -162,6 +162,9 @@
 		const mobileHideDelay = 180;
 		let lastFocusedElement = null;
 		let mobileHideTimer = null;
+		let scrollLockActive = false;
+		let previousBodyOverflow = '';
+		let previousDocumentOverflow = '';
 
 		if ( ! menuTrigger || ! mobileMenu ) {
 			return;
@@ -184,6 +187,26 @@
 			}
 		}
 
+		function updateScrollLock( open ) {
+			if ( open ) {
+				if ( ! scrollLockActive ) {
+					previousBodyOverflow = document.body.style.overflow;
+					previousDocumentOverflow = document.documentElement.style.overflow;
+					scrollLockActive = true;
+				}
+
+				document.body.style.overflow = 'hidden';
+				document.documentElement.style.overflow = 'hidden';
+				return;
+			}
+
+			if ( scrollLockActive ) {
+				document.body.style.overflow = previousBodyOverflow;
+				document.documentElement.style.overflow = previousDocumentOverflow;
+				scrollLockActive = false;
+			}
+		}
+
 		function updateTriggerState( open ) {
 			menuTrigger.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
 			menuTrigger.setAttribute( 'aria-label', open ? 'Close menu' : 'Open menu' );
@@ -203,6 +226,7 @@
 			mobileMenu.setAttribute( 'aria-hidden', open ? 'false' : 'true' );
 			root.classList.toggle( 'is-mobile-open', open );
 			document.body.classList.toggle( 'hdc-mobile-menu-open', open );
+			updateScrollLock( open );
 		}
 
 		function closeThemeMenu() {
@@ -674,9 +698,9 @@
 		const dialogHideDelay = 180;
 		let highlightIndex = -1;
 		let dialogHideTimer = null;
+		let lastDialogTrigger = null;
 
-		const staticPages = config.navItems
-			.concat( config.extraPages || [] )
+		const staticPages = ( config.commandPages.length ? config.commandPages : config.navItems )
 			.map( function ( item ) {
 				return {
 					label: decodeHtml( item.label || '' ),
@@ -688,6 +712,23 @@
 				return item.label && item.url;
 			} );
 
+		function closeDialog( options ) {
+			var settings = options || {};
+			cancelDialogHide();
+			dialog.classList.remove( 'is-open' );
+			dialog.setAttribute( 'aria-hidden', 'true' );
+			document.body.classList.remove( 'hdc-command-open' );
+			state.opened = false;
+			clearHighlight();
+			if ( settings.returnFocus !== false && lastDialogTrigger && typeof lastDialogTrigger.focus === 'function' ) {
+				lastDialogTrigger.focus();
+			}
+			dialogHideTimer = window.setTimeout( function () {
+				dialog.hidden = true;
+				dialogHideTimer = null;
+			}, dialogHideDelay );
+		}
+
 		state.items.pages = dedupeByUrl( staticPages );
 
 		function cancelDialogHide() {
@@ -697,21 +738,9 @@
 			}
 		}
 
-		function closeDialog() {
-			cancelDialogHide();
-			dialog.classList.remove( 'is-open' );
-			dialog.setAttribute( 'aria-hidden', 'true' );
-			document.body.classList.remove( 'hdc-command-open' );
-			state.opened = false;
-			clearHighlight();
-			dialogHideTimer = window.setTimeout( function () {
-				dialog.hidden = true;
-				dialogHideTimer = null;
-			}, dialogHideDelay );
-		}
-
 		function openDialog() {
 			cancelDialogHide();
+			lastDialogTrigger = document.activeElement && typeof document.activeElement.focus === 'function' ? document.activeElement : null;
 			root.dispatchEvent( new CustomEvent( 'hdc:command-open' ) );
 			dialog.hidden = false;
 			dialog.classList.add( 'is-open' );
@@ -816,15 +845,49 @@
 			} );
 		}
 
+		function fuzzyScore( haystack, query ) {
+			var hi = 0;
+			var score = 0;
+			var consecutive = 0;
+			for ( var qi = 0; qi < query.length; qi++ ) {
+				var found = false;
+				while ( hi < haystack.length ) {
+					if ( haystack[ hi ] === query[ qi ] ) {
+						score += 1 + consecutive;
+						consecutive++;
+						hi++;
+						found = true;
+						break;
+					}
+					consecutive = 0;
+					hi++;
+				}
+				if ( ! found ) {
+					return 0;
+				}
+			}
+			return score;
+		}
+
 		function searchItems( items, query ) {
 			if ( ! query ) {
 				return items;
 			}
 
 			const normalizedQuery = query.toLowerCase();
-			return items.filter( function ( item ) {
+			var scored = [];
+			items.forEach( function ( item ) {
 				const haystack = ( item.label + ' ' + ( item.shortcut || '' ) + ' ' + item.url + ' ' + ( item.search || '' ) ).toLowerCase();
-				return haystack.indexOf( normalizedQuery ) !== -1;
+				var s = fuzzyScore( haystack, normalizedQuery );
+				if ( s > 0 ) {
+					scored.push( { item: item, score: s } );
+				}
+			} );
+			scored.sort( function ( a, b ) {
+				return b.score - a.score;
+			} );
+			return scored.map( function ( entry ) {
+				return entry.item;
 			} );
 		}
 
@@ -850,8 +913,30 @@
 				projectsSection.hidden = filteredProjects.length === 0;
 			}
 
+			[ pagesSection, postsSection, projectsSection ].forEach( function ( section ) {
+				if ( section ) {
+					section.classList.remove( 'is-first-visible' );
+				}
+			} );
+
+			var firstVisibleSection = [ pagesSection, postsSection, projectsSection ].find( function ( section ) {
+				return section && ! section.hidden;
+			} );
+
+			if ( firstVisibleSection ) {
+				firstVisibleSection.classList.add( 'is-first-visible' );
+			}
+
 			const total = filteredPages.length + filteredPosts.length + filteredProjects.length;
 			emptyState.hidden = total !== 0;
+
+			if ( state.opened && highlightIndex < 0 ) {
+				var initialItems = getAllVisibleItems();
+				if ( initialItems.length ) {
+					highlightIndex = 0;
+					setHighlight( initialItems, highlightIndex );
+				}
+			}
 
 			if ( highlightIndex >= 0 ) {
 				var visibleItems = getAllVisibleItems();
@@ -897,8 +982,8 @@
 		} );
 
 		input.addEventListener( 'input', function () {
-			render();
 			clearHighlight();
+			render();
 		} );
 
 		document.addEventListener( 'keydown', function ( event ) {

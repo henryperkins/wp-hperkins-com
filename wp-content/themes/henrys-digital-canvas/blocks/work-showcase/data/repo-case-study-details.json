@@ -666,27 +666,32 @@
   },
   "ai-prompt-pro": {
     "displayName": "Prompt Forge",
-    "role": "Craft",
-    "whyItMatters": "Shows how prompt authoring becomes a real product surface when builder UX, shared heuristics, and a provider-backed agent service are treated as one system.",
+    "role": "Product",
+    "whyItMatters": "Shows how prompt authoring becomes a full product when a structured builder, community platform, and a multi-module Codex agent service are treated as one system backed by real persistence and deployment infrastructure.",
     "problem": [
-      "Prompt drafting, refinement, and reuse were split across chat windows, ad-hoc notes, and one-off demos.",
-      "Writers needed a faster path from rough intent to structured builder inputs without losing flexibility.",
-      "The app needed a secure boundary between browser tooling and model-backed prompt enhancement services."
+      "Prompt drafting, refinement, and reuse were split across chat windows, ad-hoc notes, and one-off demos with no shared community layer.",
+      "Writers needed a faster path from rough intent to structured builder inputs with quality scoring, without losing flexibility.",
+      "The app needed a secure boundary between browser tooling and model-backed prompt enhancement — plus authenticated persistence for saved and shared prompts."
     ],
     "approach": [
-      "Built a Vite + TypeScript application with dedicated routes for builder, library, presets, history, and community workflows.",
-      "Added inference heuristics that suggest role, tone, format, and constraints directly from the user's draft prompt.",
-      "Implemented a Codex-backed agent service with provider resolution, request guards, and authenticated enhancement flows."
+      "Built a React 19 + Vite 7 + TypeScript application with dedicated routes for builder, library, presets, history, community feed, user profiles, and support.",
+      "Added heuristic inference for role, tone, format, and constraints, plus a quality scoring system that guides users toward better prompts before enhancement.",
+      "Implemented a 17-module Codex agent service with JWT + API key auth, rate limiting, context source expansion, an enhancement pipeline, and SSE streaming.",
+      "Backed by Neon Postgres (via Neon Data API + Better Auth) with dual-path persistence — authenticated users use Neon, signed-out users use localStorage."
     ],
     "result": [
-      "Prompt work moved from loose drafts to a repeatable builder flow with reusable presets and versioned surfaces.",
-      "Heuristic suggestions reduced setup friction while keeping users in control of the final prompt shape.",
-      "The agent service created a clear integration seam for secure enhancement requests and provider-specific behavior."
+      "Shipped a production community platform at prompt.lakefrontdigital.io with feed, profiles, upvotes, verified votes, comments, and remix attribution.",
+      "Quality scoring and heuristic suggestions reduced builder setup friction while keeping users in control of the final prompt shape.",
+      "The agent service grew from a single file to a 17-module deployment on Azure Web App, handling auth, rate limiting, context expansion, and streaming enhancement.",
+      "Design system governance enforces 10+ automated lint checks for tokens, legacy imports, deprecated components, and typography drift."
     ],
     "highlights": [
-      "Multi-route prompt builder workspace",
+      "Structured prompt builder with quality scoring",
+      "Community feed with profiles, upvotes, and remix attribution",
+      "17-module Codex agent service with SSE streaming",
+      "Neon Postgres dual-path persistence",
       "Heuristic prompt inference",
-      "Provider-backed Codex agent service"
+      "Azure SWA + Azure Web App deployment"
     ],
     "signals": [
       "typed",
@@ -697,67 +702,91 @@
     "receipts": [
       {
         "label": "Delivery gates",
-        "value": "Package scripts bundle lint, Vitest, Playwright, and design-system drift checks into one production verification path.",
+        "value": "check:prod bundles docs-freshness, 10+ design-system lint checks, Vitest, Playwright, and token-runtime drift into one production verification path.",
         "url": "https://github.com/henryperkins/ai-prompt-pro/blob/main/package.json"
       },
       {
         "label": "Enhancement service",
-        "value": "The Codex service resolves provider config, enforces network guards, and streams enhancement responses behind an authenticated server boundary.",
+        "value": "The Codex agent service (17 modules) handles JWT + API key auth, rate limiting, context source expansion, and streams enhancement responses via SSE.",
         "url": "https://github.com/henryperkins/ai-prompt-pro/blob/main/agent_service/codex_service.mjs"
+      },
+      {
+        "label": "Enhancement pipeline",
+        "value": "Dedicated enhancement pipeline module orchestrates prompt refinement, context expansion, and streaming response assembly.",
+        "url": "https://github.com/henryperkins/ai-prompt-pro/blob/main/agent_service/enhancement-pipeline.mjs"
       }
     ],
     "architecture": {
-      "summary": "Route-based prompt workspace backed by shared inference utilities and a Codex agent service.",
+      "summary": "React 19 + Vite 7 route-based prompt workspace and community platform, backed by Neon Postgres and a multi-module Codex agent service deployed to Azure.",
       "bullets": [
-        "Browser routes separate builder, library, community, history, and support flows while sharing the same app shell.",
-        "Shared heuristics infer role, tone, length, format, and constraints from raw prompt text before the user commits edits.",
-        "The agent service handles provider resolution, request validation, and streaming enhancement orchestration outside the browser."
+        "Browser routes separate builder, library, community feed, user profiles, history, presets, and support flows with lazy loading and route-specific skeletons.",
+        "Shared heuristics infer role, tone, length, format, and constraints from raw prompt text; a quality scoring system grades prompts before enhancement.",
+        "The 17-module agent service handles provider resolution, JWT + API key auth, rate limiting, context source expansion, and streaming enhancement orchestration on Azure Web App.",
+        "Neon Postgres via Neon Data API provides authenticated persistence; localStorage serves as a fallback for signed-out users."
       ]
     },
     "keyFiles": [
       {
         "path": "src/App.tsx",
-        "note": "Lazy-loaded route shell for builder, library, community, history, and support experiences."
+        "note": "Lazy-loaded route shell for builder, library, community, profiles, history, presets, and support."
+      },
+      {
+        "path": "src/hooks/usePromptBuilder.ts",
+        "note": "Core prompt builder state management hook driving the builder workspace."
       },
       {
         "path": "src/components/BuilderHeroInput.tsx",
-        "note": "Primary prompt authoring surface with reset actions, guided input affordances, and inference hooks."
+        "note": "Primary prompt authoring surface with guided input affordances and inference hooks."
       },
       {
         "path": "shared/builder-inference-heuristics.ts",
-        "note": "Lightweight heuristics that infer role, tone, format, and constraints from a draft prompt."
+        "note": "Shared heuristics that infer role, tone, format, and constraints from a draft prompt."
       },
       {
         "path": "agent_service/codex_service.mjs",
-        "note": "Provider-backed Codex service that secures and streams prompt enhancement requests."
+        "note": "Main Codex agent service entry point with auth, rate limiting, and SSE streaming."
+      },
+      {
+        "path": "agent_service/enhancement-pipeline.mjs",
+        "note": "Enhancement pipeline orchestrating prompt refinement and context expansion."
       }
     ],
-    "shipped": "Shipped a route-based prompt workspace with guided builder heuristics and a Codex-backed enhancement service.",
-    "learned": "Blending lightweight inference in the UI with a guarded backend agent service made prompt tooling feel fast without hiding the system's real complexity."
+    "shipped": "Shipped a production prompt building and community platform at prompt.lakefrontdigital.io with a 17-module Codex agent service on Azure.",
+    "learned": "Growing from a single-file agent service to a 17-module deployment forced clear boundaries between auth, rate limiting, context expansion, and enhancement — the same discipline that made the community layer viable alongside the builder."
   },
   "ai-cli-web-funnel": {
     "displayName": "Forge",
     "role": "Systems",
-    "whyItMatters": "Turns fragmented CLI addon installation into a governed product flow that spans catalog discovery, retrieval, install policy, and runtime verification.",
+    "whyItMatters": "Replaces fragmented copy-paste CLI addon installation with a governed product flow spanning catalog discovery, dependency-aware install planning, runtime verification, security governance, profile bundles, and a user-facing CLI — modeled after CurseForge for CLI ecosystems.",
     "problem": [
-      "CLI addons were distributed through scattered docs and copy-paste installation instructions.",
-      "There was no central catalog for discovering, ranking, and comparing packages across GitHub, npm, and PyPI.",
-      "Install flows needed guardrails and verification so teams could trust what actually reached runtime."
+      "CLI addons (MCP servers, skills, plugins) were distributed through scattered docs with manual copy-paste installation and no central discovery.",
+      "There was no way to plan, verify, or roll back installs — teams had no visibility into what actually reached runtime.",
+      "Security and governance were afterthoughts: no trust gates, no audit trails, and no SLO measurement across the install funnel."
     ],
     "approach": [
-      "Built a TypeScript monorepo with a control-plane app, runtime daemon, and shared packages for catalog, ranking, and policy enforcement.",
-      "Implemented deterministic catalog ingest and retrieval bootstrap using Postgres BM25, Qdrant semantic search, and embedding-backed ranking.",
-      "Added lifecycle and governance checks so installs can be validated, replayed, and audited through workflows and tests."
+      "Built a TypeScript monorepo (four apps, five packages) with a control-plane HTTP server, standalone runtime daemon, VS Code Copilot adapter, and a user-facing forge CLI.",
+      "Implemented a four-stage deterministic funnel — discover, plan, apply, verify — with update, remove, and rollback, idempotent replay, conflict detection, and append-only audit trails across 17 Postgres migrations.",
+      "Added hybrid retrieval (Postgres BM25 + Qdrant semantic search), outbox-driven event dispatch with dead-letter replay, security trust gates, SLO rollups, and profile bundle orchestration.",
+      "Made the runtime daemon a standalone process with its own HTTP API, process registry, stdio launcher, HTTP probe client (SSE + Streamable HTTP), Dockerfile, and docker-compose service.",
+      "Layered comprehensive testing: unit, integration, integration-db (Docker-provisioned Postgres), e2e, and contract tests, with CI covering typecheck, tests, governance drift, and migration verification."
     ],
     "result": [
-      "Addon discovery moved from fragmented documentation to a searchable catalog with normalized metadata.",
-      "Retrieval and ranking infrastructure made it possible to search, compare, and surface install candidates consistently.",
-      "Lifecycle checks and CI coverage created a more reliable path from discovery to verified runtime installation."
+      "Full install lifecycle shipped: discover → plan → apply → verify, plus update, remove, and rollback with idempotent replay semantics.",
+      "Security governance enforces trust gates, reporter scoring, and appeal workflows with deterministic SLO measurement across 10 metric families.",
+      "Profile bundles let users export, import, and batch-install curated addon sets with aggregate status tracking.",
+      "Standalone runtime daemon runs as its own process with HTTP API, process registry, health probes, and Docker support.",
+      "User-facing forge CLI wraps the control-plane API for search, plan, install, verify, update, remove, rollback, and profile operations.",
+      "Release candidate v0.2.0-rc.1 reached with fail-closed GA readiness gate, pilot-to-GA runbook, and gap assessment completed."
     ],
     "highlights": [
-      "Searchable addon catalog",
-      "Hybrid retrieval and ranking pipeline",
-      "Control-plane plus runtime daemon"
+      "Four-stage install funnel (discover → plan → apply → verify)",
+      "Hybrid BM25 + semantic retrieval with graceful fallback",
+      "Outbox-driven event dispatch with dead-letter replay",
+      "Security trust gates and SLO rollups",
+      "Profile bundle orchestration",
+      "Standalone runtime daemon with HTTP API and Docker support",
+      "User-facing forge CLI",
+      "Fail-closed GA readiness gate and pilot-to-GA runbook"
     ],
     "signals": [
       "typed",
@@ -768,43 +797,58 @@
     "receipts": [
       {
         "label": "CI baseline",
-        "value": "The Forge CI workflow runs typecheck, tests, checks, and migration verification for the monorepo.",
+        "value": "Forge CI runs typecheck, unit/integration/contract tests, governance drift checks, and migration verification across the monorepo.",
         "url": "https://github.com/henryperkins/ai-cli-web-funnel/blob/main/.github/workflows/forge-ci.yml"
       },
       {
         "label": "Retrieval stack",
         "value": "The control plane boots BM25, Qdrant semantic search, and embedding-backed retrieval from the same bootstrap path.",
         "url": "https://github.com/henryperkins/ai-cli-web-funnel/blob/main/apps/control-plane/src/retrieval-bootstrap.ts"
+      },
+      {
+        "label": "GA readiness gate",
+        "value": "Fail-closed GA readiness gate validates lifecycle, security, and operational criteria with a pilot-to-GA runbook and gap assessment.",
+        "url": "https://github.com/henryperkins/ai-cli-web-funnel/blob/main/scripts/validate-ga-readiness.mjs"
       }
     ],
     "architecture": {
-      "summary": "Monorepo control plane for addon discovery, retrieval, install policy, and runtime verification.",
+      "summary": "TypeScript monorepo with four apps (control plane, runtime daemon, forge CLI, VS Code adapter) and five packages backed by Postgres and Qdrant.",
       "bullets": [
-        "The control plane exposes HTTP APIs, startup validation, and install lifecycle orchestration.",
-        "Catalog packages normalize source metadata from providers like GitHub into searchable records.",
-        "Ranking packages fuse BM25 and semantic retrieval so search results degrade gracefully when vector search is unavailable."
+        "The control plane exposes v1 HTTP APIs for catalog search, install lifecycle (plan/apply/verify/update/remove/rollback), profiles, and security governance.",
+        "The standalone runtime daemon runs as its own process with an HTTP API (/v1/runtime/start, /verify, /stop, /status, /health), process registry, stdio launcher, and HTTP probe client.",
+        "The forge CLI wraps the control-plane API for end-user addon management (search, plan, install, verify, update, remove, rollback, profiles).",
+        "Five shared packages provide catalog connectors (GitHub, npm, PyPI, docs), hybrid retrieval ranking, security governance (trust gates, SLO rollups, outbox dispatch), policy engine, and typed contracts.",
+        "17 forward-only Postgres migrations enforce deterministic ordering, idempotent replay, and append-only audit across all lifecycle stages."
       ]
     },
     "keyFiles": [
       {
         "path": "apps/control-plane/src/server.ts",
-        "note": "Server entry point for control-plane APIs, startup validation, and install lifecycle orchestration."
+        "note": "Control-plane entry point: HTTP APIs, startup validation, readiness checks, and install lifecycle orchestration."
       },
       {
-        "path": "apps/control-plane/src/retrieval-bootstrap.ts",
-        "note": "Bootstraps the BM25, Qdrant, and embedding-backed retrieval stack used by the control plane."
+        "path": "apps/runtime-daemon/src/daemon-main.ts",
+        "note": "Standalone runtime daemon entry point with HTTP server, process registry, and graceful shutdown."
       },
       {
-        "path": "packages/catalog/src/sources/github-connector.ts",
-        "note": "Normalizes GitHub repository metadata into catalog candidates and aliases."
+        "path": "apps/runtime-daemon/src/daemon-http-app.ts",
+        "note": "Runtime daemon HTTP API for start, verify, stop, status, and health endpoints."
       },
       {
-        "path": "packages/ranking/src/hybrid-retrieval.ts",
-        "note": "Fuses lexical and semantic retrieval into a single ranked search result set."
+        "path": "apps/control-plane/src/install-lifecycle.ts",
+        "note": "Core install lifecycle engine: plan, apply, verify, update, remove, and rollback with idempotent replay."
+      },
+      {
+        "path": "packages/security-governance/src/slo-rollup.ts",
+        "note": "Deterministic SLO metric computation across 10 families including funnel KPIs and cold-start success rates."
+      },
+      {
+        "path": "apps/control-plane/src/profile-routes.ts",
+        "note": "Profile bundle API: create, export, import, and batch-install curated addon sets."
       }
     ],
-    "shipped": "Shipped the control-plane retrieval stack and CI baseline for addon discovery, install lifecycle, and runtime verification.",
-    "learned": "Separating control-plane APIs from ranking and catalog packages kept a complex install workflow understandable and testable as the system grew."
+    "shipped": "Reached release candidate v0.2.0-rc.1 with full install lifecycle, security governance, profile bundles, standalone runtime daemon, forge CLI, and fail-closed GA readiness gate.",
+    "learned": "A strict four-stage funnel (discover → plan → apply → verify) with idempotent replay at every boundary kept the system predictable even as it grew to span four apps, five packages, security governance, profile orchestration, and outbox-driven event dispatch."
   },
   "web-fetch": {
     "displayName": "Web Fetch MCP",
@@ -875,6 +919,7 @@
     "learned": "The reusable part of web ingestion is not the request itself; it is the normalization and extractor boundaries that follow."
   },
   "tarot": {
+    "displayName": "Tableu",
     "role": "Product",
     "whyItMatters": "Demonstrates practical integration of AI interpretation into a consumer-facing interactive experience with clear UX affordances.",
     "problem": [

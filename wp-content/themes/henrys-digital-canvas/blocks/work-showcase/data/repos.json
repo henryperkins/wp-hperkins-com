@@ -7,6 +7,7 @@
     "forks": 0,
     "updatedAt": "2026-03-05",
     "url": "https://github.com/henryperkins/tarot",
+    "demoUrl": "https://tarot.lakefrontdev.com/",
     "topics": [
       "javascript",
       "ai",
@@ -14,22 +15,25 @@
       "web"
     ],
     "featured": true,
+    "featuredPriority": 0,
     "origin": "curated",
     "access": "public"
   },
   {
     "name": "ai-cli-web-funnel",
-    "description": "Monorepo for searchable addon discovery, installation, and runtime verification across CLI ecosystems.",
+    "description": "Forge — a governed CLI addon manager with four-stage install lifecycle (discover, plan, apply, verify), hybrid retrieval, security trust gates, profile bundles, a standalone runtime daemon, and a user-facing forge CLI.",
     "language": "TypeScript",
     "stars": 4,
     "forks": 0,
-    "updatedAt": "2026-03-01",
+    "updatedAt": "2026-03-09",
     "url": "https://github.com/henryperkins/ai-cli-web-funnel",
     "topics": [
       "typescript",
-      "ai",
       "cli",
-      "web"
+      "monorepo",
+      "postgres",
+      "qdrant",
+      "mcp"
     ],
     "featured": true,
     "origin": "curated",
@@ -92,17 +96,22 @@
   },
   {
     "name": "ai-prompt-pro",
-    "description": "Prompt builder, library, and agent-service workspace for designing, refining, and sharing AI prompts.",
+    "displayName": "Prompt Forge",
+    "description": "Full-stack AI prompt building and community platform with a structured builder, quality scoring, streaming Codex enhancement, private library, and a public community feed with profiles, upvotes, comments, and remix attribution.",
     "language": "TypeScript",
     "stars": 0,
     "forks": 0,
-    "updatedAt": "2026-03-06",
+    "updatedAt": "2026-03-12",
     "url": "https://github.com/henryperkins/ai-prompt-pro",
+    "demoUrl": "https://prompt.lakefrontdigital.io",
     "topics": [
       "typescript",
+      "react",
       "ai",
       "prompts",
-      "tools"
+      "neon-postgres",
+      "azure",
+      "community"
     ],
     "featured": true,
     "origin": "curated",

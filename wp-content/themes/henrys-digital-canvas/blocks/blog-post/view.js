@@ -19,6 +19,8 @@
 			: function () {
 				return null;
 			};
+	const COPY_FEEDBACK_DURATION_MS = 1800;
+	const PORTFOLIO_ORIGIN = 'https://hperkins.com';
 
 	function ensureString( value, fallback ) {
 		if ( typeof value !== 'string' ) {
@@ -33,13 +35,17 @@
 		return Array.isArray( value ) ? value : [];
 	}
 
-	function parseConfig( section ) {
-		let parsed = {};
+	function parseJsonAttribute( section, attributeName ) {
 		try {
-			parsed = JSON.parse( section.getAttribute( 'data-config' ) || '{}' );
+			const raw = section.getAttribute( attributeName );
+			return raw ? JSON.parse( raw ) : null;
 		} catch ( error ) {
-			parsed = {};
+			return null;
 		}
+	}
+
+	function parseConfig( section ) {
+		const parsed = parseJsonAttribute( section, 'data-config' ) || {};
 
 		return {
 			slug: ensureString( parsed.slug, '' ),
@@ -49,6 +55,7 @@
 			postsEndpoint: ensureString( parsed.postsEndpoint, '' ),
 			fallbackUrl: ensureString( parsed.fallbackUrl, '' ),
 			blogIndexUrl: ensureString( parsed.blogIndexUrl, '/blog/' ),
+			inlineFallback: parseJsonAttribute( section, 'data-fallback-payload' ),
 		};
 	}
 
@@ -120,6 +127,52 @@
 		} );
 	}
 
+	function formatLongDateLabel( value ) {
+		const date = parseDateValue( value );
+		if ( Number.isNaN( date.getTime() ) || date.getTime() <= 0 ) {
+			return ensureString( value, '' );
+		}
+
+		return date.toLocaleDateString( undefined, {
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric',
+		} );
+	}
+
+	function buildPortfolioBlogUrl( slug ) {
+		const normalizedSlug = sanitizeSlug( slug );
+		if ( ! normalizedSlug ) {
+			return PORTFOLIO_ORIGIN;
+		}
+
+		return PORTFOLIO_ORIGIN + '/blog/' + normalizedSlug;
+	}
+
+	function buildEmailShareUrl( args ) {
+		const lines = [ args.description, args.url ].filter( Boolean ).join( '\n\n' );
+		return 'mailto:?subject=' + encodeURIComponent( args.title ) + '&body=' + encodeURIComponent( lines );
+	}
+
+	function buildLinkedInShareUrl( url ) {
+		return 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent( url );
+	}
+
+	function hasUpdatedDate( post ) {
+		if ( ! post || ! post.modifiedDate ) {
+			return false;
+		}
+
+		const publishedDate = parseDateValue( post.date );
+		const modifiedDate = parseDateValue( post.modifiedDate );
+
+		if ( Number.isNaN( publishedDate.getTime() ) || Number.isNaN( modifiedDate.getTime() ) ) {
+			return false;
+		}
+
+		return modifiedDate.getTime() > publishedDate.getTime();
+	}
+
 	function fetchJson( url ) {
 		if ( ! url ) {
 			throw new Error( 'Missing URL' );
@@ -163,16 +216,33 @@
 			post && post.readingTime,
 			utils.estimateReadingTimeLabel ? utils.estimateReadingTimeLabel( contentHtml || content || excerpt ) : '1 min read'
 		);
+		const categories = ensureArray( post && post.categories )
+			.map( function ( category ) {
+				return ensureString( String( category ), '' );
+			} )
+			.filter( Boolean );
 
 		return {
+			id: post && post.id ? post.id : 0,
 			slug: ensureString( post && post.slug, 'post-' + String( index + 1 ) ),
 			title: ensureString( post && post.title, 'Untitled Post' ),
 			excerpt: excerpt,
 			date: ensureString( post && post.date, '' ),
+			modifiedDate: ensureString( post && post.modifiedDate, '' ),
 			tags: tags.length ? tags : [ 'General' ],
+			categories: categories,
 			readingTime: readingTime,
 			content: content,
 			contentHtml: contentHtml,
+			url: ensureString( post && post.url, '' ),
+			authorName: ensureString( post && post.authorName, '' ),
+			authorUrl: ensureString( post && post.authorUrl, '' ),
+			wordpressPermalink: ensureString( post && post.wordpressPermalink, '' ),
+			commentsOpen: !! ( post && post.commentsOpen ),
+			discussionUrl: ensureString( post && post.discussionUrl, '' ),
+			seoTitle: ensureString( post && post.seoTitle, '' ),
+			seoDescription: ensureString( post && post.seoDescription, '' ),
+			shareMessage: ensureString( post && post.shareMessage, '' ),
 			featuredImageUrl: ensureString( post && post.featuredImageUrl, '' ),
 			featuredImageAlt: ensureString( post && post.featuredImageAlt, '' ),
 			featuredImageSrcSet: ensureString( post && post.featuredImageSrcSet, '' ),
@@ -194,7 +264,7 @@
 		}
 
 		const title = ensureString( post && post.title, 'Blog post' );
-		return title + ' featured image';
+		return 'Featured image for ' + title;
 	}
 
 	function slugifyHeading( value ) {
@@ -212,13 +282,140 @@
 		return count === 0 ? 'blog-' + base : 'blog-' + base + '-' + String( count + 1 );
 	}
 
+	const codeLanguageAliases = {
+		bash: 'bash',
+		css: 'css',
+		diff: 'diff',
+		html: 'markup',
+		js: 'javascript',
+		json: 'json',
+		jsx: 'jsx',
+		md: 'markdown',
+		plaintext: 'text',
+		py: 'python',
+		sh: 'bash',
+		shell: 'bash',
+		svg: 'markup',
+		text: 'text',
+		ts: 'typescript',
+		tsx: 'tsx',
+		xml: 'markup',
+		yaml: 'yaml',
+		yml: 'yaml',
+		zsh: 'bash',
+	};
+
+	const codeLanguageLabels = {
+		bash: 'Bash',
+		css: 'CSS',
+		diff: 'Diff',
+		javascript: 'JS',
+		json: 'JSON',
+		jsx: 'JSX',
+		markdown: 'MD',
+		markup: 'HTML',
+		python: 'Python',
+		text: 'Code',
+		typescript: 'TS',
+		tsx: 'TSX',
+		yaml: 'YAML',
+	};
+
+	function normalizeCodeLanguage( value ) {
+		if ( ! value ) {
+			return null;
+		}
+
+		const normalized = String( value )
+			.trim()
+			.toLowerCase()
+			.replace( /^language-/, '' )
+			.replace( /^lang-/, '' );
+
+		if ( ! normalized ) {
+			return null;
+		}
+
+		return codeLanguageAliases[ normalized ] || normalized;
+	}
+
+	function getCodeLanguageLabel( language ) {
+		if ( ! language ) {
+			return 'Code';
+		}
+
+		return codeLanguageLabels[ language ] || language.toUpperCase();
+	}
+
+	function parseMarkdownSegments( content ) {
+		const segments = [];
+		const textBuffer = [];
+		const codeBuffer = [];
+		let inCodeBlock = false;
+		let currentLanguage = null;
+
+		function flushTextBuffer() {
+			if ( textBuffer.length === 0 ) {
+				return;
+			}
+
+			segments.push( {
+				type: 'text',
+				content: textBuffer.join( '\n' ),
+			} );
+			textBuffer.length = 0;
+		}
+
+		function flushCodeBuffer() {
+			segments.push( {
+				type: 'code',
+				code: codeBuffer.join( '\n' ),
+				language: currentLanguage,
+			} );
+			codeBuffer.length = 0;
+		}
+
+		String( content || '' ).split( '\n' ).forEach( function ( line ) {
+			if ( line.startsWith( '```' ) ) {
+				if ( inCodeBlock ) {
+					flushCodeBuffer();
+					inCodeBlock = false;
+					currentLanguage = null;
+				} else {
+					flushTextBuffer();
+					inCodeBlock = true;
+					currentLanguage = normalizeCodeLanguage( line.slice( 3 ) );
+				}
+				return;
+			}
+
+			if ( inCodeBlock ) {
+				codeBuffer.push( line );
+				return;
+			}
+
+			textBuffer.push( line );
+		} );
+
+		if ( inCodeBlock ) {
+			flushCodeBuffer();
+		} else {
+			flushTextBuffer();
+		}
+
+		return segments;
+	}
+
 	function getMarkdownHeadings( content ) {
 		const seen = new Map();
 		const headings = [];
 
-		String( content || '' )
-			.split( '\n' )
-			.forEach( function ( line ) {
+		parseMarkdownSegments( content ).forEach( function ( segment ) {
+			if ( segment.type !== 'text' ) {
+				return;
+			}
+
+			segment.content.split( '\n' ).forEach( function ( line ) {
 				if ( line.startsWith( '## ' ) ) {
 					const label = line.replace( '## ', '' ).trim();
 					headings.push( {
@@ -238,8 +435,23 @@
 					} );
 				}
 			} );
+		} );
 
 		return headings;
+	}
+
+	function getInlineFallbackPosts( config ) {
+		if ( ! config || ! config.inlineFallback ) {
+			return [];
+		}
+
+		return normalizePosts( resolveBlogPayload( config.inlineFallback ) );
+	}
+
+	function getInitialPostFromPosts( posts, slug ) {
+		return ensureArray( posts ).find( function ( item ) {
+			return item.slug === slug;
+		} ) || null;
 	}
 
 	function enhanceHtmlContent( contentHtml ) {
@@ -385,26 +597,17 @@
 	}
 
 	function renderContentWithCode( content, headings ) {
-		const blocks = String( content || '' ).split( /(```[\s\S]*?```)/g );
+		const blocks = parseMarkdownSegments( content );
 		const headingQueue = ensureArray( headings ).slice();
 		return blocks.filter( Boolean ).map( function ( block, index ) {
-			if ( block.startsWith( '```' ) && block.endsWith( '```' ) ) {
-				const lines = block.split( '\n' );
-				const lang = lines[0].replace( '```', '' ).trim();
-				const code = lines.slice( 1, -1 ).join( '\n' );
-
-				return h(
-					'pre',
-					{ key: 'code-' + String( index ), className: 'hdc-blog-post__code', 'data-lang': lang || undefined },
-					lang ? h( 'span', { className: 'hdc-blog-post__code-lang' }, lang ) : null,
-					h( 'code', {}, code )
-				);
+			if ( block.type === 'code' ) {
+				return renderCodeBlock( block.code, block.language, 'code-' + String( index ) );
 			}
 
 			return h(
 				'div',
 				{ key: 'text-' + String( index ) },
-				renderMarkdownBlock( block, 'block-' + String( index ), headingQueue )
+				renderMarkdownBlock( block.content, 'block-' + String( index ), headingQueue )
 			);
 		} );
 	}
@@ -422,12 +625,15 @@
 	}
 
 	function normalizeLang( lang ) {
-		var key = String( lang || '' ).toLowerCase().trim();
+		var key = normalizeCodeLanguage( lang );
 		var aliases = {
-			js: 'javascript', jsx: 'javascript', tsx: 'javascript',
-			ts: 'javascript', typescript: 'javascript',
-			py: 'python',
-			sh: 'bash', shell: 'bash', zsh: 'bash',
+			jsx: 'javascript',
+			typescript: 'javascript',
+			tsx: 'javascript',
+			markup: 'javascript',
+			yaml: 'bash',
+			diff: 'bash',
+			markdown: 'bash',
 		};
 		return aliases[ key ] || key;
 	}
@@ -590,49 +796,161 @@
 	}
 
 	/* ------------------------------------------------------------------ */
-	/*  Code block copy button (DOM-based)                                 */
+	/*  Code block shell + copy enhancement                                */
 	/* ------------------------------------------------------------------ */
 
-	function addCopyButton( preEl ) {
-		if ( preEl.querySelector( '.hdc-blog-post__code-copy' ) ) {
-			return;
+	function copyCodeWithFallback( value ) {
+		if ( typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText ) {
+			return navigator.clipboard.writeText( value ).then( function () {
+				return true;
+			} ).catch( function () {
+				return false;
+			} );
 		}
 
-		var codeEl = preEl.querySelector( 'code' );
-		if ( ! codeEl ) {
-			return;
+		if ( typeof document === 'undefined' ) {
+			return Promise.resolve( false );
 		}
 
-		var btn = document.createElement( 'button' );
-		btn.type = 'button';
-		btn.className = 'hdc-blog-post__code-copy';
-		btn.setAttribute( 'aria-label', 'Copy code block' );
-		btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="hdc-blog-post__code-copy-icon" data-icon="copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+		const textarea = document.createElement( 'textarea' );
+		textarea.value = value;
+		textarea.setAttribute( 'readonly', 'true' );
+		textarea.style.position = 'fixed';
+		textarea.style.inset = '0';
+		textarea.style.opacity = '0';
+		textarea.style.pointerEvents = 'none';
+		document.body.appendChild( textarea );
+		textarea.select();
+		textarea.setSelectionRange( 0, value.length );
 
-		var checkSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="hdc-blog-post__code-copy-icon" data-icon="check"><path d="M20 6 9 17l-5-5"/></svg>';
-		var copySvg = btn.innerHTML;
-		var timeout = 0;
+		try {
+			return Promise.resolve( document.execCommand( 'copy' ) );
+		} finally {
+			textarea.remove();
+		}
+	}
 
-		btn.addEventListener( 'click', function () {
-			var text = codeEl.textContent || '';
-			if ( ! navigator.clipboard ) {
+	function renderCodeBlock( code, language, key ) {
+		const normalizedLanguage = normalizeCodeLanguage( language );
+		const languageLabel = getCodeLanguageLabel( normalizedLanguage );
+
+		return h(
+			'div',
+			{ key: key, className: 'hdc-blog-post__code-block', 'data-language': normalizedLanguage || '' },
+			h(
+				'div',
+				{ className: 'hdc-blog-post__code-toolbar' },
+				h( 'span', { className: 'hdc-blog-post__code-language' }, languageLabel ),
+				h(
+					'button',
+					{
+						type: 'button',
+						className: 'hdc-blog-post__code-copy',
+						'aria-label': 'Copy code block',
+						'data-copy-state': 'idle',
+					},
+					h( 'span', { className: 'hdc-blog-post__code-copy-icon', 'aria-hidden': 'true' }, renderLucideIcon( h, 'copy', { size: 14 } ) ),
+					h( 'span', { className: 'hdc-blog-post__code-copy-text' }, 'Copy' )
+				)
+			),
+			h(
+				'div',
+				{ className: 'hdc-blog-post__code-scroll' },
+				h(
+					'pre',
+					{ className: 'hdc-blog-post__code' },
+					h( 'code', { className: normalizedLanguage ? 'language-' + normalizedLanguage : undefined }, code )
+				)
+			)
+		);
+	}
+
+	function getLanguageFromClassNames( value ) {
+		if ( ! value ) {
+			return null;
+		}
+
+		return value.split( /\s+/ ).reduce( function ( found, className ) {
+			if ( found ) {
+				return found;
+			}
+
+			if ( className.indexOf( 'language-' ) === 0 || className.indexOf( 'lang-' ) === 0 ) {
+				return normalizeCodeLanguage( className );
+			}
+
+			return null;
+		}, null );
+	}
+
+	function renderCodeBlockDom( doc, code, language ) {
+		const normalizedLanguage = normalizeCodeLanguage( language );
+		const wrapper = doc.createElement( 'div' );
+		wrapper.className = 'hdc-blog-post__code-block';
+		wrapper.setAttribute( 'data-language', normalizedLanguage || '' );
+
+		const toolbar = doc.createElement( 'div' );
+		toolbar.className = 'hdc-blog-post__code-toolbar';
+
+		const languageEl = doc.createElement( 'span' );
+		languageEl.className = 'hdc-blog-post__code-language';
+		languageEl.textContent = getCodeLanguageLabel( normalizedLanguage );
+
+		const button = doc.createElement( 'button' );
+		button.type = 'button';
+		button.className = 'hdc-blog-post__code-copy';
+		button.setAttribute( 'aria-label', 'Copy code block' );
+		button.setAttribute( 'data-copy-state', 'idle' );
+
+		const buttonIcon = doc.createElement( 'span' );
+		buttonIcon.className = 'hdc-blog-post__code-copy-icon';
+		buttonIcon.setAttribute( 'aria-hidden', 'true' );
+		buttonIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>';
+
+		const buttonText = doc.createElement( 'span' );
+		buttonText.className = 'hdc-blog-post__code-copy-text';
+		buttonText.textContent = 'Copy';
+
+		button.appendChild( buttonIcon );
+		button.appendChild( buttonText );
+		toolbar.appendChild( languageEl );
+		toolbar.appendChild( button );
+
+		const scroll = doc.createElement( 'div' );
+		scroll.className = 'hdc-blog-post__code-scroll';
+
+		const pre = doc.createElement( 'pre' );
+		pre.className = 'hdc-blog-post__code';
+
+		const codeEl = doc.createElement( 'code' );
+		if ( normalizedLanguage ) {
+			codeEl.className = 'language-' + normalizedLanguage;
+		}
+		codeEl.textContent = code;
+
+		pre.appendChild( codeEl );
+		scroll.appendChild( pre );
+		wrapper.appendChild( toolbar );
+		wrapper.appendChild( scroll );
+
+		return wrapper;
+	}
+
+	function upgradeHtmlArticleCodeBlocks( container ) {
+		container.querySelectorAll( '.hdc-blog-post__content pre' ).forEach( function ( preEl ) {
+			if ( preEl.closest( '.hdc-blog-post__code-block' ) ) {
 				return;
 			}
 
-			navigator.clipboard.writeText( text ).then( function () {
-				btn.innerHTML = checkSvg;
-				btn.classList.add( 'is-copied' );
-				btn.setAttribute( 'aria-label', 'Code copied' );
-				clearTimeout( timeout );
-				timeout = setTimeout( function () {
-					btn.innerHTML = copySvg;
-					btn.classList.remove( 'is-copied' );
-					btn.setAttribute( 'aria-label', 'Copy code block' );
-				}, 2000 );
-			} );
-		} );
+			const codeEl = preEl.querySelector( 'code' );
+			if ( ! codeEl ) {
+				return;
+			}
 
-		preEl.appendChild( btn );
+			const language = getLanguageFromClassNames( codeEl.getAttribute( 'class' ) || preEl.getAttribute( 'class' ) || '' );
+			const shell = renderCodeBlockDom( document, codeEl.textContent || '', language );
+			preEl.replaceWith( shell );
+		} );
 	}
 
 	/* ------------------------------------------------------------------ */
@@ -640,16 +958,36 @@
 	/* ------------------------------------------------------------------ */
 
 	function SectionJumpNav( props ) {
-		const [ activeHref, setActiveHref ] = useState( '' );
+		function getInitialActiveHref() {
+			if ( ! props.items.length ) {
+				return '';
+			}
+
+			if ( window.location.hash ) {
+				var matchedItem = props.items.find( function ( item ) {
+					return item.href === window.location.hash;
+				} );
+				if ( matchedItem ) {
+					return matchedItem.href;
+				}
+			}
+
+			return props.items[0].href;
+		}
+
+		const [ activeHref, setActiveHref ] = useState( getInitialActiveHref );
 
 		useEffect(
 			function () {
 				if ( ! props.items.length ) {
+					setActiveHref( '' );
 					return;
 				}
 
+				setActiveHref( getInitialActiveHref() );
+
 				if ( typeof IntersectionObserver === 'undefined' ) {
-					return;
+					return undefined;
 				}
 
 				var headingEls = [];
@@ -688,7 +1026,10 @@
 				function onHashChange() {
 					if ( window.location.hash ) {
 						setActiveHref( window.location.hash );
+						return;
 					}
+
+					setActiveHref( props.items[0] ? props.items[0].href : '' );
 				}
 
 				window.addEventListener( 'hashchange', onHashChange );
@@ -741,17 +1082,59 @@
 		);
 	}
 
+	function BlogPostStateCard( props ) {
+		return h(
+			'div',
+			{ className: 'hdc-blog-post__state-card' + ( props.className ? ' ' + props.className : '' ) },
+			h( 'span', { className: 'hdc-blog-post__state-icon ' + props.iconClass, 'aria-hidden': 'true' }, props.iconText || '' ),
+			h( 'h2', { className: 'hdc-blog-post__state-title' }, props.title ),
+			props.description ? h( 'p', { className: 'hdc-blog-post__state-description' }, props.description ) : null,
+			props.action || null
+		);
+	}
+
+	function BlogPostLoadingState() {
+		return h( BlogPostStateCard, {
+			className: 'is-loading',
+			iconClass: 'is-loading',
+			title: 'Loading',
+			description: 'Please wait while this article is loaded.',
+		} );
+	}
+
+	function BlogPostErrorState( props ) {
+		return h( BlogPostStateCard, {
+			className: 'is-error',
+			iconClass: 'is-error',
+			iconText: '!',
+			title: 'Post not found',
+			description: 'This article may have been removed or the URL is incorrect.',
+			action: h(
+				'a',
+				{ className: 'hdc-blog-post__state-action', href: props.blogIndexUrl },
+				'Back to Blog'
+			),
+		} );
+	}
+
 	function BlogPostApp( props ) {
 		const config = props.config;
-		const [ resolvedSlug, setResolvedSlug ] = useState( inferSlugFromLocation( config.slug ) );
-		const [ state, setState ] = useState( {
-			loading: true,
-			error: '',
-			post: null,
-			posts: [],
+		const initialSlug = inferSlugFromLocation( config.slug );
+		const initialPosts = getInlineFallbackPosts( config );
+		const initialPost = getInitialPostFromPosts( initialPosts, initialSlug );
+		const [ resolvedSlug, setResolvedSlug ] = useState( initialSlug );
+		const [ state, setState ] = useState( function () {
+			return {
+				isFetching: !! initialSlug,
+				error: initialSlug ? '' : 'Post not found.',
+				post: initialPost,
+				posts: initialPosts,
+				hasPlaceholderData: initialPosts.length > 0,
+			};
 		} );
 		const [ progress, setProgress ] = useState( 0 );
 		const rootRef = useRef( null );
+		const shareCopyResetTimeoutRef = useRef( null );
 
 		const signature = useMemo( function () {
 			return JSON.stringify( config );
@@ -766,28 +1149,58 @@
 
 		useEffect(
 			function () {
-				if ( state.loading ) {
+				const nextPosts = getInlineFallbackPosts( config );
+				const nextPost = getInitialPostFromPosts( nextPosts, resolvedSlug );
+
+				setState( function () {
+					return {
+						isFetching: !! resolvedSlug,
+						error: resolvedSlug ? '' : 'Post not found.',
+						post: nextPost,
+						posts: nextPosts,
+						hasPlaceholderData: nextPosts.length > 0,
+					};
+				} );
+			},
+			[ resolvedSlug, signature ]
+		);
+
+		useEffect(
+			function () {
+				if ( state.isFetching ) {
 					return;
 				}
 
 				if ( state.post && state.post.title ) {
-					document.title = state.post.title + ' — Henry Perkins';
+					document.title = ( state.post.seoTitle || state.post.title ) + ' — Henry Perkins';
 					return;
 				}
 
 				document.title = 'Post Not Found — Henry Perkins';
 			},
-			[ state.loading, state.post ]
+			[ state.isFetching, state.post ]
+		);
+
+		useEffect(
+			function () {
+				return function () {
+					if ( shareCopyResetTimeoutRef.current ) {
+						window.clearTimeout( shareCopyResetTimeoutRef.current );
+					}
+				};
+			},
+			[]
 		);
 
 		useEffect(
 			function () {
 				if ( ! resolvedSlug ) {
 					setState( {
-						loading: false,
+						isFetching: false,
 						error: 'Post not found.',
 						post: null,
-						posts: [],
+						posts: getInlineFallbackPosts( config ),
+						hasPlaceholderData: getInlineFallbackPosts( config ).length > 0,
 					} );
 					return;
 				}
@@ -795,14 +1208,19 @@
 				let cancelled = false;
 
 				async function load() {
-					setState( {
-						loading: true,
-						error: '',
-						post: null,
-						posts: [],
+					const inlinePosts = getInlineFallbackPosts( config );
+					setState( function () {
+						const nextPost = getInitialPostFromPosts( inlinePosts, resolvedSlug );
+						return {
+							isFetching: true,
+							error: resolvedSlug ? '' : 'Post not found.',
+							post: nextPost,
+							posts: inlinePosts,
+							hasPlaceholderData: inlinePosts.length > 0,
+						};
 					} );
 
-					let fallbackPosts = [];
+					let fallbackPosts = inlinePosts;
 					try {
 						const postsPayload = await fetchJson( config.postsEndpoint );
 						fallbackPosts = normalizePosts( resolveBlogPayload( postsPayload ) );
@@ -818,18 +1236,6 @@
 					let currentPost = fallbackPosts.find( function ( item ) {
 						return item.slug === resolvedSlug;
 					} ) || null;
-
-					if ( ! currentPost && fallbackPosts.length > 0 ) {
-						if ( ! cancelled ) {
-							setState( {
-								loading: false,
-								error: 'Post not found.',
-								post: null,
-								posts: fallbackPosts,
-							} );
-						}
-						return;
-					}
 
 					if ( currentPost ) {
 						try {
@@ -850,10 +1256,11 @@
 					if ( ! currentPost ) {
 						if ( ! cancelled ) {
 							setState( {
-								loading: false,
+								isFetching: false,
 								error: 'Post not found.',
 								post: null,
 								posts: fallbackPosts,
+								hasPlaceholderData: inlinePosts.length > 0,
 							} );
 						}
 						return;
@@ -867,10 +1274,11 @@
 
 					if ( ! cancelled ) {
 						setState( {
-							loading: false,
-							error: '',
+							isFetching: false,
+							error: currentPost ? '' : 'Post not found.',
 							post: currentPost,
 							posts: normalizePosts( relatedSource ),
+							hasPlaceholderData: inlinePosts.length > 0,
 						} );
 					}
 				}
@@ -911,33 +1319,55 @@
 		// Code block enhancement: syntax highlighting + copy buttons
 		useEffect(
 			function () {
-				if ( state.loading || ! state.post ) {
+				if ( state.isFetching || ! state.post ) {
 					return;
 				}
 
-				// Small delay to ensure DOM has rendered
 				var raf = requestAnimationFrame( function () {
 					var container = rootRef.current;
 					if ( ! container ) {
 						container = document;
 					}
 
-					var codeBlocks = container.querySelectorAll( '.hdc-blog-post__code' );
-					codeBlocks.forEach( function ( pre ) {
-						var codeEl = pre.querySelector( 'code' );
+					upgradeHtmlArticleCodeBlocks( container );
+
+					var codeBlocks = container.querySelectorAll( '.hdc-blog-post__code-block' );
+					codeBlocks.forEach( function ( block ) {
+						var codeEl = block.querySelector( '.hdc-blog-post__code code' );
 						if ( ! codeEl ) {
 							return;
 						}
 
-						// Determine language from data attribute or lang label
-						var lang = pre.getAttribute( 'data-lang' ) || '';
-						if ( ! lang ) {
-							var langSpan = pre.querySelector( '.hdc-blog-post__code-lang' );
-							lang = langSpan ? ( langSpan.textContent || '' ).trim() : '';
+						var lang = block.getAttribute( 'data-language' ) || '';
+						highlightCodeElement( codeEl, lang );
+
+						var copyButton = block.querySelector( '.hdc-blog-post__code-copy' );
+						if ( ! copyButton || copyButton.dataset.hdcBound === 'true' ) {
+							return;
 						}
 
-						highlightCodeElement( codeEl, lang );
-						addCopyButton( pre );
+						copyButton.dataset.hdcBound = 'true';
+						copyButton.addEventListener( 'click', function () {
+							var codeText = codeEl.textContent || '';
+							var copyText = copyButton.querySelector( '.hdc-blog-post__code-copy-text' );
+
+							copyCodeWithFallback( codeText ).then( function ( didCopy ) {
+								copyButton.setAttribute( 'data-copy-state', didCopy ? 'success' : 'error' );
+								copyButton.setAttribute( 'aria-label', didCopy ? 'Code copied' : 'Copy failed' );
+								if ( copyText ) {
+									copyText.textContent = didCopy ? 'Copied' : 'Error';
+								}
+
+								window.clearTimeout( copyButton._hdcCopyResetTimeout || 0 );
+								copyButton._hdcCopyResetTimeout = window.setTimeout( function () {
+									copyButton.setAttribute( 'data-copy-state', 'idle' );
+									copyButton.setAttribute( 'aria-label', 'Copy code block' );
+									if ( copyText ) {
+										copyText.textContent = 'Copy';
+									}
+								}, 1800 );
+							} );
+						} );
 					} );
 				} );
 
@@ -945,7 +1375,7 @@
 					cancelAnimationFrame( raf );
 				};
 			},
-			[ state.loading, state.post ]
+			[ state.isFetching, state.post ]
 		);
 
 		const relatedPosts = useMemo(
@@ -995,39 +1425,35 @@
 		);
 		const hasArticleSectionItems = articleSectionItems.length > 0;
 		const progressValue = Math.round( progress );
+		const isPostLookupPending = ! state.post && state.isFetching;
 
 		const prefersReducedMotion =
 			window.matchMedia &&
 			typeof window.matchMedia === 'function' &&
 			window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
 
-		if ( state.loading ) {
-			return h( 'p', { className: 'hdc-blog-post__status' }, 'Loading post…' );
+		if ( isPostLookupPending ) {
+			return h( BlogPostLoadingState );
 		}
 
 		if ( state.error || ! state.post ) {
-			return h(
-				'div',
-				{ className: 'hdc-blog-post__error-wrap' },
-				h( 'h2', { className: 'hdc-blog-post__error-title' }, 'Post not found' ),
-				h( 'p', { className: 'hdc-blog-post__error' }, 'This article may have been removed or the URL is incorrect.' ),
-					h(
-						'a',
-						{
-							className: 'hdc-blog-post__back-link',
-							href: config.blogIndexUrl,
-						},
-						h(
-							'span',
-							{ className: 'hdc-blog-post__back-link-icon', 'aria-hidden': 'true' },
-							renderLucideIcon( h, 'arrow-left', { className: 'hdc-blog-post__back-link-icon-svg', size: 14 } )
-						),
-						h( 'span', null, 'Back to Blog' )
-					)
-				);
-			}
+			return h( BlogPostErrorState, { blogIndexUrl: config.blogIndexUrl } );
+		}
 
 		const post = state.post;
+		const authorLabel = post.authorName || 'Henry Perkins';
+		const authorLink = post.authorUrl || '';
+		const postHasUpdatedDate = hasUpdatedDate( post );
+		const shareUrl = buildPortfolioBlogUrl( post.slug || resolvedSlug );
+		const metaTitle = post.seoTitle || post.title;
+		const shareMessage = post.shareMessage || post.seoDescription || post.excerpt;
+		const postMetaSummary = post.seoDescription && post.seoDescription !== post.excerpt ? post.seoDescription : '';
+		const shareLinkedInUrl = buildLinkedInShareUrl( shareUrl );
+		const shareEmailUrl = buildEmailShareUrl( {
+			description: shareMessage,
+			title: metaTitle || 'Henry Perkins article',
+			url: shareUrl,
+		} );
 		const contentNode = post.contentHtml
 			? h( 'div', {
 				className: 'hdc-blog-post__content prose-custom',
@@ -1038,6 +1464,69 @@
 				{ className: 'hdc-blog-post__content prose-custom' },
 				renderContentWithCode( post.content, markdownHeadings )
 			);
+
+		function renderInlineSeparated( items, className ) {
+			const filteredItems = ensureArray( items ).filter( Boolean );
+			if ( ! filteredItems.length ) {
+				return null;
+			}
+
+			return h(
+				'span',
+				{ className: className || 'hdc-blog-post__inline-separated' },
+				filteredItems.map( function ( item, index ) {
+					return h(
+						element.Fragment,
+						{ key: String( index ) + '-' + String( item ) },
+						index > 0 ? h( 'span', { className: 'hdc-blog-post__inline-dot', 'aria-hidden': 'true' }, '•' ) : null,
+						h( 'span', { className: 'hdc-blog-post__inline-separated-item' }, item )
+					);
+				} )
+			);
+		}
+
+		function renderMetaBlock( label, content ) {
+			if ( ! content ) {
+				return null;
+			}
+
+			return h(
+				'div',
+				{ className: 'hdc-blog-post__detail-item' },
+				h( 'p', { className: 'hdc-blog-post__detail-label' }, label ),
+				h( 'div', { className: 'hdc-blog-post__detail-value' }, content )
+			);
+		}
+
+		function handleShareCopy() {
+			if ( shareCopyResetTimeoutRef.current ) {
+				window.clearTimeout( shareCopyResetTimeoutRef.current );
+			}
+
+			const rootNode = rootRef.current || document;
+			const button = rootNode.querySelector( '.hdc-blog-post__share-copy' );
+			if ( ! button ) {
+				return;
+			}
+
+			const textNode = button.querySelector( '.hdc-blog-post__share-copy-text' );
+			copyCodeWithFallback( shareUrl ).then( function ( didCopy ) {
+				button.setAttribute( 'data-copy-state', didCopy ? 'success' : 'error' );
+				button.setAttribute( 'aria-label', didCopy ? 'Article link copied' : 'Copy article link failed' );
+				if ( textNode ) {
+					textNode.textContent = didCopy ? 'Link copied' : 'Copy failed';
+				}
+
+				shareCopyResetTimeoutRef.current = window.setTimeout( function () {
+					button.setAttribute( 'data-copy-state', 'idle' );
+					button.setAttribute( 'aria-label', 'Copy article link' );
+					if ( textNode ) {
+						textNode.textContent = 'Copy article link';
+					}
+					shareCopyResetTimeoutRef.current = null;
+				}, COPY_FEEDBACK_DURATION_MS );
+			} );
+		}
 
 			return h(
 				'div',
@@ -1119,15 +1608,19 @@
 										{ className: 'hdc-blog-post__meta-icon-glyph', 'aria-hidden': 'true' },
 										renderLucideIcon( h, 'clock', { className: 'hdc-blog-post__meta-icon-svg', size: 12 } )
 									),
-									h( 'span', {}, post.readingTime )
-								)
-								: null
+										h( 'span', {}, post.readingTime )
+									)
+									: null,
+							renderInlineSeparated( [
+								'By ' + authorLabel,
+								postHasUpdatedDate && post.modifiedDate ? 'Updated ' + formatDateLabel( post.modifiedDate ) : null,
+							], 'hdc-blog-post__meta-inline' )
 						)
 					),
 					h(
 						'div',
 						{ className: 'hdc-blog-post__layout' },
-						hasArticleSectionItems
+							hasArticleSectionItems
 							? h(
 								'aside',
 								{ className: 'hdc-blog-post__aside' },
@@ -1137,11 +1630,86 @@
 								} )
 							)
 							: null,
-						h(
-							'div',
-							{ className: 'hdc-blog-post__content-shell' },
-							contentNode,
-							relatedPosts.length
+							h(
+								'div',
+								{ className: 'hdc-blog-post__content-shell' },
+								contentNode,
+								h(
+									'section',
+									{ className: 'hdc-blog-post__details-card' },
+									h(
+										'div',
+										{ className: 'hdc-blog-post__details-layout' },
+										h(
+											'div',
+											{ className: 'hdc-blog-post__details-main' },
+											h( 'p', { className: 'hdc-blog-post__eyebrow' }, 'Post details' ),
+											h( 'h3', { className: 'hdc-blog-post__details-title' }, 'Metadata, source, and discussion' ),
+											postMetaSummary ? h( 'p', { className: 'hdc-blog-post__details-summary' }, postMetaSummary ) : null,
+											h(
+												'div',
+												{ className: 'hdc-blog-post__detail-grid' },
+												renderMetaBlock(
+													'Author',
+													authorLink
+														? h( 'a', { className: 'hdc-blog-post__detail-link', href: authorLink, rel: 'noopener noreferrer', target: '_blank' }, authorLabel )
+														: h( 'span', null, authorLabel )
+												),
+													renderMetaBlock( 'Published', h( 'time', { dateTime: post.date }, formatLongDateLabel( post.date ) ) ),
+													postHasUpdatedDate && post.modifiedDate
+														? renderMetaBlock( 'Updated', h( 'time', { dateTime: post.modifiedDate }, formatLongDateLabel( post.modifiedDate ) ) )
+														: null,
+													post.categories && post.categories.length
+														? renderMetaBlock( 'Filed under', renderInlineSeparated( post.categories, 'hdc-blog-post__detail-inline' ) )
+														: null,
+													post.wordpressPermalink
+														? renderMetaBlock( 'Original post', h( 'a', { className: 'hdc-blog-post__detail-link', href: post.wordpressPermalink, rel: 'noopener noreferrer', target: '_blank' }, 'Open original on WordPress' ) )
+														: null,
+													post.shareMessage
+														? renderMetaBlock( 'Sharing note', h( 'span', null, post.shareMessage ) )
+														: null
+												)
+											),
+											h(
+												'div',
+												{ className: 'hdc-blog-post__share-rail' },
+												h(
+													'div',
+													{ className: 'hdc-blog-post__share-panel' },
+													h( 'h3', { className: 'hdc-blog-post__share-title' }, 'Share this article' ),
+													h( 'p', { className: 'hdc-blog-post__share-description' }, 'Share the canonical hperkins.com version of this article.' ),
+													h(
+														'div',
+														{ className: 'hdc-blog-post__share-actions' },
+														h(
+															'button',
+															{
+																type: 'button',
+																className: 'hdc-blog-post__share-copy',
+																'aria-label': 'Copy article link',
+																'data-copy-state': 'idle',
+																onClick: handleShareCopy,
+															},
+																h( 'span', { className: 'hdc-blog-post__share-copy-icon', 'aria-hidden': 'true' }, renderLucideIcon( h, 'share-2', { size: 14 } ) ),
+																h( 'span', { className: 'hdc-blog-post__share-copy-text' }, 'Copy article link' )
+															),
+															h( 'a', { className: 'hdc-blog-post__share-link', href: shareLinkedInUrl, rel: 'noopener noreferrer', target: '_blank' }, h( 'span', { className: 'hdc-blog-post__share-link-icon', 'aria-hidden': 'true' }, renderLucideIcon( h, 'linkedin', { size: 14 } ) ), h( 'span', null, 'Share on LinkedIn' ) ),
+															h( 'a', { className: 'hdc-blog-post__share-link', href: shareEmailUrl }, h( 'span', { className: 'hdc-blog-post__share-link-icon', 'aria-hidden': 'true' }, renderLucideIcon( h, 'mail', { size: 14 } ) ), h( 'span', null, 'Email article' ) )
+														)
+													),
+													post.wordpressPermalink
+														? h(
+															'div',
+															{ className: 'hdc-blog-post__discussion-panel' },
+															h( 'h3', { className: 'hdc-blog-post__share-title' }, 'Discussion' ),
+															h( 'p', { className: 'hdc-blog-post__share-description' }, post.commentsOpen ? 'Comments are open on the original WordPress post.' : 'Comments are currently closed on the original WordPress post.' ),
+															h( 'a', { className: 'hdc-blog-post__share-link', href: post.discussionUrl || post.wordpressPermalink, rel: 'noopener noreferrer', target: '_blank' }, h( 'span', { className: 'hdc-blog-post__share-link-icon', 'aria-hidden': 'true' }, renderLucideIcon( h, 'message-square', { size: 14 } ) ), h( 'span', null, post.commentsOpen ? 'Comment on WordPress' : 'Open original post' ) )
+														)
+														: null
+												)
+										)
+									),
+								relatedPosts.length
 								? h(
 									'section',
 									{ className: 'hdc-blog-post__related' },

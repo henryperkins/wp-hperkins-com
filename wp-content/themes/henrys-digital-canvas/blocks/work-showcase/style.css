@@ -726,23 +726,41 @@
 	align-items: flex-start;
 }
 
+.hdc-work-featured-link,
+.hdc-work-pending-link {
+	color: inherit;
+	text-decoration: none;
+}
+
+.hdc-work-featured-link {
+	display: grid;
+	gap: 0.75rem;
+	min-height: 100%;
+}
+
+.hdc-work-featured-link:hover .hdc-work-featured-title,
+.hdc-work-featured-link:focus-visible .hdc-work-featured-title,
+.hdc-work-pending-link:hover .hdc-work-list-item-title,
+.hdc-work-pending-link:focus-visible .hdc-work-list-item-title {
+	color: hsl(var(--link));
+}
+
+.hdc-work-featured-link:focus-visible,
+.hdc-work-pending-link:focus-visible {
+	outline: 2px solid hsl(var(--ring));
+	outline-offset: 3px;
+	border-radius: var(--radius-control);
+}
+
+.hdc-work-role-disclosure {
+	align-items: center;
+	gap: 0.35rem;
+	margin-top: 1rem;
+	width: fit-content;
+}
+
 .hdc-work-role-badges {
 	margin-top: 1rem;
-}
-
-.hdc-work-role-card[role="button"] {
-	cursor: pointer;
-	transition: box-shadow 0.18s ease, transform 0.18s ease;
-}
-
-.hdc-work-role-card[role="button"]:hover {
-	box-shadow: 0 0 0 1px hsl(var(--border)), 0 2px 8px hsl(var(--shadow) / 0.08);
-	transform: translateY(-1px);
-}
-
-.hdc-work-role-card[role="button"]:focus-visible {
-	outline: 2px solid hsl(var(--ring));
-	outline-offset: 2px;
 }
 
 .hdc-work-role-proportion {
@@ -773,13 +791,6 @@
 
 .hdc-work-role-repo-link:hover {
 	background: hsl(var(--accent));
-}
-
-.hdc-work-role-toggle-badge {
-	cursor: pointer;
-	display: inline-flex;
-	align-items: center;
-	gap: 0.2rem;
 }
 
 .hdc-work-role-badge-chevron {
@@ -896,6 +907,58 @@
 .hdc-work-timeline-shell {
 	background: hsl(var(--surface-1));
 	padding: 1rem;
+}
+
+.hdc-work-pending-link {
+	align-items: center;
+	display: flex;
+	gap: 0.6rem;
+	justify-content: space-between;
+	width: 100%;
+}
+
+.hdc-work-inline-separated {
+	align-items: center;
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: 0.2rem;
+}
+
+.hdc-work-inline-separated-item {
+	display: inline-flex;
+	align-items: center;
+}
+
+.hdc-work-inline-separated-separator {
+	background: currentColor;
+	border-radius: 50%;
+	display: inline-block;
+	flex-shrink: 0;
+	height: 0.2rem;
+	opacity: 0.5;
+	width: 0.2rem;
+}
+
+.hdc-work-lang-bar-inner {
+	display: flex;
+	height: 100%;
+	overflow: hidden;
+	width: 100%;
+}
+
+.hdc-work-clamp-2,
+.hdc-work-clamp-3 {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.hdc-work-clamp-2 {
+	-webkit-line-clamp: 2;
+}
+
+.hdc-work-clamp-3 {
+	-webkit-line-clamp: 3;
 }
 
 @keyframes hdc-skeleton-pulse {
@@ -1129,13 +1192,14 @@
 		padding-block: 2rem;
 	}
 
+	.hdc-work-pending-link {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.hdc-work-role-card[role="button"]:hover {
-		transform: none;
-	}
-
 	.hdc-work-role-proportion-fill,
 	.hdc-work-role-badge-chevron,
 	.hdc-work-skeleton {

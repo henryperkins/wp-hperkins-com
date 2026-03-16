@@ -203,6 +203,15 @@ function hdc_get_configured_github_owner() {
 }
 
 /**
+ * Get the canonical portfolio origin used by the React app.
+ *
+ * @return string
+ */
+function hdc_get_portfolio_origin() {
+	return 'https://hperkins.com';
+}
+
+/**
  * Build the canonical portfolio blog detail URL.
  *
  * @param string $slug Blog post slug.
@@ -215,6 +224,21 @@ function hdc_get_blog_detail_url( $slug ) {
 	}
 
 	return esc_url_raw( home_url( '/blog/' . rawurlencode( $slug ) . '/' ) );
+}
+
+/**
+ * Build the public portfolio blog detail URL.
+ *
+ * @param string $slug Blog post slug.
+ * @return string
+ */
+function hdc_get_portfolio_blog_detail_url( $slug ) {
+	$slug = sanitize_title( (string) $slug );
+	if ( '' === $slug ) {
+		return esc_url_raw( trailingslashit( hdc_get_portfolio_origin() ) . 'blog/' );
+	}
+
+	return esc_url_raw( trailingslashit( hdc_get_portfolio_origin() ) . 'blog/' . rawurlencode( $slug ) );
 }
 
 /**
@@ -231,6 +255,38 @@ function hdc_estimate_reading_time( $html ) {
 		/* translators: %d = reading time in minutes. */
 		__( '%d min read', 'henrys-digital-canvas' ),
 		$minutes
+	);
+}
+
+/**
+ * Normalize an optional text value.
+ *
+ * @param mixed $value Raw value.
+ * @return string
+ */
+function hdc_normalize_optional_text( $value ) {
+	$normalized = wp_strip_all_tags( (string) $value );
+	$normalized = html_entity_decode( $normalized, ENT_QUOTES, 'UTF-8' );
+	$normalized = trim( preg_replace( '/\s+/u', ' ', $normalized ) );
+
+	return sanitize_text_field( $normalized );
+}
+
+/**
+ * Normalize a list of optional text values.
+ *
+ * @param mixed $values Raw values.
+ * @return array<int,string>
+ */
+function hdc_normalize_optional_text_list( $values ) {
+	if ( ! is_array( $values ) ) {
+		return array();
+	}
+
+	return array_values(
+		array_filter(
+			array_map( 'hdc_normalize_optional_text', $values )
+		)
 	);
 }
 
@@ -387,6 +443,14 @@ function hdc_normalize_fallback_blog_post_contract( $post, $index = 0 ) {
 
 	$date_iso = sanitize_text_field( (string) ( $post['date'] ?? '' ) );
 	$url      = hdc_get_blog_detail_url( $slug );
+	$seo_title = hdc_normalize_optional_text( $post['seoTitle'] ?? '' );
+	$seo_description = hdc_normalize_optional_text( $post['seoDescription'] ?? '' );
+	$share_message = hdc_normalize_optional_text( $post['shareMessage'] ?? '' );
+	$author_name = hdc_normalize_optional_text( $post['authorName'] ?? '' );
+	$author_url  = esc_url_raw( (string) ( $post['authorUrl'] ?? '' ) );
+	$discussion_url = esc_url_raw( (string) ( $post['discussionUrl'] ?? '' ) );
+	$categories = hdc_normalize_optional_text_list( $post['categories'] ?? array() );
+	$modified_date = sanitize_text_field( (string) ( $post['modifiedDate'] ?? '' ) );
 
 	$reading_time = sanitize_text_field( (string) ( $post['readingTime'] ?? '' ) );
 	if ( '' === $reading_time ) {
@@ -401,13 +465,23 @@ function hdc_normalize_fallback_blog_post_contract( $post, $index = 0 ) {
 		'title'               => html_entity_decode( sanitize_text_field( (string) ( $post['title'] ?? 'Untitled Post' ) ), ENT_QUOTES, 'UTF-8' ),
 		'excerpt'             => $excerpt,
 		'date'                => $date_iso,
+		'modifiedDate'        => $modified_date,
 		'tags'                => $tags,
+		'categories'          => $categories,
 		'featured'            => ! empty( $post['featured'] ),
 		'readingTime'         => $reading_time,
 		'content'             => $content_text,
 		'contentHtml'         => $content_html,
 		'url'                 => $url,
 		'source'              => 'local',
+		'authorName'          => $author_name,
+		'authorUrl'           => $author_url,
+		'wordpressPermalink'  => esc_url_raw( (string) ( $post['wordpressPermalink'] ?? '' ) ),
+		'commentsOpen'        => ! empty( $post['commentsOpen'] ),
+		'discussionUrl'       => $discussion_url,
+		'seoTitle'            => $seo_title,
+		'seoDescription'      => $seo_description,
+		'shareMessage'        => $share_message,
 		'featuredImageUrl'    => hdc_resolve_fallback_media_url( (string) ( $post['featuredImageUrl'] ?? '' ) ),
 		'featuredImageAlt'    => sanitize_text_field( (string) ( $post['featuredImageAlt'] ?? '' ) ),
 		'featuredImageSrcSet' => trim( wp_strip_all_tags( (string) ( $post['featuredImageSrcSet'] ?? '' ) ) ),
@@ -510,6 +584,9 @@ function hdc_map_wp_post_to_blog_contract( $post, $is_featured = false ) {
 	$content_text = trim( wp_strip_all_tags( (string) $content_html ) );
 	$media_fields = hdc_get_post_featured_media_fields( (int) $post->ID );
 	$slug         = (string) $post->post_name;
+	$author_id    = (int) $post->post_author;
+	$author_name  = $author_id > 0 ? hdc_normalize_optional_text( get_the_author_meta( 'display_name', $author_id ) ) : '';
+	$author_url   = $author_id > 0 ? get_author_posts_url( $author_id ) : '';
 
 	$excerpt = has_excerpt( $post )
 		? wp_strip_all_tags( get_the_excerpt( $post ) )
@@ -528,19 +605,48 @@ function hdc_map_wp_post_to_blog_contract( $post, $is_featured = false ) {
 		$date_iso = $post->post_date;
 	}
 
+	$modified_date = get_post_modified_time( 'c', false, $post );
+	if ( ! is_string( $modified_date ) || '' === $modified_date ) {
+		$modified_date = $post->post_modified;
+	}
+
+	$categories = wp_get_post_terms( $post->ID, 'category', array( 'fields' => 'names' ) );
+	if ( ! is_array( $categories ) ) {
+		$categories = array();
+	}
+
+	$discussion_url = '';
+	$wordpress_permalink = get_permalink( $post );
+	if ( is_string( $wordpress_permalink ) && '' !== trim( $wordpress_permalink ) && 'open' === $post->comment_status ) {
+		$discussion_url = $wordpress_permalink . '#respond';
+	}
+
+	$seo_title = hdc_normalize_optional_text( get_post_meta( $post->ID, 'jetpack_seo_html_title', true ) );
+	$seo_description = hdc_normalize_optional_text( get_post_meta( $post->ID, 'advanced_seo_description', true ) );
+	$share_message = hdc_normalize_optional_text( get_post_meta( $post->ID, 'jetpack_publicize_message', true ) );
+
 	return array(
 		'id'                  => (int) $post->ID,
 		'slug'                => $slug,
 		'title'               => html_entity_decode( get_the_title( $post ), ENT_QUOTES, 'UTF-8' ),
 		'excerpt'             => $excerpt,
 		'date'                => $date_iso,
+		'modifiedDate'        => $modified_date,
 		'tags'                => array_values( array_unique( array_map( 'sanitize_text_field', $tags ) ) ),
+		'categories'          => array_values( array_unique( array_map( 'sanitize_text_field', $categories ) ) ),
 		'featured'            => (bool) $is_featured,
 		'readingTime'         => hdc_estimate_reading_time( $content_html ),
 		'content'             => $content_text,
 		'contentHtml'         => $content_html,
 		'url'                 => hdc_get_blog_detail_url( $slug ),
-		'wordpressPermalink'  => get_permalink( $post ),
+		'authorName'          => $author_name,
+		'authorUrl'           => esc_url_raw( (string) $author_url ),
+		'wordpressPermalink'  => esc_url_raw( (string) $wordpress_permalink ),
+		'commentsOpen'        => 'open' === $post->comment_status,
+		'discussionUrl'       => esc_url_raw( $discussion_url ),
+		'seoTitle'            => $seo_title,
+		'seoDescription'      => $seo_description,
+		'shareMessage'        => $share_message,
 		'source'              => 'wordpress',
 		'featuredImageUrl'    => $media_fields['featuredImageUrl'],
 		'featuredImageAlt'    => $media_fields['featuredImageAlt'],

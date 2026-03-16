@@ -841,7 +841,7 @@
 											h(
 												'span',
 												{ 'aria-hidden': 'true', className: 'hdc-home-page__work-origin-icon' },
-												renderLucideIcon( h, repo.origin === 'github' ? 'github' : 'briefcase', {
+												renderLucideIcon( h, repo.origin === 'github' ? 'github' : 'briefcase-business', {
 													className: 'hdc-home-page__work-origin-icon-svg',
 													size: 14,
 												} )
@@ -1091,7 +1091,7 @@
 				{ className: 'hdc-home-page__section', id: 'contact-cta' },
 				h(
 					'div',
-					{ className: 'hdc-home-page__cta-card ember-surface ember-surface-strong' },
+					{ className: 'hdc-home-page__cta-card surface-library-ember-veil' },
 					h(
 						'div',
 						{ className: 'hdc-home-page__cta-layout' },

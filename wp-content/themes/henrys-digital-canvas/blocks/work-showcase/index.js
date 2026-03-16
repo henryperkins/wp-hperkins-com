@@ -7,16 +7,12 @@
 	const PanelBody = components.PanelBody;
 	const TextControl = components.TextControl;
 	const TextareaControl = components.TextareaControl;
-	const ToggleControl = components.ToggleControl;
-	const RangeControl = components.RangeControl;
 	const Notice = components.Notice;
 
 	blocks.registerBlockType( 'henrys-digital-canvas/work-showcase', {
 		edit: function Edit( props ) {
 			const attrs = props.attributes;
 			const setAttributes = props.setAttributes;
-			const showSignalsPanel = attrs.showSignalsPanel !== false;
-			const showActivitySparkline = attrs.showActivitySparkline !== false;
 			const blockProps = useBlockProps( {
 				className: 'hdc-work-showcase-editor',
 			} );
@@ -46,61 +42,6 @@
 							onChange: function ( description ) {
 								setAttributes( { description: description } );
 							},
-						} ),
-						el( RangeControl, {
-							label: __( 'Repository count', 'henrys-digital-canvas' ),
-							value: attrs.repoCount,
-							onChange: function ( repoCount ) {
-								setAttributes( { repoCount: repoCount || 100 } );
-							},
-							min: 1,
-							max: 100,
-						} ),
-						el( ToggleControl, {
-							label: __( 'Include forked repositories', 'henrys-digital-canvas' ),
-							checked: !! attrs.includeForks,
-							onChange: function ( includeForks ) {
-								setAttributes( { includeForks: includeForks } );
-							},
-						} ),
-						el( ToggleControl, {
-							label: __( 'Include archived repositories', 'henrys-digital-canvas' ),
-							checked: !! attrs.includeArchived,
-							onChange: function ( includeArchived ) {
-								setAttributes( { includeArchived: includeArchived } );
-							},
-						} ),
-						el( ToggleControl, {
-							label: __( 'Open repository links in new tab', 'henrys-digital-canvas' ),
-							checked: !! attrs.openInNewTab,
-							onChange: function ( openInNewTab ) {
-								setAttributes( { openInNewTab: openInNewTab } );
-							},
-						} ),
-						el( ToggleControl, {
-							label: __( 'Show engineering signals section', 'henrys-digital-canvas' ),
-							checked: showSignalsPanel,
-							onChange: function ( showSignalsPanel ) {
-								setAttributes( { showSignalsPanel: showSignalsPanel } );
-							},
-						} ),
-						el( ToggleControl, {
-							label: __( 'Show activity sparkline graph', 'henrys-digital-canvas' ),
-							checked: showActivitySparkline,
-							onChange: function ( showActivitySparkline ) {
-								setAttributes( { showActivitySparkline: showActivitySparkline } );
-							},
-							disabled: ! showSignalsPanel,
-						} ),
-						el( RangeControl, {
-							label: __( 'Sparkline week range', 'henrys-digital-canvas' ),
-							value: attrs.sparklineWeeks || 8,
-							onChange: function ( sparklineWeeks ) {
-								setAttributes( { sparklineWeeks: sparklineWeeks || 8 } );
-							},
-							min: 4,
-							max: 16,
-							disabled: ! showSignalsPanel || ! showActivitySparkline,
 						} )
 					)
 				),
@@ -114,7 +55,7 @@
 							isDismissible: false,
 						},
 						__(
-							'Frontend uses React state for GitHub sync/fallback, filters, compare sheet, and timeline/grid views.',
+							'Frontend uses React state for GitHub sync, filtering, and timeline/grid presentation.',
 							'henrys-digital-canvas'
 						)
 					),
@@ -128,7 +69,7 @@
 						'p',
 						{ className: 'hdc-work-editor-meta' },
 						__(
-							'Save and view on frontend to run live GitHub fetching and compare interactions.',
+							'Save and view on the frontend to run live GitHub fetching and work page interactions.',
 							'henrys-digital-canvas'
 						)
 					)

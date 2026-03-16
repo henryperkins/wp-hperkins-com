@@ -27,7 +27,7 @@
   margin: 0 auto;
   max-width: 1400px;
   min-height: var(--layout-header-height);
-  padding: 0.35rem 1rem;
+  padding: 0.35rem 2rem;
 }
 
 .hdc-site-shell__brand {
@@ -74,7 +74,7 @@
 
 .hdc-site-shell__title {
   font-family: "Playfair Display", Georgia, serif;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 600;
   line-height: 1.1;
   letter-spacing: -0.02em;
@@ -97,11 +97,11 @@
 .hdc-site-shell__nav-link,
 .hdc-site-shell__mobile-link {
   border-radius: var(--radius-control);
-  color: hsl(var(--text-subtle));
+  color: hsl(var(--text-body));
   display: inline-flex;
   font-family: var(--font-sans);
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.875rem;
+  font-weight: 500;
   line-height: 1;
   padding: 0.5rem 0.75rem;
   text-decoration: none;
@@ -366,7 +366,7 @@
   margin: 0 auto;
   max-width: 1400px;
   min-height: 100%;
-  padding: 3.5rem 1rem calc(1rem + var(--space-safe-area-bottom));
+  padding: 3.5rem 2rem calc(1rem + var(--space-safe-area-bottom));
 }
 
 .hdc-site-shell__mobile-close {
@@ -420,11 +420,9 @@
 
 .hdc-site-shell__mobile-link {
   align-items: center;
-  background: hsl(var(--secondary));
-  border: 1px solid hsl(var(--border));
   justify-content: flex-start;
-  min-height: 3rem;
-  padding: 0.8rem 0.95rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
   width: 100%;
 }
 
@@ -551,6 +549,16 @@
   text-transform: uppercase;
 }
 
+.hdc-site-shell__command-groups section {
+  border-top: 1px solid hsl(var(--border));
+  padding-top: 1rem;
+}
+
+.hdc-site-shell__command-groups section.is-first-visible {
+  border-top: 0;
+  padding-top: 0;
+}
+
 .hdc-site-shell__command-item {
   align-items: center;
   border-radius: var(--radius-control);
@@ -583,8 +591,9 @@
 
 .hdc-site-shell__command-shortcut {
   color: hsl(var(--text-meta));
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  opacity: 0.8;
 }
 
 .hdc-site-shell__command-empty {
@@ -722,18 +731,20 @@ body.hdc-mobile-menu-open {
   text-shadow: var(--text-shadow-inverse-strong);
 }
 
-@media (min-width: 768px) {
-  .hdc-site-shell__desktop-nav {
-    display: block;
-  }
-
+@media (min-width: 640px) {
   .hdc-site-shell__brand-mark {
     height: 2.75rem;
     width: 2.75rem;
   }
 
   .hdc-site-shell__title {
-    font-size: 1.1rem;
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .hdc-site-shell__desktop-nav {
+    display: block;
   }
 
   .hdc-site-shell__menu-trigger,
@@ -787,6 +798,21 @@ body.hdc-mobile-menu-open {
   }
 
   .hdc-site-shell__mobile-shell {
-    padding-top: 1rem;
+    padding: 3rem 1rem calc(1rem + var(--space-safe-area-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hdc-site-shell__nav-link,
+  .hdc-site-shell__brand-link,
+  .hdc-site-shell__theme-trigger,
+  .hdc-site-shell__theme-icon,
+  .hdc-site-shell__theme-menu,
+  .hdc-site-shell__menu-trigger,
+  .hdc-site-shell__mobile,
+  .hdc-site-shell__mobile-backdrop,
+  .hdc-site-shell__command-panel,
+  .hdc-site-shell__command-backdrop {
+    transition: none;
   }
 }

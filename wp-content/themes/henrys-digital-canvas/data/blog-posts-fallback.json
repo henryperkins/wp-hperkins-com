@@ -4,16 +4,29 @@
     "title": "Building an AI-Powered Content Pipeline from Scratch",
     "excerpt": "How I designed and built an automated content processing workflow using NLP, careful evaluation, and a lot of edge-case handling.",
     "date": "2026-01-18",
+    "modifiedDate": "2026-01-20",
     "tags": [
       "AI",
       "Python",
       "Architecture"
+    ],
+    "categories": [
+      "Engineering",
+      "AI"
     ],
     "featured": true,
     "readingTime": "8 min read",
     "content": "The system has three stages: ingestion, processing, and routing.",
     "contentHtml": "<h2>The Problem</h2><p>Every content team hits manual tagging bottlenecks at scale.</p><h2>Architecture Overview</h2><p>The pipeline automates summarization, tagging, and routing with human review for low-confidence cases.</p>",
     "url": "/blog/building-ai-powered-content-pipeline/",
+    "authorName": "Henry Perkins",
+    "authorUrl": "https://wp.hperkins.com/author/henry/",
+    "wordpressPermalink": "https://wp.hperkins.com/blog/building-ai-powered-content-pipeline/",
+    "commentsOpen": true,
+    "discussionUrl": "https://wp.hperkins.com/blog/building-ai-powered-content-pipeline/#respond",
+    "seoTitle": "Building an AI-Powered Content Pipeline from Scratch",
+    "seoDescription": "How I designed and built an automated content processing workflow using NLP, careful evaluation, and a lot of edge-case handling.",
+    "shareMessage": "A practical walkthrough of building an AI-assisted content pipeline that can survive real-world edge cases.",
     "featuredImageUrl": "/images/hero-piano-ide.png",
     "featuredImageAlt": "Hands on a piano keyboard beside an IDE dashboard",
     "featuredImageSrcSet": ""
@@ -23,16 +36,28 @@
     "title": "Design Systems That Actually Work",
     "excerpt": "Lessons from building and maintaining design systems across different teams. Spoiler: the hard part isn't components.",
     "date": "2025-11-22",
+    "modifiedDate": "2025-11-28",
     "tags": [
       "Design",
       "React",
       "CSS"
+    ],
+    "categories": [
+      "Design Systems",
+      "Frontend"
     ],
     "featured": false,
     "readingTime": "6 min read",
     "content": "Adoption is the hard part, not component APIs.",
     "contentHtml": "<h2>Why Most Design Systems Fail</h2><p>Adoption and workflow fit determine whether systems survive.</p><h2>What Actually Works</h2><p>Start with tokens, then make the right thing the easy thing.</p>",
     "url": "/blog/design-systems-that-actually-work/",
+    "authorName": "Henry Perkins",
+    "authorUrl": "https://wp.hperkins.com/author/henry/",
+    "wordpressPermalink": "https://wp.hperkins.com/blog/design-systems-that-actually-work/",
+    "commentsOpen": false,
+    "seoTitle": "Design Systems That Actually Work",
+    "seoDescription": "Lessons from building and maintaining design systems across different teams. Spoiler: the hard part isn't components.",
+    "shareMessage": "Good design systems succeed when tokens, workflow fit, and decision clarity all line up.",
     "featuredImageUrl": "/images/amber-pattern.png",
     "featuredImageAlt": "Abstract amber geometric pattern",
     "featuredImageSrcSet": ""
@@ -42,16 +67,28 @@
     "title": "What Playing Guitar Taught Me About Writing Code",
     "excerpt": "The surprising parallels between learning an instrument and becoming a better programmer.",
     "date": "2025-09-10",
+    "modifiedDate": "2025-09-10",
     "tags": [
       "Personal",
       "Music",
       "Career"
+    ],
+    "categories": [
+      "Personal",
+      "Writing"
     ],
     "featured": false,
     "readingTime": "5 min read",
     "content": "Practice means isolating hard parts and improving deliberately.",
     "contentHtml": "<h2>Practice vs. Performance</h2><p>Skill growth comes from focused repetition, not passive repetition.</p><h2>The Ensemble Effect</h2><p>Great software teams, like bands, require listening and timing.</p>",
     "url": "/blog/music-and-code/",
+    "authorName": "Henry Perkins",
+    "authorUrl": "https://wp.hperkins.com/author/henry/",
+    "wordpressPermalink": "https://wp.hperkins.com/blog/music-and-code/",
+    "commentsOpen": false,
+    "seoTitle": "What Playing Guitar Taught Me About Writing Code",
+    "seoDescription": "The surprising parallels between learning an instrument and becoming a better programmer.",
+    "shareMessage": "Practice, listening, and timing matter in software teams as much as they do in music.",
     "featuredImageUrl": "",
     "featuredImageAlt": "",
     "featuredImageSrcSet": ""

@@ -36,7 +36,13 @@ echo "==> Parity check: ${1}"
 echo "==> Agent: $AGENT"
 echo ""
 
-exec codex \
-  --instructions "$AGENT" \
-  --approval-mode suggest \
-  "$PROMPT"
+CODEX_ARGS=(exec -C "$PROJECT_ROOT" --skip-git-repo-check --color never)
+
+if [[ -n "${CODEX_OUTPUT_FILE:-}" ]]; then
+  CODEX_ARGS+=( -o "$CODEX_OUTPUT_FILE" )
+fi
+
+exec codex "${CODEX_ARGS[@]}" - < <(
+  cat "$AGENT"
+  printf '\n\n%s\n' "$PROMPT"
+)

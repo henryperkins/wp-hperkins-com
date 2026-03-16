@@ -9,7 +9,6 @@
 	const useBlockProps = blockEditor.useBlockProps;
 	const InspectorControls = blockEditor.InspectorControls;
 	const PanelBody = components.PanelBody;
-	const TextControl = components.TextControl;
 	const ToggleControl = components.ToggleControl;
 	const Notice = components.Notice;
 
@@ -33,13 +32,6 @@
 							title: __( 'About Timeline Settings', 'henrys-digital-canvas' ),
 							initialOpen: true,
 						},
-						el( TextControl, {
-							label: __( 'Heading', 'henrys-digital-canvas' ),
-							value: attrs.heading,
-							onChange: function ( heading ) {
-								setAttributes( { heading: heading } );
-							},
-						} ),
 						el( ToggleControl, {
 							label: __( 'Show values cards', 'henrys-digital-canvas' ),
 							checked: !! attrs.showValues,
@@ -65,9 +57,9 @@
 							status: 'info',
 							isDismissible: false,
 						},
-						__( 'Frontend renders the About profile narrative, values cards, and timeline milestones.', 'henrys-digital-canvas' )
+						__( 'Frontend renders the About hero, profile narrative, capabilities, values cards, and timeline milestones.', 'henrys-digital-canvas' )
 					),
-					el( 'h3', { className: 'hdc-about-timeline-editor__title' }, attrs.heading || __( 'About Henry Perkins', 'henrys-digital-canvas' ) )
+					el( 'h3', { className: 'hdc-about-timeline-editor__title' }, __( 'About Henry Perkins', 'henrys-digital-canvas' ) )
 				)
 			);
 		},

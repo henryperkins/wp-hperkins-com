@@ -23,19 +23,16 @@
 	const PENDING_DESCRIPTION_PREVIEW_COUNT = 8;
 	const FEATURED_CASE_STUDY_LIMIT = 3;
 	const SIGNAL_ACTIVITY_WINDOW_DAYS = 30;
-	const SIGNAL_LANGUAGE_WINDOW_DAYS = 90;
 	var COMMIT_SPARKLINE_WINDOW_WEEKS = 12;
 	var COMMIT_TOTAL_WINDOW_WEEKS = 52;
 	var LANGUAGE_FALLBACK_MIN_REPO_SIZE_KB = 50;
 	const DEFAULT_FILTER = 'All';
 	const DEFAULT_SORT = 'stars';
 	const DEFAULT_VIEW = 'grid';
-	const DEFAULT_SPARKLINE_WEEKS = 8;
-	const MIN_SPARKLINE_WEEKS = 4;
-	const MAX_SPARKLINE_WEEKS = 16;
 	const GITHUB_REPO_LIST_LIMIT = 100;
 	const GITHUB_REPO_MAX_PAGES = 20;
 	const RATE_LIMIT_COOLDOWN_FALLBACK_MS = 60000;
+	const WHOLE_NUMBER_FORMATTER = new Intl.NumberFormat( 'en-US' );
 	const ROLE_ORDER = [ 'Systems', 'Product', 'Craft', 'Performance' ];
 	const ROLE_DESCRIPTION_MAP = {
 		Systems: 'Architecture, integrations, data movement, and operational foundations.',
@@ -223,6 +220,28 @@
 		}
 
 		return weeksAgo + ' weeks ago';
+	}
+
+	function getEmptyActivityBuckets() {
+		return Array.from( { length: COMMIT_SPARKLINE_WINDOW_WEEKS }, function ( _, index ) {
+			return {
+				count: 0,
+				height: 4,
+				label: getActivityBucketLabel( index, COMMIT_SPARKLINE_WINDOW_WEEKS ),
+			};
+		} );
+	}
+
+	function getRepoRecord( recordsByRepoName, repoName ) {
+		return recordsByRepoName[ repoName ] || recordsByRepoName[ String( repoName ).toLowerCase() ] || null;
+	}
+
+	function formatWholeNumber( value ) {
+		return WHOLE_NUMBER_FORMATTER.format( Math.abs( Math.round( value ) ) );
+	}
+
+	function formatSignedCount( value, sign ) {
+		return sign + formatWholeNumber( value );
 	}
 
 	function readInitialWorkState() {
@@ -522,17 +541,6 @@
 				'Selected repositories and client case studies focused on problem framing, implementation decisions, and shipped outcomes.'
 			),
 			githubUsername: sanitizeString( parsed.githubUsername, 'henryperkins' ),
-			repoCount: clamp( Number.parseInt( parsed.repoCount, 10 ) || 100, 1, 100 ),
-			includeForks: !! parsed.includeForks,
-			includeArchived: !! parsed.includeArchived,
-			openInNewTab: !! parsed.openInNewTab,
-			showSignalsPanel: parsed.showSignalsPanel !== false,
-			showActivitySparkline: parsed.showActivitySparkline !== false,
-			sparklineWeeks: clamp(
-				Number.parseInt( parsed.sparklineWeeks, 10 ) || DEFAULT_SPARKLINE_WEEKS,
-				MIN_SPARKLINE_WEEKS,
-				MAX_SPARKLINE_WEEKS
-			),
 			githubProxyUrl: sanitizeString( parsed.githubProxyUrl, '/api/github/repos' ),
 			githubRepoProofsProxyUrl: sanitizeString(
 				parsed.githubRepoProofsProxyUrl,
@@ -753,22 +761,14 @@
 		return normalizeRepo( Object.assign( {}, repo, details ) );
 	}
 
-	function mapGitHubRepos( apiRepos, localRepos, config ) {
+	function mapGitHubRepos( apiRepos, localRepos ) {
 		const localRepoMap = new Map();
 		localRepos.forEach( function ( repo ) {
 			localRepoMap.set( repo.name, repo );
 		} );
 
 		const sourceRepos = apiRepos.filter( function ( repo ) {
-			if ( ! config.includeForks && repo.fork ) {
-				return false;
-			}
-			if ( ! config.includeArchived && repo.archived ) {
-				return false;
-			}
-
-			const localRepo = localRepoMap.get( repo.name );
-			return Boolean( repo.language || ( localRepo && localRepo.language ) );
+			return ! repo.fork && ! repo.archived;
 		} );
 
 		const mergedRepos = sourceRepos.map( function ( repo ) {
@@ -828,7 +828,7 @@
 		} );
 
 		if ( mergedRepos.length === 0 ) {
-			return localRepos.slice().sort( compareReposByUpdatedAtDesc ).slice( 0, config.repoCount );
+			return localRepos.slice().sort( compareReposByUpdatedAtDesc );
 		}
 
 		const mergedNames = new Set(
@@ -843,8 +843,7 @@
 
 		return mergedRepos
 			.concat( missingLocalRepos )
-			.sort( compareReposByUpdatedAtDesc )
-			.slice( 0, config.repoCount );
+			.sort( compareReposByUpdatedAtDesc );
 	}
 
 	function resolveRequestUrl( value ) {
@@ -921,7 +920,7 @@
 			}
 		}
 
-		return mapGitHubRepos( allRepos, localRepos, config );
+		return mapGitHubRepos( allRepos, localRepos );
 	}
 
 	function getRepoProofRateLimitCooldownQueryKey( owner, repoNames ) {
@@ -1395,6 +1394,70 @@
 		);
 	}
 
+	function InlineSeparatedList( props ) {
+		var items = ensureArray( props.items ).filter( function ( item ) {
+			if ( typeof item === 'string' ) {
+				return sanitizeString( item, '' ).length > 0;
+			}
+
+			return item !== null && item !== undefined;
+		} );
+
+		if ( items.length === 0 ) {
+			return null;
+		}
+
+		return h(
+			'span',
+			{ className: classNames( 'hdc-work-inline-separated', props.className ) },
+			items.map( function ( item, index ) {
+				return h(
+					Fragment,
+					{ key: 'inline-separated-item-' + index },
+					h( 'span', { className: 'hdc-work-inline-separated-item' }, item ),
+					index < items.length - 1
+						? h( 'span', {
+							className: 'hdc-work-inline-separated-separator',
+							'aria-hidden': 'true',
+						} )
+						: null
+				);
+			} )
+		);
+	}
+
+	function Sparkline( props ) {
+		var items = ensureArray( props.items );
+		if ( items.length === 0 ) {
+			return null;
+		}
+
+		var getItemDescription =
+			typeof props.getItemDescription === 'function'
+				? props.getItemDescription
+				: function ( item ) {
+					return item.label + ': ' + item.count;
+				};
+
+		return h(
+			'div',
+			{
+				className: classNames( 'hdc-work-sparkline', props.className ),
+				role: 'img',
+				'aria-label': props.ariaLabel,
+			},
+			items.map( function ( item ) {
+				return h( 'span', {
+					key: item.label,
+					className: 'hdc-work-sparkline-bar',
+					title: getItemDescription( item ),
+					style: { height: item.height + 'px', opacity: item.count === 0 ? 0.2 : 1 },
+					'aria-hidden': 'true',
+				} );
+			} )
+		);
+	}
+
 	function EmptyState( props ) {
 		return h(
 			'section',
@@ -1553,17 +1616,266 @@
 	}
 
 	function SignalsPanel( props ) {
-		var hasData = props.recentlyUpdatedCount > 0 || props.signalRepoCount > 0 || props.analyzedRepoCount > 0;
+		var hasData = props.recentlyUpdatedCount > 0 || props.signalRepos.length > 0 || props.analyzedRepoCount > 0;
 		if ( ! hasData ) {
 			return null;
 		}
 
-		var recentRepoPreviewLabel = concatTextParts(
-			props.recentRepoPreview.map( function ( repo ) {
-				return getRepoDisplayName( repo );
-			} ),
-			' \u2022 '
+		var hasTrackedPublicGitHubRepos = props.signalRepos.length > 0;
+		var signalRepoNames = props.signalRepos.map( function ( repo ) {
+			return repo.name;
+		} );
+		var contributorEntries = signalRepoNames.map( function ( repoName ) {
+			return getRepoRecord( props.contributorStatsByRepo, repoName );
+		} );
+		var computingRepoCount = contributorEntries.filter( function ( entry ) {
+			return entry && entry.status === 'computing';
+		} ).length;
+		var missingRepoCount = contributorEntries.filter( function ( entry ) {
+			return entry && entry.status === 'missing';
+		} ).length;
+		var readyEntries = contributorEntries.filter( function ( entry ) {
+			return entry && entry.status === 'ready' && entry.contributorStats;
+		} );
+		var unavailableRepoCount = Math.max( 0, signalRepoNames.length - readyEntries.length - computingRepoCount - missingRepoCount );
+		var commitBuckets = readyEntries.length === 0
+			? getEmptyActivityBuckets()
+			: ( function () {
+				var weeklyCounts = Array.from( { length: COMMIT_TOTAL_WINDOW_WEEKS }, function ( _, weekIndex ) {
+					return readyEntries.reduce( function ( sum, entry ) {
+						var week = entry.contributorStats.weeks[ weekIndex ];
+						return sum + ( week && week.commits ? week.commits : 0 );
+					}, 0 );
+				} );
+				var recentWeeklyCounts = weeklyCounts.slice( -COMMIT_SPARKLINE_WINDOW_WEEKS );
+				var peak = Math.max.apply( null, [ 1 ].concat( recentWeeklyCounts ) );
+				return recentWeeklyCounts.map( function ( count, index ) {
+					return {
+						count: count,
+						height: count === 0 ? 4 : Math.max( 14, Math.round( ( count / peak ) * 56 ) ),
+						label: getActivityBucketLabel( index, COMMIT_SPARKLINE_WINDOW_WEEKS ),
+					};
+				} );
+			} )();
+		var lastYearCommits = readyEntries.length > 0
+			? readyEntries.reduce( function ( sum, entry ) {
+				return sum + entry.contributorStats.lastYearCommits;
+			}, 0 )
+			: null;
+		var lastYearAdditions = readyEntries.length > 0
+			? readyEntries.reduce( function ( sum, entry ) {
+				return sum + entry.contributorStats.lastYearAdditions;
+			}, 0 )
+			: null;
+		var lastYearDeletions = readyEntries.length > 0
+			? readyEntries.reduce( function ( sum, entry ) {
+				return sum + entry.contributorStats.lastYearDeletions;
+			}, 0 )
+			: null;
+		var lifetimeCommits = readyEntries.length > 0
+			? readyEntries.reduce( function ( sum, entry ) {
+				return sum + entry.contributorStats.totalCommits;
+			}, 0 )
+			: null;
+		var activeWeeks = readyEntries.length > 0
+			? Array.from( { length: COMMIT_TOTAL_WINDOW_WEEKS }, function ( _, weekIndex ) {
+				return readyEntries.reduce( function ( sum, entry ) {
+					var week = entry.contributorStats.weeks[ weekIndex ];
+					return sum + ( week && week.commits ? week.commits : 0 );
+				}, 0 );
+			} ).filter( function ( count ) {
+				return count > 0;
+			} ).length
+			: 0;
+		var commitPeakBucket = commitBuckets.reduce( function ( currentPeak, bucket ) {
+			if ( ! currentPeak || bucket.count > currentPeak.count ) {
+				return bucket;
+			}
+
+			return currentPeak;
+		}, null );
+		var hasOnlyMissingContributorStats = lastYearCommits === null && missingRepoCount > 0 && computingRepoCount === 0 && unavailableRepoCount === 0;
+
+		var ciSummary = signalRepoNames.reduce(
+			function ( counts, repoName ) {
+				var entry = getRepoRecord( props.ciStatusByRepo, repoName );
+				var status = typeof entry === 'string' ? entry : entry && entry.ciStatus ? entry.ciStatus : 'unavailable';
+
+				if ( status === 'unavailable' ) {
+					counts.unavailable += 1;
+					return counts;
+				}
+
+				counts.availableRepoCount += 1;
+				if ( status === 'passing' ) {
+					counts.passing += 1;
+				} else if ( status === 'failing' ) {
+					counts.failing += 1;
+				} else if ( status === 'running' ) {
+					counts.running += 1;
+				} else if ( status === 'none' ) {
+					counts.none += 1;
+				} else if ( status === 'neutral' ) {
+					counts.neutral += 1;
+				}
+
+				return counts;
+			},
+			{
+				availableRepoCount: 0,
+				failing: 0,
+				neutral: 0,
+				none: 0,
+				passing: 0,
+				running: 0,
+				totalRepoCount: signalRepoNames.length,
+				unavailable: 0,
+			}
 		);
+
+		var reposWithPositiveSize = props.activeLanguageRepos.filter( function ( repo ) {
+			return typeof repo.sizeKb === 'number' && Number.isFinite( repo.sizeKb ) && repo.sizeKb > 0;
+		} );
+		var substantialRepos = reposWithPositiveSize.filter( function ( repo ) {
+			return repo.sizeKb >= LANGUAGE_FALLBACK_MIN_REPO_SIZE_KB;
+		} );
+		var fallbackLanguageRepos = substantialRepos.length > 0 ? substantialRepos : reposWithPositiveSize;
+		var languageTotals = new Map();
+		fallbackLanguageRepos.forEach( function ( repo ) {
+			var language = normalizeLanguage( repo.language );
+			languageTotals.set( language, ( languageTotals.get( language ) || 0 ) + repo.sizeKb );
+		} );
+		var weightedEntries = Array.from( languageTotals.entries() ).map( function ( entry ) {
+			return { language: entry[ 0 ], value: entry[ 1 ] };
+		} );
+		if ( weightedEntries.some( function ( entry ) { return entry.language !== 'Unknown'; } ) ) {
+			weightedEntries = weightedEntries.filter( function ( entry ) { return entry.language !== 'Unknown'; } );
+		}
+		weightedEntries.sort( function ( a, b ) {
+			return b.value - a.value || a.language.localeCompare( b.language );
+		} );
+		var weightedTotal = weightedEntries.reduce( function ( sum, entry ) {
+			return sum + entry.value;
+		}, 0 );
+		var byteEntries = props.languageByteTotals
+			.filter( function ( entry ) {
+				return entry.bytes > 0;
+			} )
+			.sort( function ( a, b ) {
+				return b.bytes - a.bytes || a.language.localeCompare( b.language );
+			} );
+		var byteTotal = byteEntries.reduce( function ( sum, entry ) {
+			return sum + entry.bytes;
+		}, 0 );
+		var languageBreakdown = byteTotal > 0
+			? byteEntries.slice( 0, 3 ).map( function ( entry ) {
+				return { language: entry.language, percentage: ( entry.bytes / byteTotal ) * 100 };
+			} )
+			: weightedTotal > 0
+				? weightedEntries.slice( 0, 3 ).map( function ( entry ) {
+					return { language: entry.language, percentage: ( entry.value / weightedTotal ) * 100 };
+				} )
+				: [];
+		var primaryLanguage = languageBreakdown[ 0 ] || null;
+		var isUsingSizeWeightedLanguageFallback = byteEntries.length === 0 && languageBreakdown.length > 0;
+
+		var repoProofs = signalRepoNames.map( function ( repoName ) {
+			return getRepoRecord( props.proofsByRepoName, repoName );
+		} );
+		var availableProofCount = repoProofs.filter( Boolean ).length;
+		var healthScores = repoProofs.reduce( function ( items, proof ) {
+			if ( proof && proof.communityHealth && typeof proof.communityHealth.healthPercentage === 'number' ) {
+				items.push( proof.communityHealth.healthPercentage );
+			}
+			return items;
+		}, [] );
+		var averageHealth = healthScores.length > 0
+			? Math.round( healthScores.reduce( function ( sum, score ) {
+				return sum + score;
+			}, 0 ) / healthScores.length )
+			: null;
+		var coreArtifactsCount = repoProofs.filter( function ( proof ) {
+			return Boolean(
+				proof && proof.communityHealth && proof.communityHealth.files && proof.communityHealth.files.hasReadme && proof.communityHealth.files.hasLicense && proof.communityHealth.files.hasContributing
+			);
+		} ).length;
+		var releaseRepoCount = repoProofs.filter( function ( proof ) {
+			return proof && proof.releaseStatus === 'published' && proof.latestRelease;
+		} ).length;
+		var latestRelease = repoProofs.reduce( function ( latest, proof ) {
+			if ( ! proof || ! proof.latestRelease || proof.releaseStatus !== 'published' ) {
+				return latest;
+			}
+			if ( ! latest || new Date( proof.latestRelease.publishedAt ).getTime() > new Date( latest.publishedAt ).getTime() ) {
+				return {
+					publishedAt: proof.latestRelease.publishedAt,
+					repo: proof.repo,
+					tagName: proof.latestRelease.tagName,
+				};
+			}
+			return latest;
+		}, null );
+
+		var languageSummaryItems = isUsingSizeWeightedLanguageFallback
+			? [
+				'Fallback weighted by repo size across ' + fallbackLanguageRepos.length + ' active repos',
+				substantialRepos.length > 0 ? 'Excludes repos under ' + LANGUAGE_FALLBACK_MIN_REPO_SIZE_KB + ' KB' : null,
+			].filter( Boolean )
+			: [
+				props.analyzedRepoCount > 0 ? 'Across ' + formatWholeNumber( props.analyzedRepoCount ) + ' active repos' : null,
+				props.byteDataIncomplete ? 'Some byte totals are still incomplete' : null,
+				props.failedLanguageRequestCount > 0 ? props.failedLanguageRequestCount + ' language requests failed' : null,
+			].filter( Boolean );
+		var ciStatusItems = [
+			ciSummary.failing > 0 ? ciSummary.failing + ' failing' : null,
+			ciSummary.running > 0 ? ciSummary.running + ' running' : null,
+			ciSummary.none > 0 ? ciSummary.none + ' without workflows' : null,
+			ciSummary.neutral > 0 ? ciSummary.neutral + ' neutral' : null,
+		].filter( Boolean );
+		var deliveryItems = []
+			.concat( ciSummary.availableRepoCount > 0 ? ( ciStatusItems.length > 0 ? ciStatusItems : [ 'All tracked workflows passing' ] ) : [] )
+			.concat( averageHealth !== null && ciSummary.availableRepoCount > 0 ? [ formatWholeNumber( averageHealth ) + '% avg repo health' ] : [] )
+			.concat( coreArtifactsCount > 0 ? [ coreArtifactsCount + '/' + signalRepoNames.length + ' core docs' ] : [] )
+			.concat( releaseRepoCount > 0 ? [ releaseRepoCount + '/' + signalRepoNames.length + ' publish releases' ] : [] );
+		var deliveryCoverageItems = [
+			ciSummary.availableRepoCount > 0 && ciSummary.availableRepoCount < ciSummary.totalRepoCount ? 'CI ' + ciSummary.availableRepoCount + '/' + ciSummary.totalRepoCount + ' covered' : null,
+			availableProofCount > 0 && availableProofCount < signalRepoNames.length ? 'Proofs ' + availableProofCount + '/' + signalRepoNames.length + ' covered' : null,
+		].filter( Boolean );
+
+		var commitValue = ! hasTrackedPublicGitHubRepos
+			? 'N/A'
+			: lastYearCommits === null
+				? props.contributorStatsIsLoading
+					? 'Loading...'
+					: props.contributorStatsSource === 'live'
+						? computingRepoCount > 0
+							? 'Pending'
+							: hasOnlyMissingContributorStats
+								? 'No match'
+								: 'Unavailable'
+						: 'Unavailable'
+				: formatWholeNumber( lastYearCommits ) + ' commits';
+		var hasActiveLanguageRepos = props.activeLanguageRepos.length > 0 || props.analyzedRepoCount > 0 || languageBreakdown.length > 0;
+		var primaryLanguageLabel = ! hasTrackedPublicGitHubRepos || ! hasActiveLanguageRepos
+			? 'N/A'
+			: primaryLanguage
+				? primaryLanguage.language + ' ' + Math.max( 1, Math.round( primaryLanguage.percentage ) ) + '%'
+				: props.languageSummaryIsLoading
+					? 'Loading...'
+					: props.languageSummarySource === 'live'
+						? 'Pending'
+						: 'Unavailable';
+		var deliveryValue = ! hasTrackedPublicGitHubRepos
+			? 'N/A'
+			: ciSummary.availableRepoCount > 0
+				? formatWholeNumber( ciSummary.passing ) + '/' + formatWholeNumber( ciSummary.totalRepoCount ) + ' passing'
+				: averageHealth !== null
+					? formatWholeNumber( averageHealth ) + '% health'
+					: props.ciStatusIsLoading || props.repoProofIsLoading
+						? 'Loading...'
+						: props.ciStatusSource === 'live' || props.repoProofSource === 'live'
+							? 'Pending'
+							: 'Unavailable';
 
 		return h(
 			'section',
@@ -1573,170 +1885,74 @@
 			},
 			h( SectionIntro, {
 				title: 'Engineering Signals',
-				description:
-					'Snapshot of recent shipping activity, current language focus, and delivery cadence.',
+				description: 'Commit, code, delivery, and governance evidence across public GitHub work.',
 			} ),
 			h(
 				'div',
 				{ className: 'hdc-work-stats-grid' },
-
-				// Card 1: Recently updated
 				h(
 					StatCard,
 					{ label: 'Recently updated (30 days)', value: String( props.recentlyUpdatedCount ) },
 					props.recentRepoPreview.length > 0
-						? h( 'p', { className: 'hdc-work-stat-meta' }, recentRepoPreviewLabel )
+						? h( 'p', { className: 'hdc-work-stat-meta' }, h( InlineSeparatedList, { items: props.recentRepoPreview.map( function ( repo ) { return repo.name; } ) } ) )
 						: h( 'p', { className: 'hdc-work-stat-meta' }, 'No repositories updated in this window.' )
 				),
-
-				// Card 2: Top language by code volume
 				h(
 					StatCard,
-					{
-						label: 'Top language by code volume',
-						value: props.languageSummary.top3.length > 0
-							? props.languageSummary.top3[ 0 ].language + ' ' + props.languageSummary.top3[ 0 ].percentage + '%'
-							: props.languageSummarySource === 'loading' ? 'Loading\u2026' : 'N/A',
-					},
-					props.languageSummary.top3.length > 0
-						? h(
-							Fragment,
-							null,
-							h(
-								'div',
-								{ className: 'hdc-work-lang-bar' },
-								props.languageSummary.top3.map( function ( item ) {
-									return h( 'div', {
-										key: 'lang-seg-' + item.language,
-										className: classNames( 'hdc-work-lang-segment', 'is-' + item.language.toLowerCase() ),
-										style: { width: item.percentage + '%' },
-									} );
-								} ),
-								props.languageSummary.otherPercentage > 0
-									? h( 'div', {
-										className: 'hdc-work-lang-segment is-other',
-										style: { width: props.languageSummary.otherPercentage + '%' },
-									} )
-									: null
-							),
-							h(
-								'div',
-								{ className: 'hdc-work-lang-legend' },
-								props.languageSummary.top3.map( function ( item ) {
-									return h(
-										'span',
-										{ key: 'lang-legend-' + item.language, className: 'hdc-work-lang-legend-item' },
-										h( LanguageBadge, { language: item.language } ),
-										' ' + item.percentage + '%'
-									);
-								} )
-							),
-							h(
-								'p',
-								{ className: 'hdc-work-stat-meta' },
-								props.analyzedRepoCount + ' repos analyzed',
-								props.languageSummary.source === 'metadata' ? ' (metadata fallback)' : ''
-							)
-						)
-						: h( 'p', { className: 'hdc-work-stat-meta' }, 'No language data available.' )
+					{ label: 'Top language by code volume', value: primaryLanguageLabel },
+					! hasTrackedPublicGitHubRepos
+						? h( 'span', { className: 'hdc-work-stat-meta' }, 'No public GitHub language totals are currently tracked.' )
+						: ! hasActiveLanguageRepos
+							? h( 'span', { className: 'hdc-work-stat-meta' }, 'No active public GitHub repos were updated in the last 30 days.' )
+							: languageBreakdown.length > 0
+								? h(
+									Fragment,
+									null,
+									h( 'div', { className: 'hdc-work-lang-bar' }, h( 'div', { className: 'hdc-work-lang-bar-inner' }, languageBreakdown.map( function ( entry ) {
+										return h( 'div', {
+											key: 'lang-seg-' + entry.language,
+											className: classNames( 'hdc-work-lang-segment', 'is-' + entry.language.toLowerCase() ),
+											style: { width: entry.percentage + '%' },
+											'aria-hidden': 'true',
+										} );
+									} ) ) ),
+									h( 'div', { className: 'hdc-work-lang-legend' }, languageBreakdown.map( function ( entry ) {
+										return h( 'div', { key: 'lang-legend-' + entry.language, className: 'hdc-work-lang-legend-item' }, h( LanguageBadge, { language: entry.language } ), h( 'span', null, Math.max( 1, Math.round( entry.percentage ) ) + '%' ) );
+									} ) ),
+									languageSummaryItems.length > 0 ? h( 'p', { className: 'hdc-work-stat-meta' }, h( InlineSeparatedList, { items: languageSummaryItems } ) ) : null
+								)
+								: h( 'span', { className: 'hdc-work-stat-meta' }, props.languageSummaryIsLoading ? 'Loading byte-weighted language totals from GitHub.' : 'Byte-weighted language totals are unavailable right now.' )
 				),
-
-				// Card 3: Commit activity
 				h(
 					StatCard,
-					{
-						label: 'Commit activity (52 weeks)',
-						value: props.commitSummary.yearlyCommits > 0
-							? formatNumber( props.commitSummary.yearlyCommits ) + ' commits'
-							: props.contributorStatsSource === 'loading' ? 'Loading\u2026' : 'N/A',
-					},
-					props.showActivitySparkline && props.commitSummary.sparklineData.length > 0
-						? h(
-							Fragment,
-							null,
-							h(
-								'div',
-								{
-									className: 'hdc-work-sparkline',
-									role: 'img',
-									'aria-label': 'Commit activity sparkline over ' + COMMIT_SPARKLINE_WINDOW_WEEKS + ' weeks',
-								},
-								props.commitSummary.sparklineData.map( function ( value, index ) {
-									var peak = Math.max.apply( null, [ 1 ].concat( props.commitSummary.sparklineData ) );
-									return h( 'span', {
-										key: 'spark-' + index,
-										className: 'hdc-work-sparkline-bar',
-										title: 'Week ' + ( index + 1 ) + ': ' + value + ' commits',
-										style: { height: Math.max( 4, Math.round( ( value / peak ) * 56 ) ) + 'px' },
-									} );
-								} )
-							),
-							h(
-								'div',
-								{ className: 'hdc-work-stat-line' },
-								h( 'span', { className: 'hdc-work-stat-additions' }, '+' + formatNumber( props.commitSummary.yearlyAdditions ) ),
-								' ',
-								h( 'span', { className: 'hdc-work-stat-deletions' }, '-' + formatNumber( props.commitSummary.yearlyDeletions ) ),
-								' \u00B7 ',
-								formatNumber( props.commitSummary.lifetimeCommits ) + ' lifetime'
-							),
-							h(
-								'p',
-								{ className: 'hdc-work-stat-meta' },
-								props.commitSummary.readyCount + '/' + props.signalRepoCount + ' repos',
-								props.commitSummary.computingCount > 0 ? ', ' + props.commitSummary.computingCount + ' computing' : ''
+					{ label: 'Commit activity (52 weeks)', value: commitValue },
+					! hasTrackedPublicGitHubRepos
+						? h( 'span', { className: 'hdc-work-stat-meta' }, 'No public GitHub repositories are currently tracked for this panel.' )
+						: lastYearCommits !== null
+							? h(
+								Fragment,
+								null,
+								h( Sparkline, { ariaLabel: 'Recent portfolio commit activity trend', items: commitBuckets, getItemDescription: function ( bucket ) { return bucket.label + ': ' + formatWholeNumber( bucket.count ) + ' ' + ( bucket.count === 1 ? 'commit' : 'commits' ); } } ),
+								h( 'p', { className: 'hdc-work-stat-meta' }, h( InlineSeparatedList, { items: [ h( 'span', { key: 'plus', className: 'hdc-work-stat-additions' }, formatSignedCount( lastYearAdditions || 0, '+' ) ), h( 'span', { key: 'minus', className: 'hdc-work-stat-deletions' }, formatSignedCount( lastYearDeletions || 0, '-' ) ), lifetimeCommits !== null ? 'Lifetime total ' + formatWholeNumber( lifetimeCommits ) + ' commits' : null ].filter( Boolean ) } ) ),
+								h( 'p', { className: 'hdc-work-stat-meta' }, h( InlineSeparatedList, { items: [ COMMIT_SPARKLINE_WINDOW_WEEKS + '-week sparkline', 'Active ' + activeWeeks + '/' + COMMIT_TOTAL_WINDOW_WEEKS + ' weeks', readyEntries.length + '/' + signalRepoNames.length + ' repos', computingRepoCount > 0 ? computingRepoCount + ' computing' : null, missingRepoCount > 0 ? missingRepoCount + ' without author match' : null, unavailableRepoCount > 0 ? unavailableRepoCount + ' unavailable' : null ].filter( Boolean ) } ) ),
+								commitPeakBucket && lastYearCommits > 0 ? h( 'p', { className: 'hdc-work-stat-meta' }, 'Peak recent volume was ', formatWholeNumber( commitPeakBucket.count ), ' ', commitPeakBucket.count === 1 ? 'commit' : 'commits', ' in ', commitPeakBucket.label.toLowerCase(), '.' ) : null
 							)
-						)
-						: h( 'p', { className: 'hdc-work-stat-meta' }, 'No commit data available.' )
+							: h( 'span', { className: 'hdc-work-stat-meta' }, props.contributorStatsIsLoading ? 'Loading contributor commit and code-volume stats from GitHub.' : props.contributorStatsSource === 'live' ? computingRepoCount > 0 ? 'GitHub is still computing contributor stats for this portfolio.' : hasOnlyMissingContributorStats ? 'GitHub returned repository stats, but no matching author commit history was found for the tracked portfolio.' : 'Live contributor commit stats are unavailable right now.' : 'Live contributor commit stats are unavailable right now.' )
 				),
-
-				// Card 4: Delivery health
 				h(
 					StatCard,
-					{
-						label: 'Delivery health',
-						value: props.ciSummary.tracked > 0
-							? props.ciSummary.passing + '/' + props.ciSummary.tracked + ' passing'
-							: props.communitySummary.avgHealth !== null
-								? props.communitySummary.avgHealth + '% avg health'
-								: props.ciStatusSource === 'loading' ? 'Loading\u2026' : 'N/A',
-					},
-					h(
-						Fragment,
-						null,
-						props.ciSummary.tracked > 0
+					{ label: 'Delivery health', value: deliveryValue },
+					! hasTrackedPublicGitHubRepos
+						? h( 'span', { className: 'hdc-work-stat-meta' }, 'No public GitHub repositories are currently tracked for this panel.' )
+						: ciSummary.availableRepoCount > 0 || availableProofCount > 0
 							? h(
 								'div',
-								{ className: 'hdc-work-stat-line' },
-								props.ciSummary.failing > 0 ? h( 'span', { className: 'hdc-work-stat-failing' }, props.ciSummary.failing + ' failing' ) : null,
-								props.ciSummary.running > 0 ? h( 'span', { className: 'hdc-work-stat-running' }, props.ciSummary.running + ' running' ) : null,
-								props.ciSummary.failing === 0 && props.ciSummary.running === 0
-									? h( 'span', { className: 'hdc-work-stat-passing' }, 'All tracked workflows passing' )
-									: null
+								null,
+								deliveryItems.length > 0 ? h( 'p', { className: 'hdc-work-stat-meta' }, h( InlineSeparatedList, { items: deliveryItems } ) ) : null,
+								latestRelease ? h( 'p', { className: 'hdc-work-stat-meta' }, 'Latest release: ', latestRelease.repo, ' ', latestRelease.tagName, ' on ', formatDateLabel( latestRelease.publishedAt ), '.' ) : null,
+								deliveryCoverageItems.length > 0 ? h( 'p', { className: 'hdc-work-stat-meta' }, h( InlineSeparatedList, { items: deliveryCoverageItems } ) ) : null
 							)
-							: null,
-						props.communitySummary.avgHealth !== null
-							? h(
-								'p',
-								{ className: 'hdc-work-stat-meta' },
-								props.communitySummary.avgHealth + '% avg health',
-								props.communitySummary.coreDocsCount > 0 ? ' \u00B7 ' + props.communitySummary.coreDocsCount + ' with core docs' : '',
-								props.communitySummary.releaseCount > 0 ? ' \u00B7 ' + props.communitySummary.releaseCount + ' released' : ''
-							)
-							: null,
-						props.communitySummary.latestRelease
-							? h(
-								'p',
-								{ className: 'hdc-work-stat-meta' },
-								'Latest: ',
-								h( 'strong', null, getRepoDisplayName( { name: props.communitySummary.latestRelease.repo } ) ),
-								' ',
-								props.communitySummary.latestRelease.tagName,
-								' \u00B7 ',
-								formatDateLabel( props.communitySummary.latestRelease.publishedAt )
-							)
-							: null
-					)
+							: h( 'span', { className: 'hdc-work-stat-meta' }, props.ciStatusIsLoading || props.repoProofIsLoading ? 'Loading CI, release, and community-health signals from GitHub.' : 'Live delivery signals are unavailable right now.' )
 				)
 			)
 		);
@@ -1746,6 +1962,8 @@
 		if ( props.repos.length === 0 ) {
 			return null;
 		}
+
+		var sortedRepos = props.repos.slice().sort( compareReposByUpdatedAtDesc );
 
 		return h(
 			'section',
@@ -1758,7 +1976,11 @@
 			h(
 				'div',
 				{ className: 'hdc-work-featured-grid' },
-				props.repos.map( function ( repo, index ) {
+				sortedRepos.map( function ( repo, index ) {
+					var visuals = getRepoVisualSet( repo.name );
+					var architecturePreview = repo.architecture && ( repo.architecture.summary || repo.architecture.bullets.length )
+						? repo.architecture.summary || repo.architecture.bullets[ 0 ]
+						: null;
 					return h(
 						'article',
 						{
@@ -1767,115 +1989,44 @@
 							style: { '--reveal-index': index },
 						},
 						h(
-							'div',
-							{ className: 'hdc-work-featured-top' },
-							h(
-								'div',
-								{ className: 'hdc-work-badge-row' },
-								repo.role ? h( Badge, { variant: 'default' }, repo.role ) : null,
-								repo.access === 'private' ? h( Badge, { variant: 'secondary' }, 'Private' ) : null
-							),
-							h(
-								'time',
-								{ className: 'hdc-work-meta-time', dateTime: repo.updatedAt },
-								formatDateLabel( repo.updatedAt )
-							)
-						),
-						( function () {
-							var visuals = getRepoVisualSet( repo.name );
-							if ( ! visuals || ! visuals.cover ) {
-								return null;
-							}
-							return h( 'img', {
-								className: 'hdc-work-featured-cover',
-								src: visuals.cover.src,
-								srcSet: visuals.cover.srcSet,
-								alt: visuals.cover.alt,
-								loading: 'lazy',
-								sizes: '(max-width: 720px) 100vw, 33vw',
-							} );
-						} )(),
-						h( 'h4', { className: 'hdc-work-featured-title' }, getRepoDisplayName( repo ) ),
-						h(
-							'p',
-							{ className: 'hdc-work-featured-summary' },
-							repo.whyItMatters || repo.description
-						),
-						h(
-							'div',
-							{ className: 'hdc-work-triptych' },
-							h(
-								'div',
-								{ className: 'hdc-work-triptych-col' },
-								h( 'p', { className: 'hdc-work-label' }, 'The Challenge' ),
-								h(
-									'ul',
-									{ className: 'hdc-work-bullet-list' },
-									( repo.problem || [] ).slice( 0, 2 ).map( function ( item, index ) {
-										return h( 'li', { key: repo.name + '-problem-' + index }, item );
-									} )
-								)
-							),
-							h(
-								'div',
-								{ className: 'hdc-work-triptych-col' },
-								h( 'p', { className: 'hdc-work-label' }, 'Technical Approach' ),
-								h(
-									'ul',
-									{ className: 'hdc-work-bullet-list' },
-									( repo.approach || [] ).slice( 0, 2 ).map( function ( item, index ) {
-										return h( 'li', { key: repo.name + '-approach-' + index }, item );
-									} )
-								)
-							),
-							h(
-								'div',
-								{ className: 'hdc-work-triptych-col' },
-								h( 'p', { className: 'hdc-work-label' }, 'Shipped Results' ),
-								h(
-									'ul',
-									{ className: 'hdc-work-bullet-list' },
-									( repo.result || [] ).slice( 0, 2 ).map( function ( item, index ) {
-										return h( 'li', { key: repo.name + '-result-' + index }, item );
-									} )
-								)
-							)
-						),
-						repo.highlights && repo.highlights.length
-							? h(
-								'div',
-								{ className: 'hdc-work-badge-row' },
-								repo.highlights.slice( 0, 2 ).map( function ( highlight, index ) {
-									return h( Badge, { key: repo.name + '-highlight-' + index, variant: 'outline' }, highlight );
-								} )
-							)
-							: null,
-						repo.architecture && ( repo.architecture.summary || repo.architecture.bullets.length )
-							? h(
-								'div',
-								{ className: 'hdc-work-architecture-box' },
-								h( 'p', { className: 'hdc-work-label' }, 'Architecture' ),
-								repo.architecture.summary
-									? h( 'p', { className: 'hdc-work-architecture-summary' }, repo.architecture.summary )
-									: null,
-								repo.architecture.bullets.length
-									? h(
-										'ul',
-										{ className: 'hdc-work-bullet-list' },
-										repo.architecture.bullets.slice( 0, 3 ).map( function ( bullet, index ) {
-											return h( 'li', { key: repo.name + '-architecture-' + index }, bullet );
-										} )
-									)
-									: null
-							)
-							: null,
-						h(
 							'a',
-							{
-								className: 'hdc-work-link-button',
-								href: getWorkDetailUrl( repo.name ),
-							},
-							'View Case Study'
+							{ className: 'hdc-work-featured-link', href: getWorkDetailUrl( repo.name ) },
+							visuals && visuals.cover
+								? h( 'img', {
+									className: 'hdc-work-featured-cover',
+									src: visuals.cover.src,
+									srcSet: visuals.cover.srcSet,
+									alt: visuals.cover.alt,
+									loading: 'lazy',
+									sizes: '(min-width: 1280px) 30vw, (min-width: 1024px) 33vw, 100vw',
+								} )
+								: null,
+							h(
+								'div',
+								{ className: 'hdc-work-featured-top' },
+								h(
+									'div',
+									{ className: 'hdc-work-badge-row' },
+									repo.role ? h( Badge, { variant: 'default' }, repo.role ) : null,
+									repo.access === 'private' ? h( Badge, { variant: 'secondary' }, 'Private' ) : null
+								),
+								h( 'time', { className: 'hdc-work-meta-time', dateTime: repo.updatedAt }, formatDateLabel( repo.updatedAt ) )
+							),
+							h( 'h4', { className: 'hdc-work-featured-title' }, getRepoDisplayName( repo ) ),
+							h( 'p', { className: 'hdc-work-featured-summary hdc-work-clamp-3' }, repo.whyItMatters || repo.description ),
+							h(
+								'div',
+								{ className: 'hdc-work-triptych' },
+								h( 'div', { className: 'hdc-work-triptych-col' }, h( 'p', { className: 'hdc-work-label' }, 'The Challenge' ), h( 'ul', { className: 'hdc-work-bullet-list' }, ( repo.problem || [] ).slice( 0, 1 ).map( function ( item, itemIndex ) { return h( 'li', { key: repo.name + '-problem-' + itemIndex, className: 'hdc-work-clamp-2' }, item ); } ) ) ),
+								h( 'div', { className: 'hdc-work-triptych-col' }, h( 'p', { className: 'hdc-work-label' }, 'Technical Approach' ), h( 'ul', { className: 'hdc-work-bullet-list' }, ( repo.approach || [] ).slice( 0, 1 ).map( function ( item, itemIndex ) { return h( 'li', { key: repo.name + '-approach-' + itemIndex, className: 'hdc-work-clamp-2' }, item ); } ) ) ),
+								h( 'div', { className: 'hdc-work-triptych-col' }, h( 'p', { className: 'hdc-work-label' }, 'Shipped Results' ), h( 'ul', { className: 'hdc-work-bullet-list' }, ( repo.result || [] ).slice( 0, 1 ).map( function ( item, itemIndex ) { return h( 'li', { key: repo.name + '-result-' + itemIndex, className: 'hdc-work-clamp-2' }, item ); } ) ) )
+							),
+							repo.highlights && repo.highlights.length > 0
+								? h( 'div', null, h( 'p', { className: 'hdc-work-label' }, 'Key highlights' ), h( 'div', { className: 'hdc-work-badge-row' }, repo.highlights.slice( 0, 2 ).map( function ( highlight, itemIndex ) { return h( Badge, { key: repo.name + '-highlight-' + itemIndex, variant: 'secondary' }, highlight ); } ) ) )
+								: null,
+							architecturePreview
+								? h( 'div', { className: 'hdc-work-architecture-box' }, h( 'p', { className: 'hdc-work-label' }, 'Architecture' ), h( 'p', { className: 'hdc-work-architecture-summary hdc-work-clamp-3' }, architecturePreview ) )
+								: null
 						)
 					);
 				} )
@@ -1884,6 +2035,7 @@
 	}
 
 	function RoleGroups( props ) {
+		const previewCount = 2;
 		const [ expandedRoles, setExpandedRoles ] = useState( function () {
 			return new Set();
 		} );
@@ -1915,41 +2067,30 @@
 				description:
 					'Quick orientation for how the work is distributed across systems, product delivery, craft, and performance.',
 			} ),
-			h(
-				'div',
-				{ className: 'hdc-work-role-grid' },
-				props.groups.map( function ( group, groupIndex ) {
-					const sortedRepos = group.repos.slice().sort( compareReposByUpdatedAtDesc );
-					const latestRepo = sortedRepos[ 0 ] || null;
-					const isExpanded = expandedRoles.has( group.role );
-					const visibleRepos = isExpanded ? sortedRepos : sortedRepos.slice( 0, 2 );
-					const hiddenPreviewCount = Math.max( 0, sortedRepos.length - 2 );
-					const canExpand = hiddenPreviewCount > 0;
-					const proportionPercent = totalRepos > 0 ? Math.round( ( sortedRepos.length / totalRepos ) * 100 ) : 0;
+				h(
+					'div',
+					{ className: 'hdc-work-role-grid' },
+					props.groups.map( function ( group, groupIndex ) {
+						const sortedRepos = group.repos.slice().sort( compareReposByUpdatedAtDesc );
+						const latestRepo = sortedRepos[ 0 ] || null;
+						const isExpanded = expandedRoles.has( group.role );
+						const visibleRepos = isExpanded ? sortedRepos : sortedRepos.slice( 0, previewCount );
+						const hiddenPreviewCount = Math.max( 0, sortedRepos.length - previewCount );
+						const canExpand = hiddenPreviewCount > 0;
+						const proportionPercent = totalRepos > 0 ? Math.round( ( sortedRepos.length / totalRepos ) * 100 ) : 0;
+						const roleSlug = group.role.toLowerCase().replace( /\s+/g, '-' );
+						const examplesId = 'focus-area-' + roleSlug + '-examples';
+						const disclosureLabel = isExpanded
+							? 'Show fewer ' + group.role + ' projects'
+							: 'Show ' + hiddenPreviewCount + ' more ' + group.role + ' ' + ( hiddenPreviewCount === 1 ? 'project' : 'projects' );
 
-					return h(
-						'article',
-						{
-							key: 'role-' + group.role,
-							className: classNames( 'hdc-work-role-card', 'hdc-reveal', isExpanded && 'is-expanded' ),
-							role: canExpand ? 'button' : undefined,
-							'aria-expanded': canExpand ? String( isExpanded ) : undefined,
-							tabIndex: canExpand ? 0 : undefined,
-							style: { '--reveal-index': groupIndex },
-							onClick: canExpand
-								? function () {
-									handleToggleRole( group.role );
-								}
-								: undefined,
-							onKeyDown: canExpand
-								? function ( event ) {
-									if ( event.key === 'Enter' || event.key === ' ' ) {
-										event.preventDefault();
-										handleToggleRole( group.role );
-									}
-								}
-								: undefined,
-						},
+						return h(
+							'article',
+							{
+								key: 'role-' + group.role,
+								className: classNames( 'hdc-work-role-card', 'hdc-reveal', isExpanded && 'is-expanded' ),
+								style: { '--reveal-index': groupIndex },
+							},
 						h(
 							'div',
 							{ className: 'hdc-work-role-proportion' },
@@ -1967,13 +2108,13 @@
 								{ className: 'hdc-work-role-icon', 'aria-hidden': 'true' },
 								renderLucideIcon( h, ROLE_ICON_MARKER[ group.role ], { className: 'hdc-work-role-icon-svg', size: 16 } ) || '•'
 							),
-							h(
-								'div',
-								null,
-								h( 'h4', { className: 'hdc-work-role-title' }, group.role ),
-								h( 'p', { className: 'hdc-work-role-description' }, ROLE_DESCRIPTION_MAP[ group.role ] )
-							)
-						),
+								h(
+									'div',
+									null,
+									h( 'h4', { className: 'hdc-work-role-title' }, group.role ),
+									h( 'p', { className: 'hdc-work-role-description' }, ( props.roleDescriptionMap || ROLE_DESCRIPTION_MAP )[ group.role ] )
+								)
+							),
 						h(
 							'div',
 							{ className: 'hdc-work-badge-row hdc-work-role-badges' },
@@ -1992,82 +2133,46 @@
 								)
 								: null
 						),
-						visibleRepos.length > 0
-							? h(
-								'div',
-								{ className: 'hdc-work-role-preview' },
-								h( 'p', { className: 'hdc-work-label' }, 'Recent examples' ),
-								h(
+							visibleRepos.length > 0
+								? h(
 									'div',
+									{ className: 'hdc-work-role-preview', id: examplesId },
+									h( 'p', { className: 'hdc-work-label' }, 'Recent examples' ),
+									h(
+										'div',
 									{ className: 'hdc-work-badge-row' },
 									visibleRepos.map( function ( repo ) {
 										return h(
 											'a',
-											{
-												key: group.role + '-' + repo.name,
-												className: 'hdc-work-badge is-outline hdc-work-role-repo-link',
-												href: getWorkDetailUrl( repo.name ),
-												onClick: function ( event ) {
-													event.stopPropagation();
+												{
+													key: group.role + '-' + repo.name,
+													className: 'hdc-work-badge is-outline hdc-work-role-repo-link',
+													href: getWorkDetailUrl( repo.name ),
 												},
-												onKeyDown: function ( event ) {
-													event.stopPropagation();
-												},
-											},
-											getRepoDisplayName( repo )
-										);
-									} ).concat(
-										! isExpanded && hiddenPreviewCount > 0
-											? [
-												h(
-													Badge,
-													{
-														key: group.role + '-hidden-preview',
-														variant: 'outline',
-														className: 'hdc-work-role-toggle-badge',
-													},
-													'+',
-													String( hiddenPreviewCount ),
-													' more',
-													h(
-														'span',
-														{
-															className: 'hdc-work-role-badge-chevron',
-															'aria-hidden': 'true',
-														},
-														renderLucideIcon( h, 'chevron-down', { size: 12 } )
-													)
-												),
-											]
-											: []
-									).concat(
-										isExpanded && canExpand
-											? [
-												h(
-													Badge,
-													{
-														key: group.role + '-show-less',
-														variant: 'outline',
-														className: 'hdc-work-role-toggle-badge',
-													},
-													'Show less',
-													h(
-														'span',
-														{
-															className: 'hdc-work-role-badge-chevron',
-															'aria-hidden': 'true',
-														},
-														renderLucideIcon( h, 'chevron-down', { size: 12 } )
-													)
-												),
-											]
-											: []
+												getRepoDisplayName( repo )
+											);
+										} )
 									)
 								)
-							)
-							: null
-					);
-				} )
+								: null,
+							canExpand
+								? h(
+									'button',
+									{
+										type: 'button',
+										className: 'hdc-work-button is-link hdc-work-role-disclosure',
+										'aria-controls': examplesId,
+										'aria-expanded': isExpanded ? 'true' : 'false',
+										onClick: function () {
+											handleToggleRole( group.role );
+										},
+									},
+									h( 'span', null, disclosureLabel ),
+									h( 'span', { className: 'hdc-work-role-badge-chevron', 'aria-hidden': 'true' }, renderLucideIcon( h, 'chevron-down', { size: 16 } ) )
+								)
+								: null
+						);
+					} )
 			)
 		);
 	}
@@ -2406,7 +2511,6 @@
 								repo: repo,
 								repoProof: props.repoProofsByRepoName[ repo.name ] || props.repoProofsByRepoName[ String( repo.name ).toLowerCase() ] || null,
 								ciStatus: props.ciStatusByRepoName[ repo.name ] || props.ciStatusByRepoName[ String( repo.name ).toLowerCase() ] || null,
-								openInNewTab: props.openInNewTab,
 								revealIndex: index,
 							} );
 						} )
@@ -2522,15 +2626,15 @@
 								'li',
 								{ key: 'pending-' + repo.name, className: 'hdc-work-list-item' },
 								h(
-									'div',
-									{ className: 'hdc-work-list-item-main' },
-									h( 'p', { className: 'hdc-work-list-item-title' }, getRepoDisplayName( repo ) ),
-									h( 'p', { className: 'hdc-work-list-item-text' }, repo.language )
-								),
-								h(
-									'time',
-									{ className: 'hdc-work-list-item-time', dateTime: repo.updatedAt },
-									formatDateLabel( repo.updatedAt )
+									'a',
+									{ className: 'hdc-work-pending-link', href: getWorkDetailUrl( repo.name ) },
+									h(
+										'div',
+										{ className: 'hdc-work-list-item-main' },
+										h( 'p', { className: 'hdc-work-list-item-title' }, getRepoDisplayName( repo ) ),
+										h( 'p', { className: 'hdc-work-list-item-text' }, repo.language )
+									),
+									h( 'time', { className: 'hdc-work-list-item-time', dateTime: repo.updatedAt }, formatDateLabel( repo.updatedAt ) )
 								)
 							);
 						} )
@@ -2851,138 +2955,24 @@
 			} );
 		}, [ repos ] );
 
+		var recentlyUpdatedGitHubSignalRepos = useMemo( function () {
+			return signalRepos
+				.filter( function ( repo ) {
+					return isUpdatedWithin( repo, SIGNAL_ACTIVITY_WINDOW_DAYS, now );
+				} )
+				.sort( compareReposByUpdatedAtDesc );
+		}, [ signalRepos, now ] );
+
 		var signalRepoNames = useMemo( function () {
 			return signalRepos.map( function ( repo ) { return repo.name; } );
 		}, [ signalRepos ] );
 
-		var commitSummary = useMemo( function () {
-			var weeklyBuckets = {};
-			var lifetimeCommits = 0;
-			var yearlyCommits = 0;
-			var yearlyAdditions = 0;
-			var yearlyDeletions = 0;
-			var readyCount = 0;
-			var computingCount = 0;
-			var missingCount = 0;
-
-			signalRepos.forEach( function ( repo ) {
-				var stats = contributorStatsByRepo[ repo.name ] || contributorStatsByRepo[ repo.name.toLowerCase() ];
-				if ( ! stats ) { missingCount++; return; }
-				if ( stats.status === 'computing' ) { computingCount++; return; }
-				if ( stats.status !== 'ready' || ! stats.contributorStats ) { missingCount++; return; }
-				readyCount++;
-
-				var cs = stats.contributorStats;
-				lifetimeCommits += cs.totalCommits || 0;
-				yearlyCommits += cs.lastYearCommits || 0;
-				yearlyAdditions += cs.lastYearAdditions || 0;
-				yearlyDeletions += cs.lastYearDeletions || 0;
-
-				( cs.weeks || [] ).forEach( function ( week ) {
-					var key = week.weekStart;
-					if ( ! key ) { return; }
-					if ( ! weeklyBuckets[ key ] ) { weeklyBuckets[ key ] = 0; }
-					weeklyBuckets[ key ] += week.commits || 0;
-				} );
+		var recentlyUpdatedGitHubSignalRepoNames = useMemo( function () {
+			return recentlyUpdatedGitHubSignalRepos.map( function ( repo ) {
+				return repo.name;
 			} );
+		}, [ recentlyUpdatedGitHubSignalRepos ] );
 
-			var sortedWeeks = Object.keys( weeklyBuckets ).sort();
-			var sparklineWeeks = sortedWeeks.slice( -COMMIT_SPARKLINE_WINDOW_WEEKS );
-			var sparklineData = sparklineWeeks.map( function ( key ) { return weeklyBuckets[ key ]; } );
-			var activeWeeks = sortedWeeks.filter( function ( key ) { return weeklyBuckets[ key ] > 0; } ).length;
-			var totalWeeksInWindow = Math.min( sortedWeeks.length, COMMIT_TOTAL_WINDOW_WEEKS );
-
-			return {
-				sparklineData: sparklineData,
-				lifetimeCommits: lifetimeCommits,
-				yearlyCommits: yearlyCommits,
-				yearlyAdditions: yearlyAdditions,
-				yearlyDeletions: yearlyDeletions,
-				readyCount: readyCount,
-				computingCount: computingCount,
-				missingCount: missingCount,
-				activeWeeks: activeWeeks,
-				totalWeeksInWindow: totalWeeksInWindow,
-			};
-		}, [ signalRepos, contributorStatsByRepo ] );
-
-		var ciSummary = useMemo( function () {
-			var passing = 0;
-			var failing = 0;
-			var running = 0;
-			var none = 0;
-
-			signalRepos.forEach( function ( repo ) {
-				var status = ciStatusAllByRepo[ repo.name ] || ciStatusAllByRepo[ repo.name.toLowerCase() ];
-				if ( ! status ) { none++; return; }
-				var ciStatus = typeof status === 'string' ? status : status.ciStatus;
-				switch ( ciStatus ) {
-					case 'passing': passing++; break;
-					case 'failing': failing++; break;
-					case 'running': running++; break;
-					default: none++; break;
-				}
-			} );
-
-			var tracked = passing + failing + running;
-			return { passing: passing, failing: failing, running: running, none: none, tracked: tracked };
-		}, [ signalRepos, ciStatusAllByRepo ] );
-
-		var languageSummary = useMemo( function () {
-			if ( languageByteTotals.length > 0 ) {
-				var sorted = languageByteTotals.slice().sort( function ( a, b ) { return b.bytes - a.bytes; } );
-				var totalBytes = sorted.reduce( function ( sum, item ) { return sum + item.bytes; }, 0 );
-				var top3 = sorted.slice( 0, 3 ).map( function ( item ) {
-					return { language: item.language, percentage: totalBytes > 0 ? Math.round( ( item.bytes / totalBytes ) * 100 ) : 0 };
-				} );
-				var otherPercentage = 100 - top3.reduce( function ( sum, item ) { return sum + item.percentage; }, 0 );
-				return { top3: top3, otherPercentage: Math.max( 0, otherPercentage ), source: 'bytes' };
-			}
-
-			var eligibleRepos = signalRepos.filter( function ( repo ) { return repo.sizeKb >= LANGUAGE_FALLBACK_MIN_REPO_SIZE_KB; } );
-			var langWeights = {};
-			var totalWeight = 0;
-			eligibleRepos.forEach( function ( repo ) {
-				var lang = repo.language || 'Unknown';
-				langWeights[ lang ] = ( langWeights[ lang ] || 0 ) + repo.sizeKb;
-				totalWeight += repo.sizeKb;
-			} );
-			var sorted2 = Object.entries( langWeights ).sort( function ( a, b ) { return b[ 1 ] - a[ 1 ]; } );
-			var top3fb = sorted2.slice( 0, 3 ).map( function ( entry ) {
-				return { language: entry[ 0 ], percentage: totalWeight > 0 ? Math.round( ( entry[ 1 ] / totalWeight ) * 100 ) : 0 };
-			} );
-			var otherFb = 100 - top3fb.reduce( function ( sum, item ) { return sum + item.percentage; }, 0 );
-			return { top3: top3fb, otherPercentage: Math.max( 0, otherFb ), source: 'metadata' };
-		}, [ languageByteTotals, signalRepos ] );
-
-		var communitySummary = useMemo( function () {
-			var healthScores = [];
-			var coreDocsCount = 0;
-			var releaseCount = 0;
-			var latestRelease = null;
-
-			signalRepos.forEach( function ( repo ) {
-				var proof = repoProofsAllByRepo[ repo.name ] || repoProofsAllByRepo[ repo.name.toLowerCase() ];
-				if ( ! proof ) { return; }
-
-				if ( proof.communityHealth && typeof proof.communityHealth.healthPercentage === 'number' ) {
-					healthScores.push( proof.communityHealth.healthPercentage );
-					var files = proof.communityHealth.files || {};
-					if ( files.hasReadme && files.hasLicense && files.hasContributing ) {
-						coreDocsCount++;
-					}
-				}
-				if ( proof.releaseStatus === 'published' && proof.latestRelease ) {
-					releaseCount++;
-					if ( ! latestRelease || ( proof.latestRelease.publishedAt > latestRelease.publishedAt ) ) {
-						latestRelease = { repo: repo.name, tagName: proof.latestRelease.tagName, publishedAt: proof.latestRelease.publishedAt };
-					}
-				}
-			} );
-
-			var avgHealth = healthScores.length > 0 ? Math.round( healthScores.reduce( function ( sum, s ) { return sum + s; }, 0 ) / healthScores.length ) : null;
-			return { avgHealth: avgHealth, coreDocsCount: coreDocsCount, releaseCount: releaseCount, latestRelease: latestRelease };
-		}, [ signalRepos, repoProofsAllByRepo ] );
 
 		useEffect(
 			function () {
@@ -3075,10 +3065,15 @@
 
 		useEffect( function () {
 			var cancelled = false;
-			if ( loading || signalRepoNames.length === 0 ) {
+			if ( loading || recentlyUpdatedGitHubSignalRepoNames.length === 0 ) {
+				setLanguageByteTotals( [] );
+				setAnalyzedRepoCount( 0 );
+				setByteDataIncomplete( false );
+				setFailedLanguageRequestCount( 0 );
+				setLanguageSummarySource( 'live' );
 				return function () { cancelled = true; };
 			}
-			loadLanguageSummary( config, signalRepoNames ).then( function ( data ) {
+			loadLanguageSummary( config, recentlyUpdatedGitHubSignalRepoNames ).then( function ( data ) {
 				if ( cancelled ) { return; }
 				setLanguageByteTotals( data.languageByteTotals );
 				setAnalyzedRepoCount( data.analyzedRepoCount );
@@ -3087,7 +3082,7 @@
 				setLanguageSummarySource( data.source );
 			} );
 			return function () { cancelled = true; };
-		}, [ config, loading, signalRepoNames ] );
+		}, [ config, loading, recentlyUpdatedGitHubSignalRepoNames ] );
 
 		useEffect( function () {
 			var cancelled = false;
@@ -3228,26 +3223,27 @@
 							value: activeFilter,
 							view: view,
 						} ),
-						config.showSignalsPanel
-							? h( SignalsPanel, {
-								recentlyUpdatedCount: recentlyUpdatedRepos.length,
-								recentRepoPreview: recentRepoPreview,
-								commitSummary: commitSummary,
-								contributorStatsSource: contributorStatsSource,
-								ciSummary: ciSummary,
-								ciStatusSource: ciStatusAllSource,
-								languageSummary: languageSummary,
-								analyzedRepoCount: analyzedRepoCount,
-								byteDataIncomplete: byteDataIncomplete,
-								failedLanguageRequestCount: failedLanguageRequestCount,
-								languageSummarySource: languageSummarySource,
-								communitySummary: communitySummary,
-								repoProofsSource: repoProofsAllSource,
-								signalRepoCount: signalRepos.length,
-								showActivitySparkline: config.showActivitySparkline,
-								sparklineWeeks: config.sparklineWeeks,
-							} )
-							: null,
+						h( SignalsPanel, {
+							activeLanguageRepos: recentlyUpdatedGitHubSignalRepos,
+							analyzedRepoCount: analyzedRepoCount,
+							byteDataIncomplete: byteDataIncomplete,
+							ciStatusByRepo: ciStatusAllByRepo,
+							ciStatusIsLoading: ciStatusAllSource === 'loading',
+							ciStatusSource: ciStatusAllSource,
+							contributorStatsByRepo: contributorStatsByRepo,
+							contributorStatsIsLoading: contributorStatsSource === 'loading',
+							contributorStatsSource: contributorStatsSource,
+							failedLanguageRequestCount: failedLanguageRequestCount,
+							languageByteTotals: languageByteTotals,
+							languageSummaryIsLoading: languageSummarySource === 'loading',
+							languageSummarySource: languageSummarySource,
+							proofsByRepoName: repoProofsAllByRepo,
+							recentRepoPreview: recentRepoPreview,
+							recentlyUpdatedCount: recentlyUpdatedRepos.length,
+							repoProofIsLoading: repoProofsAllSource === 'loading',
+							repoProofSource: repoProofsAllSource,
+							signalRepos: signalRepos,
+						} ),
 						filtered.length === 0
 							? h( EmptyState, {
 								title: 'No projects found',
@@ -3270,7 +3266,6 @@
 								showFeaturedCaseStudies
 									? h( FeaturedCaseStudies, {
 										repos: featuredCaseStudies,
-										openInNewTab: config.openInNewTab,
 									} )
 									: null,
 								showRoleGroups
@@ -3290,14 +3285,13 @@
 											return Math.max( 1, current - 1 );
 										} );
 									},
-									paginatedRepos: paginatedRepos,
-									repoProofsByRepoName: repoProofsByRepoName,
-									safePage: safePage,
-									timelineRepos: timelineRepos,
-									totalPages: totalPages,
-									view: view,
-									openInNewTab: config.openInNewTab,
-								} ),
+										paginatedRepos: paginatedRepos,
+										repoProofsByRepoName: repoProofsByRepoName,
+										safePage: safePage,
+										timelineRepos: timelineRepos,
+										totalPages: totalPages,
+										view: view,
+									} ),
 								reposPendingDescription.length > 0
 									? h( PendingReposPanel, {
 										hiddenPendingCount: hiddenPendingCount,

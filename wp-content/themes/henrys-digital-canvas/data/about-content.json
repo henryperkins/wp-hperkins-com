@@ -1,23 +1,70 @@
 {
-  "pageTitle": "About — Henry Perkins",
+  "pageTitle": "About \u2014 Henry Perkins",
+  "metadata": {
+    "title": "About \u2014 Henry Perkins",
+    "description": "Learn how Henry Perkins builds AI-assisted workflows, WordPress solutions, and support-focused technical projects shaped by consulting and operations experience.",
+    "canonical": "/about",
+    "openGraph": {
+      "title": "About \u2014 Henry Perkins",
+      "description": "Learn how Henry Perkins builds AI-assisted workflows, WordPress solutions, and support-focused technical projects shaped by consulting and operations experience.",
+      "type": "website",
+      "url": "/about",
+      "image": "https://www.gravatar.com/avatar/251a0a7f43fc6a5086ffa73cebc49ab2?s=384",
+      "imageAlt": "Henry Perkins profile image"
+    },
+    "twitter": {
+      "card": "summary_large_image",
+      "title": "About \u2014 Henry Perkins",
+      "description": "Learn how Henry Perkins builds AI-assisted workflows, WordPress solutions, and support-focused technical projects shaped by consulting and operations experience.",
+      "image": "https://www.gravatar.com/avatar/251a0a7f43fc6a5086ffa73cebc49ab2?s=384"
+    }
+  },
   "heading": "About Henry Perkins",
+  "heroDescription": "Customer-facing technical consultant focused on AI-assisted workflows, WordPress delivery, and practical systems that help support and product teams work more clearly.",
   "sectionLabels": {
+    "capabilities": "AI all day. Everything else too.",
     "values": "What I Value",
     "timeline": "Career Path"
   },
   "intro": [
-    "I have worked on technical projects that stay close to real customer needs: an AI meeting transcript summarizer, a support-focused FAQ chatbot prototype, WordPress and WooCommerce client builds, and documentation systems that make troubleshooting easier to hand off.",
+    "I build technical projects that stay close to real customer needs: AI prompt tooling, interactive web apps like a tarot reading AI and a DJ mixing platform, WordPress consulting sites, and a React portfolio deployed to Cloudflare Workers.",
     "What ties those projects together is the same throughline in my support, community, and consulting background: I like taking messy information and turning it into clear workflows, calmer operations, and practical tools that non-specialists can actually use.",
-    "I am especially interested in scaling up my AI and WordPress skills because they fit the work I already do best. AI helps me prototype better summaries, triage, and self-service experiences; WordPress remains one of the fastest ways to ship useful business outcomes. Growing in both areas is part of how I am working toward stable, living-wage technical work rooted in customer empathy and execution."
+    "I am especially interested in scaling up my AI and WordPress skills because they fit the work I already do best. AI helps me prototype better summaries, triage, and self-service experiences; WordPress remains one of the fastest ways to ship useful business outcomes. Growing in both areas is how I am building a long-term customer-facing technical career rooted in empathy and execution."
   ],
   "profile": {
     "imageUrl": "https://www.gravatar.com/avatar/251a0a7f43fc6a5086ffa73cebc49ab2?s=384",
     "imageAlt": "Henry Perkins",
     "cardAvatarUrl": "https://www.gravatar.com/avatar/251a0a7f43fc6a5086ffa73cebc49ab2?s=128",
     "cardName": "Henry Perkins",
-    "cardTitle": "Founder, Lakefront Digital",
+    "cardSubtitle": "Where tech meets tenacity \u2014 and Java isn\u2019t just coffee",
     "linkedinUrl": "https://linkedin.com/in/henryperkins"
   },
+  "capabilities": [
+    {
+      "title": "AI Agents & Prompt Engineering",
+      "icon": "bot",
+      "description": [
+        "I design agentic workflows \u2014 prompt pipelines, reasoning chains, autonomous loops \u2014 and the tooling that makes them repeatable. Not demos. Not proof-of-concepts. Systems that hold up when a real person presses the button.",
+        "I built Prompt Forge because I needed a place to design, iterate, and organize prompts at scale. Then I shipped it so other people could too."
+      ]
+    },
+    {
+      "title": "Technical Consulting & Delivery",
+      "icon": "wrench",
+      "description": [
+        "Full-arc project ownership: discovery, scoping, build, launch, post-launch. WordPress and WooCommerce platforms. Cloudflare Workers deployments. API integrations and webhook configs. React + TypeScript front ends.",
+        "I don\u2019t hand off half-finished work \u2014 I ship it, document it, and make sure someone else can maintain it after I leave."
+      ]
+    },
+    {
+      "title": "Documentation & Developer Enablement",
+      "icon": "notebook-pen",
+      "description": [
+        "The best system in the world fails the moment the person who built it walks away. I write the docs, build the onboarding paths, and create the internal tooling that turns tribal knowledge into something a new hire can actually follow.",
+        "I\u2019ve been doing this since I ran a developer community of 50 WordPress professionals at PageLines \u2014 answering questions, finding resources, traveling to WordCamps, and making sure feedback made it back into the product."
+      ]
+    }
+  ],
   "valueCards": [
     {
       "title": "Customer Empathy",
@@ -49,16 +96,16 @@
     },
     {
       "id": "community-manager",
-      "periodLabel": "2012",
-      "periodDateTime": "2012",
+      "periodLabel": "May-Oct 2012",
+      "periodDateTime": "2012-05",
       "title": "Community Manager",
       "detail": "Built and grew the PageLines developer community and App Store ecosystem",
       "icon": "users"
     },
     {
       "id": "happiness-engineer",
-      "periodLabel": "2012",
-      "periodDateTime": "2012",
+      "periodLabel": "Oct-Nov 2012",
+      "periodDateTime": "2012-10",
       "title": "Happiness Engineer",
       "detail": "Supported WordPress.com users globally at Automattic",
       "icon": "heart"

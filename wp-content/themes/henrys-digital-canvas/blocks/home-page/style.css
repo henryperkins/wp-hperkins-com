@@ -721,6 +721,12 @@
   }
 }
 
+@media (max-width: 719px) {
+  .hdc-home-page__work-card {
+    min-height: auto;
+  }
+}
+
 @media (max-width: 767px) {
   .hdc-home-page__hero {
     min-height: max(30rem, calc(72svh - var(--layout-header-height)));

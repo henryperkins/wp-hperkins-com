@@ -19,6 +19,9 @@ wp-content/db.php
 tmp/
 output/
 
+# Nested repos
+agent-skills/
+
 # OS files
 .DS_Store
 Thumbs.db

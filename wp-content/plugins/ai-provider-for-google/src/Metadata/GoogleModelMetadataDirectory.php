@@ -138,6 +138,7 @@ class GoogleModelMetadataDirectory extends AbstractOpenAiCompatibleModelMetadata
             new SupportedOption(OptionEnum::webSearch()),
         ]);
         $geminiMultimodalImageOutputOptions = array_merge($geminiBaseOptions, [
+            new SupportedOption(OptionEnum::outputFileType(), [FileTypeEnum::inline()]),
             new SupportedOption(
                 OptionEnum::inputModalities(),
                 $allModalityCombinationsWithText
