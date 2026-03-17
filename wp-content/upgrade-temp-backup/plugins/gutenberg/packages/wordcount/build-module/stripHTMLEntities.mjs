@@ -1,8 +1,0 @@
-// packages/wordcount/src/stripHTMLEntities.ts
-function stripHTMLEntities(settings, text) {
-  return text.replace(settings.HTMLEntityRegExp, "");
-}
-export {
-  stripHTMLEntities as default
-};
-//# sourceMappingURL=stripHTMLEntities.mjs.map

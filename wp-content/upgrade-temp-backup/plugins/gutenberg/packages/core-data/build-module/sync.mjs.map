@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/sync.ts"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport {\n\tprivateApis as syncPrivateApis,\n\ttype SyncManager,\n} from '@wordpress/sync';\n\n/**\n * Internal dependencies\n */\nimport { unlock } from './lock-unlock';\n\nconst {\n\tcreateSyncManager,\n\tDelta,\n\tCRDT_DOC_META_PERSISTENCE_KEY,\n\tCRDT_RECORD_MAP_KEY,\n\tLOCAL_EDITOR_ORIGIN,\n\tLOCAL_UNDO_IGNORED_ORIGIN,\n\tretrySyncConnection,\n} = unlock( syncPrivateApis );\n\nexport {\n\tDelta,\n\tCRDT_DOC_META_PERSISTENCE_KEY,\n\tCRDT_RECORD_MAP_KEY,\n\tLOCAL_EDITOR_ORIGIN,\n\tLOCAL_UNDO_IGNORED_ORIGIN,\n\tretrySyncConnection,\n};\n\nlet syncManager: SyncManager;\n\nexport function getSyncManager(): SyncManager | undefined {\n\tif ( syncManager ) {\n\t\treturn syncManager;\n\t}\n\n\tsyncManager = createSyncManager();\n\n\treturn syncManager;\n}\n"],
-  "mappings": ";AAGA;AAAA,EACC,eAAe;AAAA,OAET;AAKP,SAAS,cAAc;AAEvB,IAAM;AAAA,EACL;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AACD,IAAI,OAAQ,eAAgB;AAW5B,IAAI;AAEG,SAAS,iBAA0C;AACzD,MAAK,aAAc;AAClB,WAAO;AAAA,EACR;AAEA,gBAAc,kBAAkB;AAEhC,SAAO;AACR;",
-  "names": []
-}

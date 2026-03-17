@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/font-library/utils/fonts-outline.ts"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { FontFace, FontFamily } from '@wordpress/core-data';\n\nexport function getFontsOutline(\n\tfonts: FontFamily[]\n): Record< string, Record< string, boolean > > {\n\treturn fonts.reduce(\n\t\t( acc, font ) => ( {\n\t\t\t...acc,\n\t\t\t[ font.slug ]: ( font?.fontFace || [] ).reduce(\n\t\t\t\t( faces, face ) => ( {\n\t\t\t\t\t...faces,\n\t\t\t\t\t[ `${ face.fontStyle }-${ face.fontWeight }` ]: true,\n\t\t\t\t} ),\n\t\t\t\t{}\n\t\t\t),\n\t\t} ),\n\t\t{}\n\t);\n}\n\nexport function isFontFontFaceInOutline(\n\tslug: string,\n\tface: FontFace | null,\n\toutline: Record< string, Record< string, boolean > >\n): boolean {\n\tif ( ! face ) {\n\t\treturn !! outline[ slug ];\n\t}\n\treturn !! outline[ slug ]?.[ `${ face.fontStyle }-${ face.fontWeight }` ];\n}\n"],
-  "mappings": ";AAKO,SAAS,gBACf,OAC8C;AAC9C,SAAO,MAAM;AAAA,IACZ,CAAE,KAAK,UAAY;AAAA,MAClB,GAAG;AAAA,MACH,CAAE,KAAK,IAAK,IAAK,MAAM,YAAY,CAAC,GAAI;AAAA,QACvC,CAAE,OAAO,UAAY;AAAA,UACpB,GAAG;AAAA,UACH,CAAE,GAAI,KAAK,SAAU,IAAK,KAAK,UAAW,EAAG,GAAG;AAAA,QACjD;AAAA,QACA,CAAC;AAAA,MACF;AAAA,IACD;AAAA,IACA,CAAC;AAAA,EACF;AACD;AAEO,SAAS,wBACf,MACA,MACA,SACU;AACV,MAAK,CAAE,MAAO;AACb,WAAO,CAAC,CAAE,QAAS,IAAK;AAAA,EACzB;AACA,SAAO,CAAC,CAAE,QAAS,IAAK,IAAK,GAAI,KAAK,SAAU,IAAK,KAAK,UAAW,EAAG;AACzE;",
-  "names": []
-}

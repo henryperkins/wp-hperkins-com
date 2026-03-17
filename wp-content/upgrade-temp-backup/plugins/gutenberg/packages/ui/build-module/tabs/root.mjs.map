@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/tabs/root.tsx"],
-  "sourcesContent": ["import { forwardRef } from '@wordpress/element';\nimport { Tabs as _Tabs } from '@base-ui/react/tabs';\nimport type { TabRootProps } from './types';\n\n/**\n * Groups the tabs and the corresponding panels.\n *\n * `Tabs` is a collection of React components that combine to render\n * an [ARIA-compliant tabs pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/).\n */\nexport const Root = forwardRef< HTMLDivElement, TabRootProps >(\n\tfunction TabsRoot( { ...otherProps }, forwardedRef ) {\n\t\treturn <_Tabs.Root ref={ forwardedRef } { ...otherProps } />;\n\t}\n);\n"],
-  "mappings": ";AAAA,SAAS,kBAAkB;AAC3B,SAAS,QAAQ,aAAa;AAWrB;AAFF,IAAM,OAAO;AAAA,EACnB,SAAS,SAAU,EAAE,GAAG,WAAW,GAAG,cAAe;AACpD,WAAO,oBAAC,MAAM,MAAN,EAAW,KAAM,cAAiB,GAAG,YAAa;AAAA,EAC3D;AACD;",
-  "names": []
-}

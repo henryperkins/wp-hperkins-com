@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/notices/index.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { InlineNotices, SnackbarNotices } from '@wordpress/notices';\n\nfunction Notices() {\n\treturn (\n\t\t<>\n\t\t\t<InlineNotices\n\t\t\t\tpinnedNoticesClassName=\"edit-widgets-notices__pinned\"\n\t\t\t\tdismissibleNoticesClassName=\"edit-widgets-notices__dismissible\"\n\t\t\t/>\n\t\t\t<SnackbarNotices className=\"edit-widgets-notices__snackbar\" />\n\t\t</>\n\t);\n}\n\nexport default Notices;\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,qBAA+C;AAI7C;AAFF,SAAS,UAAU;AAClB,SACC,4EACC;AAAA;AAAA,MAAC;AAAA;AAAA,QACA,wBAAuB;AAAA,QACvB,6BAA4B;AAAA;AAAA,IAC7B;AAAA,IACA,4CAAC,kCAAgB,WAAU,kCAAiC;AAAA,KAC7D;AAEF;AAEA,IAAO,kBAAQ;",
-  "names": []
-}

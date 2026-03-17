@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/sidebar-controls/index.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { createContext, useMemo, useContext } from '@wordpress/element';\n\nexport const SidebarControlsContext = createContext();\nSidebarControlsContext.displayName = 'SidebarControlsContext';\n\nexport default function SidebarControls( {\n\tsidebarControls,\n\tactiveSidebarControl,\n\tchildren,\n} ) {\n\tconst context = useMemo(\n\t\t() => ( {\n\t\t\tsidebarControls,\n\t\t\tactiveSidebarControl,\n\t\t} ),\n\t\t[ sidebarControls, activeSidebarControl ]\n\t);\n\n\treturn (\n\t\t<SidebarControlsContext.Provider value={ context }>\n\t\t\t{ children }\n\t\t</SidebarControlsContext.Provider>\n\t);\n}\n\nexport function useSidebarControls() {\n\tconst { sidebarControls } = useContext( SidebarControlsContext );\n\n\treturn sidebarControls;\n}\n\nexport function useActiveSidebarControl() {\n\tconst { activeSidebarControl } = useContext( SidebarControlsContext );\n\n\treturn activeSidebarControl;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,qBAAmD;AAmBjD;AAjBK,IAAM,6BAAyB,8BAAc;AACpD,uBAAuB,cAAc;AAEtB,SAAR,gBAAkC;AAAA,EACxC;AAAA,EACA;AAAA,EACA;AACD,GAAI;AACH,QAAM,cAAU;AAAA,IACf,OAAQ;AAAA,MACP;AAAA,MACA;AAAA,IACD;AAAA,IACA,CAAE,iBAAiB,oBAAqB;AAAA,EACzC;AAEA,SACC,4CAAC,uBAAuB,UAAvB,EAAgC,OAAQ,SACtC,UACH;AAEF;AAEO,SAAS,qBAAqB;AACpC,QAAM,EAAE,gBAAgB,QAAI,2BAAY,sBAAuB;AAE/D,SAAO;AACR;AAEO,SAAS,0BAA0B;AACzC,QAAM,EAAE,qBAAqB,QAAI,2BAAY,sBAAuB;AAEpE,SAAO;AACR;",
-  "names": []
-}

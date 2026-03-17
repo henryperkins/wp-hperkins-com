@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/screen-revisions/types.ts"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { GlobalStylesConfig } from '@wordpress/global-styles-engine';\n\nexport interface User {\n\tid: number;\n\tname: string;\n\tavatar_urls: Record< string, string >;\n}\n\nexport interface Revision extends GlobalStylesConfig {\n\tid: string | number;\n\tauthor?: User;\n\tmodified?: string | Date;\n\tisLatest?: boolean;\n\t_links?: any;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

@@ -1,8 +1,0 @@
-// packages/wordcount/src/stripHTMLComments.ts
-function stripHTMLComments(settings, text) {
-  return text.replace(settings.HTMLcommentRegExp, "");
-}
-export {
-  stripHTMLComments as default
-};
-//# sourceMappingURL=stripHTMLComments.mjs.map

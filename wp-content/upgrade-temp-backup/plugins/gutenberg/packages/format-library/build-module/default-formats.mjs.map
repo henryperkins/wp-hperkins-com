@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/default-formats.js"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport { bold } from './bold';\nimport { code } from './code';\nimport { image } from './image';\nimport { italic } from './italic';\nimport { link } from './link';\nimport { strikethrough } from './strikethrough';\nimport { underline } from './underline';\nimport { textColor } from './text-color';\nimport { subscript } from './subscript';\nimport { superscript } from './superscript';\nimport { keyboard } from './keyboard';\nimport { unknown } from './unknown';\nimport { language } from './language';\nimport { math } from './math';\nimport { nonBreakingSpace } from './non-breaking-space';\n\nexport default [\n\tbold,\n\tcode,\n\timage,\n\titalic,\n\tlink,\n\tstrikethrough,\n\tunderline,\n\ttextColor,\n\tsubscript,\n\tsuperscript,\n\tkeyboard,\n\tunknown,\n\tlanguage,\n\tmath,\n\tnonBreakingSpace,\n];\n"],
-  "mappings": ";AAGA,SAAS,YAAY;AACrB,SAAS,YAAY;AACrB,SAAS,aAAa;AACtB,SAAS,cAAc;AACvB,SAAS,YAAY;AACrB,SAAS,qBAAqB;AAC9B,SAAS,iBAAiB;AAC1B,SAAS,iBAAiB;AAC1B,SAAS,iBAAiB;AAC1B,SAAS,mBAAmB;AAC5B,SAAS,gBAAgB;AACzB,SAAS,eAAe;AACxB,SAAS,gBAAgB;AACzB,SAAS,YAAY;AACrB,SAAS,wBAAwB;AAEjC,IAAO,0BAAQ;AAAA,EACd;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AACD;",
-  "names": []
-}

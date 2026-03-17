@@ -1,8 +1,0 @@
-// packages/wordcount/src/stripSpaces.ts
-function stripSpaces(settings, text) {
-  return text.replace(settings.spaceRegExp, " ");
-}
-export {
-  stripSpaces as default
-};
-//# sourceMappingURL=stripSpaces.mjs.map

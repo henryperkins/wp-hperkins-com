@@ -1,7 +1,0 @@
-import type { ValidatedControlProps } from './types';
-export declare const ValidatedToggleControl: import("react").ForwardRefExoticComponent<Omit<Pick<import("../../form-toggle/types").FormToggleProps, "disabled" | "checked"> & Pick<import("../../base-control/types").BaseControlProps, "className" | "__nextHasNoMarginBottom"> & {
-    help?: import("react").ReactNode | ((checked: boolean) => import("react").ReactNode);
-    label: import("react").ReactNode;
-    onChange: (value: boolean) => void;
-} & Omit<Omit<import("react").DetailedHTMLProps<import("react").InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, "ref">, "className" | "children" | "help" | "onChange" | "label" | "disabled" | "as" | "checked" | "__nextHasNoMarginBottom"> & import("react").RefAttributes<HTMLInputElement> & ValidatedControlProps, "ref"> & import("react").RefAttributes<HTMLInputElement>>;
-//# sourceMappingURL=toggle-control.d.ts.map

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/paragraph/save.js"],
-  "sourcesContent": ["/**\n * External dependencies\n */\nimport clsx from 'clsx';\n\n/**\n * WordPress dependencies\n */\nimport { RichText, useBlockProps } from '@wordpress/block-editor';\nimport { isRTL } from '@wordpress/i18n';\n\nexport default function save( { attributes } ) {\n\tconst { content, dropCap, direction, style } = attributes;\n\tconst textAlign = style?.typography?.textAlign;\n\tconst className = clsx( {\n\t\t'has-drop-cap':\n\t\t\ttextAlign === ( isRTL() ? 'left' : 'right' ) ||\n\t\t\ttextAlign === 'center'\n\t\t\t\t? false\n\t\t\t\t: dropCap,\n\t} );\n\n\treturn (\n\t\t<p { ...useBlockProps.save( { className, dir: direction } ) }>\n\t\t\t<RichText.Content value={ content } />\n\t\t</p>\n\t);\n}\n"],
-  "mappings": ";AAGA,OAAO,UAAU;AAKjB,SAAS,UAAU,qBAAqB;AACxC,SAAS,aAAa;AAenB;AAbY,SAAR,KAAuB,EAAE,WAAW,GAAI;AAC9C,QAAM,EAAE,SAAS,SAAS,WAAW,MAAM,IAAI;AAC/C,QAAM,YAAY,OAAO,YAAY;AACrC,QAAM,YAAY,KAAM;AAAA,IACvB,gBACC,eAAgB,MAAM,IAAI,SAAS,YACnC,cAAc,WACX,QACA;AAAA,EACL,CAAE;AAEF,SACC,oBAAC,OAAI,GAAG,cAAc,KAAM,EAAE,WAAW,KAAK,UAAU,CAAE,GACzD,8BAAC,SAAS,SAAT,EAAiB,OAAQ,SAAU,GACrC;AAEF;",
-  "names": []
-}

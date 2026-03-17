@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/store/private-selectors.js"],
-  "sourcesContent": ["export function getRoutes( state ) {\n\treturn state.routes;\n}\n"],
-  "mappings": ";AAAO,SAAS,UAAW,OAAQ;AAClC,SAAO,MAAM;AACd;",
-  "names": []
-}

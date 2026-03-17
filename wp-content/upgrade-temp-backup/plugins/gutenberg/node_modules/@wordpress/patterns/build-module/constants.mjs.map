@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/constants.js"],
-  "sourcesContent": ["export const PATTERN_TYPES = {\n\ttheme: 'pattern',\n\tuser: 'wp_block',\n};\n\nexport const PATTERN_DEFAULT_CATEGORY = 'all-patterns';\nexport const PATTERN_USER_CATEGORY = 'my-patterns';\nexport const EXCLUDED_PATTERN_SOURCES = [\n\t'core',\n\t'pattern-directory/core',\n\t'pattern-directory/featured',\n];\nexport const PATTERN_SYNC_TYPES = {\n\tfull: 'fully',\n\tunsynced: 'unsynced',\n};\n\nexport const PATTERN_OVERRIDES_BINDING_SOURCE = 'core/pattern-overrides';\n"],
-  "mappings": ";AAAO,IAAM,gBAAgB;AAAA,EAC5B,OAAO;AAAA,EACP,MAAM;AACP;AAEO,IAAM,2BAA2B;AACjC,IAAM,wBAAwB;AAC9B,IAAM,2BAA2B;AAAA,EACvC;AAAA,EACA;AAAA,EACA;AACD;AACO,IAAM,qBAAqB;AAAA,EACjC,MAAM;AAAA,EACN,UAAU;AACX;AAEO,IAAM,mCAAmC;",
-  "names": []
-}

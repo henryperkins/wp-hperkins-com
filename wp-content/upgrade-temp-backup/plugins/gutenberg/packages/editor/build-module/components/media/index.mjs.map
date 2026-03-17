@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/media/index.js"],
-  "sourcesContent": ["export { default as MediaPreview } from './preview';\nexport { default as MediaMetadataPanel } from './metadata-panel';\n"],
-  "mappings": ";AAAA,SAAoB,WAAXA,gBAA+B;AACxC,SAAoB,WAAXA,gBAAqC;",
-  "names": ["default"]
-}

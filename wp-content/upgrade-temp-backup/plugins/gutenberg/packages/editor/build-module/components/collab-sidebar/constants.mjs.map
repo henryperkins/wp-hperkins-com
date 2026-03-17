@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/collab-sidebar/constants.js"],
-  "sourcesContent": ["export const ALL_NOTES_SIDEBAR = 'edit-post/collab-history-sidebar';\nexport const FLOATING_NOTES_SIDEBAR = 'edit-post/collab-sidebar';\nexport const SIDEBARS = [ ALL_NOTES_SIDEBAR, FLOATING_NOTES_SIDEBAR ];\n"],
-  "mappings": ";AAAO,IAAM,oBAAoB;AAC1B,IAAM,yBAAyB;AAC/B,IAAM,WAAW,CAAE,mBAAmB,sBAAuB;",
-  "names": []
-}

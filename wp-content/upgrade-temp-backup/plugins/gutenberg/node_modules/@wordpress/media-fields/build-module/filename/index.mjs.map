@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/filename/index.ts"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __ } from '@wordpress/i18n';\nimport { getFilename } from '@wordpress/url';\nimport type { Field } from '@wordpress/dataviews';\n\n/**\n * Internal dependencies\n */\nimport type { MediaItem } from '../types';\nimport FileNameView from './view';\n\nconst filenameField: Partial< Field< MediaItem > > = {\n\tid: 'filename',\n\ttype: 'text',\n\tlabel: __( 'File name' ),\n\tgetValue: ( { item }: { item: MediaItem } ) =>\n\t\tgetFilename( item?.source_url || '' ),\n\trender: FileNameView,\n\tenableSorting: false,\n\tfilterBy: false,\n\treadOnly: true,\n};\n\nexport default filenameField;\n"],
-  "mappings": ";AAGA,SAAS,UAAU;AACnB,SAAS,mBAAmB;AAO5B,OAAO,kBAAkB;AAEzB,IAAM,gBAA+C;AAAA,EACpD,IAAI;AAAA,EACJ,MAAM;AAAA,EACN,OAAO,GAAI,WAAY;AAAA,EACvB,UAAU,CAAE,EAAE,KAAK,MAClB,YAAa,MAAM,cAAc,EAAG;AAAA,EACrC,QAAQ;AAAA,EACR,eAAe;AAAA,EACf,UAAU;AAAA,EACV,UAAU;AACX;AAEA,IAAO,mBAAQ;",
-  "names": []
-}

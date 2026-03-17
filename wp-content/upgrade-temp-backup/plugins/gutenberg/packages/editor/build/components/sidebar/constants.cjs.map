@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/sidebar/constants.js"],
-  "sourcesContent": ["export const sidebars = {\n\tdocument: 'edit-post/document',\n\tblock: 'edit-post/block',\n};\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,IAAM,WAAW;AAAA,EACvB,UAAU;AAAA,EACV,OAAO;AACR;",
-  "names": []
-}

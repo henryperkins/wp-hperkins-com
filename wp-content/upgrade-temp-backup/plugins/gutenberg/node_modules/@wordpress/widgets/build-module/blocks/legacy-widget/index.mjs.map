@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/blocks/legacy-widget/index.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { widget as icon } from '@wordpress/icons';\n\n/**\n * Internal dependencies\n */\nimport metadata from './block.json';\nimport edit from './edit';\nimport transforms from './transforms';\n\nconst { name } = metadata;\nexport { metadata, name };\n\nexport const settings = {\n\ticon,\n\tedit,\n\ttransforms,\n};\n"],
-  "mappings": ";AAGA,SAAS,UAAU,YAAY;AAK/B,OAAO,cAAc;AACrB,OAAO,UAAU;AACjB,OAAO,gBAAgB;AAEvB,IAAM,EAAE,KAAK,IAAI;AAGV,IAAM,WAAW;AAAA,EACvB;AAAA,EACA;AAAA,EACA;AACD;",
-  "names": []
-}

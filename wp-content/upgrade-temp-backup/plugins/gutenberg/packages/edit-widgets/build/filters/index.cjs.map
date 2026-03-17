@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/filters/index.js"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport './move-to-widget-area';\nimport './replace-media-upload';\n"],
-  "mappings": ";AAGA,iCAAO;AACP,kCAAO;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/screen-shadows.tsx"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport ShadowsPanel from './shadows-panel';\nimport ShadowsEditPanel from './shadows-edit-panel';\n\nexport function ScreenShadows() {\n\treturn <ShadowsPanel />;\n}\n\nexport function ScreenShadowsEdit() {\n\treturn <ShadowsEditPanel />;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,2BAAyB;AACzB,gCAA6B;AAGrB;AADD,SAAS,gBAAgB;AAC/B,SAAO,4CAAC,qBAAAA,SAAA,EAAa;AACtB;AAEO,SAAS,oBAAoB;AACnC,SAAO,4CAAC,0BAAAC,SAAA,EAAiB;AAC1B;",
-  "names": ["ShadowsPanel", "ShadowsEditPanel"]
-}

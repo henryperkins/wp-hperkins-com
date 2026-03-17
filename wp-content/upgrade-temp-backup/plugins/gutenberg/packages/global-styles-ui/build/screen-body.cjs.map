@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/screen-body.tsx"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __experimentalSpacer as Spacer } from '@wordpress/components';\nimport clsx from 'clsx';\n\ninterface ScreenBodyProps {\n\tchildren: React.ReactNode;\n\tclassName?: string;\n}\n\nexport function ScreenBody( { children, className }: ScreenBodyProps ) {\n\treturn (\n\t\t<Spacer\n\t\t\tclassName={ clsx( 'global-styles-ui-screen-body', className ) }\n\t\t\tpadding={ 4 } // 4 units = 16px. Could be made configurable via prop in the future if needed.\n\t\t>\n\t\t\t{ children }\n\t\t</Spacer>\n\t);\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,wBAA+C;AAC/C,kBAAiB;AASf;AAFK,SAAS,WAAY,EAAE,UAAU,UAAU,GAAqB;AACtE,SACC;AAAA,IAAC,kBAAAA;AAAA,IAAA;AAAA,MACA,eAAY,YAAAC,SAAM,gCAAgC,SAAU;AAAA,MAC5D,SAAU;AAAA,MAER;AAAA;AAAA,EACH;AAEF;",
-  "names": ["Spacer", "clsx"]
-}

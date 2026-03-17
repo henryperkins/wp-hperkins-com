@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/navigation-overlay-close/index.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { addFilter } from '@wordpress/hooks';\n\n/**\n * Internal dependencies\n */\nimport initBlock from '../utils/init-block';\nimport { isWithinNavigationOverlay } from '../utils/is-within-overlay';\nimport edit from './edit';\nimport metadata from './block.json';\nimport icon from './icon';\n\nconst { name } = metadata;\n\nexport { metadata, name };\n\nexport const settings = {\n\ticon,\n\tedit,\n};\n\nexport const init = () => {\n\taddFilter(\n\t\t'blockEditor.__unstableCanInsertBlockType',\n\t\t'core/navigation-overlay-close/restrict-to-overlay-template-parts',\n\t\t( canInsert, blockType ) => {\n\t\t\tif ( blockType.name !== 'core/navigation-overlay-close' ) {\n\t\t\t\treturn canInsert;\n\t\t\t}\n\n\t\t\tif ( ! canInsert ) {\n\t\t\t\treturn canInsert;\n\t\t\t}\n\n\t\t\treturn isWithinNavigationOverlay();\n\t\t}\n\t);\n\n\treturn initBlock( { name, metadata, settings } );\n};\n"],
-  "mappings": ";AAGA,SAAS,iBAAiB;AAK1B,OAAO,eAAe;AACtB,SAAS,iCAAiC;AAC1C,OAAO,UAAU;AACjB,OAAO,cAAc;AACrB,OAAO,UAAU;AAEjB,IAAM,EAAE,KAAK,IAAI;AAIV,IAAM,WAAW;AAAA,EACvB;AAAA,EACA;AACD;AAEO,IAAM,OAAO,MAAM;AACzB;AAAA,IACC;AAAA,IACA;AAAA,IACA,CAAE,WAAW,cAAe;AAC3B,UAAK,UAAU,SAAS,iCAAkC;AACzD,eAAO;AAAA,MACR;AAEA,UAAK,CAAE,WAAY;AAClB,eAAO;AAAA,MACR;AAEA,aAAO,0BAA0B;AAAA,IAClC;AAAA,EACD;AAEA,SAAO,UAAW,EAAE,MAAM,UAAU,SAAS,CAAE;AAChD;",
-  "names": []
-}

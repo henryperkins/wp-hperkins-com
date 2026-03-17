@@ -1,8 +1,0 @@
-// packages/wordcount/src/stripRemovables.ts
-function stripRemovables(settings, text) {
-  return text.replace(settings.removeRegExp, "");
-}
-export {
-  stripRemovables as default
-};
-//# sourceMappingURL=stripRemovables.mjs.map

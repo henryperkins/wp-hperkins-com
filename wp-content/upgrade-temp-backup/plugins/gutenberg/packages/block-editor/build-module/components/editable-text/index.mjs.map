@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/editable-text/index.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { forwardRef } from '@wordpress/element';\n\n/**\n * Internal dependencies\n */\nimport RichText from '../rich-text';\n\nconst EditableText = forwardRef( ( props, ref ) => {\n\treturn <RichText ref={ ref } { ...props } __unstableDisableFormats />;\n} );\n\nEditableText.Content = function Content( {\n\tvalue = '',\n\ttagName: Tag = 'div',\n\t...props\n} ) {\n\treturn <Tag { ...props }>{ value }</Tag>;\n};\n\n/**\n * Renders an editable text input in which text formatting is not allowed.\n */\nexport default EditableText;\n"],
-  "mappings": ";AAGA,SAAS,kBAAkB;AAK3B,OAAO,cAAc;AAGb;AADR,IAAM,eAAe,WAAY,CAAE,OAAO,QAAS;AAClD,SAAO,oBAAC,YAAS,KAAc,GAAG,OAAQ,0BAAwB,MAAC;AACpE,CAAE;AAEF,aAAa,UAAU,SAAS,QAAS;AAAA,EACxC,QAAQ;AAAA,EACR,SAAS,MAAM;AAAA,EACf,GAAG;AACJ,GAAI;AACH,SAAO,oBAAC,OAAM,GAAG,OAAU,iBAAO;AACnC;AAKA,IAAO,wBAAQ;",
-  "names": []
-}

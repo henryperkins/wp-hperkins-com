@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/fields/title/view.tsx"],
-  "sourcesContent": ["/**\n * External dependencies\n */\nimport clsx from 'clsx';\nimport type { ReactNode } from 'react';\n\n/**\n * WordPress dependencies\n */\nimport { __experimentalHStack as HStack } from '@wordpress/components';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport type { CommonPost } from '../../types';\nimport { getItemTitle } from '../../actions/utils';\n\nexport function BaseTitleView( {\n\titem,\n\tclassName,\n\tchildren,\n}: {\n\titem: CommonPost;\n\tclassName?: string;\n\tchildren?: ReactNode;\n} ) {\n\tconst renderedTitle = getItemTitle( item );\n\treturn (\n\t\t<HStack\n\t\t\tclassName={ clsx( 'fields-field__title', className ) }\n\t\t\talignment=\"center\"\n\t\t\tjustify=\"flex-start\"\n\t\t>\n\t\t\t<span>{ renderedTitle || __( '(no title)' ) }</span>\n\t\t\t{ children }\n\t\t</HStack>\n\t);\n}\n\nexport default function TitleView( { item }: { item: CommonPost } ) {\n\treturn <BaseTitleView item={ item } />;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,kBAAiB;AAMjB,wBAA+C;AAC/C,kBAAmB;AAMnB,mBAA6B;AAa3B;AAXK,SAAS,cAAe;AAAA,EAC9B;AAAA,EACA;AAAA,EACA;AACD,GAII;AACH,QAAM,oBAAgB,2BAAc,IAAK;AACzC,SACC;AAAA,IAAC,kBAAAA;AAAA,IAAA;AAAA,MACA,eAAY,YAAAC,SAAM,uBAAuB,SAAU;AAAA,MACnD,WAAU;AAAA,MACV,SAAQ;AAAA,MAER;AAAA,oDAAC,UAAO,+BAAiB,gBAAI,YAAa,GAAG;AAAA,QAC3C;AAAA;AAAA;AAAA,EACH;AAEF;AAEe,SAAR,UAA4B,EAAE,KAAK,GAA0B;AACnE,SAAO,4CAAC,iBAAc,MAAc;AACrC;",
-  "names": ["HStack", "clsx"]
-}

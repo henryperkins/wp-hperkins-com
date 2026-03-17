@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/link/use-link-instance-key.js"],
-  "sourcesContent": ["// Weakly referenced map allows unused ids to be garbage collected.\nconst weakMap = new WeakMap();\n\n// Incrementing zero-based ID value.\nlet id = -1;\n\nconst prefix = 'link-control-instance';\n\nfunction getKey( _id ) {\n\treturn `${ prefix }-${ _id }`;\n}\n\n/**\n * Builds a unique link control key for the given object reference.\n *\n * @param {Object} instance an unique object reference specific to this link control instance.\n * @return {string | undefined} the unique key to use for this link control.\n */\nfunction useLinkInstanceKey( instance ) {\n\tif ( ! instance ) {\n\t\treturn;\n\t}\n\tif ( weakMap.has( instance ) ) {\n\t\treturn getKey( weakMap.get( instance ) );\n\t}\n\n\tid += 1;\n\n\tweakMap.set( instance, id );\n\n\treturn getKey( id );\n}\n\nexport default useLinkInstanceKey;\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AACA,IAAM,UAAU,oBAAI,QAAQ;AAG5B,IAAI,KAAK;AAET,IAAM,SAAS;AAEf,SAAS,OAAQ,KAAM;AACtB,SAAO,GAAI,MAAO,IAAK,GAAI;AAC5B;AAQA,SAAS,mBAAoB,UAAW;AACvC,MAAK,CAAE,UAAW;AACjB;AAAA,EACD;AACA,MAAK,QAAQ,IAAK,QAAS,GAAI;AAC9B,WAAO,OAAQ,QAAQ,IAAK,QAAS,CAAE;AAAA,EACxC;AAEA,QAAM;AAEN,UAAQ,IAAK,UAAU,EAAG;AAE1B,SAAO,OAAQ,EAAG;AACnB;AAEA,IAAO,gCAAQ;",
-  "names": []
-}

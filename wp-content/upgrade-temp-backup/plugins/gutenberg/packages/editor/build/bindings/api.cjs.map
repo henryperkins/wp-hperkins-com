@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/bindings/api.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { registerBlockBindingsSource } from '@wordpress/blocks';\n\n/**\n * Internal dependencies\n */\nimport patternOverrides from './pattern-overrides';\nimport postData from './post-data';\nimport postMeta from './post-meta';\nimport termData from './term-data';\n\n/**\n * Function to register core block bindings sources provided by the editor.\n *\n * @example\n * ```js\n * import { registerCoreBlockBindingsSources } from '@wordpress/editor';\n *\n * registerCoreBlockBindingsSources();\n * ```\n */\nexport function registerCoreBlockBindingsSources() {\n\tregisterBlockBindingsSource( patternOverrides );\n\tregisterBlockBindingsSource( postData );\n\tregisterBlockBindingsSource( postMeta );\n\tregisterBlockBindingsSource( termData );\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,oBAA4C;AAK5C,+BAA6B;AAC7B,uBAAqB;AACrB,uBAAqB;AACrB,uBAAqB;AAYd,SAAS,mCAAmC;AAClD,iDAA6B,yBAAAA,OAAiB;AAC9C,iDAA6B,iBAAAC,OAAS;AACtC,iDAA6B,iBAAAC,OAAS;AACtC,iDAA6B,iBAAAC,OAAS;AACvC;",
-  "names": ["patternOverrides", "postData", "postMeta", "termData"]
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/strip-ansi.ts"],
-  "sourcesContent": ["/**\n * Copied pasted from `strip-ansi` to use without ESM.\n *\n * @see https://github.com/chalk/strip-ansi\n * Licensed under MIT license.\n *\n * @param string The ansi string.\n */\nfunction stripAnsi( string: string ) {\n\treturn string.replace(\n\t\tnew RegExp(\n\t\t\t[\n\t\t\t\t'[\\\\u001B\\\\u009B][[\\\\]()#;?]*(?:(?:(?:[a-zA-Z\\\\d]*(?:;[-a-zA-Z\\\\d\\\\/#&.:=?%@~_]*)*)?\\\\u0007)',\n\t\t\t\t'(?:(?:\\\\d{1,4}(?:;\\\\d{0,4})*)?[\\\\dA-PR-TZcf-ntqry=><~]))',\n\t\t\t].join( '|' ),\n\t\t\t'g'\n\t\t),\n\t\t''\n\t);\n}\n\nexport { stripAnsi };\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAQA,SAAS,UAAW,QAAiB;AACpC,SAAO,OAAO;AAAA,IACb,IAAI;AAAA,MACH;AAAA,QACC;AAAA,QACA;AAAA,MACD,EAAE,KAAM,GAAI;AAAA,MACZ;AAAA,IACD;AAAA,IACA;AAAA,EACD;AACD;",
-  "names": []
-}

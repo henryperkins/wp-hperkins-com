@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/constants.js"],
-  "sourcesContent": ["export const ALLOW_REUSABLE_BLOCKS = false;\nexport const ENABLE_EXPERIMENTAL_FSE_BLOCKS = false;\n"],
-  "mappings": ";AAAO,IAAM,wBAAwB;AAC9B,IAAM,iCAAiC;",
-  "names": []
-}

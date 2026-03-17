@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/queried-data/index.js"],
-  "sourcesContent": ["export * from './actions';\nexport * from './selectors';\nexport { default as reducer } from './reducer';\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iCAAc,0BAAd;AACA,iCAAc,4BADd;AAEA,qBAAmC;",
-  "names": []
-}

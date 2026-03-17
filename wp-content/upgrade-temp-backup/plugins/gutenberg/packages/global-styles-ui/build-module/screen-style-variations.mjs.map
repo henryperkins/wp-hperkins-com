@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/screen-style-variations.tsx"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { Card, CardBody } from '@wordpress/components';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport { ScreenHeader } from './screen-header';\nimport { StyleVariationsContent } from './style-variations-content';\n\nfunction ScreenStyleVariations() {\n\treturn (\n\t\t<>\n\t\t\t<ScreenHeader\n\t\t\t\ttitle={ __( 'Browse styles' ) }\n\t\t\t\tdescription={ __(\n\t\t\t\t\t'Choose a variation to change the look of the site.'\n\t\t\t\t) }\n\t\t\t/>\n\n\t\t\t<Card\n\t\t\t\tsize=\"small\"\n\t\t\t\tisBorderless\n\t\t\t\tclassName=\"global-styles-ui-screen-style-variations\"\n\t\t\t>\n\t\t\t\t<CardBody>\n\t\t\t\t\t<StyleVariationsContent />\n\t\t\t\t</CardBody>\n\t\t\t</Card>\n\t\t</>\n\t);\n}\n\nexport default ScreenStyleVariations;\n"],
-  "mappings": ";AAGA,SAAS,MAAM,gBAAgB;AAC/B,SAAS,UAAU;AAKnB,SAAS,oBAAoB;AAC7B,SAAS,8BAA8B;AAIrC,mBACC,KADD;AAFF,SAAS,wBAAwB;AAChC,SACC,iCACC;AAAA;AAAA,MAAC;AAAA;AAAA,QACA,OAAQ,GAAI,eAAgB;AAAA,QAC5B,aAAc;AAAA,UACb;AAAA,QACD;AAAA;AAAA,IACD;AAAA,IAEA;AAAA,MAAC;AAAA;AAAA,QACA,MAAK;AAAA,QACL,cAAY;AAAA,QACZ,WAAU;AAAA,QAEV,8BAAC,YACA,8BAAC,0BAAuB,GACzB;AAAA;AAAA,IACD;AAAA,KACD;AAEF;AAEA,IAAO,kCAAQ;",
-  "names": []
-}

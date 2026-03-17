@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/style-variations-content.tsx"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __ } from '@wordpress/i18n';\nimport { __experimentalVStack as VStack } from '@wordpress/components';\n\n/**\n * Internal dependencies\n */\nimport StyleVariationsContainer from './style-variations-container';\nimport TypographyVariations from './variations/variations-typography';\nimport ColorVariations from './variations/variations-color';\n\nexport function StyleVariationsContent() {\n\tconst gap = 3;\n\n\treturn (\n\t\t<VStack spacing={ 10 } className=\"global-styles-ui-variation-container\">\n\t\t\t<StyleVariationsContainer gap={ gap } />\n\t\t\t<ColorVariations title={ __( 'Color Variations' ) } gap={ gap } />\n\t\t\t<TypographyVariations title={ __( 'Typography' ) } gap={ gap } />\n\t\t</VStack>\n\t);\n}\n"],
-  "mappings": ";AAGA,SAAS,UAAU;AACnB,SAAS,wBAAwB,cAAc;AAK/C,OAAO,8BAA8B;AACrC,OAAO,0BAA0B;AACjC,OAAO,qBAAqB;AAM1B,SACC,KADD;AAJK,SAAS,yBAAyB;AACxC,QAAM,MAAM;AAEZ,SACC,qBAAC,UAAO,SAAU,IAAK,WAAU,wCAChC;AAAA,wBAAC,4BAAyB,KAAY;AAAA,IACtC,oBAAC,mBAAgB,OAAQ,GAAI,kBAAmB,GAAI,KAAY;AAAA,IAChE,oBAAC,wBAAqB,OAAQ,GAAI,YAAa,GAAI,KAAY;AAAA,KAChE;AAEF;",
-  "names": []
-}

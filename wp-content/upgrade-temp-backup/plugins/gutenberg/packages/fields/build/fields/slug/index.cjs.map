@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/fields/slug/index.ts"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { Field } from '@wordpress/dataviews';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport type { BasePost } from '../../types';\nimport SlugEdit from './slug-edit';\nimport SlugView from './slug-view';\n\nconst slugField: Field< BasePost > = {\n\tid: 'slug',\n\ttype: 'text',\n\tlabel: __( 'Slug' ),\n\tEdit: SlugEdit,\n\trender: SlugView,\n\tfilterBy: false,\n};\n\n/**\n * Slug field for BasePost.\n */\nexport default slugField;\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAIA,kBAAmB;AAMnB,uBAAqB;AACrB,uBAAqB;AAErB,IAAM,YAA+B;AAAA,EACpC,IAAI;AAAA,EACJ,MAAM;AAAA,EACN,WAAO,gBAAI,MAAO;AAAA,EAClB,MAAM,iBAAAA;AAAA,EACN,QAAQ,iBAAAC;AAAA,EACR,UAAU;AACX;AAKA,IAAO,eAAQ;",
-  "names": ["SlugEdit", "SlugView"]
-}

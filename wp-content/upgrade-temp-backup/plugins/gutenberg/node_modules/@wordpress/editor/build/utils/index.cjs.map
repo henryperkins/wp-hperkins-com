@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/utils/index.js"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport mediaUpload from './media-upload';\n\nexport { mediaUpload };\nexport { cleanForSlug } from './url.js';\nexport { getTemplatePartIcon } from './get-template-part-icon';\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA,yCAAAA;AAAA;AAAA;AAGA,0BAAwB;AAGxB,iBAA6B;AAC7B,oCAAoC;",
-  "names": ["mediaUpload"]
-}

@@ -1,8 +1,0 @@
-// packages/wordcount/src/stripConnectors.ts
-function stripConnectors(settings, text) {
-  return text.replace(settings.connectorRegExp, " ");
-}
-export {
-  stripConnectors as default
-};
-//# sourceMappingURL=stripConnectors.mjs.map

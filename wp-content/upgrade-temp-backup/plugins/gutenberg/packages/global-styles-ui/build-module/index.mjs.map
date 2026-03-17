@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/index.ts"],
-  "sourcesContent": ["export { GlobalStylesUI } from './global-styles-ui';\nexport { StyleVariations } from './style-variations';\nexport { ColorVariations } from './color-variations';\nexport { TypographyVariations } from './typography-variations';\n\n// Ideally this should just be a core-data selector.\nexport { default as useGlobalStylesRevisions } from './screen-revisions/use-global-styles-revisions';\n\n// Font Library exports\nexport { FontLibrary } from './font-library/font-library';\nexport { default as FontLibraryProvider } from './font-library/context';\nexport { FontLibraryContext } from './font-library/context';\nexport { default as InstalledFonts } from './font-library/installed-fonts';\nexport { default as UploadFonts } from './font-library/upload-fonts';\nexport { default as FontCollection } from './font-library/font-collection';\n"],
-  "mappings": ";AAAA,SAAS,sBAAsB;AAC/B,SAAS,uBAAuB;AAChC,SAAS,uBAAuB;AAChC,SAAS,4BAA4B;AAGrC,SAAoB,WAAXA,gBAA2C;AAGpD,SAAS,mBAAmB;AAC5B,SAAoB,WAAXA,gBAAsC;AAC/C,SAAS,0BAA0B;AACnC,SAAoB,WAAXA,gBAAiC;AAC1C,SAAoB,WAAXA,gBAA8B;AACvC,SAAoB,WAAXA,gBAAiC;",
-  "names": ["default"]
-}

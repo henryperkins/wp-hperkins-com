@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/post-title/constants.js"],
-  "sourcesContent": ["export const DEFAULT_CLASSNAMES =\n\t'wp-block wp-block-post-title block-editor-block-list__block editor-post-title editor-post-title__input rich-text';\n\nexport const REGEXP_NEWLINES = /[\\r\\n]+/g;\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,IAAM,qBACZ;AAEM,IAAM,kBAAkB;",
-  "names": []
-}

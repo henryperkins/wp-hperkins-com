@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/index.ts"],
-  "sourcesContent": ["// Components\nexport { MediaEditorProvider } from './components/media-editor-provider';\nexport { default as MediaPreview } from './components/media-preview';\nexport { default as MediaForm } from './components/media-form';\n\n// Types\nexport type {\n\tMedia,\n\tMediaEditorProviderProps,\n} from './components/media-editor-provider';\nexport type { MediaPreviewProps } from './components/media-preview';\nexport type { MediaFormProps } from './components/media-form';\n\n// Re-export commonly used dataviews types for convenience\nexport type { Field, Form } from '@wordpress/dataviews';\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AACA,mCAAoC;AACpC,2BAAwC;AACxC,wBAAqC;",
-  "names": []
-}

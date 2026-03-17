@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/breadcrumbs/types.ts"],
-  "sourcesContent": ["export interface BreadcrumbItem {\n\t/**\n\t * The label text for the breadcrumb item.\n\t */\n\tlabel: string;\n\n\t/**\n\t * The router path that the breadcrumb item should link to.\n\t * It is optional because the current item does not have a link.\n\t */\n\tto?: string;\n}\n\nexport interface BreadcrumbsProps extends React.HTMLAttributes< HTMLElement > {\n\t/**\n\t * An array of items to display in the breadcrumb trail.\n\t * The last item is considered the current item.\n\t */\n\titems: BreadcrumbItem[];\n\t/**\n\t * A boolean to show/hide the current item in the trail.\n\t * Note that when `false` the current item is only visually hidden.\n\t */\n\tshowCurrentItem?: boolean;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

@@ -1,3 +1,0 @@
-import type { ValidatedControlProps } from './types';
-export declare const ValidatedInputControl: import("react").ForwardRefExoticComponent<Omit<Omit<import("../../input-control/types").InputControlProps & import("react").RefAttributes<HTMLInputElement>, "__next40pxDefaultSize"> & ValidatedControlProps, "ref"> & import("react").RefAttributes<HTMLInputElement>>;
-//# sourceMappingURL=input-control.d.ts.map

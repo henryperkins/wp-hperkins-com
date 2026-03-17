@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/filters/wide-widget-display.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { createHigherOrderComponent } from '@wordpress/compose';\nimport { addFilter } from '@wordpress/hooks';\n\nconst { wp } = window;\n\nconst withWideWidgetDisplay = createHigherOrderComponent(\n\t( BlockEdit ) => ( props ) => {\n\t\tconst { idBase } = props.attributes;\n\t\tconst isWide =\n\t\t\twp.customize.Widgets.data.availableWidgets.find(\n\t\t\t\t( widget ) => widget.id_base === idBase\n\t\t\t)?.is_wide ?? false;\n\n\t\treturn <BlockEdit key=\"edit\" { ...props } isWide={ isWide } />;\n\t},\n\t'withWideWidgetDisplay'\n);\n\naddFilter(\n\t'editor.BlockEdit',\n\t'core/customize-widgets/wide-widget-display',\n\twithWideWidgetDisplay\n);\n"],
-  "mappings": ";AAGA,qBAA2C;AAC3C,mBAA0B;AAYjB;AAVT,IAAM,EAAE,GAAG,IAAI;AAEf,IAAM,4BAAwB;AAAA,EAC7B,CAAE,cAAe,CAAE,UAAW;AAC7B,UAAM,EAAE,OAAO,IAAI,MAAM;AACzB,UAAM,SACL,GAAG,UAAU,QAAQ,KAAK,iBAAiB;AAAA,MAC1C,CAAE,WAAY,OAAO,YAAY;AAAA,IAClC,GAAG,WAAW;AAEf,WAAO,4CAAC,aAAuB,GAAG,OAAQ,UAApB,MAAsC;AAAA,EAC7D;AAAA,EACA;AACD;AAAA,IAEA;AAAA,EACC;AAAA,EACA;AAAA,EACA;AACD;",
-  "names": []
-}

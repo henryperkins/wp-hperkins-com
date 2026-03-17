@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/private-apis.ts"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport {\n\tCRDT_DOC_META_PERSISTENCE_KEY,\n\tCRDT_RECORD_MAP_KEY,\n\tLOCAL_EDITOR_ORIGIN,\n\tLOCAL_UNDO_IGNORED_ORIGIN,\n} from './config';\nimport { lock } from './lock-unlock';\nimport { createSyncManager } from './manager';\nimport { pollingManager } from './providers/http-polling/polling-manager';\nimport { default as Delta } from './quill-delta/Delta';\n\nexport const privateApis = {};\n\nlock( privateApis, {\n\tcreateSyncManager,\n\tDelta,\n\tCRDT_DOC_META_PERSISTENCE_KEY,\n\tCRDT_RECORD_MAP_KEY,\n\tLOCAL_EDITOR_ORIGIN,\n\tLOCAL_UNDO_IGNORED_ORIGIN,\n\tretrySyncConnection: () => pollingManager.retryNow(),\n} );\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,oBAKO;AACP,yBAAqB;AACrB,qBAAkC;AAClC,6BAA+B;AAC/B,mBAAiC;AAE1B,IAAM,cAAc,CAAC;AAAA,IAE5B,yBAAM,aAAa;AAAA,EAClB;AAAA,EACA,oBAAAA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA,qBAAqB,MAAM,sCAAe,SAAS;AACpD,CAAE;",
-  "names": ["Delta"]
-}

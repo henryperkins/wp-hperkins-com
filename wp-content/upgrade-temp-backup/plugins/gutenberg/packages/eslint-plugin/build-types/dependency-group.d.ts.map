@@ -1,1 +1,0 @@
-{"version":3,"file":"dependency-group.d.ts","sourceRoot":"","sources":["../rules/dependency-group.js"],"names":[],"mappings":";;;wBAOW,OAAO,QAAQ,EAAE,IAAI,CAAC,UAAU;;eAP7B,OAAO,QAAQ,EAAE,OAAO;YACxB,OAAO,QAAQ,EAAE,IAAI;sBACrB,OAAO,QAAQ,EAAE,cAAc"}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/more-menu/tools-more-menu-group.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { createSlotFill } from '@wordpress/components';\n\nconst { Fill: ToolsMoreMenuGroup, Slot } =\n\tcreateSlotFill( 'ToolsMoreMenuGroup' );\n\nToolsMoreMenuGroup.Slot = ( { fillProps } ) => <Slot fillProps={ fillProps } />;\n\nexport default ToolsMoreMenuGroup;\n"],
-  "mappings": ";AAGA,SAAS,sBAAsB;AAKgB;AAH/C,IAAM,EAAE,MAAM,oBAAoB,KAAK,IACtC,eAAgB,oBAAqB;AAEtC,mBAAmB,OAAO,CAAE,EAAE,UAAU,MAAO,oBAAC,QAAK,WAAwB;AAE7E,IAAO,gCAAQ;",
-  "names": []
-}

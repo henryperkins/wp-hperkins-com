@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/store/private-actions.js"],
-  "sourcesContent": ["export function registerRoute( route ) {\n\treturn {\n\t\ttype: 'REGISTER_ROUTE',\n\t\troute,\n\t};\n}\n\nexport function unregisterRoute( name ) {\n\treturn {\n\t\ttype: 'UNREGISTER_ROUTE',\n\t\tname,\n\t};\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,SAAS,cAAe,OAAQ;AACtC,SAAO;AAAA,IACN,MAAM;AAAA,IACN;AAAA,EACD;AACD;AAEO,SAAS,gBAAiB,MAAO;AACvC,SAAO;AAAA,IACN,MAAM;AAAA,IACN;AAAA,EACD;AACD;",
-  "names": []
-}

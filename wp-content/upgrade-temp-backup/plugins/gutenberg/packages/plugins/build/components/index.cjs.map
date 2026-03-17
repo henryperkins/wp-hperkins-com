@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/components/index.ts"],
-  "sourcesContent": ["export { default as PluginArea } from './plugin-area';\nexport { usePluginContext, withPluginContext } from './plugin-context';\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,yBAAsC;AACtC,4BAAoD;",
-  "names": []
-}

@@ -24,7 +24,7 @@
 			"type": "string",
 			"default": "Writing on customer-facing engineering, AI workflows, WordPress delivery, and support-to-implementation systems.",
 			"role": "content"
-		},
+		}
 	},
 	"editorScript": "file:./index.js",
 	"viewScript": "file:./view.js",

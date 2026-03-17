@@ -1,1 +1,0 @@
-{"version":3,"file":"screen-body.d.ts","sourceRoot":"","sources":["../src/screen-body.tsx"],"names":[],"mappings":"AAMA,UAAU,eAAe;IACxB,QAAQ,EAAE,KAAK,CAAC,SAAS,CAAC;IAC1B,SAAS,CAAC,EAAE,MAAM,CAAC;CACnB;AAED,wBAAgB,UAAU,CAAE,EAAE,QAAQ,EAAE,SAAS,EAAE,EAAE,eAAe,+BASnE"}

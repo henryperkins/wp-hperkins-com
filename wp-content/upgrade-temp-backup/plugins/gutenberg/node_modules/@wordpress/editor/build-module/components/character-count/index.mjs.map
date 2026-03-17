@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/character-count/index.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { useSelect } from '@wordpress/data';\nimport { count as characterCount } from '@wordpress/wordcount';\n\n/**\n * Internal dependencies\n */\nimport { store as editorStore } from '../../store';\n\n/**\n * Renders the character count of the post content.\n *\n * @return {number} The character count.\n */\nexport default function CharacterCount() {\n\tconst content = useSelect(\n\t\t( select ) => select( editorStore ).getEditedPostAttribute( 'content' ),\n\t\t[]\n\t);\n\n\treturn characterCount( content, 'characters_including_spaces' );\n}\n"],
-  "mappings": ";AAGA,SAAS,iBAAiB;AAC1B,SAAS,SAAS,sBAAsB;AAKxC,SAAS,SAAS,mBAAmB;AAOtB,SAAR,iBAAkC;AACxC,QAAM,UAAU;AAAA,IACf,CAAE,WAAY,OAAQ,WAAY,EAAE,uBAAwB,SAAU;AAAA,IACtE,CAAC;AAAA,EACF;AAEA,SAAO,eAAgB,SAAS,6BAA8B;AAC/D;",
-  "names": []
-}

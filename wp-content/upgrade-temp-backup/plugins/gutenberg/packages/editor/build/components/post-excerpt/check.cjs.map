@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/post-excerpt/check.js"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport PostTypeSupportCheck from '../post-type-support-check';\n\n/**\n * Component for checking if the post type supports the excerpt field.\n *\n * @param {Object}          props          Props.\n * @param {React.ReactNode} props.children Children to be rendered.\n *\n * @return {React.ReactNode} The rendered component.\n */\nfunction PostExcerptCheck( { children } ) {\n\treturn (\n\t\t<PostTypeSupportCheck supportKeys=\"excerpt\">\n\t\t\t{ children }\n\t\t</PostTypeSupportCheck>\n\t);\n}\n\nexport default PostExcerptCheck;\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,qCAAiC;AAY/B;AAFF,SAAS,iBAAkB,EAAE,SAAS,GAAI;AACzC,SACC,4CAAC,+BAAAA,SAAA,EAAqB,aAAY,WAC/B,UACH;AAEF;AAEA,IAAO,gBAAQ;",
-  "names": ["PostTypeSupportCheck"]
-}

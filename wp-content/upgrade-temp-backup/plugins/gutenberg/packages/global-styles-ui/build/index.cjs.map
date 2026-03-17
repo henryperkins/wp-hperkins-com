@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/index.ts"],
-  "sourcesContent": ["export { GlobalStylesUI } from './global-styles-ui';\nexport { StyleVariations } from './style-variations';\nexport { ColorVariations } from './color-variations';\nexport { TypographyVariations } from './typography-variations';\n\n// Ideally this should just be a core-data selector.\nexport { default as useGlobalStylesRevisions } from './screen-revisions/use-global-styles-revisions';\n\n// Font Library exports\nexport { FontLibrary } from './font-library/font-library';\nexport { default as FontLibraryProvider } from './font-library/context';\nexport { FontLibraryContext } from './font-library/context';\nexport { default as InstalledFonts } from './font-library/installed-fonts';\nexport { default as UploadFonts } from './font-library/upload-fonts';\nexport { default as FontCollection } from './font-library/font-collection';\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,8BAA+B;AAC/B,8BAAgC;AAChC,8BAAgC;AAChC,mCAAqC;AAGrC,yCAAoD;AAGpD,0BAA4B;AAC5B,qBAA+C;AAC/C,IAAAA,kBAAmC;AACnC,6BAA0C;AAC1C,0BAAuC;AACvC,6BAA0C;",
-  "names": ["import_context"]
-}

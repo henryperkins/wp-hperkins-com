@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/store/utils/is-template-revertable.js"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport { TEMPLATE_ORIGINS } from '../constants';\n\n// Copy of the function from packages/edit-site/src/utils/is-template-revertable.js\n\n/**\n * Check if a template or template part is revertable to its original theme-provided file.\n *\n * @param {Object} templateOrTemplatePart The entity to check.\n * @return {boolean} Whether the entity is revertable.\n */\nexport default function isTemplateRevertable( templateOrTemplatePart ) {\n\tif ( ! templateOrTemplatePart ) {\n\t\treturn false;\n\t}\n\n\treturn (\n\t\ttemplateOrTemplatePart.source === TEMPLATE_ORIGINS.custom &&\n\t\t( Boolean( templateOrTemplatePart?.plugin ) ||\n\t\t\ttemplateOrTemplatePart?.has_theme_file )\n\t);\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,uBAAiC;AAUlB,SAAR,qBAAuC,wBAAyB;AACtE,MAAK,CAAE,wBAAyB;AAC/B,WAAO;AAAA,EACR;AAEA,SACC,uBAAuB,WAAW,kCAAiB,WACjD,QAAS,wBAAwB,MAAO,KACzC,wBAAwB;AAE3B;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/hooks/index.ts"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nexport { default as useFormValidity } from './use-form-validity';\n"],
-  "mappings": ";AAGA,SAAoB,WAAXA,gBAAkC;",
-  "names": ["default"]
-}

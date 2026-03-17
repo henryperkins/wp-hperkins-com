@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/post-last-revision/panel.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { PanelBody } from '@wordpress/components';\n\n/**\n * Internal dependencies\n */\nimport PostLastRevision from './';\nimport PostLastRevisionCheck from './check';\n\n/**\n * Renders the panel for displaying the last revision of a post.\n *\n * @return {React.ReactNode} The rendered component.\n */\nfunction PostLastRevisionPanel() {\n\treturn (\n\t\t<PostLastRevisionCheck>\n\t\t\t<PanelBody className=\"editor-post-last-revision__panel\">\n\t\t\t\t<PostLastRevision />\n\t\t\t</PanelBody>\n\t\t</PostLastRevisionCheck>\n\t);\n}\n\nexport default PostLastRevisionPanel;\n"],
-  "mappings": ";AAGA,SAAS,iBAAiB;AAK1B,OAAO,sBAAsB;AAC7B,OAAO,2BAA2B;AAW9B;AAJJ,SAAS,wBAAwB;AAChC,SACC,oBAAC,yBACA,8BAAC,aAAU,WAAU,oCACpB,8BAAC,oBAAiB,GACnB,GACD;AAEF;AAEA,IAAO,gBAAQ;",
-  "names": []
-}

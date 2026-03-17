@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/collaborators-overlay/collaborator-styles.ts"],
-  "sourcesContent": ["/**\n * Compiled CSS value of $elevation-x-small.\n * Keep in sync with @wordpress/base-styles/_variables.scss.\n */\nexport const ELEVATION_X_SMALL =\n\t'0 1px 1px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.02), 0 3px 3px rgba(0, 0, 0, 0.02), 0 4px 4px rgba(0, 0, 0, 0.01)';\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAIO,IAAM,oBACZ;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/mime_type/index.ts"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __ } from '@wordpress/i18n';\nimport type { Attachment, Updatable } from '@wordpress/core-data';\nimport type { Field } from '@wordpress/dataviews';\n\nconst mimeTypeField: Partial< Field< Updatable< Attachment > > > = {\n\tid: 'mime_type',\n\ttype: 'text',\n\tlabel: __( 'File type' ),\n\tgetValue: ( { item } ) => item?.mime_type || '',\n\trender: ( { item } ) => item?.mime_type || '-',\n\t// Disable sorting until REST API support for ordering my `mime_type` is added.\n\t// See: https://core.trac.wordpress.org/ticket/64073\n\tenableSorting: false,\n\tfilterBy: false,\n\treadOnly: true,\n};\n\nexport default mimeTypeField;\n"],
-  "mappings": ";AAGA,SAAS,UAAU;AAInB,IAAM,gBAA6D;AAAA,EAClE,IAAI;AAAA,EACJ,MAAM;AAAA,EACN,OAAO,GAAI,WAAY;AAAA,EACvB,UAAU,CAAE,EAAE,KAAK,MAAO,MAAM,aAAa;AAAA,EAC7C,QAAQ,CAAE,EAAE,KAAK,MAAO,MAAM,aAAa;AAAA;AAAA;AAAA,EAG3C,eAAe;AAAA,EACf,UAAU;AAAA,EACV,UAAU;AACX;AAEA,IAAO,oBAAQ;",
-  "names": []
-}

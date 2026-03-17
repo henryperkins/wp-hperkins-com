@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/index.ts"],
-  "sourcesContent": ["export { default as altTextField } from './alt_text';\nexport { default as attachedToField } from './attached_to';\nexport { default as authorField } from './author';\nexport { default as captionField } from './caption';\nexport { default as dateAddedField } from './date_added';\nexport { default as dateModifiedField } from './date_modified';\nexport { default as descriptionField } from './description';\nexport { default as filenameField } from './filename';\nexport { default as filesizeField } from './filesize';\nexport { default as mediaDimensionsField } from './media_dimensions';\nexport { default as mediaThumbnailField } from './media_thumbnail';\nexport { default as mimeTypeField } from './mime_type';\n\nexport type {\n\tMediaItem,\n\tMediaKind,\n\tMediaType,\n\tMediaItemUpdatable,\n} from './types';\n"],
-  "mappings": ";AAAA,SAAoB,WAAXA,gBAA+B;AACxC,SAAoB,WAAXA,gBAAkC;AAC3C,SAAoB,WAAXA,gBAA8B;AACvC,SAAoB,WAAXA,gBAA+B;AACxC,SAAoB,WAAXA,gBAAiC;AAC1C,SAAoB,WAAXA,gBAAoC;AAC7C,SAAoB,WAAXA,gBAAmC;AAC5C,SAAoB,WAAXA,gBAAgC;AACzC,SAAoB,WAAXA,iBAAgC;AACzC,SAAoB,WAAXA,iBAAuC;AAChD,SAAoB,WAAXA,iBAAsC;AAC/C,SAAoB,WAAXA,iBAAgC;",
-  "names": ["default"]
-}

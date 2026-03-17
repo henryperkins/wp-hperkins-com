@@ -1,8 +1,0 @@
-// packages/wordcount/src/stripTags.ts
-function stripTags(settings, text) {
-  return text.replace(settings.HTMLRegExp, "\n");
-}
-export {
-  stripTags as default
-};
-//# sourceMappingURL=stripTags.mjs.map

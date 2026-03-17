@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/post-panel-row/index.js"],
-  "sourcesContent": ["/**\n * External dependencies\n */\nimport clsx from 'clsx';\n\n/**\n * WordPress dependencies\n */\nimport { __experimentalHStack as HStack } from '@wordpress/components';\nimport { forwardRef } from '@wordpress/element';\n\nconst PostPanelRow = forwardRef( ( { className, label, children }, ref ) => {\n\treturn (\n\t\t<HStack\n\t\t\tclassName={ clsx( 'editor-post-panel__row', className ) }\n\t\t\tref={ ref }\n\t\t>\n\t\t\t{ label && (\n\t\t\t\t<div className=\"editor-post-panel__row-label\">{ label }</div>\n\t\t\t) }\n\t\t\t<div className=\"editor-post-panel__row-control\">{ children }</div>\n\t\t</HStack>\n\t);\n} );\n\nexport default PostPanelRow;\n"],
-  "mappings": ";AAGA,OAAO,UAAU;AAKjB,SAAS,wBAAwB,cAAc;AAC/C,SAAS,kBAAkB;AAIzB,SAKE,KALF;AAFF,IAAM,eAAe,WAAY,CAAE,EAAE,WAAW,OAAO,SAAS,GAAG,QAAS;AAC3E,SACC;AAAA,IAAC;AAAA;AAAA,MACA,WAAY,KAAM,0BAA0B,SAAU;AAAA,MACtD;AAAA,MAEE;AAAA,iBACD,oBAAC,SAAI,WAAU,gCAAiC,iBAAO;AAAA,QAExD,oBAAC,SAAI,WAAU,kCAAmC,UAAU;AAAA;AAAA;AAAA,EAC7D;AAEF,CAAE;AAEF,IAAO,yBAAQ;",
-  "names": []
-}

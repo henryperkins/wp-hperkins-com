@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/tab/slug-from-label.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { cleanForSlug } from '@wordpress/url';\n\n/**\n * Generates a slug from a tab's text label.\n *\n * @param {string} label    Tab label RichText value.\n * @param {number} tabIndex Tab index value.\n *\n * @return {string} The generated slug with HTML stripped out.\n */\nexport default function slugFromLabel( label, tabIndex ) {\n\t// Get just the text content, filtering out any HTML tags from the RichText value.\n\tconst htmlDocument = new window.DOMParser().parseFromString(\n\t\tlabel,\n\t\t'text/html'\n\t);\n\tif ( htmlDocument.body?.textContent ) {\n\t\treturn cleanForSlug( htmlDocument.body.textContent );\n\t}\n\n\t// Fall back to using the tab index if the label is empty.\n\treturn `tab-panel-${ tabIndex }`;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,iBAA6B;AAUd,SAAR,cAAgC,OAAO,UAAW;AAExD,QAAM,eAAe,IAAI,OAAO,UAAU,EAAE;AAAA,IAC3C;AAAA,IACA;AAAA,EACD;AACA,MAAK,aAAa,MAAM,aAAc;AACrC,eAAO,yBAAc,aAAa,KAAK,WAAY;AAAA,EACpD;AAGA,SAAO,aAAc,QAAS;AAC/B;",
-  "names": []
-}

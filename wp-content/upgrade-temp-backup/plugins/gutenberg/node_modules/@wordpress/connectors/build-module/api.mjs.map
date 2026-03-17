@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/api.ts"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { dispatch } from '@wordpress/data';\n\n/**\n * Internal dependencies\n */\nimport { store } from './store';\nimport { unlock } from './lock-unlock';\nimport type { ConnectorConfig } from './types';\n\n/**\n * Register a connector that will appear in the Connectors settings page.\n *\n * @param slug   Unique identifier for the connector.\n * @param config Connector configuration.\n *\n * @example\n * ```js\n * import { __experimentalRegisterConnector as registerConnector, __experimentalConnectorItem as ConnectorItem } from '@wordpress/connectors';\n *\n * registerConnector( 'my-plugin/openai', {\n *     label: 'OpenAI',\n *     description: 'Text, image, and code generation with GPT.',\n *     icon: <MyOpenAIIcon />,\n *     render: ( { slug, label, description } ) => (\n *         <ConnectorItem\n *             icon={ <MyOpenAIIcon /> }\n *             name={ label }\n *             description={ description }\n *         >\n *             <MyCustomSettings />\n *         </ConnectorItem>\n *     ),\n * } );\n * ```\n */\nexport function registerConnector(\n\tslug: string,\n\tconfig: Omit< ConnectorConfig, 'slug' >\n): void {\n\tunlock( dispatch( store ) ).registerConnector( slug, config );\n}\n"],
-  "mappings": ";AAGA,SAAS,gBAAgB;AAKzB,SAAS,aAAa;AACtB,SAAS,cAAc;AA6BhB,SAAS,kBACf,MACA,QACO;AACP,SAAQ,SAAU,KAAM,CAAE,EAAE,kBAAmB,MAAM,MAAO;AAC7D;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/sidebar-navigation-screen-patterns/use-default-pattern-categories.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { store as coreStore } from '@wordpress/core-data';\nimport { useSelect } from '@wordpress/data';\n\n/**\n * Internal dependencies\n */\nimport { unlock } from '../../lock-unlock';\nimport { store as editSiteStore } from '../../store';\n\nexport default function useDefaultPatternCategories() {\n\tconst blockPatternCategories = useSelect( ( select ) => {\n\t\tconst { getSettings } = unlock( select( editSiteStore ) );\n\t\tconst settings = getSettings();\n\n\t\treturn (\n\t\t\tsettings.__experimentalAdditionalBlockPatternCategories ??\n\t\t\tsettings.__experimentalBlockPatternCategories\n\t\t);\n\t} );\n\n\tconst restBlockPatternCategories = useSelect( ( select ) =>\n\t\tselect( coreStore ).getBlockPatternCategories()\n\t);\n\n\treturn [\n\t\t...( blockPatternCategories || [] ),\n\t\t...( restBlockPatternCategories || [] ),\n\t];\n}\n"],
-  "mappings": ";AAGA,SAAS,SAAS,iBAAiB;AACnC,SAAS,iBAAiB;AAK1B,SAAS,cAAc;AACvB,SAAS,SAAS,qBAAqB;AAExB,SAAR,8BAA+C;AACrD,QAAM,yBAAyB,UAAW,CAAE,WAAY;AACvD,UAAM,EAAE,YAAY,IAAI,OAAQ,OAAQ,aAAc,CAAE;AACxD,UAAM,WAAW,YAAY;AAE7B,WACC,SAAS,kDACT,SAAS;AAAA,EAEX,CAAE;AAEF,QAAM,6BAA6B;AAAA,IAAW,CAAE,WAC/C,OAAQ,SAAU,EAAE,0BAA0B;AAAA,EAC/C;AAEA,SAAO;AAAA,IACN,GAAK,0BAA0B,CAAC;AAAA,IAChC,GAAK,8BAA8B,CAAC;AAAA,EACrC;AACD;",
-  "names": []
-}

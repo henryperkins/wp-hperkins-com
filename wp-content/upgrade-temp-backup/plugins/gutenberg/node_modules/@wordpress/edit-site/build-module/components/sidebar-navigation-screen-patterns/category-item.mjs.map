@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/sidebar-navigation-screen-patterns/category-item.js"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport SidebarNavigationItem from '../sidebar-navigation-item';\n\nexport default function CategoryItem( {\n\tcount,\n\ticon,\n\tid,\n\tisActive,\n\tlabel,\n\ttype,\n} ) {\n\tif ( ! count ) {\n\t\treturn;\n\t}\n\tconst queryArgs = [ `postType=${ type }` ];\n\tif ( id ) {\n\t\tqueryArgs.push( `categoryId=${ id }` );\n\t}\n\n\treturn (\n\t\t<SidebarNavigationItem\n\t\t\ticon={ icon }\n\t\t\tsuffix={ <span>{ count }</span> }\n\t\t\taria-current={ isActive ? 'true' : undefined }\n\t\t\tto={ `/pattern?${ queryArgs.join( '&' ) }` }\n\t\t>\n\t\t\t{ label }\n\t\t</SidebarNavigationItem>\n\t);\n}\n"],
-  "mappings": ";AAGA,OAAO,2BAA2B;AAqBtB;AAnBG,SAAR,aAA+B;AAAA,EACrC;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AACD,GAAI;AACH,MAAK,CAAE,OAAQ;AACd;AAAA,EACD;AACA,QAAM,YAAY,CAAE,YAAa,IAAK,EAAG;AACzC,MAAK,IAAK;AACT,cAAU,KAAM,cAAe,EAAG,EAAG;AAAA,EACtC;AAEA,SACC;AAAA,IAAC;AAAA;AAAA,MACA;AAAA,MACA,QAAS,oBAAC,UAAO,iBAAO;AAAA,MACxB,gBAAe,WAAW,SAAS;AAAA,MACnC,IAAK,YAAa,UAAU,KAAM,GAAI,CAAE;AAAA,MAEtC;AAAA;AAAA,EACH;AAEF;",
-  "names": []
-}

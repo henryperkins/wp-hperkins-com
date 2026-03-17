@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/utils/get-template-part-icon.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport {\n\theader as headerIcon,\n\tfooter as footerIcon,\n\tsidebar as sidebarIcon,\n\tnavigationOverlay as navigationOverlayIcon,\n\tsymbolFilled as symbolFilledIcon,\n} from '@wordpress/icons';\n\n/**\n * Helper function to retrieve the corresponding icon by area name.\n *\n * @param {string} areaOrIconName The area name (e.g., 'header', 'navigation-overlay').\n *\n * @return {Object} The corresponding icon.\n */\nexport function getTemplatePartIcon( areaOrIconName ) {\n\tif ( 'header' === areaOrIconName ) {\n\t\treturn headerIcon;\n\t} else if ( 'footer' === areaOrIconName ) {\n\t\treturn footerIcon;\n\t} else if ( 'sidebar' === areaOrIconName ) {\n\t\treturn sidebarIcon;\n\t} else if ( 'navigation-overlay' === areaOrIconName ) {\n\t\treturn navigationOverlayIcon;\n\t}\n\treturn symbolFilledIcon;\n}\n"],
-  "mappings": ";AAGA;AAAA,EACC,UAAU;AAAA,EACV,UAAU;AAAA,EACV,WAAW;AAAA,EACX,qBAAqB;AAAA,EACrB,gBAAgB;AAAA,OACV;AASA,SAAS,oBAAqB,gBAAiB;AACrD,MAAK,aAAa,gBAAiB;AAClC,WAAO;AAAA,EACR,WAAY,aAAa,gBAAiB;AACzC,WAAO;AAAA,EACR,WAAY,cAAc,gBAAiB;AAC1C,WAAO;AAAA,EACR,WAAY,yBAAyB,gBAAiB;AACrD,WAAO;AAAA,EACR;AACA,SAAO;AACR;",
-  "names": []
-}

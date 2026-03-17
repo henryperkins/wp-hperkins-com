@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/hooks/index.js"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport './custom-sources-backwards-compatibility';\nimport './default-autocompleters';\nimport './media-upload';\nimport './pattern-overrides';\nimport './navigation-link-view-button';\nimport './template-part-navigation-edit-button';\nimport './push-changes-to-global-styles';\n"],
-  "mappings": ";AAGA,OAAO;AACP,OAAO;AACP,OAAO;AACP,OAAO;AACP,OAAO;AACP,OAAO;AACP,OAAO;",
-  "names": []
-}

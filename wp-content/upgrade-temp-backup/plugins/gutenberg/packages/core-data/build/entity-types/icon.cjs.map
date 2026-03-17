@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/entity-types/icon.ts"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport type { Context, OmitNevers } from './helpers';\n\nimport type { BaseEntityRecords as _BaseEntityRecords } from './base-entity-records';\n\ndeclare module './base-entity-records' {\n\texport namespace BaseEntityRecords {\n\t\t/* eslint-disable-next-line @typescript-eslint/no-unused-vars */\n\t\texport interface Icon< C extends Context > {\n\t\t\t/**\n\t\t\t * The icon name.\n\t\t\t */\n\t\t\tname: string;\n\t\t\t/**\n\t\t\t * The icon content (SVG markup).\n\t\t\t */\n\t\t\tcontent: string;\n\t\t\t/**\n\t\t\t * The icon label.\n\t\t\t */\n\t\t\tlabel: string;\n\t\t}\n\t}\n}\n\nexport type Icon< C extends Context = 'edit' > = OmitNevers<\n\t_BaseEntityRecords.Icon< C >\n>;\n"],
-  "mappings": ";;;;;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

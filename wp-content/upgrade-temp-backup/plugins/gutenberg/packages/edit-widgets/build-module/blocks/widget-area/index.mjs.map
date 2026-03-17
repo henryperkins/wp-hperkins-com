@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/blocks/widget-area/index.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport metadata from './block.json';\nimport edit from './edit';\n\nconst { name } = metadata;\nexport { metadata, name };\n\nexport const settings = {\n\ttitle: __( 'Widget Area' ),\n\tdescription: __( 'A widget area container.' ),\n\t__experimentalLabel: ( { name: label } ) => label,\n\tedit,\n};\n"],
-  "mappings": ";AAGA,SAAS,UAAU;AAKnB,OAAO,cAAc;AACrB,OAAO,UAAU;AAEjB,IAAM,EAAE,KAAK,IAAI;AAGV,IAAM,WAAW;AAAA,EACvB,OAAO,GAAI,aAAc;AAAA,EACzB,aAAa,GAAI,0BAA2B;AAAA,EAC5C,qBAAqB,CAAE,EAAE,MAAM,MAAM,MAAO;AAAA,EAC5C;AACD;",
-  "names": []
-}

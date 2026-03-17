@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/store/types.ts"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport type { Ability, AbilityCategory } from '../types';\n\n/**\n * The state shape for the abilities store.\n */\nexport interface AbilitiesState {\n\t/**\n\t * Map of ability names to ability objects.\n\t */\n\tabilitiesByName: Record< string, Ability >;\n\n\t/**\n\t * Map of category slugs to category objects.\n\t */\n\tcategoriesBySlug: Record< string, AbilityCategory >;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

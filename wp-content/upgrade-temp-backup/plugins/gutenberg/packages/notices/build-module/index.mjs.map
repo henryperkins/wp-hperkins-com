@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/index.ts"],
-  "sourcesContent": ["export { store } from './store';\nexport { default as InlineNotices } from './components/inline-notices';\nexport { default as SnackbarNotices } from './components/snackbar-notices';\n"],
-  "mappings": ";AAAA,SAAS,aAAa;AACtB,SAAoB,WAAXA,gBAAgC;AACzC,SAAoB,WAAXA,gBAAkC;",
-  "names": ["default"]
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/post-visibility/check.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { useSelect } from '@wordpress/data';\n\n/**\n * Internal dependencies\n */\nimport { store as editorStore } from '../../store';\n\n/**\n * Determines if the current post can be edited (published)\n * and passes this information to the provided render function.\n *\n * @param {Object}   props        The component props.\n * @param {Function} props.render Function to render the component.\n *                                Receives an object with a `canEdit` property.\n * @return {React.ReactNode} The rendered component.\n */\nexport default function PostVisibilityCheck( { render } ) {\n\tconst canEdit = useSelect( ( select ) => {\n\t\treturn (\n\t\t\tselect( editorStore ).getCurrentPost()._links?.[\n\t\t\t\t'wp:action-publish'\n\t\t\t] ?? false\n\t\t);\n\t} );\n\n\treturn render( { canEdit } );\n}\n"],
-  "mappings": ";AAGA,SAAS,iBAAiB;AAK1B,SAAS,SAAS,mBAAmB;AAWtB,SAAR,oBAAsC,EAAE,OAAO,GAAI;AACzD,QAAM,UAAU,UAAW,CAAE,WAAY;AACxC,WACC,OAAQ,WAAY,EAAE,eAAe,EAAE,SACtC,mBACD,KAAK;AAAA,EAEP,CAAE;AAEF,SAAO,OAAQ,EAAE,QAAQ,CAAE;AAC5B;",
-  "names": []
-}

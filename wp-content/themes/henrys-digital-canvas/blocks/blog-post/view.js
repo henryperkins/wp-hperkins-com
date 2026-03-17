@@ -1378,17 +1378,107 @@
 			[ state.isFetching, state.post ]
 		);
 
+		useEffect(
+			function () {
+				if ( ! state.post ) {
+					return;
+				}
+
+				var existing = document.getElementById( 'hdc-blog-post-jsonld' );
+				if ( existing ) {
+					existing.remove();
+				}
+
+				var ld = {
+					'@context': 'https://schema.org',
+					'@type': 'BlogPosting',
+					headline: state.post.title,
+					description: state.post.seoDescription || state.post.excerpt,
+					datePublished: state.post.date,
+					dateModified: state.post.modifiedDate || state.post.date,
+					author: {
+						'@type': 'Person',
+						name: state.post.authorName || 'Henry Perkins',
+						url: state.post.authorUrl || undefined,
+					},
+					image: state.post.featuredImageUrl
+						? [ new URL( state.post.featuredImageUrl, window.location.origin ).href ]
+						: undefined,
+					mainEntityOfPage: buildPortfolioBlogUrl( state.post.slug ),
+					url: buildPortfolioBlogUrl( state.post.slug ),
+					keywords: state.post.tags && state.post.tags.length ? state.post.tags.join( ', ' ) : undefined,
+					articleSection: state.post.categories && state.post.categories.length ? state.post.categories : undefined,
+				};
+
+				var script = document.createElement( 'script' );
+				script.type = 'application/ld+json';
+				script.id = 'hdc-blog-post-jsonld';
+				script.textContent = JSON.stringify( ld );
+				document.head.appendChild( script );
+
+				return function () {
+					var el = document.getElementById( 'hdc-blog-post-jsonld' );
+					if ( el ) {
+						el.remove();
+					}
+				};
+			},
+			[ state.post ]
+		);
+
 		const relatedPosts = useMemo(
 			function () {
 				if ( ! state.post ) {
 					return [];
 				}
 
+				if ( state.post.relatedPosts && state.post.relatedPosts.length ) {
+					return state.post.relatedPosts.slice( 0, 2 );
+				}
+
+				var currentTags = ensureArray( state.post.tags );
+				var currentCategories = ensureArray( state.post.categories );
+
+				function getSharedCount( current, candidate ) {
+					if ( ! current.length || ! candidate.length ) {
+						return 0;
+					}
+
+					var set = {};
+					current.forEach( function ( v ) {
+						set[ v ] = true;
+					} );
+					return candidate.filter( function ( v ) {
+						return set[ v ];
+					} ).length;
+				}
+
 				return state.posts
 					.filter( function ( candidate ) {
 						return candidate.slug !== state.post.slug;
 					} )
-					.slice( 0, 2 );
+					.map( function ( candidate ) {
+						return {
+							post: candidate,
+							sharedTags: getSharedCount( currentTags, ensureArray( candidate.tags ) ),
+							sharedCategories: getSharedCount( currentCategories, ensureArray( candidate.categories ) ),
+						};
+					} )
+					.sort( function ( a, b ) {
+						if ( b.sharedTags !== a.sharedTags ) {
+							return b.sharedTags - a.sharedTags;
+						}
+
+						if ( b.sharedCategories !== a.sharedCategories ) {
+							return b.sharedCategories - a.sharedCategories;
+						}
+
+						return 0;
+					} )
+					.slice( 0, 2 )
+					.map( function ( entry ) {
+						return entry.post;
+					} );
 			},
 			[ state.posts, state.post ]
 		);
@@ -1448,6 +1538,7 @@
 		const metaTitle = post.seoTitle || post.title;
 		const shareMessage = post.shareMessage || post.seoDescription || post.excerpt;
 		const postMetaSummary = post.seoDescription && post.seoDescription !== post.excerpt ? post.seoDescription : '';
+		const articlePreview = ( post.excerpt || '' ).trim() || ( post.seoDescription || '' ).trim() || '';
 		const shareLinkedInUrl = buildLinkedInShareUrl( shareUrl );
 		const shareEmailUrl = buildEmailShareUrl( {
 			description: shareMessage,
@@ -1567,7 +1658,7 @@
 					),
 					h(
 						'header',
-						{ className: 'hdc-blog-post__header' },
+						{ className: 'hdc-blog-post__header' + ( post.featuredImageUrl ? ' has-image' : '' ) },
 						post.featuredImageUrl
 							? h(
 								'div',
@@ -1589,12 +1680,16 @@
 							: null,
 						h(
 							'div',
-							{ className: 'hdc-blog-post__tags' },
+							{ className: 'hdc-blog-post__header-card surface-inset-soft' },
+							h(
+								'div',
+								{ className: 'hdc-blog-post__tags' },
 							post.tags.map( function ( tag ) {
 								return h( 'span', { className: 'hdc-blog-post__tag', key: post.slug + '-tag-' + tag }, tag );
 							} )
 						),
 						h( 'h1', { className: 'hdc-blog-post__title' }, post.title ),
+						articlePreview ? h( 'p', { className: 'hdc-blog-post__lede' }, articlePreview ) : null,
 						h(
 							'p',
 							{ className: 'hdc-blog-post__meta' },
@@ -1615,6 +1710,7 @@
 								'By ' + authorLabel,
 								postHasUpdatedDate && post.modifiedDate ? 'Updated ' + formatDateLabel( post.modifiedDate ) : null,
 							], 'hdc-blog-post__meta-inline' )
+						)
 						)
 					),
 					h(

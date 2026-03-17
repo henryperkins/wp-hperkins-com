@@ -149,6 +149,48 @@
   margin-bottom: 1.25rem;
 }
 
+.hdc-blog-post__header-card {
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .hdc-blog-post__header-card {
+    padding: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hdc-blog-post__header-card {
+    padding: 2.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .hdc-blog-post__header.has-image {
+    align-items: end;
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: minmax(0, 1.35fr) minmax(20rem, 1fr);
+  }
+
+  .hdc-blog-post__header.has-image .hdc-blog-post__hero {
+    margin-bottom: 0;
+  }
+}
+
+.hdc-blog-post__lede {
+  color: hsl(var(--text-body));
+  font-size: 1.05rem;
+  line-height: 1.65;
+  margin: 0;
+  max-width: 42rem;
+}
+
 .hdc-blog-post__layout {
   display: grid;
   gap: 1.5rem;

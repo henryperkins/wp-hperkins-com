@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/color-variations.tsx"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { GlobalStylesConfig } from '@wordpress/global-styles-engine';\n\n/**\n * Internal dependencies\n */\nimport ColorVariationsInternal from './variations/variations-color';\nimport { withGlobalStylesProvider } from './with-global-styles-provider';\n\nexport interface ColorVariationsProps {\n\tvalue: GlobalStylesConfig;\n\tbaseValue: GlobalStylesConfig;\n\tonChange: ( config: GlobalStylesConfig ) => void;\n\ttitle?: string;\n\tgap?: number;\n}\n\n/**\n * Render Global Styles Color Variations.\n *\n * @example\n * ```tsx\n * <ColorVariations\n *   value={userConfig}\n *   baseValue={baseConfig}\n *   onChange={setUserConfig}\n *   title=\"Palettes\"\n *   gap={3}\n * />\n * ```\n */\nexport const ColorVariations: React.ComponentType< ColorVariationsProps > =\n\twithGlobalStylesProvider( ColorVariationsInternal );\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAQA,8BAAoC;AACpC,yCAAyC;AAwBlC,IAAM,sBACZ,6DAA0B,wBAAAA,OAAwB;",
-  "names": ["ColorVariationsInternal"]
-}

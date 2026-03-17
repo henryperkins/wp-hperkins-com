@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/post-featured-image/check.js"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport PostTypeSupportCheck from '../post-type-support-check';\nimport ThemeSupportCheck from '../theme-support-check';\n\n/**\n * Wrapper component that renders its children only if the post type supports a featured image\n * and the theme supports post thumbnails.\n *\n * @param {Object}          props          Props.\n * @param {React.ReactNode} props.children Children to be rendered.\n *\n * @return {React.ReactNode} The rendered component.\n */\nfunction PostFeaturedImageCheck( { children } ) {\n\treturn (\n\t\t<ThemeSupportCheck supportKeys=\"post-thumbnails\">\n\t\t\t<PostTypeSupportCheck supportKeys=\"thumbnail\">\n\t\t\t\t{ children }\n\t\t\t</PostTypeSupportCheck>\n\t\t</ThemeSupportCheck>\n\t);\n}\n\nexport default PostFeaturedImageCheck;\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,qCAAiC;AACjC,iCAA8B;AAc3B;AAHH,SAAS,uBAAwB,EAAE,SAAS,GAAI;AAC/C,SACC,4CAAC,2BAAAA,SAAA,EAAkB,aAAY,mBAC9B,sDAAC,+BAAAC,SAAA,EAAqB,aAAY,aAC/B,UACH,GACD;AAEF;AAEA,IAAO,gBAAQ;",
-  "names": ["ThemeSupportCheck", "PostTypeSupportCheck"]
-}

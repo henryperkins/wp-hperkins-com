@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/preferences-modal/enable-plugin-document-setting-panel.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { createSlotFill } from '@wordpress/components';\n\n/**\n * Internal dependencies\n */\nimport EnablePanelOption from './enable-panel';\n\nconst { Fill, Slot } = createSlotFill(\n\t'EnablePluginDocumentSettingPanelOption'\n);\n\nconst EnablePluginDocumentSettingPanelOption = ( { label, panelName } ) => (\n\t<Fill>\n\t\t<EnablePanelOption label={ label } panelName={ panelName } />\n\t</Fill>\n);\n\nEnablePluginDocumentSettingPanelOption.Slot = Slot;\n\nexport default EnablePluginDocumentSettingPanelOption;\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,wBAA+B;AAK/B,0BAA8B;AAQ5B;AANF,IAAM,EAAE,MAAM,KAAK,QAAI;AAAA,EACtB;AACD;AAEA,IAAM,yCAAyC,CAAE,EAAE,OAAO,UAAU,MACnE,4CAAC,QACA,sDAAC,oBAAAA,SAAA,EAAkB,OAAgB,WAAwB,GAC5D;AAGD,uCAAuC,OAAO;AAE9C,IAAO,+CAAQ;",
-  "names": ["EnablePanelOption"]
-}

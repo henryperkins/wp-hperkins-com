@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/collapsible-card/content.tsx"],
-  "sourcesContent": ["import { Collapsible } from '@base-ui/react/collapsible';\nimport { forwardRef } from '@wordpress/element';\nimport * as Card from '../card';\nimport type { ContentProps } from './types';\n\n/**\n * The collapsible content area of the card. Hidden when collapsed,\n * visible when expanded.\n */\nexport const Content = forwardRef< HTMLDivElement, ContentProps >(\n\tfunction CollapsibleCardContent( { render, ...restProps }, ref ) {\n\t\treturn (\n\t\t\t<Collapsible.Panel\n\t\t\t\tref={ ref }\n\t\t\t\trender={ <Card.Content render={ render } /> }\n\t\t\t\t{ ...restProps }\n\t\t\t/>\n\t\t);\n\t}\n);\n"],
-  "mappings": ";AAAA,SAAS,mBAAmB;AAC5B,SAAS,kBAAkB;AAC3B,YAAY,UAAU;AAYT;AALN,IAAMA,WAAU;AAAA,EACtB,SAAS,uBAAwB,EAAE,QAAQ,GAAG,UAAU,GAAG,KAAM;AAChE,WACC;AAAA,MAAC,YAAY;AAAA,MAAZ;AAAA,QACA;AAAA,QACA,QAAS,oBAAM,cAAL,EAAa,QAAkB;AAAA,QACvC,GAAG;AAAA;AAAA,IACN;AAAA,EAEF;AACD;",
-  "names": ["Content"]
-}

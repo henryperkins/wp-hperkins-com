@@ -1,7 +1,0 @@
-// packages/core-data/src/hooks/memoize.js
-import memoize from "memize";
-var memoize_default = memoize;
-export {
-  memoize_default as default
-};
-//# sourceMappingURL=memoize.mjs.map

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/navigation-link/shared/index.js"],
-  "sourcesContent": ["/**\n * Shared components for Navigation Link and Navigation Submenu blocks.\n *\n * This module provides common functionality that can be used by both blocks\n * to reduce code duplication and ensure consistent behavior.\n */\n\nexport { Controls, getInvalidLinkHelpText } from './controls';\nexport { updateAttributes } from './update-attributes';\nexport {\n\tuseEntityBinding,\n\tbuildNavigationLinkEntityBinding,\n} from './use-entity-binding';\nexport { LinkUI } from '../link-ui';\nexport { useHandleLinkChange } from './use-handle-link-change';\nexport { useIsInvalidLink } from './use-is-invalid-link';\nexport { InvalidDraftDisplay } from './invalid-draft-display';\nexport { useEnableLinkStatusValidation } from './use-enable-link-status-validation';\nexport { useIsDraggingWithin } from './use-is-dragging-within';\nexport { selectLabelText } from './select-label-text';\nexport { useLinkPreview } from './use-link-preview';\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAOA,sBAAiD;AACjD,+BAAiC;AACjC,gCAGO;AACP,qBAAuB;AACvB,oCAAoC;AACpC,iCAAiC;AACjC,mCAAoC;AACpC,+CAA8C;AAC9C,oCAAoC;AACpC,+BAAgC;AAChC,8BAA+B;",
-  "names": []
-}

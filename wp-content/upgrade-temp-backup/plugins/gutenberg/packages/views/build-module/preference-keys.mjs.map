@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/preference-keys.ts"],
-  "sourcesContent": ["/**\n * Generates a unique preference key for a DataViews view.\n *\n * @param kind The entity kind (e.g., 'postType', 'root')\n * @param name The specific entity name (e.g., 'post', 'user', 'site')\n * @param slug The specific entity slug (e.g., 'category', 'post', 'all')\n * @return The preference key string\n */\nexport function generatePreferenceKey(\n\tkind: string,\n\tname: string,\n\tslug: string\n): string {\n\treturn `dataviews-${ kind }-${ name }-${ slug }`;\n}\n"],
-  "mappings": ";AAQO,SAAS,sBACf,MACA,MACA,MACS;AACT,SAAO,aAAc,IAAK,IAAK,IAAK,IAAK,IAAK;AAC/C;",
-  "names": []
-}

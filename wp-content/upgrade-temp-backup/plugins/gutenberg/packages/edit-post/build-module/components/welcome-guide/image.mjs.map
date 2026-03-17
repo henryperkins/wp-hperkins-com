@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/welcome-guide/image.js"],
-  "sourcesContent": ["export default function WelcomeGuideImage( { nonAnimatedSrc, animatedSrc } ) {\n\treturn (\n\t\t<picture className=\"edit-post-welcome-guide__image\">\n\t\t\t<source\n\t\t\t\tsrcSet={ nonAnimatedSrc }\n\t\t\t\tmedia=\"(prefers-reduced-motion: reduce)\"\n\t\t\t/>\n\t\t\t<img src={ animatedSrc } width=\"312\" height=\"240\" alt=\"\" />\n\t\t</picture>\n\t);\n}\n"],
-  "mappings": ";AAEE,SACC,KADD;AAFa,SAAR,kBAAoC,EAAE,gBAAgB,YAAY,GAAI;AAC5E,SACC,qBAAC,aAAQ,WAAU,kCAClB;AAAA;AAAA,MAAC;AAAA;AAAA,QACA,QAAS;AAAA,QACT,OAAM;AAAA;AAAA,IACP;AAAA,IACA,oBAAC,SAAI,KAAM,aAAc,OAAM,OAAM,QAAO,OAAM,KAAI,IAAG;AAAA,KAC1D;AAEF;",
-  "names": []
-}

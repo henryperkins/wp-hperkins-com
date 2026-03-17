@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/site-editor-routes/attachment-item.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport Editor from '../editor';\nimport SidebarNavigationScreen from '../sidebar-navigation-screen';\n\nexport const attachmentItemRoute = {\n\tname: 'attachment-item',\n\tpath: '/attachment/:postId',\n\tareas: {\n\t\tsidebar: (\n\t\t\t<SidebarNavigationScreen\n\t\t\t\ttitle={ __( 'Media' ) }\n\t\t\t\tbackPath=\"/\"\n\t\t\t\t// Empty content - no sidebar list needed for attachments\n\t\t\t\tcontent={ null }\n\t\t\t/>\n\t\t),\n\t\tmobile: <Editor />,\n\t\tpreview: <Editor />,\n\t},\n};\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,kBAAmB;AAKnB,oBAAmB;AACnB,uCAAoC;AAOjC;AALI,IAAM,sBAAsB;AAAA,EAClC,MAAM;AAAA,EACN,MAAM;AAAA,EACN,OAAO;AAAA,IACN,SACC;AAAA,MAAC,iCAAAA;AAAA,MAAA;AAAA,QACA,WAAQ,gBAAI,OAAQ;AAAA,QACpB,UAAS;AAAA,QAET,SAAU;AAAA;AAAA,IACX;AAAA,IAED,QAAQ,4CAAC,cAAAC,SAAA,EAAO;AAAA,IAChB,SAAS,4CAAC,cAAAA,SAAA,EAAO;AAAA,EAClB;AACD;",
-  "names": ["SidebarNavigationScreen", "Editor"]
-}

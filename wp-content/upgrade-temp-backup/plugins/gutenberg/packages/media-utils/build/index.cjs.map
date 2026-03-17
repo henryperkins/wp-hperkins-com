@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/index.ts"],
-  "sourcesContent": ["export * from './components';\n\nexport { uploadMedia } from './utils/upload-media';\nexport { transformAttachment } from './utils/transform-attachment';\nexport { validateFileSize } from './utils/validate-file-size';\nexport { validateMimeType } from './utils/validate-mime-type';\nexport { validateMimeTypeForUser } from './utils/validate-mime-type-for-user';\n\nexport type { Attachment, RestAttachment } from './utils/types';\n\nexport { privateApis } from './private-apis';\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAAc,mCAAd;AAEA,0BAA4B;AAC5B,kCAAoC;AACpC,gCAAiC;AACjC,gCAAiC;AACjC,yCAAwC;AAIxC,0BAA4B;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/filters/replace-media-upload.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { addFilter } from '@wordpress/hooks';\nimport { MediaUpload } from '@wordpress/media-utils';\n\nconst replaceMediaUpload = () => MediaUpload;\n\naddFilter(\n\t'editor.MediaUpload',\n\t'core/edit-widgets/replace-media-upload',\n\treplaceMediaUpload\n);\n"],
-  "mappings": ";AAGA,SAAS,iBAAiB;AAC1B,SAAS,mBAAmB;AAE5B,IAAM,qBAAqB,MAAM;AAEjC;AAAA,EACC;AAAA,EACA;AAAA,EACA;AACD;",
-  "names": []
-}

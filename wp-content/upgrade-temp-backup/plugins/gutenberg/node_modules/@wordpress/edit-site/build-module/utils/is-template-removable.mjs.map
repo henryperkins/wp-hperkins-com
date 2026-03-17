@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/utils/is-template-removable.js"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport { TEMPLATE_ORIGINS } from './constants';\n\n/**\n * Check if a template is removable.\n *\n * @param {Object} template The template entity to check.\n * @return {boolean} Whether the template is removable.\n */\nexport default function isTemplateRemovable( template ) {\n\tif ( ! template ) {\n\t\treturn false;\n\t}\n\n\treturn (\n\t\ttemplate.source === TEMPLATE_ORIGINS.custom &&\n\t\t! Boolean( template.plugin ) &&\n\t\t! template.has_theme_file\n\t);\n}\n"],
-  "mappings": ";AAGA,SAAS,wBAAwB;AAQlB,SAAR,oBAAsC,UAAW;AACvD,MAAK,CAAE,UAAW;AACjB,WAAO;AAAA,EACR;AAEA,SACC,SAAS,WAAW,iBAAiB,UACrC,CAAE,QAAS,SAAS,MAAO,KAC3B,CAAE,SAAS;AAEb;",
-  "names": []
-}

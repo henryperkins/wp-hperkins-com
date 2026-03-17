@@ -1,7 +1,0 @@
-import type { ValidatedControlProps } from './types';
-export declare const ValidatedTextareaControl: import("react").ForwardRefExoticComponent<Omit<Pick<import("../../base-control/types").BaseControlProps, "help" | "label" | "hideLabelFromVision" | "__nextHasNoMarginBottom"> & {
-    onChange: (value: string) => void;
-    value: string;
-    rows?: import("react").TextareaHTMLAttributes<HTMLTextAreaElement>["rows"];
-} & Omit<Omit<import("react").DetailedHTMLProps<import("react").TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement>, "ref">, "children" | "help" | "onChange" | "value" | "label" | "as" | "rows" | "hideLabelFromVision" | "__nextHasNoMarginBottom"> & import("react").RefAttributes<HTMLTextAreaElement> & ValidatedControlProps, "ref"> & import("react").RefAttributes<HTMLTextAreaElement>>;
-//# sourceMappingURL=textarea-control.d.ts.map

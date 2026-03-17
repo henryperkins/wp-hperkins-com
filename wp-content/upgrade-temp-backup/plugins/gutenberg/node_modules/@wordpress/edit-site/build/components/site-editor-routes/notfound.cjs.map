@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/site-editor-routes/notfound.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport { Notice, __experimentalSpacer as Spacer } from '@wordpress/components';\nimport SidebarNavigationScreenMain from '../sidebar-navigation-screen-main';\n\nfunction NotFoundError() {\n\treturn (\n\t\t<Notice status=\"error\" isDismissible={ false }>\n\t\t\t{ __(\n\t\t\t\t'The requested page could not be found. Please check the URL.'\n\t\t\t) }\n\t\t</Notice>\n\t);\n}\n\nexport const notFoundRoute = {\n\tname: 'notfound',\n\tpath: '*',\n\tareas: {\n\t\tsidebar: <SidebarNavigationScreenMain />,\n\t\tmobile: (\n\t\t\t<SidebarNavigationScreenMain\n\t\t\t\tcustomDescription={ <NotFoundError /> }\n\t\t\t/>\n\t\t),\n\t\tcontent: (\n\t\t\t<Spacer padding={ 2 }>\n\t\t\t\t<NotFoundError />\n\t\t\t</Spacer>\n\t\t),\n\t},\n};\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,kBAAmB;AAKnB,wBAAuD;AACvD,4CAAwC;AAItC;AAFF,SAAS,gBAAgB;AACxB,SACC,4CAAC,4BAAO,QAAO,SAAQ,eAAgB,OACpC;AAAA,IACD;AAAA,EACD,GACD;AAEF;AAEO,IAAM,gBAAgB;AAAA,EAC5B,MAAM;AAAA,EACN,MAAM;AAAA,EACN,OAAO;AAAA,IACN,SAAS,4CAAC,sCAAAA,SAAA,EAA4B;AAAA,IACtC,QACC;AAAA,MAAC,sCAAAA;AAAA,MAAA;AAAA,QACA,mBAAoB,4CAAC,iBAAc;AAAA;AAAA,IACpC;AAAA,IAED,SACC,4CAAC,kBAAAC,sBAAA,EAAO,SAAU,GACjB,sDAAC,iBAAc,GAChB;AAAA,EAEF;AACD;",
-  "names": ["SidebarNavigationScreenMain", "Spacer"]
-}

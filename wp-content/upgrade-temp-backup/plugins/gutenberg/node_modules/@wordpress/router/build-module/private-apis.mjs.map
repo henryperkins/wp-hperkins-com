@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/private-apis.ts"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport { useHistory, useLocation, RouterProvider } from './router';\nimport { useLink, Link } from './link';\nimport { lock } from './lock-unlock';\n\nexport const privateApis = {};\nlock( privateApis, {\n\tuseHistory,\n\tuseLocation,\n\tRouterProvider,\n\tuseLink,\n\tLink,\n} );\n"],
-  "mappings": ";AAGA,SAAS,YAAY,aAAa,sBAAsB;AACxD,SAAS,SAAS,YAAY;AAC9B,SAAS,YAAY;AAEd,IAAM,cAAc,CAAC;AAC5B,KAAM,aAAa;AAAA,EAClB;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AACD,CAAE;",
-  "names": []
-}

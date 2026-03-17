@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/store/actions.ts"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport type { MenuItem, Route } from './types';\n\nexport function registerMenuItem( id: string, menuItem: MenuItem ) {\n\treturn {\n\t\ttype: 'REGISTER_MENU_ITEM' as const,\n\t\tid,\n\t\tmenuItem,\n\t};\n}\n\nexport function updateMenuItem( id: string, updates: Partial< MenuItem > ) {\n\treturn {\n\t\ttype: 'UPDATE_MENU_ITEM' as const,\n\t\tid,\n\t\tupdates,\n\t};\n}\n\nexport function registerRoute( route: Route ) {\n\treturn {\n\t\ttype: 'REGISTER_ROUTE' as const,\n\t\troute,\n\t};\n}\n\nexport function setDashboardLink( dashboardLink: string ) {\n\treturn {\n\t\ttype: 'SET_DASHBOARD_LINK' as const,\n\t\tdashboardLink,\n\t};\n}\n\nexport type Action =\n\t| ReturnType< typeof registerMenuItem >\n\t| ReturnType< typeof updateMenuItem >\n\t| ReturnType< typeof registerRoute >\n\t| ReturnType< typeof setDashboardLink >;\n"],
-  "mappings": ";AAKO,SAAS,iBAAkB,IAAY,UAAqB;AAClE,SAAO;AAAA,IACN,MAAM;AAAA,IACN;AAAA,IACA;AAAA,EACD;AACD;AAEO,SAAS,eAAgB,IAAY,SAA+B;AAC1E,SAAO;AAAA,IACN,MAAM;AAAA,IACN;AAAA,IACA;AAAA,EACD;AACD;AAEO,SAAS,cAAe,OAAe;AAC7C,SAAO;AAAA,IACN,MAAM;AAAA,IACN;AAAA,EACD;AACD;AAEO,SAAS,iBAAkB,eAAwB;AACzD,SAAO;AAAA,IACN,MAAM;AAAA,IACN;AAAA,EACD;AACD;",
-  "names": []
-}

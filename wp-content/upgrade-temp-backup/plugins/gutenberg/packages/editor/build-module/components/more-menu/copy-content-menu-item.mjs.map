@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/more-menu/copy-content-menu-item.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { MenuItem } from '@wordpress/components';\nimport { useSelect, useDispatch } from '@wordpress/data';\nimport { __ } from '@wordpress/i18n';\nimport { useCopyToClipboard } from '@wordpress/compose';\nimport { store as noticesStore } from '@wordpress/notices';\n\n/**\n * Internal dependencies\n */\nimport { store as editorStore } from '../../store';\n\nexport default function CopyContentMenuItem() {\n\tconst { createNotice } = useDispatch( noticesStore );\n\tconst { getEditedPostContent } = useSelect( editorStore );\n\n\tfunction getText() {\n\t\treturn getEditedPostContent();\n\t}\n\n\tfunction onSuccess() {\n\t\tcreateNotice( 'info', __( 'All content copied.' ), {\n\t\t\tisDismissible: true,\n\t\t\ttype: 'snackbar',\n\t\t} );\n\t}\n\n\tconst ref = useCopyToClipboard( getText, onSuccess );\n\n\treturn <MenuItem ref={ ref }>{ __( 'Copy all blocks' ) }</MenuItem>;\n}\n"],
-  "mappings": ";AAGA,SAAS,gBAAgB;AACzB,SAAS,WAAW,mBAAmB;AACvC,SAAS,UAAU;AACnB,SAAS,0BAA0B;AACnC,SAAS,SAAS,oBAAoB;AAKtC,SAAS,SAAS,mBAAmB;AAmB7B;AAjBO,SAAR,sBAAuC;AAC7C,QAAM,EAAE,aAAa,IAAI,YAAa,YAAa;AACnD,QAAM,EAAE,qBAAqB,IAAI,UAAW,WAAY;AAExD,WAAS,UAAU;AAClB,WAAO,qBAAqB;AAAA,EAC7B;AAEA,WAAS,YAAY;AACpB,iBAAc,QAAQ,GAAI,qBAAsB,GAAG;AAAA,MAClD,eAAe;AAAA,MACf,MAAM;AAAA,IACP,CAAE;AAAA,EACH;AAEA,QAAM,MAAM,mBAAoB,SAAS,SAAU;AAEnD,SAAO,oBAAC,YAAS,KAAc,aAAI,iBAAkB,GAAG;AACzD;",
-  "names": []
-}

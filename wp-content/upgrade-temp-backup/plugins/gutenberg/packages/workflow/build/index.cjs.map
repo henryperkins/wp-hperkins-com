@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/index.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { createRoot, createElement } from '@wordpress/element';\n\n/**\n * Internal dependencies\n */\nimport { WorkflowMenu } from './components/workflow-menu';\n\nconst root = document.createElement( 'div' );\ndocument.body.appendChild( root );\ncreateRoot( root ).render( createElement( WorkflowMenu ) );\n"],
-  "mappings": ";AAGA,qBAA0C;AAK1C,2BAA6B;AAE7B,IAAM,OAAO,SAAS,cAAe,KAAM;AAC3C,SAAS,KAAK,YAAa,IAAK;AAAA,IAChC,2BAAY,IAAK,EAAE,WAAQ,8BAAe,iCAAa,CAAE;",
-  "names": []
-}

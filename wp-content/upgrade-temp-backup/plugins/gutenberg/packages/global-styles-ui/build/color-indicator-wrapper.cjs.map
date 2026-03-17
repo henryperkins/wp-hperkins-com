@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/color-indicator-wrapper.tsx"],
-  "sourcesContent": ["/**\n * External dependencies\n */\nimport clsx from 'clsx';\n\n/**\n * WordPress dependencies\n */\nimport { Flex } from '@wordpress/components';\n\ninterface ColorIndicatorWrapperProps {\n\tclassName?: string;\n\t[ key: string ]: any;\n}\n\nfunction ColorIndicatorWrapper( {\n\tclassName,\n\tchildren,\n\t...props\n}: ColorIndicatorWrapperProps ) {\n\treturn (\n\t\t<Flex\n\t\t\tclassName={ clsx(\n\t\t\t\t'global-styles-ui__color-indicator-wrapper',\n\t\t\t\tclassName\n\t\t\t) }\n\t\t\t{ ...props }\n\t\t>\n\t\t\t{ children }\n\t\t</Flex>\n\t);\n}\n\nexport default ColorIndicatorWrapper;\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,kBAAiB;AAKjB,wBAAqB;AAanB;AANF,SAAS,sBAAuB;AAAA,EAC/B;AAAA,EACA;AAAA,EACA,GAAG;AACJ,GAAgC;AAC/B,SACC;AAAA,IAAC;AAAA;AAAA,MACA,eAAY,YAAAA;AAAA,QACX;AAAA,QACA;AAAA,MACD;AAAA,MACE,GAAG;AAAA,MAEH;AAAA;AAAA,EACH;AAEF;AAEA,IAAO,kCAAQ;",
-  "names": ["clsx"]
-}

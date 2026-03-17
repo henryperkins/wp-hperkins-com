@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/fields/parent/utils.ts"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { decodeEntities } from '@wordpress/html-entities';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport type { BasePost } from '../../types';\n\nexport function getTitleWithFallbackName( post: BasePost ) {\n\treturn typeof post.title === 'object' &&\n\t\t'rendered' in post.title &&\n\t\tpost.title.rendered\n\t\t? decodeEntities( post.title.rendered )\n\t\t: `#${ post?.id } (${ __( 'no title' ) })`;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,2BAA+B;AAC/B,kBAAmB;AAOZ,SAAS,yBAA0B,MAAiB;AAC1D,SAAO,OAAO,KAAK,UAAU,YAC5B,cAAc,KAAK,SACnB,KAAK,MAAM,eACT,qCAAgB,KAAK,MAAM,QAAS,IACpC,IAAK,MAAM,EAAG,SAAM,gBAAI,UAAW,CAAE;AACzC;",
-  "names": []
-}

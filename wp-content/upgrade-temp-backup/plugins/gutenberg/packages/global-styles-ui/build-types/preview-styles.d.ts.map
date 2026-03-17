@@ -1,1 +1,0 @@
-{"version":3,"file":"preview-styles.d.ts","sourceRoot":"","sources":["../src/preview-styles.tsx"],"names":[],"mappings":"AAiDA,UAAU,kBAAkB;IAC3B,KAAK,CAAC,EAAE,MAAM,CAAC;IACf,SAAS,CAAC,EAAE,OAAO,CAAC;IACpB,aAAa,CAAC,EAAE,OAAO,CAAC;IACxB,SAAS,CAAC,EAAE,GAAG,CAAC;CAChB;AAED,iBAAS,aAAa,CAAE,EACvB,KAAK,EACL,SAAS,EACT,aAAa,EACb,SAAS,GACT,EAAE,kBAAkB,+BAoIpB;AAED,eAAe,aAAa,CAAC"}

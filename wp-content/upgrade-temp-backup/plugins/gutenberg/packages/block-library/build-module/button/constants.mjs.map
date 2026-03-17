@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/button/constants.js"],
-  "sourcesContent": ["export const NEW_TAB_REL = 'noreferrer noopener';\nexport const NEW_TAB_TARGET = '_blank';\nexport const NOFOLLOW_REL = 'nofollow';\n"],
-  "mappings": ";AAAO,IAAM,cAAc;AACpB,IAAM,iBAAiB;AACvB,IAAM,eAAe;",
-  "names": []
-}

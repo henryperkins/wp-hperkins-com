@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/types.ts"],
-  "sourcesContent": ["/**\n * Converts a type to its \"remote\" version where all methods become async.\n *\n * This type transformation ensures that when calling methods on a wrapped\n * worker, the return types are properly wrapped in Promises.\n */\nexport type Remote< T > = {\n\t[ K in keyof T ]: T[ K ] extends ( ...args: infer A ) => infer R\n\t\t? ( ...args: A ) => Promise< Awaited< R > >\n\t\t: never;\n};\n\n/**\n * Internal symbol used to store the worker reference on the proxy.\n */\nexport const WORKER_SYMBOL = Symbol( 'worker' );\n\n/**\n * Interface for objects that have an associated worker.\n */\nexport interface WithWorker {\n\t[ WORKER_SYMBOL ]: Worker;\n}\n"],
-  "mappings": ";AAeO,IAAM,gBAAgB,uBAAQ,QAAS;",
-  "names": []
-}

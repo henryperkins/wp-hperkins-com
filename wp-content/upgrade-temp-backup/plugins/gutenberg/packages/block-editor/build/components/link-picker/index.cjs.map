@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/link-picker/index.js"],
-  "sourcesContent": ["export { LinkPicker } from './link-picker';\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,yBAA2B;",
-  "names": []
-}

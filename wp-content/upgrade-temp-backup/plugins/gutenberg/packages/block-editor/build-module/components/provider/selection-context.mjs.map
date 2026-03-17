@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/provider/selection-context.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { createContext } from '@wordpress/element';\n\nconst noop = () => {};\n\n/**\n * Context for coordinating selection state between the editor and block sync.\n *\n * - `getSelection`: Stable getter that reads selection from entity edits imperatively.\n *                   Using a getter instead of a value avoids re-rendering the entire\n *                   block editor tree on every keystroke.\n * - `onChangeSelection`: Callback to report selection changes with external IDs back to the entity.\n */\nexport const SelectionContext = createContext( {\n\tgetSelection: () => undefined,\n\tonChangeSelection: noop,\n} );\n"],
-  "mappings": ";AAGA,SAAS,qBAAqB;AAE9B,IAAM,OAAO,MAAM;AAAC;AAUb,IAAM,mBAAmB,cAAe;AAAA,EAC9C,cAAc,MAAM;AAAA,EACpB,mBAAmB;AACpB,CAAE;",
-  "names": []
-}

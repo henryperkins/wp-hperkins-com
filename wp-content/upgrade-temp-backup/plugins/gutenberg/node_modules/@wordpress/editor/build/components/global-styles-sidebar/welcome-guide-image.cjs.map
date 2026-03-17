@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/global-styles-sidebar/welcome-guide-image.js"],
-  "sourcesContent": ["export default function WelcomeGuideImage( { nonAnimatedSrc, animatedSrc } ) {\n\treturn (\n\t\t<picture className=\"editor-welcome-guide__image\">\n\t\t\t<source\n\t\t\t\tsrcSet={ nonAnimatedSrc }\n\t\t\t\tmedia=\"(prefers-reduced-motion: reduce)\"\n\t\t\t/>\n\t\t\t<img src={ animatedSrc } width=\"312\" height=\"240\" alt=\"\" />\n\t\t</picture>\n\t);\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAEE;AAFa,SAAR,kBAAoC,EAAE,gBAAgB,YAAY,GAAI;AAC5E,SACC,6CAAC,aAAQ,WAAU,+BAClB;AAAA;AAAA,MAAC;AAAA;AAAA,QACA,QAAS;AAAA,QACT,OAAM;AAAA;AAAA,IACP;AAAA,IACA,4CAAC,SAAI,KAAM,aAAc,OAAM,OAAM,QAAO,OAAM,KAAI,IAAG;AAAA,KAC1D;AAEF;",
-  "names": []
-}

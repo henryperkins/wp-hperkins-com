@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/secondary-sidebar/index.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { useSelect } from '@wordpress/data';\n/**\n * Internal dependencies\n */\nimport { store as editWidgetsStore } from '../../store';\n\n/**\n * Internal dependencies\n */\nimport InserterSidebar from './inserter-sidebar';\nimport ListViewSidebar from './list-view-sidebar';\n\nexport default function SecondarySidebar() {\n\tconst { isInserterOpen, isListViewOpen } = useSelect( ( select ) => {\n\t\tconst { isInserterOpened, isListViewOpened } =\n\t\t\tselect( editWidgetsStore );\n\t\treturn {\n\t\t\tisInserterOpen: isInserterOpened(),\n\t\t\tisListViewOpen: isListViewOpened(),\n\t\t};\n\t}, [] );\n\n\tif ( isInserterOpen ) {\n\t\treturn <InserterSidebar />;\n\t}\n\tif ( isListViewOpen ) {\n\t\treturn <ListViewSidebar />;\n\t}\n\treturn null;\n}\n"],
-  "mappings": ";AAGA,SAAS,iBAAiB;AAI1B,SAAS,SAAS,wBAAwB;AAK1C,OAAO,qBAAqB;AAC5B,OAAO,qBAAqB;AAanB;AAXM,SAAR,mBAAoC;AAC1C,QAAM,EAAE,gBAAgB,eAAe,IAAI,UAAW,CAAE,WAAY;AACnE,UAAM,EAAE,kBAAkB,iBAAiB,IAC1C,OAAQ,gBAAiB;AAC1B,WAAO;AAAA,MACN,gBAAgB,iBAAiB;AAAA,MACjC,gBAAgB,iBAAiB;AAAA,IAClC;AAAA,EACD,GAAG,CAAC,CAAE;AAEN,MAAK,gBAAiB;AACrB,WAAO,oBAAC,mBAAgB;AAAA,EACzB;AACA,MAAK,gBAAiB;AACrB,WAAO,oBAAC,mBAAgB;AAAA,EACzB;AACA,SAAO;AACR;",
-  "names": []
-}

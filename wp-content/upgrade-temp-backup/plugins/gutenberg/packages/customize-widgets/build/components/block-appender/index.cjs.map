@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/block-appender/index.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { useRef, useEffect } from '@wordpress/element';\nimport {\n\tButtonBlockAppender,\n\tstore as blockEditorStore,\n} from '@wordpress/block-editor';\nimport { useSelect } from '@wordpress/data';\n\nexport default function BlockAppender( props ) {\n\tconst ref = useRef();\n\tconst isBlocksListEmpty = useSelect(\n\t\t( select ) => select( blockEditorStore ).getBlockCount() === 0\n\t);\n\n\t// Move the focus to the block appender to prevent focus from\n\t// being lost when emptying the widget area.\n\tuseEffect( () => {\n\t\tif ( isBlocksListEmpty && ref.current ) {\n\t\t\tconst { ownerDocument } = ref.current;\n\n\t\t\tif (\n\t\t\t\t! ownerDocument.activeElement ||\n\t\t\t\townerDocument.activeElement === ownerDocument.body\n\t\t\t) {\n\t\t\t\tref.current.focus();\n\t\t\t}\n\t\t}\n\t}, [ isBlocksListEmpty ] );\n\n\treturn <ButtonBlockAppender { ...props } ref={ ref } />;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,qBAAkC;AAClC,0BAGO;AACP,kBAA0B;AAuBlB;AArBO,SAAR,cAAgC,OAAQ;AAC9C,QAAM,UAAM,uBAAO;AACnB,QAAM,wBAAoB;AAAA,IACzB,CAAE,WAAY,OAAQ,oBAAAA,KAAiB,EAAE,cAAc,MAAM;AAAA,EAC9D;AAIA,gCAAW,MAAM;AAChB,QAAK,qBAAqB,IAAI,SAAU;AACvC,YAAM,EAAE,cAAc,IAAI,IAAI;AAE9B,UACC,CAAE,cAAc,iBAChB,cAAc,kBAAkB,cAAc,MAC7C;AACD,YAAI,QAAQ,MAAM;AAAA,MACnB;AAAA,IACD;AAAA,EACD,GAAG,CAAE,iBAAkB,CAAE;AAEzB,SAAO,4CAAC,2CAAsB,GAAG,OAAQ,KAAY;AACtD;",
-  "names": ["blockEditorStore"]
-}

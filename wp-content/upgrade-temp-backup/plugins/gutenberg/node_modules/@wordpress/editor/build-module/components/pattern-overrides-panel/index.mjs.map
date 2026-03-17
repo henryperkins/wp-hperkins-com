@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/pattern-overrides-panel/index.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { useSelect } from '@wordpress/data';\nimport { privateApis as patternsPrivateApis } from '@wordpress/patterns';\n\n/**\n * Internal dependencies\n */\nimport { store as editorStore } from '../../store';\nimport { unlock } from '../../lock-unlock';\n\nconst { OverridesPanel } = unlock( patternsPrivateApis );\n\nexport default function PatternOverridesPanel() {\n\tconst supportsPatternOverridesPanel = useSelect(\n\t\t( select ) => select( editorStore ).getCurrentPostType() === 'wp_block',\n\t\t[]\n\t);\n\n\tif ( ! supportsPatternOverridesPanel ) {\n\t\treturn null;\n\t}\n\n\treturn <OverridesPanel />;\n}\n"],
-  "mappings": ";AAGA,SAAS,iBAAiB;AAC1B,SAAS,eAAe,2BAA2B;AAKnD,SAAS,SAAS,mBAAmB;AACrC,SAAS,cAAc;AAcf;AAZR,IAAM,EAAE,eAAe,IAAI,OAAQ,mBAAoB;AAExC,SAAR,wBAAyC;AAC/C,QAAM,gCAAgC;AAAA,IACrC,CAAE,WAAY,OAAQ,WAAY,EAAE,mBAAmB,MAAM;AAAA,IAC7D,CAAC;AAAA,EACF;AAEA,MAAK,CAAE,+BAAgC;AACtC,WAAO;AAAA,EACR;AAEA,SAAO,oBAAC,kBAAe;AACxB;",
-  "names": []
-}

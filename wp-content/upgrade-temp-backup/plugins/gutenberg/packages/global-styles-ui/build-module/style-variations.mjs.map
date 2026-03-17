@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/style-variations.tsx"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { GlobalStylesConfig } from '@wordpress/global-styles-engine';\n\n/**\n * Internal dependencies\n */\nimport StyleVariationsContainer from './style-variations-container';\nimport { withGlobalStylesProvider } from './with-global-styles-provider';\n\nexport interface StyleVariationsProps {\n\tvalue: GlobalStylesConfig;\n\tbaseValue: GlobalStylesConfig;\n\tonChange: ( config: GlobalStylesConfig ) => void;\n\tgap?: number;\n}\n\n/**\n * Render Style Variations.\n *\n * @example\n * ```tsx\n * <StyleVariations\n *   value={userConfig}\n *   baseValue={baseConfig}\n *   onChange={setUserConfig}\n *   gap={3}\n * />\n * ```\n */\nexport const StyleVariations: React.ComponentType< StyleVariationsProps > =\n\twithGlobalStylesProvider( StyleVariationsContainer );\n"],
-  "mappings": ";AAQA,OAAO,8BAA8B;AACrC,SAAS,gCAAgC;AAsBlC,IAAM,kBACZ,yBAA0B,wBAAyB;",
-  "names": []
-}

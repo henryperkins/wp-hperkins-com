@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/store/constants.ts"],
-  "sourcesContent": ["export const STORE_NAME = 'core/upload-media';\n\n/**\n * Default maximum number of concurrent uploads.\n */\nexport const DEFAULT_MAX_CONCURRENT_UPLOADS = 5;\n\n/**\n * Default maximum number of concurrent image processing operations.\n *\n * Image processing (VIPS WASM) is significantly more memory-intensive\n * than network uploads. Each operation can consume 50-100MB+ of memory\n * for large images. A lower limit prevents out-of-memory crashes when\n * uploading many images at once.\n */\nexport const DEFAULT_MAX_CONCURRENT_IMAGE_PROCESSING = 2;\n\n/**\n * MIME types supported by client-side media processing.\n *\n * These are the image formats that can be processed using\n * WebAssembly-based vips in the browser.\n */\nexport const CLIENT_SIDE_SUPPORTED_MIME_TYPES: readonly string[] = [\n\t'image/jpeg',\n\t'image/png',\n\t'image/gif',\n\t'image/webp',\n\t'image/avif',\n] as const;\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,IAAM,aAAa;AAKnB,IAAM,iCAAiC;AAUvC,IAAM,0CAA0C;AAQhD,IAAM,mCAAsD;AAAA,EAClE;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AACD;",
-  "names": []
-}

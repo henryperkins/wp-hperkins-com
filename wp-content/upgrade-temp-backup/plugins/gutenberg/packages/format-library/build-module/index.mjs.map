@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/index.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { registerFormatType } from '@wordpress/rich-text';\n\n/**\n * Internal dependencies\n */\nimport formats from './default-formats';\n\nformats.forEach( ( { name, ...settings } ) =>\n\tregisterFormatType( name, settings )\n);\n"],
-  "mappings": ";AAGA,SAAS,0BAA0B;AAKnC,OAAO,aAAa;AAEpB,QAAQ;AAAA,EAAS,CAAE,EAAE,MAAM,GAAG,SAAS,MACtC,mBAAoB,MAAM,QAAS;AACpC;",
-  "names": []
-}

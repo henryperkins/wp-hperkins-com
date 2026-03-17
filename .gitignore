@@ -10,7 +10,10 @@ wp-content/uploads/
 # Cache and generated files
 wp-content/cache/
 wp-content/upgrade/
+wp-content/upgrade-temp-backup/
 wp-content/backups/
+wp-content/boost-cache/
+wp-content/settings/
 wp-content/advanced-cache.php
 wp-content/object-cache.php
 wp-content/db.php
@@ -18,6 +21,8 @@ wp-content/db.php
 # Temporary/output directories
 tmp/
 output/
+.playwright-cli/
+.playwright-mcp/
 
 # Nested repos
 agent-skills/

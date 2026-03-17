@@ -1,1 +1,0 @@
-{"version":3,"file":"screen-header.d.ts","sourceRoot":"","sources":["../src/screen-header.tsx"],"names":[],"mappings":"AAeA,UAAU,iBAAiB;IAC1B,KAAK,EAAE,MAAM,CAAC;IACd,WAAW,CAAC,EAAE,MAAM,GAAG,KAAK,CAAC,YAAY,CAAC;IAC1C,MAAM,CAAC,EAAE,MAAM,IAAI,CAAC;CACpB;AAED,wBAAgB,YAAY,CAAE,EAC7B,KAAK,EACL,WAAW,EACX,MAAM,GACN,EAAE,iBAAiB,+BAiCnB"}

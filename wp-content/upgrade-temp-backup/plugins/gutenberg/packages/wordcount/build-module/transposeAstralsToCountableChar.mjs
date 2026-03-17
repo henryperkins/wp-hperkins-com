@@ -1,8 +1,0 @@
-// packages/wordcount/src/transposeAstralsToCountableChar.ts
-function transposeAstralsToCountableChar(settings, text) {
-  return text.replace(settings.astralRegExp, "a");
-}
-export {
-  transposeAstralsToCountableChar as default
-};
-//# sourceMappingURL=transposeAstralsToCountableChar.mjs.map

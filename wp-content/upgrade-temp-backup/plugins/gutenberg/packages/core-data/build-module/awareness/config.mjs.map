@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/awareness/config.ts"],
-  "sourcesContent": ["/**\n * Delay in milliseconds before throttling the cursor position updates.\n */\nexport const AWARENESS_CURSOR_UPDATE_THROTTLE_IN_MS = 100;\n\n/**\n * Delay in milliseconds before updating the cursor position.\n */\nexport const LOCAL_CURSOR_UPDATE_DEBOUNCE_IN_MS = 5;\n\n/**\n * Delay in milliseconds before removing a collaborator from presence indicators.\n */\nexport const REMOVAL_DELAY_IN_MS = 5000;\n"],
-  "mappings": ";AAGO,IAAM,yCAAyC;AAK/C,IAAM,qCAAqC;AAK3C,IAAM,sBAAsB;",
-  "names": []
-}

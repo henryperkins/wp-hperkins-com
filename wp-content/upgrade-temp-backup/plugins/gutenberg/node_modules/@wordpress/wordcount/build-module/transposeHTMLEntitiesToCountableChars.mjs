@@ -1,8 +1,0 @@
-// packages/wordcount/src/transposeHTMLEntitiesToCountableChars.ts
-function transposeHTMLEntitiesToCountableChars(settings, text) {
-  return text.replace(settings.HTMLEntityRegExp, "a");
-}
-export {
-  transposeHTMLEntitiesToCountableChars as default
-};
-//# sourceMappingURL=transposeHTMLEntitiesToCountableChars.mjs.map

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/index.ts"],
-  "sourcesContent": ["export * from './badge';\nexport * from './button';\nexport * as Card from './card';\nexport * as CollapsibleCard from './collapsible-card';\nexport * as Dialog from './dialog';\nexport * from './form/primitives';\nexport * from './icon';\nexport * from './icon-button';\nexport * as Notice from './notice';\nexport * from './stack';\nexport * as Tabs from './tabs';\nexport * as Tooltip from './tooltip';\nexport * from './visually-hidden';\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,0BAAc,8BAAd;AACA,0BAAc,+BADd;AAEA,WAAsB;AACtB,sBAAiC;AACjC,aAAwB;AACxB,0BAAc,wCALd;AAMA,0BAAc,6BANd;AAOA,0BAAc,oCAPd;AAQA,aAAwB;AACxB,0BAAc,8BATd;AAUA,WAAsB;AACtB,cAAyB;AACzB,0BAAc,wCAZd;",
-  "names": []
-}

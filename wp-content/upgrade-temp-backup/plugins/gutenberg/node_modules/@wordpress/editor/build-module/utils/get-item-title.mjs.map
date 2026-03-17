@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/utils/get-item-title.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { decodeEntities } from '@wordpress/html-entities';\n\n/**\n * Helper function to get the title of a post item.\n * This is duplicated from the `@wordpress/fields` package.\n * `packages/fields/src/actions/utils.ts`\n *\n * @param {Object} item The post item.\n * @return {string} The title of the item, or an empty string if the title is not found.\n */\nexport function getItemTitle( item ) {\n\tif ( typeof item.title === 'string' ) {\n\t\treturn decodeEntities( item.title );\n\t}\n\tif ( item.title && 'rendered' in item.title ) {\n\t\treturn decodeEntities( item.title.rendered );\n\t}\n\tif ( item.title && 'raw' in item.title ) {\n\t\treturn decodeEntities( item.title.raw );\n\t}\n\treturn '';\n}\n"],
-  "mappings": ";AAGA,SAAS,sBAAsB;AAUxB,SAAS,aAAc,MAAO;AACpC,MAAK,OAAO,KAAK,UAAU,UAAW;AACrC,WAAO,eAAgB,KAAK,KAAM;AAAA,EACnC;AACA,MAAK,KAAK,SAAS,cAAc,KAAK,OAAQ;AAC7C,WAAO,eAAgB,KAAK,MAAM,QAAS;AAAA,EAC5C;AACA,MAAK,KAAK,SAAS,SAAS,KAAK,OAAQ;AACxC,WAAO,eAAgB,KAAK,MAAM,GAAI;AAAA,EACvC;AACA,SAAO;AACR;",
-  "names": []
-}

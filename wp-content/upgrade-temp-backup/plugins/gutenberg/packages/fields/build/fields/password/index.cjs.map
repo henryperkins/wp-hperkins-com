@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/fields/password/index.tsx"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { Field } from '@wordpress/dataviews';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport type { BasePost } from '../../types';\nimport PasswordEdit from './edit';\n\nconst passwordField: Field< BasePost > = {\n\tid: 'password',\n\ttype: 'text',\n\tlabel: __( 'Password' ),\n\tEdit: PasswordEdit,\n\tenableSorting: false,\n\tenableHiding: false,\n\tisVisible: ( item ) => item.status !== 'private',\n\tfilterBy: false,\n};\n\n/**\n * Password field for BasePost.\n */\nexport default passwordField;\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAIA,kBAAmB;AAMnB,kBAAyB;AAEzB,IAAM,gBAAmC;AAAA,EACxC,IAAI;AAAA,EACJ,MAAM;AAAA,EACN,WAAO,gBAAI,UAAW;AAAA,EACtB,MAAM,YAAAA;AAAA,EACN,eAAe;AAAA,EACf,cAAc;AAAA,EACd,WAAW,CAAE,SAAU,KAAK,WAAW;AAAA,EACvC,UAAU;AACX;AAKA,IAAO,mBAAQ;",
-  "names": ["PasswordEdit"]
-}

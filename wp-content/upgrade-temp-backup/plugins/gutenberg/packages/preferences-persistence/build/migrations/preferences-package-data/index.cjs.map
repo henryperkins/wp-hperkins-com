@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/migrations/preferences-package-data/index.js"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport convertComplementaryAreas from './convert-complementary-areas';\nimport convertEditorSettings from './convert-editor-settings';\n\nexport default function convertPreferencesPackageData( data ) {\n\tlet newData = convertComplementaryAreas( data );\n\tnewData = convertEditorSettings( newData );\n\treturn newData;\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,yCAAsC;AACtC,qCAAkC;AAEnB,SAAR,8BAAgD,MAAO;AAC7D,MAAI,cAAU,mCAAAA,SAA2B,IAAK;AAC9C,gBAAU,+BAAAC,SAAuB,OAAQ;AACzC,SAAO;AACR;",
-  "names": ["convertComplementaryAreas", "convertEditorSettings"]
-}

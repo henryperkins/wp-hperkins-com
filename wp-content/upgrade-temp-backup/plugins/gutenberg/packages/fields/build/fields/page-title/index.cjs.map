@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/fields/page-title/index.ts"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { Field } from '@wordpress/dataviews';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport type { BasePost } from '../../types';\nimport { getItemTitle } from '../../actions/utils';\nimport PageTitleView from './view';\n\nconst pageTitleField: Field< BasePost > = {\n\ttype: 'text',\n\tid: 'title',\n\tlabel: __( 'Title' ),\n\tplaceholder: __( 'No title' ),\n\tgetValue: ( { item } ) => getItemTitle( item ),\n\trender: PageTitleView,\n\tenableHiding: false,\n\tenableGlobalSearch: true,\n\tfilterBy: false,\n};\n\n/**\n * Title for the page entity.\n */\nexport default pageTitleField;\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAIA,kBAAmB;AAMnB,mBAA6B;AAC7B,kBAA0B;AAE1B,IAAM,iBAAoC;AAAA,EACzC,MAAM;AAAA,EACN,IAAI;AAAA,EACJ,WAAO,gBAAI,OAAQ;AAAA,EACnB,iBAAa,gBAAI,UAAW;AAAA,EAC5B,UAAU,CAAE,EAAE,KAAK,UAAO,2BAAc,IAAK;AAAA,EAC7C,QAAQ,YAAAA;AAAA,EACR,cAAc;AAAA,EACd,oBAAoB;AAAA,EACpB,UAAU;AACX;AAKA,IAAO,qBAAQ;",
-  "names": ["PageTitleView"]
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/tabs-menu-item/index.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { tabsMenuItem as icon } from '@wordpress/icons';\n\n/**\n * Internal dependencies\n */\nimport initBlock from '../utils/init-block';\nimport edit from './edit';\nimport save from './save';\nimport metadata from './block.json';\n\nconst { name } = metadata;\n\nexport { metadata, name };\n\nexport const settings = {\n\ticon,\n\tedit,\n\tsave,\n};\n\nexport const init = () => initBlock( { name, metadata, settings } );\n"],
-  "mappings": ";AAGA,SAAS,gBAAgB,YAAY;AAKrC,OAAO,eAAe;AACtB,OAAO,UAAU;AACjB,OAAO,UAAU;AACjB,OAAO,cAAc;AAErB,IAAM,EAAE,KAAK,IAAI;AAIV,IAAM,WAAW;AAAA,EACvB;AAAA,EACA;AAAA,EACA;AACD;AAEO,IAAM,OAAO,MAAM,UAAW,EAAE,MAAM,UAAU,SAAS,CAAE;",
-  "names": []
-}

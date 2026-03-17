@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/sidebar-button/index.js"],
-  "sourcesContent": ["/**\n * External dependencies\n */\nimport clsx from 'clsx';\n\n/**\n * WordPress dependencies\n */\nimport { Button } from '@wordpress/components';\n\nexport default function SidebarButton( props ) {\n\treturn (\n\t\t<Button\n\t\t\tsize=\"compact\"\n\t\t\t{ ...props }\n\t\t\tclassName={ clsx( 'edit-site-sidebar-button', props.className ) }\n\t\t/>\n\t);\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,kBAAiB;AAKjB,wBAAuB;AAIrB;AAFa,SAAR,cAAgC,OAAQ;AAC9C,SACC;AAAA,IAAC;AAAA;AAAA,MACA,MAAK;AAAA,MACH,GAAG;AAAA,MACL,eAAY,YAAAA,SAAM,4BAA4B,MAAM,SAAU;AAAA;AAAA,EAC/D;AAEF;",
-  "names": ["clsx"]
-}

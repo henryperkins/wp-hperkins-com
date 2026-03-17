@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/post-sticky/panel.js"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport PostPanelRow from '../post-panel-row';\nimport PostStickyForm from './';\nimport PostStickyCheck from './check';\n\nexport function PostStickyPanel() {\n\treturn (\n\t\t<PostStickyCheck>\n\t\t\t<PostPanelRow>\n\t\t\t\t<PostStickyForm />\n\t\t\t</PostPanelRow>\n\t\t</PostStickyCheck>\n\t);\n}\n\nexport default PostStickyPanel;\n"],
-  "mappings": ";AAGA,OAAO,kBAAkB;AACzB,OAAO,oBAAoB;AAC3B,OAAO,qBAAqB;AAMxB;AAJG,SAAS,kBAAkB;AACjC,SACC,oBAAC,mBACA,8BAAC,gBACA,8BAAC,kBAAe,GACjB,GACD;AAEF;AAEA,IAAO,gBAAQ;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/page/sidebar-toggle-slot.tsx"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { createSlotFill } from '@wordpress/components';\n\nconst { Fill: SidebarToggleFill, Slot: SidebarToggleSlot } =\n\tcreateSlotFill( 'SidebarToggle' );\n\nexport { SidebarToggleFill, SidebarToggleSlot };\n"],
-  "mappings": ";AAGA,SAAS,sBAAsB;AAE/B,IAAM,EAAE,MAAM,mBAAmB,MAAM,kBAAkB,IACxD,eAAgB,eAAgB;",
-  "names": []
-}

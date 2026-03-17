@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/navigation/router-link-item.tsx"],
-  "sourcesContent": ["/**\n * External dependencies\n */\nimport type { ForwardedRef } from 'react';\n\n/**\n * WordPress dependencies\n */\nimport { forwardRef } from '@wordpress/element';\nimport { __experimentalItem as Item } from '@wordpress/components';\nimport { privateApis as routePrivateApis } from '@wordpress/route';\n\n/**\n * Internal dependencies\n */\nimport { unlock } from '../../lock-unlock';\n\nconst { createLink } = unlock( routePrivateApis );\n\nfunction AnchorOnlyItem(\n\tprops: React.ComponentProps< typeof Item >,\n\tforwardedRef: ForwardedRef< HTMLAnchorElement >\n) {\n\treturn <Item as=\"a\" ref={ forwardedRef } { ...props } />;\n}\n\nconst RouterLinkItem = createLink( forwardRef( AnchorOnlyItem ) );\n\nexport default RouterLinkItem;\n"],
-  "mappings": ";AAQA,SAAS,kBAAkB;AAC3B,SAAS,sBAAsB,YAAY;AAC3C,SAAS,eAAe,wBAAwB;AAKhD,SAAS,cAAc;AAQf;AANR,IAAM,EAAE,WAAW,IAAI,OAAQ,gBAAiB;AAEhD,SAAS,eACR,OACA,cACC;AACD,SAAO,oBAAC,QAAK,IAAG,KAAI,KAAM,cAAiB,GAAG,OAAQ;AACvD;AAEA,IAAM,iBAAiB,WAAY,WAAY,cAAe,CAAE;AAEhE,IAAO,2BAAQ;",
-  "names": []
-}

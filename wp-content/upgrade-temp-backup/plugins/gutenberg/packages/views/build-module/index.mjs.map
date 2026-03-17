@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/index.ts"],
-  "sourcesContent": ["export { useView } from './use-view';\nexport { loadView } from './load-view';\n"],
-  "mappings": ";AAAA,SAAS,eAAe;AACxB,SAAS,gBAAgB;",
-  "names": []
-}

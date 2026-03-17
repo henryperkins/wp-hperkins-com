@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/utils.ts"],
-  "sourcesContent": ["/**\n * Determines whether a given file type supports a quality setting,\n *\n * @todo Make this smarter.\n *\n * @param type Mime type.\n * @return Whether the file supports a quality setting.\n */\nexport function supportsQuality(\n\ttype: string\n): type is 'image/jpeg' | 'image/png' | 'image/webp' | 'image/avif' {\n\treturn [ 'image/jpeg', 'image/png', 'image/webp', 'image/avif' ].includes(\n\t\ttype\n\t);\n}\n\n/**\n * Determines whether a given file type supports animation,\n *\n * @todo Make this smarter.\n *\n * @param type Mime type.\n * @return Whether the file supports animation.\n */\nexport function supportsAnimation(\n\ttype: string\n): type is 'image/webp' | 'image/gif' {\n\treturn [ 'image/webp', 'image/gif' ].includes( type );\n}\n\n/**\n * Determines whether a given file type supports interlaced/progressive output.\n *\n * @todo Make this smarter.\n *\n * @param type Mime type.\n * @return Whether the file supports interlaced/progressive output.\n */\nexport function supportsInterlace(\n\ttype: string\n): type is 'image/jpeg' | 'image/gif' | 'image/png' {\n\treturn [ 'image/jpeg', 'image/gif', 'image/png' ].includes( type );\n}\n"],
-  "mappings": ";AAQO,SAAS,gBACf,MACmE;AACnE,SAAO,CAAE,cAAc,aAAa,cAAc,YAAa,EAAE;AAAA,IAChE;AAAA,EACD;AACD;AAUO,SAAS,kBACf,MACqC;AACrC,SAAO,CAAE,cAAc,WAAY,EAAE,SAAU,IAAK;AACrD;AAUO,SAAS,kBACf,MACmD;AACnD,SAAO,CAAE,cAAc,aAAa,WAAY,EAAE,SAAU,IAAK;AAClE;",
-  "names": []
-}

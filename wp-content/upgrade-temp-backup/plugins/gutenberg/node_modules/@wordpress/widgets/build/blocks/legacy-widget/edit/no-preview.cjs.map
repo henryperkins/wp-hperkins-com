@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../src/blocks/legacy-widget/edit/no-preview.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __ } from '@wordpress/i18n';\n\nexport default function NoPreview( { name } ) {\n\treturn (\n\t\t<div className=\"wp-block-legacy-widget__edit-no-preview\">\n\t\t\t{ name && <h3>{ name }</h3> }\n\t\t\t<p>{ __( 'No preview available.' ) }</p>\n\t\t</div>\n\t);\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,kBAAmB;AAIjB;AAFa,SAAR,UAA4B,EAAE,KAAK,GAAI;AAC7C,SACC,6CAAC,SAAI,WAAU,2CACZ;AAAA,YAAQ,4CAAC,QAAK,gBAAM;AAAA,IACtB,4CAAC,OAAI,8BAAI,uBAAwB,GAAG;AAAA,KACrC;AAEF;",
-  "names": []
-}

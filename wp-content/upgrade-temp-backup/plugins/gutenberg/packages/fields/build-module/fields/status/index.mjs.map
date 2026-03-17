@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/fields/status/index.tsx"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { Field } from '@wordpress/dataviews';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport type { BasePost } from '../../types';\nimport StatusView from './status-view';\nimport STATUSES from './status-elements';\n\nconst OPERATOR_IS_ANY = 'isAny';\n\nconst statusField: Field< BasePost > = {\n\tlabel: __( 'Status' ),\n\tid: 'status',\n\ttype: 'text',\n\telements: STATUSES,\n\trender: StatusView,\n\tEdit: 'radio',\n\tenableSorting: false,\n\tfilterBy: {\n\t\toperators: [ OPERATOR_IS_ANY ],\n\t},\n};\n\n/**\n * Status field for BasePost.\n */\nexport default statusField;\n"],
-  "mappings": ";AAIA,SAAS,UAAU;AAMnB,OAAO,gBAAgB;AACvB,OAAO,cAAc;AAErB,IAAM,kBAAkB;AAExB,IAAM,cAAiC;AAAA,EACtC,OAAO,GAAI,QAAS;AAAA,EACpB,IAAI;AAAA,EACJ,MAAM;AAAA,EACN,UAAU;AAAA,EACV,QAAQ;AAAA,EACR,MAAM;AAAA,EACN,eAAe;AAAA,EACf,UAAU;AAAA,IACT,WAAW,CAAE,eAAgB;AAAA,EAC9B;AACD;AAKA,IAAO,iBAAQ;",
-  "names": []
-}

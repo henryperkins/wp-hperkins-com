@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/fields/template-title/index.ts"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { Field } from '@wordpress/dataviews';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport type { Template } from '../../types';\nimport { getItemTitle } from '../../actions/utils';\nimport TitleView from '../title/view';\n\nconst templateTitleField: Field< Template > = {\n\ttype: 'text',\n\tlabel: __( 'Template' ),\n\tplaceholder: __( 'No title' ),\n\tid: 'title',\n\tgetValue: ( { item } ) => getItemTitle( item ),\n\trender: TitleView,\n\tenableHiding: false,\n\tenableGlobalSearch: true,\n\tfilterBy: false,\n};\n\n/**\n * Title for the template entity.\n */\nexport default templateTitleField;\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAIA,kBAAmB;AAMnB,mBAA6B;AAC7B,kBAAsB;AAEtB,IAAM,qBAAwC;AAAA,EAC7C,MAAM;AAAA,EACN,WAAO,gBAAI,UAAW;AAAA,EACtB,iBAAa,gBAAI,UAAW;AAAA,EAC5B,IAAI;AAAA,EACJ,UAAU,CAAE,EAAE,KAAK,UAAO,2BAAc,IAAK;AAAA,EAC7C,QAAQ,YAAAA;AAAA,EACR,cAAc;AAAA,EACd,oBAAoB;AAAA,EACpB,UAAU;AACX;AAKA,IAAO,yBAAQ;",
-  "names": ["TitleView"]
-}

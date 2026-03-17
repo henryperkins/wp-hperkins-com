@@ -1,9 +1,0 @@
-import type { ValidatedControlProps } from './types';
-export declare const ValidatedCheckboxControl: import("react").ForwardRefExoticComponent<Pick<import("../../base-control/types").BaseControlProps, "help" | "__nextHasNoMarginBottom"> & {
-    onChange: (value: boolean) => void;
-    label?: string;
-    checked?: boolean;
-    indeterminate?: boolean;
-    heading?: import("react").ReactNode;
-} & Omit<Omit<import("react").DetailedHTMLProps<import("react").InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, "ref">, "children" | "help" | "onChange" | "label" | "as" | "heading" | "checked" | "__nextHasNoMarginBottom" | "indeterminate"> & ValidatedControlProps & import("react").RefAttributes<HTMLInputElement>>;
-//# sourceMappingURL=checkbox-control.d.ts.map

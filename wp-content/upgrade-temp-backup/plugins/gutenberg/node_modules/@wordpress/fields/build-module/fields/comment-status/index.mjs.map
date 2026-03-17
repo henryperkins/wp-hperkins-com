@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/fields/comment-status/index.tsx"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport type { Field } from '@wordpress/dataviews';\nimport { __ } from '@wordpress/i18n';\n\n/**\n * Internal dependencies\n */\nimport type { BasePost } from '../../types';\n\nconst commentStatusField: Field< BasePost > = {\n\tid: 'comment_status',\n\tlabel: __( 'Comments' ),\n\ttype: 'text',\n\tEdit: 'radio',\n\tenableSorting: false,\n\tenableHiding: false,\n\tfilterBy: false,\n\telements: [\n\t\t{\n\t\t\tvalue: 'open',\n\t\t\tlabel: __( 'Open' ),\n\t\t\tdescription: __( 'Visitors can add new comments and replies.' ),\n\t\t},\n\t\t{\n\t\t\tvalue: 'closed',\n\t\t\tlabel: __( 'Closed' ),\n\t\t\tdescription: __(\n\t\t\t\t'Visitors cannot add new comments or replies. Existing comments remain visible.'\n\t\t\t),\n\t\t},\n\t],\n};\n\n/**\n * Comment status field for BasePost.\n */\nexport default commentStatusField;\n"],
-  "mappings": ";AAIA,SAAS,UAAU;AAOnB,IAAM,qBAAwC;AAAA,EAC7C,IAAI;AAAA,EACJ,OAAO,GAAI,UAAW;AAAA,EACtB,MAAM;AAAA,EACN,MAAM;AAAA,EACN,eAAe;AAAA,EACf,cAAc;AAAA,EACd,UAAU;AAAA,EACV,UAAU;AAAA,IACT;AAAA,MACC,OAAO;AAAA,MACP,OAAO,GAAI,MAAO;AAAA,MAClB,aAAa,GAAI,4CAA6C;AAAA,IAC/D;AAAA,IACA;AAAA,MACC,OAAO;AAAA,MACP,OAAO,GAAI,QAAS;AAAA,MACpB,aAAa;AAAA,QACZ;AAAA,MACD;AAAA,IACD;AAAA,EACD;AACD;AAKA,IAAO,yBAAQ;",
-  "names": []
-}

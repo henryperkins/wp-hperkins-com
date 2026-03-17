@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/block-ratings/index.js"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport Stars from './stars';\n\nexport const BlockRatings = ( { rating } ) => (\n\t<span className=\"block-directory-block-ratings\">\n\t\t<Stars rating={ rating } />\n\t</span>\n);\n\nexport default BlockRatings;\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,mBAAkB;AAIhB;AAFK,IAAM,eAAe,CAAE,EAAE,OAAO,MACtC,4CAAC,UAAK,WAAU,iCACf,sDAAC,aAAAA,SAAA,EAAM,QAAkB,GAC1B;AAGD,IAAO,wBAAQ;",
-  "names": ["Stars"]
-}

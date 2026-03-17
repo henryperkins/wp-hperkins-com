@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/meta-boxes/index.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { useSelect } from '@wordpress/data';\n\n/**\n * Internal dependencies\n */\nimport MetaBoxesArea from './meta-boxes-area';\nimport MetaBoxVisibility from './meta-box-visibility';\nimport { store as editPostStore } from '../../store';\n\nexport default function MetaBoxes( { location } ) {\n\tconst metaBoxes = useSelect(\n\t\t( select ) =>\n\t\t\tselect( editPostStore ).getMetaBoxesPerLocation( location ),\n\t\t[ location ]\n\t);\n\treturn (\n\t\t<>\n\t\t\t{ ( metaBoxes ?? [] ).map( ( { id } ) => (\n\t\t\t\t<MetaBoxVisibility key={ id } id={ id } />\n\t\t\t) ) }\n\t\t\t<MetaBoxesArea location={ location } />\n\t\t</>\n\t);\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,kBAA0B;AAK1B,6BAA0B;AAC1B,iCAA8B;AAC9B,mBAAuC;AASrC;AAPa,SAAR,UAA4B,EAAE,SAAS,GAAI;AACjD,QAAM,gBAAY;AAAA,IACjB,CAAE,WACD,OAAQ,aAAAA,KAAc,EAAE,wBAAyB,QAAS;AAAA,IAC3D,CAAE,QAAS;AAAA,EACZ;AACA,SACC,4EACK;AAAA,kBAAa,CAAC,GAAI,IAAK,CAAE,EAAE,GAAG,MACjC,4CAAC,2BAAAC,SAAA,EAA6B,MAAL,EAAe,CACvC;AAAA,IACF,4CAAC,uBAAAC,SAAA,EAAc,UAAsB;AAAA,KACtC;AAEF;",
-  "names": ["editPostStore", "MetaBoxVisibility", "MetaBoxesArea"]
-}

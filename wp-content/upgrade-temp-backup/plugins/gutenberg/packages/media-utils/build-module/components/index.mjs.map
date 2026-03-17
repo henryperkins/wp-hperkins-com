@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/components/index.ts"],
-  "sourcesContent": ["export { default as MediaUpload } from './media-upload';\n"],
-  "mappings": ";AAAA,SAAoB,WAAXA,gBAA8B;",
-  "names": ["default"]
-}

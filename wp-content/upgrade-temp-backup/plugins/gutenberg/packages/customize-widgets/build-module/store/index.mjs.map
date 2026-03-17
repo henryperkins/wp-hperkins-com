@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/store/index.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { createReduxStore, register } from '@wordpress/data';\n\n/**\n * Internal dependencies\n */\nimport reducer from './reducer';\nimport * as selectors from './selectors';\nimport * as actions from './actions';\nimport { STORE_NAME } from './constants';\n\n/**\n * Block editor data store configuration.\n *\n * @see https://github.com/WordPress/gutenberg/blob/HEAD/packages/data/README.md#registering-a-store\n *\n * @type {Object}\n */\nconst storeConfig = {\n\treducer,\n\tselectors,\n\tactions,\n};\n\n/**\n * Store definition for the edit widgets namespace.\n *\n * @see https://github.com/WordPress/gutenberg/blob/HEAD/packages/data/README.md#createReduxStore\n *\n * @type {Object}\n */\nexport const store = createReduxStore( STORE_NAME, storeConfig );\nregister( store );\n"],
-  "mappings": ";AAGA,SAAS,kBAAkB,gBAAgB;AAK3C,OAAO,aAAa;AACpB,YAAY,eAAe;AAC3B,YAAY,aAAa;AACzB,SAAS,kBAAkB;AAS3B,IAAM,cAAc;AAAA,EACnB;AAAA,EACA;AAAA,EACA;AACD;AASO,IAAM,QAAQ,iBAAkB,YAAY,WAAY;AAC/D,SAAU,KAAM;",
-  "names": []
-}

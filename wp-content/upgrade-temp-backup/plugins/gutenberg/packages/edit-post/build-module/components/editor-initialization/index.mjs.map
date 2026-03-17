@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/editor-initialization/index.js"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport { useUpdatePostLinkListener } from './listener-hooks';\n\n/**\n * Data component used for initializing the editor and re-initializes\n * when postId changes or on unmount.\n *\n * @return {null} This is a data component so does not render any ui.\n */\nexport default function EditorInitialization() {\n\tuseUpdatePostLinkListener();\n\treturn null;\n}\n"],
-  "mappings": ";AAGA,SAAS,iCAAiC;AAQ3B,SAAR,uBAAwC;AAC9C,4BAA0B;AAC1B,SAAO;AACR;",
-  "names": []
-}

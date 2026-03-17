@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/post-author/constants.js"],
-  "sourcesContent": ["export const BASE_QUERY = {\n\t_fields: 'id,name',\n\tcontext: 'view', // Allows non-admins to perform requests.\n};\n\nexport const AUTHORS_QUERY = {\n\twho: 'authors',\n\tper_page: 100,\n\t...BASE_QUERY,\n};\n"],
-  "mappings": ";AAAO,IAAM,aAAa;AAAA,EACzB,SAAS;AAAA,EACT,SAAS;AAAA;AACV;AAEO,IAAM,gBAAgB;AAAA,EAC5B,KAAK;AAAA,EACL,UAAU;AAAA,EACV,GAAG;AACJ;",
-  "names": []
-}

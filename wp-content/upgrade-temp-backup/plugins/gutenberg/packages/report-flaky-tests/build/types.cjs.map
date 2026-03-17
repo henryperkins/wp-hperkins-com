@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/types.ts"],
-  "sourcesContent": ["/**\n * External dependencies\n */\nimport type { TestCaseResult } from '@jest/test-result';\nimport type { TestResult } from '@playwright/test/reporter';\n\ntype BaseFlakyTestResult = {\n\tversion: number;\n\ttitle: string;\n\tpath: string;\n};\n\ntype JestCircusFlakyTestResult = BaseFlakyTestResult & {\n\trunner: 'jest-circus';\n\tresults: TestCaseResult[];\n};\n\ntype PlaywrightTestFlakyTestResult = BaseFlakyTestResult & {\n\trunner: '@playwright/test';\n\tresults: TestResult[];\n};\n\nexport type FlakyTestResult =\n\t| JestCircusFlakyTestResult\n\t| PlaywrightTestFlakyTestResult;\n\nexport type MetaData = {\n\tfailedTimes?: number;\n\ttotalCommits?: number;\n\tbaseCommit?: string;\n};\n\nexport type ReportedIssue = {\n\ttestTitle: string;\n\ttestPath: string;\n\tissueNumber: number;\n\tissueUrl: string;\n};\n"],
-  "mappings": ";;;;;;;;;;;;;;;;AAAA;AAAA;",
-  "names": []
-}

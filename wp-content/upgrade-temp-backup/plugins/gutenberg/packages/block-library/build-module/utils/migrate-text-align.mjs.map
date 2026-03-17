@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/utils/migrate-text-align.js"],
-  "sourcesContent": ["/**\n * Migrates the current textAlign attribute,\n *\n * @param {Object} attributes The current attributes\n * @return {Object} The updated attributes.\n */\nexport default function ( attributes ) {\n\tconst { textAlign, ...restAttributes } = attributes;\n\tif ( ! textAlign ) {\n\t\treturn attributes;\n\t}\n\treturn {\n\t\t...restAttributes,\n\t\tstyle: {\n\t\t\t...attributes.style,\n\t\t\ttypography: {\n\t\t\t\t...attributes.style?.typography,\n\t\t\t\ttextAlign,\n\t\t\t},\n\t\t},\n\t};\n}\n"],
-  "mappings": ";AAMe,SAAR,2BAAmB,YAAa;AACtC,QAAM,EAAE,WAAW,GAAG,eAAe,IAAI;AACzC,MAAK,CAAE,WAAY;AAClB,WAAO;AAAA,EACR;AACA,SAAO;AAAA,IACN,GAAG;AAAA,IACH,OAAO;AAAA,MACN,GAAG,WAAW;AAAA,MACd,YAAY;AAAA,QACX,GAAG,WAAW,OAAO;AAAA,QACrB;AAAA,MACD;AAAA,IACD;AAAA,EACD;AACD;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/index.js"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport './hooks';\n\nexport { storeConfig, store } from './store';\nexport * from './components';\nexport * from './utils';\nexport * from './private-apis';\nexport * from './dataviews/api';\n\n/*\n * Backward compatibility\n */\nexport { transformStyles } from '@wordpress/block-editor';\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,mBAAO;AAEP,mBAAmC;AACnC,0BAAc,mCANd;AAOA,0BAAc,8BAPd;AAQA,0BAAc,+BARd;AASA,0BAAc,gCATd;AAcA,0BAAgC;",
-  "names": []
-}

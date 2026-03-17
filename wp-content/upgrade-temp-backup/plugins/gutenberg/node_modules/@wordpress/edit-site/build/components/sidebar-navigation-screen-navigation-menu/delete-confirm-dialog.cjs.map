@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/sidebar-navigation-screen-navigation-menu/delete-confirm-dialog.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __experimentalConfirmDialog as ConfirmDialog } from '@wordpress/components';\nimport { __ } from '@wordpress/i18n';\n\nexport default function DeleteConfirmDialog( { onClose, onConfirm } ) {\n\treturn (\n\t\t<ConfirmDialog\n\t\t\tisOpen\n\t\t\tonConfirm={ () => {\n\t\t\t\tonConfirm();\n\n\t\t\t\t// Immediate close avoids ability to hit delete multiple times.\n\t\t\t\tonClose();\n\t\t\t} }\n\t\t\tonCancel={ onClose }\n\t\t\tconfirmButtonText={ __( 'Delete' ) }\n\t\t\tsize=\"medium\"\n\t\t>\n\t\t\t{ __( 'Are you sure you want to delete this Navigation Menu?' ) }\n\t\t</ConfirmDialog>\n\t);\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,wBAA6D;AAC7D,kBAAmB;AAIjB;AAFa,SAAR,oBAAsC,EAAE,SAAS,UAAU,GAAI;AACrE,SACC;AAAA,IAAC,kBAAAA;AAAA,IAAA;AAAA,MACA,QAAM;AAAA,MACN,WAAY,MAAM;AACjB,kBAAU;AAGV,gBAAQ;AAAA,MACT;AAAA,MACA,UAAW;AAAA,MACX,uBAAoB,gBAAI,QAAS;AAAA,MACjC,MAAK;AAAA,MAEH,8BAAI,uDAAwD;AAAA;AAAA,EAC/D;AAEF;",
-  "names": ["ConfirmDialog"]
-}

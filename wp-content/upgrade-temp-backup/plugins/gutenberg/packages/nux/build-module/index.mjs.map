@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/index.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport deprecated from '@wordpress/deprecated';\n\nexport { store } from './store';\nexport { default as DotTip } from './components/dot-tip';\n\ndeprecated( 'wp.nux', {\n\tsince: '5.4',\n\thint: 'wp.components.Guide can be used to show a user guide.',\n\tversion: '6.2',\n} );\n"],
-  "mappings": ";AAGA,OAAO,gBAAgB;AAEvB,SAAS,aAAa;AACtB,SAAoB,WAAXA,gBAAyB;AAElC,WAAY,UAAU;AAAA,EACrB,OAAO;AAAA,EACP,MAAM;AAAA,EACN,SAAS;AACV,CAAE;",
-  "names": ["default"]
-}

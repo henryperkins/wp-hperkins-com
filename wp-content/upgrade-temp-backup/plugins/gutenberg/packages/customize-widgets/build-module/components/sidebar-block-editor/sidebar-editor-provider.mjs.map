@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/sidebar-block-editor/sidebar-editor-provider.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { privateApis as blockEditorPrivateApis } from '@wordpress/block-editor';\n\n/**\n * Internal dependencies\n */\nimport useSidebarBlockEditor from './use-sidebar-block-editor';\nimport useBlocksFocusControl from '../focus-control/use-blocks-focus-control';\n\nimport { unlock } from '../../lock-unlock';\n\nconst { ExperimentalBlockEditorProvider } = unlock( blockEditorPrivateApis );\n\nexport default function SidebarEditorProvider( {\n\tsidebar,\n\tsettings,\n\tchildren,\n} ) {\n\tconst [ blocks, onInput, onChange ] = useSidebarBlockEditor( sidebar );\n\n\tuseBlocksFocusControl( blocks );\n\n\treturn (\n\t\t<ExperimentalBlockEditorProvider\n\t\t\tvalue={ blocks }\n\t\t\tonInput={ onInput }\n\t\t\tonChange={ onChange }\n\t\t\tsettings={ settings }\n\t\t\tuseSubRegistry={ false }\n\t\t>\n\t\t\t{ children }\n\t\t</ExperimentalBlockEditorProvider>\n\t);\n}\n"],
-  "mappings": ";AAGA,SAAS,eAAe,8BAA8B;AAKtD,OAAO,2BAA2B;AAClC,OAAO,2BAA2B;AAElC,SAAS,cAAc;AAcrB;AAZF,IAAM,EAAE,gCAAgC,IAAI,OAAQ,sBAAuB;AAE5D,SAAR,sBAAwC;AAAA,EAC9C;AAAA,EACA;AAAA,EACA;AACD,GAAI;AACH,QAAM,CAAE,QAAQ,SAAS,QAAS,IAAI,sBAAuB,OAAQ;AAErE,wBAAuB,MAAO;AAE9B,SACC;AAAA,IAAC;AAAA;AAAA,MACA,OAAQ;AAAA,MACR;AAAA,MACA;AAAA,MACA;AAAA,MACA,gBAAiB;AAAA,MAEf;AAAA;AAAA,EACH;AAEF;",
-  "names": []
-}

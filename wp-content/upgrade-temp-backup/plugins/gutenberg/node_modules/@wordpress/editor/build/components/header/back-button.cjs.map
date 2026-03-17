@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/header/back-button.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport {\n\t__experimentalUseSlotFills as useSlotFills,\n\tcreateSlotFill,\n} from '@wordpress/components';\n\n// Keeping an old name for backward compatibility.\nconst slotName = '__experimentalMainDashboardButton';\n\nexport const useHasBackButton = () => {\n\tconst fills = useSlotFills( slotName );\n\treturn Boolean( fills && fills.length );\n};\n\nconst { Fill, Slot } = createSlotFill( slotName );\n\nconst BackButton = Fill;\nconst BackButtonSlot = () => {\n\tconst fills = useSlotFills( slotName );\n\n\treturn (\n\t\t<Slot\n\t\t\tbubblesVirtually\n\t\t\tfillProps={ { length: ! fills ? 0 : fills.length } }\n\t\t/>\n\t);\n};\nBackButton.Slot = BackButtonSlot;\n\nexport default BackButton;\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,wBAGO;AAiBL;AAdF,IAAM,WAAW;AAEV,IAAM,mBAAmB,MAAM;AACrC,QAAM,YAAQ,kBAAAA,4BAAc,QAAS;AACrC,SAAO,QAAS,SAAS,MAAM,MAAO;AACvC;AAEA,IAAM,EAAE,MAAM,KAAK,QAAI,kCAAgB,QAAS;AAEhD,IAAM,aAAa;AACnB,IAAM,iBAAiB,MAAM;AAC5B,QAAM,YAAQ,kBAAAA,4BAAc,QAAS;AAErC,SACC;AAAA,IAAC;AAAA;AAAA,MACA,kBAAgB;AAAA,MAChB,WAAY,EAAE,QAAQ,CAAE,QAAQ,IAAI,MAAM,OAAO;AAAA;AAAA,EAClD;AAEF;AACA,WAAW,OAAO;AAElB,IAAO,sBAAQ;",
-  "names": ["useSlotFills"]
-}

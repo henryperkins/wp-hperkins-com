@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/block/index.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { addFilter } from '@wordpress/hooks';\nimport { withSelect } from '@wordpress/data';\n\n/**\n * Internal dependencies\n */\nimport { STORE_NAME } from '../store/constants';\n/**\n * Adds annotation className to the block-list-block component.\n *\n * @param {Object} OriginalComponent The original BlockListBlock component.\n * @return {Object} The enhanced component.\n */\nconst addAnnotationClassName = ( OriginalComponent ) => {\n\treturn withSelect( ( select, { clientId, className } ) => {\n\t\tconst annotations =\n\t\t\tselect( STORE_NAME ).__experimentalGetAnnotationsForBlock(\n\t\t\t\tclientId\n\t\t\t);\n\n\t\treturn {\n\t\t\tclassName: annotations\n\t\t\t\t.map( ( annotation ) => {\n\t\t\t\t\treturn 'is-annotated-by-' + annotation.source;\n\t\t\t\t} )\n\t\t\t\t.concat( className )\n\t\t\t\t.filter( Boolean )\n\t\t\t\t.join( ' ' ),\n\t\t};\n\t} )( OriginalComponent );\n};\n\naddFilter(\n\t'editor.BlockListBlock',\n\t'core/annotations',\n\taddAnnotationClassName\n);\n"],
-  "mappings": ";AAGA,mBAA0B;AAC1B,kBAA2B;AAK3B,uBAA2B;AAO3B,IAAM,yBAAyB,CAAE,sBAAuB;AACvD,aAAO,wBAAY,CAAE,QAAQ,EAAE,UAAU,UAAU,MAAO;AACzD,UAAM,cACL,OAAQ,2BAAW,EAAE;AAAA,MACpB;AAAA,IACD;AAED,WAAO;AAAA,MACN,WAAW,YACT,IAAK,CAAE,eAAgB;AACvB,eAAO,qBAAqB,WAAW;AAAA,MACxC,CAAE,EACD,OAAQ,SAAU,EAClB,OAAQ,OAAQ,EAChB,KAAM,GAAI;AAAA,IACb;AAAA,EACD,CAAE,EAAG,iBAAkB;AACxB;AAAA,IAEA;AAAA,EACC;AAAA,EACA;AAAA,EACA;AACD;",
-  "names": []
-}

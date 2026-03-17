@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/components/downloadable-block-notice/index.js"],
-  "sourcesContent": ["/**\n * WordPress dependencies\n */\nimport { __ } from '@wordpress/i18n';\nimport { useSelect } from '@wordpress/data';\n\n/**\n * Internal dependencies\n */\nimport { store as blockDirectoryStore } from '../../store';\n\nexport const DownloadableBlockNotice = ( { block } ) => {\n\tconst errorNotice = useSelect(\n\t\t( select ) =>\n\t\t\tselect( blockDirectoryStore ).getErrorNoticeForBlock( block.id ),\n\t\t[ block ]\n\t);\n\n\tif ( ! errorNotice ) {\n\t\treturn null;\n\t}\n\n\treturn (\n\t\t<div className=\"block-directory-downloadable-block-notice\">\n\t\t\t<div className=\"block-directory-downloadable-block-notice__content\">\n\t\t\t\t{ errorNotice.message }\n\t\t\t\t{ errorNotice.isFatal\n\t\t\t\t\t? ' ' + __( 'Try reloading the page.' )\n\t\t\t\t\t: null }\n\t\t\t</div>\n\t\t</div>\n\t);\n};\n\nexport default DownloadableBlockNotice;\n"],
-  "mappings": ";AAGA,SAAS,UAAU;AACnB,SAAS,iBAAiB;AAK1B,SAAS,SAAS,2BAA2B;AAc3C,cACC,YADD;AAZK,IAAM,0BAA0B,CAAE,EAAE,MAAM,MAAO;AACvD,QAAM,cAAc;AAAA,IACnB,CAAE,WACD,OAAQ,mBAAoB,EAAE,uBAAwB,MAAM,EAAG;AAAA,IAChE,CAAE,KAAM;AAAA,EACT;AAEA,MAAK,CAAE,aAAc;AACpB,WAAO;AAAA,EACR;AAEA,SACC,oBAAC,SAAI,WAAU,6CACd,+BAAC,SAAI,WAAU,sDACZ;AAAA,gBAAY;AAAA,IACZ,YAAY,UACX,MAAM,GAAI,yBAA0B,IACpC;AAAA,KACJ,GACD;AAEF;AAEA,IAAO,oCAAQ;",
-  "names": []
-}

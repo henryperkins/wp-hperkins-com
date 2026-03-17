@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/tabs/controls.js"],
-  "sourcesContent": ["/**\n * Internal dependencies\n */\nimport AddTabToolbarControl from '../tab/add-tab-toolbar-control';\nimport RemoveTabToolbarControl from '../tab/remove-tab-toolbar-control';\n\nexport default function Controls( { clientId } ) {\n\treturn (\n\t\t<>\n\t\t\t<AddTabToolbarControl tabsClientId={ clientId } />\n\t\t\t<RemoveTabToolbarControl tabsClientId={ clientId } />\n\t\t</>\n\t);\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,qCAAiC;AACjC,wCAAoC;AAIlC;AAFa,SAAR,SAA2B,EAAE,SAAS,GAAI;AAChD,SACC,4EACC;AAAA,gDAAC,+BAAAA,SAAA,EAAqB,cAAe,UAAW;AAAA,IAChD,4CAAC,kCAAAC,SAAA,EAAwB,cAAe,UAAW;AAAA,KACpD;AAEF;",
-  "names": ["AddTabToolbarControl", "RemoveTabToolbarControl"]
-}
