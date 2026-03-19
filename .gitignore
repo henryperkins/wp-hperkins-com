@@ -24,6 +24,11 @@ output/
 .playwright-cli/
 .playwright-mcp/
 
+# Plugins (third-party, installable via WP admin)
+wp-content/plugins/
+!wp-content/plugins/flavor-agent
+!wp-content/plugins/hdc-ai-media-modal/
+
 # Nested repos
 agent-skills/
 
