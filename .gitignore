@@ -1,42 +1,24 @@
-# Sensitive files
-wp-config.php
-.env
-*.sql
-*.sql.gz
+# Track only the site-owned code and repo tooling.
+/*
 
-# Uploads (large media files)
-wp-content/uploads/
+# Repo metadata and project tooling.
+!/.gitignore
+!/.mcp.json
+!/CLAUDE.md
+!/WPDS_COMPREHENSIVE_REFERENCE_VALIDATED.md
+!/.claude/
+!/.claude/**
+!/codex/
+!/codex/**
 
-# Cache and generated files
-wp-content/cache/
-wp-content/upgrade/
-wp-content/upgrade-temp-backup/
-wp-content/backups/
-wp-content/boost-cache/
-wp-content/settings/
-wp-content/advanced-cache.php
-wp-content/object-cache.php
-wp-content/db.php
-
-# Temporary/output directories
-tmp/
-output/
-.playwright-cli/
-.playwright-mcp/
-
-# Plugins (third-party, installable via WP admin)
-wp-content/plugins/
-!wp-content/plugins/flavor-agent
-!wp-content/plugins/hdc-ai-media-modal/
-
-# Nested repos
-agent-skills/
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Editor files
-*.swp
-*.swo
-*~
+# Custom WordPress code.
+!/wp-content/
+/wp-content/*
+!/wp-content/themes/
+/wp-content/themes/*
+!/wp-content/themes/henrys-digital-canvas/
+!/wp-content/themes/henrys-digital-canvas/**
+!/wp-content/plugins/
+/wp-content/plugins/*
+!/wp-content/plugins/hdc-ai-media-modal/
+!/wp-content/plugins/hdc-ai-media-modal/**
