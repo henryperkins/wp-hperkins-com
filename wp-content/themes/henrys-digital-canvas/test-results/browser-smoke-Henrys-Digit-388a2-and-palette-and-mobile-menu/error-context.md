@@ -1,0 +1,218 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#wp--skip-link--target"
+  - generic [ref=e3]:
+    - banner:
+      - banner [ref=e4]:
+        - generic [ref=e5]:
+          - link "Henry Perkins" [ref=e6] [cursor=pointer]:
+            - /url: https://wp.hperkins.com/
+            - generic [ref=e9]: Henry Perkins
+          - navigation "Primary" [ref=e10]:
+            - list [ref=e11]:
+              - listitem [ref=e12]:
+                - link "Home" [ref=e13] [cursor=pointer]:
+                  - /url: https://wp.hperkins.com/
+              - listitem [ref=e14]:
+                - link "Work" [ref=e15] [cursor=pointer]:
+                  - /url: https://wp.hperkins.com/work/
+              - listitem [ref=e16]:
+                - link "Resume" [ref=e17] [cursor=pointer]:
+                  - /url: https://wp.hperkins.com/resume/
+              - listitem [ref=e18]:
+                - link "Hobbies" [ref=e19] [cursor=pointer]:
+                  - /url: https://wp.hperkins.com/hobbies/
+              - listitem [ref=e20]:
+                - link "Blog" [ref=e21] [cursor=pointer]:
+                  - /url: https://wp.hperkins.com/blog/
+              - listitem [ref=e22]:
+                - link "About" [ref=e23] [cursor=pointer]:
+                  - /url: https://wp.hperkins.com/about/
+              - listitem [ref=e24]:
+                - link "Contact" [ref=e25] [cursor=pointer]:
+                  - /url: https://wp.hperkins.com/contact/
+          - 'button "Theme: System" [ref=e28] [cursor=pointer]':
+            - img [ref=e29]
+            - generic [ref=e35]: Theme
+    - main [ref=e36]:
+      - generic [ref=e37]:
+        - generic [ref=e40]:
+          - generic [ref=e45]:
+            - heading "Henry T. Perkins" [level=1] [ref=e46]
+            - paragraph
+            - generic [ref=e47]:
+              - link "Work with me" [ref=e48] [cursor=pointer]:
+                - /url: /contact
+                - text: Work with me
+                - img [ref=e49]
+              - link "Work With Me" [ref=e51] [cursor=pointer]:
+                - /url: /contact
+                - text: Work With Me
+                - img [ref=e52]
+          - generic [ref=e54]:
+            - generic [ref=e55]:
+              - heading "Selected Work" [level=2] [ref=e56]
+              - link "View all work" [ref=e57] [cursor=pointer]:
+                - /url: /work
+                - text: View all work
+                - img [ref=e59]
+            - generic [ref=e61]:
+              - 'link "TypeScript Open source Live GitHub Prompt Forge Shows how prompt authoring becomes a full product when a structured builder, community platform, and a multi-module Codex agent service are treated as one system backed by real persistence and deployment infrastructure. Updated: Apr 4, 2026 View project" [ref=e62] [cursor=pointer]':
+                - /url: /work/ai-prompt-pro
+                - generic [ref=e63]:
+                  - generic [ref=e64]:
+                    - img [ref=e66]
+                    - generic [ref=e69]: TypeScript
+                  - generic [ref=e70]: Open source
+                  - generic [ref=e71]: Live GitHub
+                - heading "Prompt Forge" [level=3] [ref=e72]
+                - paragraph [ref=e73]: Shows how prompt authoring becomes a full product when a structured builder, community platform, and a multi-module Codex agent service are treated as one system backed by real persistence and deployment infrastructure.
+                - generic [ref=e74]:
+                  - generic [ref=e75]:
+                    - img [ref=e77]
+                    - generic [ref=e80]: "Updated:"
+                    - text: Apr 4, 2026
+                  - generic [ref=e81]:
+                    - text: View project
+                    - img [ref=e83]
+              - 'link "JavaScript Open source Live GitHub Tableu Demonstrates practical integration of AI interpretation into a consumer-facing interactive experience with clear UX affordances. Updated: Apr 4, 2026 View project" [ref=e85] [cursor=pointer]':
+                - /url: /work/tarot
+                - generic [ref=e86]:
+                  - generic [ref=e87]:
+                    - img [ref=e89]
+                    - generic [ref=e92]: JavaScript
+                  - generic [ref=e93]: Open source
+                  - generic [ref=e94]: Live GitHub
+                - heading "Tableu" [level=3] [ref=e95]
+                - paragraph [ref=e96]: Demonstrates practical integration of AI interpretation into a consumer-facing interactive experience with clear UX affordances.
+                - generic [ref=e97]:
+                  - generic [ref=e98]:
+                    - img [ref=e100]
+                    - generic [ref=e103]: "Updated:"
+                    - text: Apr 4, 2026
+                  - generic [ref=e104]:
+                    - text: View project
+                    - img [ref=e106]
+              - 'link "TypeScript Open source Live GitHub Forge Replaces fragmented copy-paste CLI addon installation with a governed product flow spanning catalog discovery, dependency-aware install planning, runtime verification, security governance, profile bundles, and a user-facing CLI — modeled after CurseForge for CLI ecosystems. Updated: Mar 26, 2026 View project" [ref=e108] [cursor=pointer]':
+                - /url: /work/ai-cli-web-funnel
+                - generic [ref=e109]:
+                  - generic [ref=e110]:
+                    - img [ref=e112]
+                    - generic [ref=e115]: TypeScript
+                  - generic [ref=e116]: Open source
+                  - generic [ref=e117]: Live GitHub
+                - heading "Forge" [level=3] [ref=e118]
+                - paragraph [ref=e119]: Replaces fragmented copy-paste CLI addon installation with a governed product flow spanning catalog discovery, dependency-aware install planning, runtime verification, security governance, profile bundles, and a user-facing CLI — modeled after CurseForge for CLI ecosystems.
+                - generic [ref=e120]:
+                  - generic [ref=e121]:
+                    - img [ref=e123]
+                    - generic [ref=e126]: "Updated:"
+                    - text: Mar 26, 2026
+                  - generic [ref=e127]:
+                    - text: View project
+                    - img [ref=e129]
+          - generic [ref=e131]:
+            - heading "From the floor to the frontier." [level=2] [ref=e133]
+            - generic [ref=e137]:
+              - generic [ref=e138]:
+                - img [ref=e139]
+                - generic [ref=e142]: A former colleague
+              - blockquote [ref=e143]:
+                - paragraph [ref=e144]: “”
+          - generic [ref=e145]:
+            - generic [ref=e146]:
+              - heading "Resume Snapshot" [level=2] [ref=e147]
+              - link "Interactive resume" [ref=e148] [cursor=pointer]:
+                - /url: /resume
+                - text: Interactive resume
+                - img [ref=e150]
+            - generic [ref=e152]:
+              - generic [ref=e153]:
+                - paragraph [ref=e154]: Positioning
+                - generic [ref=e155]:
+                  - heading "Solutions Engineer | AI Workflows, WordPress, and API Integrations" [level=3] [ref=e156]
+                  - paragraph [ref=e157]: Customer-facing technical delivery across implementation, support, documentation, and enablement.
+                  - generic [ref=e158]:
+                    - generic [ref=e159]: Solutions Engineer
+                    - generic [ref=e160]: Implementation Engineer
+                    - generic [ref=e161]: Developer Enablement
+              - generic [ref=e162]:
+                - paragraph [ref=e163]: Best fit
+                - heading "Where I contribute fastest" [level=3] [ref=e164]
+                - list [ref=e165]
+          - generic [ref=e166]:
+            - generic [ref=e167]:
+              - heading "Recent Writing" [level=2] [ref=e168]
+              - link "All posts" [ref=e169] [cursor=pointer]:
+                - /url: /blog
+                - text: All posts
+                - img [ref=e171]
+            - generic [ref=e173]:
+              - link "Featured image for Getting Started with GitHub Copilot CLI Getting Started with GitHub Copilot CLI GitHub Copilot CLI is now generally available, enhancing terminal workflows by enabling a more interactive and permissioned coding experience. It assists users in writing and reviewing code with a focus on user control over permissions and actions. Key features include interactive and programmatic use, making it a valuable terminal assistant. Apr 3, 2026 12 min read" [ref=e174] [cursor=pointer]:
+                - /url: /blog/getting-started-with-github-copilot-cli
+                - img "Featured image for Getting Started with GitHub Copilot CLI" [ref=e176]
+                - generic [ref=e177]:
+                  - heading "Getting Started with GitHub Copilot CLI" [level=3] [ref=e178]
+                  - paragraph [ref=e179]: GitHub Copilot CLI is now generally available, enhancing terminal workflows by enabling a more interactive and permissioned coding experience. It assists users in writing and reviewing code with a focus on user control over permissions and actions. Key features include interactive and programmatic use, making it a valuable terminal assistant.
+                  - generic [ref=e180]:
+                    - time [ref=e181]: Apr 3, 2026
+                    - generic [ref=e182]: 12 min read
+              - link "Featured image for Clarity is a Technical Skill Clarity is a Technical Skill The hardest engineering work often happens between the meeting and the ticket. Clarity — in specs, tradeoffs, and structure — is what prevents rework and keeps projects moving. Apr 3, 2026 4 min read" [ref=e183] [cursor=pointer]:
+                - /url: /blog/clarity-is-a-technical-skill
+                - img "Featured image for Clarity is a Technical Skill" [ref=e185]
+                - generic [ref=e186]:
+                  - heading "Clarity is a Technical Skill" [level=3] [ref=e187]
+                  - paragraph [ref=e188]: The hardest engineering work often happens between the meeting and the ticket. Clarity — in specs, tradeoffs, and structure — is what prevents rework and keeps projects moving.
+                  - generic [ref=e189]:
+                    - time [ref=e190]: Apr 3, 2026
+                    - generic [ref=e191]: 4 min read
+              - link "Hello world! Welcome to WordPress. This is your first post. Edit or delete it, then start writing! Mar 23, 2026 1 min read" [ref=e192] [cursor=pointer]:
+                - /url: /blog/hello-world
+                - generic [ref=e193]:
+                  - heading "Hello world!" [level=3] [ref=e194]
+                  - paragraph [ref=e195]: Welcome to WordPress. This is your first post. Edit or delete it, then start writing!
+                  - generic [ref=e196]:
+                    - time [ref=e197]: Mar 23, 2026
+                    - generic [ref=e198]: 1 min read
+          - generic [ref=e201]:
+            - generic [ref=e202]:
+              - paragraph [ref=e203]: Need a technical partner?
+              - heading [level=2]
+              - paragraph
+            - generic [ref=e204]:
+              - link "Work with me" [ref=e205] [cursor=pointer]:
+                - /url: /contact
+              - link "View resume" [ref=e206] [cursor=pointer]:
+                - /url: /resume
+        - paragraph
+    - contentinfo [ref=e207]:
+      - contentinfo [ref=e208]:
+        - generic [ref=e209]:
+          - generic [ref=e210]:
+            - generic [ref=e211]:
+              - paragraph [ref=e212]: Henry Perkins
+              - paragraph [ref=e213]:
+                - generic [ref=e214]: Support Enablement
+                - generic [ref=e216]: WordPress Delivery
+                - generic [ref=e218]: AI Workflows
+            - list [ref=e219]:
+              - listitem [ref=e220]:
+                - link "GitHub" [ref=e221] [cursor=pointer]:
+                  - /url: https://github.com/henryperkins
+                  - img [ref=e222]
+                  - generic [ref=e225]: GitHub
+              - listitem [ref=e226]:
+                - link "LinkedIn" [ref=e227] [cursor=pointer]:
+                  - /url: https://linkedin.com/in/henryperkins
+                  - img [ref=e228]
+                  - generic [ref=e232]: LinkedIn
+              - listitem [ref=e233]:
+                - link "Email" [ref=e234] [cursor=pointer]:
+                  - /url: mailto:henry@lakefrontdigital.io
+                  - img [ref=e235]
+                  - generic [ref=e238]: Email
+          - paragraph [ref=e239]: © 2026 Henry Perkins. Built with WordPress.
+```

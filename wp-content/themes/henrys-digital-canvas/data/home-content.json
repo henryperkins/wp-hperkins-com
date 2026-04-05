@@ -24,14 +24,14 @@
     "title": "Retail floors. WordPress themes. Cloud platforms. Agentic AI.",
     "description": "I\u2019ve been learning to talk to machines since 2007 \u2014 now they\u2019re starting to talk back.",
     "primaryCtaLabel": "Explore Prompt Forge",
-    "primaryCtaHref": "/work/ai-prompt-pro/",
+    "primaryCtaHref": "/work/ai-prompt-pro",
     "secondaryCtaLabel": "Work With Me",
-    "secondaryCtaHref": "/contact/"
+    "secondaryCtaHref": "/contact"
   },
   "selectedWork": {
     "title": "Selected Work",
     "actionLabel": "View all work",
-    "actionHref": "/work/",
+    "actionHref": "/work",
     "loadingLabel": "Syncing selected work...",
     "sourceLiveLabel": "Selected work blends live GitHub builds with private client case studies.",
     "sourceFallbackLabel": "Selected work blends private client case studies with a cached GitHub snapshot.",
@@ -56,7 +56,7 @@
   "resumeSnapshot": {
     "title": "Resume Snapshot",
     "actionLabel": "Interactive resume",
-    "actionHref": "/resume/",
+    "actionHref": "/resume",
     "positioningEyebrow": "Positioning",
     "label": "Public proof of work",
     "items": [
@@ -67,25 +67,25 @@
     "bestFitEyebrow": "Best fit",
     "bestFitTitle": "Where I contribute fastest",
     "focusAreas": [
-      "Customer-facing implementation, onboarding, and technical support flows",
-      "API integrations, debugging, and documentation that reduce support friction",
-      "AI workflow prototypes grounded in WordPress and durable web delivery"
+      "Customer-facing implementation, onboarding, and support workflows",
+      "API integrations, documentation, and escalation triage",
+      "AI-assisted workflow delivery grounded in WordPress and durable web systems"
     ],
     "actionLinks": [
       {
         "label": "Interactive resume",
-        "href": "/resume/"
+        "href": "/resume"
       },
       {
         "label": "ATS / recruiter view",
-        "href": "/resume/ats/"
+        "href": "/resume/ats"
       }
     ]
   },
   "recentWriting": {
     "title": "Recent Writing",
     "actionLabel": "All posts",
-    "actionHref": "/blog/",
+    "actionHref": "/blog",
     "emptyTitle": "Recent writing is updating",
     "emptyDescription": "Recent posts aren\u2019t available in the homepage feed. Visit All posts to browse the full index."
   },
@@ -94,13 +94,8 @@
     "title": "Bring me in where support, product, and implementation overlap.",
     "description": "I help teams turn customer issues into shipped fixes \u2014 integrations, documentation, and AI-assisted triage \u2014 so delivery stays calm and outcomes are measurable.",
     "primaryCtaLabel": "Work with me",
-    "primaryCtaHref": "/contact/",
+    "primaryCtaHref": "/contact",
     "secondaryCtaLabel": "View resume",
-    "secondaryCtaHref": "/resume/"
-  },
-  "repoTitles": {
-    "tarot": "AI tarot reading app",
-    "ai-cli-web-funnel": "CLI addon catalog and install flow",
-    "dj-judas": "Performer site, booking, and storefront"
+    "secondaryCtaHref": "/resume"
   }
 }

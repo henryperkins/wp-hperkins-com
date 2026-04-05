@@ -4,13 +4,40 @@
 }
 
 .hdc-home-page__shell {
+  isolation: isolate;
   margin: 0 auto;
   max-width: 1400px;
   padding: 0 clamp(1.25rem, 3vw, 2rem) clamp(2.75rem, 6vw, 4rem);
+  position: relative;
+}
+
+.hdc-home-page__shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hdc-home-page__shell::before {
+  background:
+    linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--surface-1)) 16%, hsl(var(--surface-1)) 84%, hsl(var(--background)) 100%),
+    radial-gradient(48% 32% at 14% 18%, hsl(var(--warning) / 0.14), transparent 68%),
+    radial-gradient(40% 28% at 86% 42%, hsl(var(--accent) / 0.12), transparent 72%),
+    url("../../assets/images/backgrounds/theme-surface-learning-paper.webp");
+  background-blend-mode: normal, multiply, screen, normal;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: auto, auto, auto, cover;
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+[data-theme="dark"] .hdc-home-page__shell::before {
+  opacity: 0;
 }
 
 .hdc-home-page__status,
-.hdc-home-page__source,
 .hdc-home-page__copy,
 .hdc-home-page__empty {
   color: hsl(var(--text-body));
@@ -211,10 +238,14 @@
   gap: 0.35rem;
 }
 
-.hdc-home-page__section-link::after,
-.hdc-home-page__text-link::after,
-.hdc-home-page__card-cta::after {
-  content: "\2192";
+.hdc-home-page__action-icon {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+}
+
+.hdc-home-page__action-icon-svg {
+  display: block;
 }
 
 .hdc-home-page__section-title--intro {
@@ -224,6 +255,12 @@
 .hdc-home-page__throughline-grid {
   display: grid;
   gap: 1.5rem;
+}
+
+.hdc-home-page__throughline-story {
+  border: 1px solid hsl(var(--border-emphasis));
+  border-radius: var(--radius-surface);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
 }
 
 .hdc-home-page__throughline-narrative {
@@ -238,49 +275,12 @@
 }
 
 .hdc-home-page__throughline-quote-card {
-  background-color: hsl(var(--surface-1));
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius-surface);
   display: grid;
   gap: 1rem;
   height: fit-content;
-  isolation: isolate;
-  overflow: hidden;
   padding: 2rem;
-  position: relative;
-}
-
-.hdc-home-page__throughline-quote-card > * {
-  position: relative;
-  z-index: 1;
-}
-
-.hdc-home-page__throughline-quote-card::before {
-  background:
-    linear-gradient(180deg, hsl(var(--surface-1) / 0.94) 0%, hsl(var(--surface-2) / 0.9) 100%),
-    radial-gradient(72% 56% at 84% 20%, hsl(var(--warning) / 0.12), transparent 60%),
-    url("../../assets/images/backgrounds/theme-surface-learning-paper.webp");
-  background-blend-mode: normal, multiply, normal;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  content: "";
-  inset: 0;
-  pointer-events: none;
-  position: absolute;
-  z-index: 0;
-}
-
-[data-theme="dark"] .hdc-home-page__throughline-quote-card::before {
-  background:
-    linear-gradient(180deg, hsl(var(--background) / 0.94) 0%, hsl(var(--surface-2) / 0.9) 100%),
-    radial-gradient(72% 56% at 84% 20%, hsl(var(--warning) / 0.08), transparent 60%),
-    url("../../assets/images/backgrounds/theme-surface-learning-paper.webp");
-  background-blend-mode: normal, screen, normal;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  filter: saturate(0.82) brightness(0.5);
 }
 
 .hdc-home-page__throughline-quote-header {
@@ -308,12 +308,6 @@
   color: hsl(var(--text-subtle));
   font-size: 0.85rem;
   margin: 0;
-}
-
-.hdc-home-page__source {
-  color: hsl(var(--text-subtle));
-  font-size: 0.78rem;
-  max-width: 42rem;
 }
 
 .hdc-home-page__work-grid,
@@ -476,6 +470,10 @@
   padding: 0.25rem 0.55rem;
 }
 
+.hdc-home-page__badge--outline {
+  background: transparent;
+}
+
 .hdc-home-page__card-title {
   font-size: clamp(1.25rem, 2vw, 1.5rem);
 }
@@ -501,14 +499,18 @@
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius-surface);
   display: grid;
-  gap: 0.75rem;
-  padding: 1.25rem 1.5rem;
+  gap: 0.85rem;
+  justify-items: center;
+  padding: 2rem 1.5rem;
+  text-align: center;
 }
 
-.hdc-home-page__empty-state-header {
+.hdc-home-page__empty-actions {
   align-items: center;
   display: flex;
-  gap: 0.65rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
 }
 
 .hdc-home-page__empty-state-icon {
@@ -519,17 +521,50 @@
   color: hsl(var(--text-accent));
   display: inline-flex;
   flex: 0 0 auto;
-  height: 2rem;
+  height: 2.75rem;
   justify-content: center;
-  width: 2rem;
+  width: 2.75rem;
+}
+
+.hdc-home-page__empty-state-icon-svg {
+  display: block;
+}
+
+.hdc-home-page__empty-state-icon-svg--spin {
+  animation: hdc-home-icon-spin 1s linear infinite;
 }
 
 .hdc-home-page__empty-title {
   color: hsl(var(--foreground));
   font-family: "Playfair Display", Georgia, serif;
-  font-size: 1.15rem;
+  font-size: clamp(1.35rem, 2vw, 1.75rem);
   font-weight: 600;
   margin: 0;
+}
+
+.hdc-home-page__empty {
+  max-width: 38rem;
+}
+
+.hdc-home-page__retry {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-control);
+  color: hsl(var(--foreground));
+  cursor: pointer;
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1;
+  min-height: 2.1rem;
+  padding: 0.58rem 0.8rem;
+  transition:
+    background-color var(--motion-duration-hover, 160ms) var(--motion-ease-standard, ease),
+    border-color var(--motion-duration-hover, 160ms) var(--motion-ease-standard, ease);
+}
+
+.hdc-home-page__retry:hover {
+  background: hsl(var(--surface-hover));
+  border-color: hsl(var(--interactive-border-hover, var(--border)));
 }
 
 .hdc-home-page__resume-card {
@@ -740,6 +775,11 @@
 @keyframes hdc-home-pulse {
   0%, 100% { opacity: 0.72; }
   50% { opacity: 0.4; }
+}
+
+@keyframes hdc-home-icon-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 @keyframes hdc-home-reveal-fade-in {

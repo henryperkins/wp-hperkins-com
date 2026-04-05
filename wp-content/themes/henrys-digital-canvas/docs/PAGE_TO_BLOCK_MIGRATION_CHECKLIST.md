@@ -1,6 +1,6 @@
 # Henry's Digital Canvas Page-to-Block Migration Checklist
 
-Last updated: 2026-03-08 (UTC)
+Last updated: 2026-04-03 (UTC)
 
 ## Purpose
 Use this checklist whenever a source page changes in `/home/azureuser/henry-s-digital-canvas/src/pages/*` and the matching WordPress block or route wrapper must be brought back into parity.
@@ -15,14 +15,13 @@ Use this checklist whenever a source page changes in `/home/azureuser/henry-s-di
 - Shared shell behavior belongs to `blocks/site-shell/`, not to individual page blocks.
 
 ## Before You Edit
-- Resolve the source page law in the React repo:
-  - `npm run page-laws:resolve -- <route-or-source>`
+- Identify the source page in the React repo:
+  - `/home/azureuser/henry-s-digital-canvas/src/pages/<Page>.tsx`
 - Read, in order:
-  - `docs/page-laws/manifest.json`
-  - `docs/page-laws/foundation.md`
-  - the route law for the page
-  - any referenced pattern laws
   - the source page under `src/pages/`
+  - any mapped shared layout/component files used by that route
+  - the matching WordPress block files under `blocks/<block>/`
+  - any route wrapper involved (`page-*.php`, `templates/*.html`, `parts/*.html`)
 - Identify whether the change is:
   - block-only rendering/styling
   - data-contract/API shape
@@ -113,14 +112,16 @@ Run from the theme directory unless noted otherwise.
 ### Syntax / File Checks
 - `php -l <touched-php-file>`
 - `node --check <touched-view-js-file>`
+- `php -l scripts/sync_page_sources.php` if page sync logic changed
 - `bash -n scripts/sync_page_sources.sh` if sync logic changed
 
 ### Content Sync Checks
 - `npm run sync:pages` if any static-route mounted block/default changed
-- `wp post get <page-id> --field=post_content`
-- `wp option get show_on_front`
-- `wp option get page_on_front`
-- `wp option get page_for_posts`
+- `wp --path=/home/hperkins-wp/htdocs/wp.hperkins.com post get <page-id> --field=post_content`
+- `wp --path=/home/hperkins-wp/htdocs/wp.hperkins.com option get show_on_front`
+- `wp --path=/home/hperkins-wp/htdocs/wp.hperkins.com option get page_on_front`
+- `wp --path=/home/hperkins-wp/htdocs/wp.hperkins.com option get page_for_posts`
+- `wp --path=/home/hperkins-wp/htdocs/wp.hperkins.com rewrite flush` if dynamic route rewrites changed
 
 ### Route / Runtime Checks
 - `npm run smoke:full`

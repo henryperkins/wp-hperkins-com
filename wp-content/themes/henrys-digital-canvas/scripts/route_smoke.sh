@@ -2,7 +2,17 @@
 set -euo pipefail
 
 BASE_URL="${BASE_URL:-https://wp.hperkins.com}"
+BLOG_DETAIL_SLUG="${BLOG_DETAIL_SLUG:-}"
 WORK_DETAIL_REPO="${WORK_DETAIL_REPO:-henry-s-digital-canvas}"
+
+if [[ -z "$BLOG_DETAIL_SLUG" ]]; then
+  BLOG_DETAIL_SLUG="$(curl -sS -L "${BASE_URL}/wp-json/henrys-digital-canvas/v1/blog?limit=1" | jq -r '.posts[0].slug // empty')"
+fi
+
+if [[ -z "$BLOG_DETAIL_SLUG" ]]; then
+  printf "FAIL\tCould not resolve a blog detail slug for route smoke checks.\n"
+  exit 1
+fi
 
 routes=(
   "/|200|hdc-home-page"
@@ -12,7 +22,7 @@ routes=(
   "/resume/ats/|200|hdc-resume-ats|Loading ATS resume"
   "/hobbies/|200|hdc-hobbies-moments"
   "/blog/|200|hdc-blog-index"
-  "/blog/wordpress-ai-use-cases-developers-admins/|200|hdc-blog-post"
+  "/blog/${BLOG_DETAIL_SLUG}/|200|hdc-blog-post"
   "/about/|200|hdc-about-timeline"
   "/contact/|200|hdc-contact-form"
   "/route-should-not-exist/|404|hdc-not-found"

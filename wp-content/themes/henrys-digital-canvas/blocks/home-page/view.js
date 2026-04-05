@@ -95,6 +95,24 @@
 		return base + separator + params.toString();
 	}
 
+	function normalizeAppPath( value ) {
+		const normalized = ensureString( value, '' );
+		if ( ! normalized || '/' === normalized || '/' !== normalized.charAt( 0 ) ) {
+			return normalized;
+		}
+
+		if ( 0 === normalized.indexOf( '/wp-json/' ) || 0 === normalized.indexOf( '/api/' ) ) {
+			return normalized;
+		}
+
+		const suffixIndex = normalized.search( /[?#]/ );
+		const path = -1 === suffixIndex ? normalized : normalized.slice( 0, suffixIndex );
+		const suffix = -1 === suffixIndex ? '' : normalized.slice( suffixIndex );
+		const trimmedPath = path.replace( /\/+$/, '' ) || '/';
+
+		return trimmedPath + suffix;
+	}
+
 	function normalizePostsEndpoint( endpoint, count ) {
 		const perPage = clamp( Number.parseInt( count, 10 ) || 3, 1, 10 );
 
@@ -178,12 +196,16 @@
 			.join( ' ' );
 	}
 
-	function getHomeRepoTitle( repo, repoTitles ) {
-		return ensureString( repo.displayName, '' ) || ensureString( repoTitles[ repo.name ], '' ) || humanizeRepoName( repo.name );
+	function getHomeRepoTitle( repo ) {
+		return ensureString( repo.displayName, '' ) || humanizeRepoName( repo.name );
 	}
 
 	function getHomeRepoSummary( repo ) {
 		return ensureString( repo.whyItMatters, '' ) || ensureString( repo.description, 'Description coming soon.' );
+	}
+
+	function isGitHubLinkedRepo( repo ) {
+		return repo.origin === 'github' || /github\.com\//i.test( ensureString( repo.externalUrl, '' ) );
 	}
 
 	function getHomeRepoBadge( repo ) {
@@ -191,11 +213,23 @@
 			return 'Private case study';
 		}
 
-		if ( repo.origin === 'github' ) {
+		if ( isGitHubLinkedRepo( repo ) ) {
 			return 'Open source';
 		}
 
 		return 'Curated project';
+	}
+
+	function getHomeRepoSourceBadge( repo, source ) {
+		if ( repo.access === 'private' ) {
+			return null;
+		}
+
+		if ( source === 'live' ) {
+			return repo.origin === 'github' ? 'Live GitHub' : null;
+		}
+
+		return isGitHubLinkedRepo( repo ) ? 'GitHub snapshot' : null;
 	}
 
 	function getHomeRepoCtaLabel( repo ) {
@@ -204,6 +238,17 @@
 		}
 
 		return 'View case study';
+	}
+
+	function renderActionArrow() {
+		return h(
+			'span',
+			{ 'aria-hidden': 'true', className: 'hdc-home-page__action-icon' },
+			renderLucideIcon( h, 'arrow-right', {
+				className: 'hdc-home-page__action-icon-svg',
+				size: 14,
+			} )
+		);
 	}
 
 	function parseConfig( section ) {
@@ -221,7 +266,6 @@
 			resumeSnapshot: ensureObject( parsed.resumeSnapshot ),
 			recentWriting: ensureObject( parsed.recentWriting ),
 			contactCta: ensureObject( parsed.contactCta ),
-			repoTitles: ensureObject( parsed.repoTitles ),
 			initialPosts: parsed.initialPosts,
 			initialResume: parsed.initialResume,
 			githubUsername: ensureString( parsed.githubUsername, 'henryperkins' ),
@@ -248,16 +292,22 @@
 			name: name,
 			displayName: ensureString( localRepo.displayName, ensureString( sourceRepo.displayName, '' ) ),
 			description: ensureString( localRepo.description, '' ) || ensureString( sourceRepo.description, 'Description coming soon.' ),
+			externalUrl: ensureString(
+				sourceRepo.html_url,
+				ensureString( localRepo.url, ensureString( sourceRepo.url, '' ) )
+			),
 			language: ensureString( sourceRepo.language, ensureString( localRepo.language, 'Unknown' ) ),
 			updatedAt: updatedAt,
 			featured: !! localRepo.featured || !! sourceRepo.featured,
 			access: ensureString( localRepo.access, sourceRepo.private ? 'private' : ensureString( sourceRepo.access, 'public' ) ),
 			origin: ensureString(
 				sourceRepo.origin,
-				ensureString( localRepo.origin, /github\.com/i.test( ensureString( sourceRepo.html_url, '' ) ) ? 'github' : 'curated' )
+				/github\.com/i.test( ensureString( sourceRepo.html_url, '' ) )
+					? 'github'
+					: ensureString( localRepo.origin, 'curated' )
 			),
 			whyItMatters: ensureString( localRepo.whyItMatters, ensureString( sourceRepo.whyItMatters, '' ) ),
-			url: '/work/' + encodeURIComponent( name ) + '/',
+			url: normalizeAppPath( '/work/' + encodeURIComponent( name ) + '/' ),
 		};
 	}
 
@@ -339,14 +389,14 @@
 
 		return {
 			id: post && post.id ? post.id : slug || title,
-			link: slug ? '/blog/' + encodeURIComponent( slug ) + '/' : ensureString( post && post.url, '#' ),
+			link: slug ? normalizeAppPath( '/blog/' + encodeURIComponent( slug ) + '/' ) : normalizeAppPath( ensureString( post && post.url, '#' ) ),
 			title: title,
 			excerpt: stripHtml( post && post.excerpt ),
 			date: ensureString( post && post.date, '' ),
 			dateLabel: formatDate( post && post.date ),
 			readingTime: ensureString( post && post.readingTime, '' ),
 			thumbnailUrl: thumbnailUrl,
-			thumbnailAlt: ensureString( post && post.featuredImageAlt, title + ' featured image' ),
+			thumbnailAlt: ensureString( post && post.featuredImageAlt, 'Featured image for ' + title ),
 			thumbnailSrcSet: ensureString( post && post.featuredImageSrcSet, '' ),
 		};
 	}
@@ -495,34 +545,81 @@
 		return normalizeResumeData( payload );
 	}
 
-	function RecentWritingLoadingState( props ) {
+	function StateCard( props ) {
+		const hasLinkAction = props.actionHref && props.actionLabel;
+		const hasButtonAction = typeof props.onButtonClick === 'function' && props.buttonLabel;
+
 		return h(
 			'div',
-			{ 'aria-hidden': 'true', className: 'hdc-home-page__post-stack' },
-			Array.from( { length: props.count } ).map( function ( item, index ) {
-				return h(
+			{ className: 'hdc-home-page__empty-state ember-surface' },
+			h(
+				'span',
+				{ 'aria-hidden': 'true', className: 'hdc-home-page__empty-state-icon' },
+				renderLucideIcon( h, props.iconName, {
+					className: 'hdc-home-page__empty-state-icon-svg' + ( props.spinIcon ? ' hdc-home-page__empty-state-icon-svg--spin' : '' ),
+					size: 20,
+				} )
+			),
+			h( 'h2', { className: 'hdc-home-page__empty-title' }, props.title ),
+			props.description ? h( 'p', { className: 'hdc-home-page__empty' }, props.description ) : null,
+			hasLinkAction || hasButtonAction
+				? h(
 					'div',
-					{
-						className: 'hdc-home-page__post-card hdc-home-page__post-card--skeleton ember-surface',
-						key: 'post-skeleton-' + String( index ),
-					},
-					h( 'div', { className: 'hdc-home-page__post-thumb-wrap' }, h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--thumb' } ) ),
-					h(
-						'div',
-						{ className: 'hdc-home-page__post-body' },
-						h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--title' } ),
-						h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--line' } ),
-						h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--line hdc-home-page__skeleton--line-short' } ),
-						h(
-							'div',
-							{ className: 'hdc-home-page__post-meta' },
-							h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--meta' } ),
-							h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--meta hdc-home-page__skeleton--meta-short' } )
+					{ className: 'hdc-home-page__empty-actions' },
+					hasButtonAction
+						? h(
+							'button',
+							{
+								className: 'hdc-home-page__retry focus-ring',
+								onClick: props.onButtonClick,
+								type: 'button',
+							},
+							props.buttonLabel
 						)
-					)
-				);
-			} )
+						: null,
+						hasLinkAction
+							? h(
+								'a',
+								{
+									className: 'hdc-home-page__text-link focus-ring',
+									href: normalizeAppPath( props.actionHref ),
+								},
+								props.actionLabel,
+								renderActionArrow()
+							)
+							: null
+				)
+				: null
 		);
+	}
+
+	function EmptyStateCard( props ) {
+		return h( StateCard, {
+			actionHref: props.actionHref,
+			actionLabel: props.actionLabel,
+			description: props.description,
+			iconName: 'inbox',
+			title: props.title,
+		} );
+	}
+
+	function ErrorStateCard( props ) {
+		return h( StateCard, {
+			buttonLabel: props.buttonLabel,
+			description: props.description,
+			iconName: 'alert-circle',
+			onButtonClick: props.onButtonClick,
+			title: props.title,
+		} );
+	}
+
+	function RecentWritingLoadingState( props ) {
+		return h( StateCard, {
+			description: props.description,
+			iconName: 'loader-2',
+			spinIcon: true,
+			title: props.title,
+		} );
 	}
 
 	function WorkGridLoadingState( props ) {
@@ -579,33 +676,6 @@
 		);
 	}
 
-	function SectionEmptyState( props ) {
-		return h(
-			'div',
-			{ className: 'hdc-home-page__empty-state ember-surface' },
-			h(
-				'div',
-				{ className: 'hdc-home-page__empty-state-header' },
-				h(
-					'span',
-					{ 'aria-hidden': 'true', className: 'hdc-home-page__empty-state-icon' },
-					renderLucideIcon( h, props.iconName, { size: 16 } )
-				),
-				h( 'h3', { className: 'hdc-home-page__empty-title' }, props.title )
-				),
-			h( 'p', { className: 'hdc-home-page__empty' }, props.description ),
-			props.actionHref && props.actionLabel
-				? h(
-					'a',
-					{
-						className: 'hdc-home-page__text-link focus-ring',
-						href: props.actionHref,
-					},
-					props.actionLabel
-				)
-				: null
-		);
-	}
 
 	function HomePageApp( props ) {
 		const config = props.config;
@@ -622,6 +692,7 @@
 			items: initialPosts,
 			loading: initialPosts.length === 0,
 		} );
+		const [ postsRetryCount, setPostsRetryCount ] = useState( 0 );
 		const [ resumeState, setResumeState ] = useState( {
 			data: initialResume,
 			loading: ! initialResume,
@@ -664,30 +735,6 @@
 						} );
 					} );
 
-				fetchPosts( config )
-					.then( function ( posts ) {
-						if ( cancelled ) {
-							return;
-						}
-
-						setPostsState( {
-							error: '',
-							items: posts,
-							loading: false,
-						} );
-					} )
-					.catch( function ( error ) {
-						if ( cancelled ) {
-							return;
-						}
-
-						setPostsState( {
-							error: error instanceof Error ? error.message : 'Recent writing is temporarily unavailable.',
-							items: initialPosts,
-							loading: false,
-						} );
-					} );
-
 				fetchResume( config )
 					.then( function ( resume ) {
 						if ( cancelled ) {
@@ -717,12 +764,44 @@
 			[ config ]
 		);
 
+		useEffect(
+			function () {
+				let cancelled = false;
+
+				fetchPosts( config )
+					.then( function ( posts ) {
+						if ( cancelled ) {
+							return;
+						}
+
+						setPostsState( {
+							error: '',
+							items: posts,
+							loading: false,
+						} );
+					} )
+					.catch( function ( error ) {
+						if ( cancelled ) {
+							return;
+						}
+
+						setPostsState( {
+							error: error instanceof Error ? error.message : 'Recent writing is temporarily unavailable.',
+							items: initialPosts,
+							loading: false,
+						} );
+					} );
+
+				return function () {
+					cancelled = true;
+				};
+			},
+			[ config, postsRetryCount ]
+		);
+
 		const featuredRepos = reposState.items.filter( function ( repo ) {
 			return repo.featured;
 		} ).slice( 0, config.repoCount );
-		const sourceLabel = reposState.source === 'live'
-			? ensureString( config.selectedWork.sourceLiveLabel, 'Selected work blends live GitHub builds with private client case studies.' )
-			: ensureString( config.selectedWork.sourceFallbackLabel, 'Selected work blends private client case studies with a cached GitHub snapshot.' );
 		const selectedWorkEmptyTitle = ensureString( config.selectedWork.emptyTitle, 'Selected work is updating' );
 		const selectedWorkEmptyDescription = reposState.source === 'live'
 			? ensureString(
@@ -738,11 +817,35 @@
 			config.recentWriting.emptyDescription,
 			'Recent posts are not available in the homepage feed right now. Use All posts to check the full writing index.'
 		);
+		const recentWritingLoadingTitle = ensureString( config.recentWriting.loadingTitle, 'Loading recent writing' );
+		const recentWritingLoadingDescription = ensureString(
+			config.recentWriting.loadingDescription,
+			'Please wait while the latest posts are prepared for the homepage.'
+		);
+		const recentWritingErrorTitle = ensureString( config.recentWriting.errorTitle, 'Could not load recent writing' );
+		const recentWritingErrorDescription = ensureString(
+			config.recentWriting.errorDescription,
+			'The homepage writing feed is temporarily unavailable. Try again or visit the full blog index.'
+		);
+		const recentWritingRetryLabel = ensureString( config.recentWriting.retryLabel, 'Try again' );
 		const resumeSnapshotLabel = ensureString( config.resumeSnapshot.label, '' );
 		const resumeSnapshotItems = ensureArray( config.resumeSnapshot.items ).filter( function ( item ) {
 			return typeof item === 'string' && item.trim();
 		} );
 		const resume = resumeState.data;
+
+		function handleRetryPosts() {
+			setPostsState( function ( currentState ) {
+				return {
+					error: '',
+					items: currentState.items,
+					loading: currentState.items.length === 0,
+				};
+			} );
+			setPostsRetryCount( function ( currentCount ) {
+				return currentCount + 1;
+			} );
+		}
 
 		return h(
 			'div',
@@ -752,7 +855,7 @@
 				{ className: 'hdc-home-page__hero noise hdc-reveal hdc-reveal--fade-in', style: { '--reveal-index': 0 } },
 				h(
 					'div',
-					{ className: 'hero-backdrop', 'aria-hidden': 'true' },
+					{ className: 'hero-backdrop-editorial-amber', 'aria-hidden': 'true' },
 					h( 'div', { className: 'hero-backdrop-overlay' } )
 				),
 				h( 'div', { className: 'hdc-home-page__hero-gradient hero-gradient-layer', 'aria-hidden': 'true' } ),
@@ -775,7 +878,7 @@
 							{
 								className: 'hdc-home-page__button hdc-home-page__button--hero focus-ring',
 								'data-contrast-probe': 'hero-action-primary-home',
-								href: ensureString( config.hero.primaryCtaHref, '/contact/' ),
+								href: normalizeAppPath( ensureString( config.hero.primaryCtaHref, '/contact/' ) ),
 							},
 							ensureString( config.hero.primaryCtaLabel, 'Work with me' ),
 							renderLucideIcon( h, 'arrow-right', { size: 16 } )
@@ -785,7 +888,7 @@
 							{
 								className: 'hdc-home-page__button hdc-home-page__button--secondary hdc-home-page__button--hero-secondary focus-ring',
 								'data-contrast-probe': 'hero-action-secondary-home',
-								href: ensureString( config.hero.secondaryCtaHref, '/contact/' ),
+								href: normalizeAppPath( ensureString( config.hero.secondaryCtaHref, '/contact/' ) ),
 							},
 								ensureString( config.hero.secondaryCtaLabel, 'Work With Me' ),
 								renderLucideIcon( h, 'arrow-right', { size: 16 } )
@@ -805,17 +908,11 @@
 						'a',
 						{
 							className: 'hdc-home-page__section-link focus-ring',
-							href: ensureString( config.selectedWork.actionHref, '/work/' ),
+							href: normalizeAppPath( ensureString( config.selectedWork.actionHref, '/work/' ) ),
 						},
-						ensureString( config.selectedWork.actionLabel, 'View all work' )
+						ensureString( config.selectedWork.actionLabel, 'View all work' ),
+						renderActionArrow()
 					)
-				),
-				h(
-					'p',
-					{ className: 'hdc-home-page__source' },
-					reposState.loading
-						? ensureString( config.selectedWork.loadingLabel, 'Syncing selected work...' )
-						: sourceLabel
 				),
 				reposState.loading
 					? h( WorkGridLoadingState, { count: config.repoCount } )
@@ -841,16 +938,19 @@
 											h(
 												'span',
 												{ 'aria-hidden': 'true', className: 'hdc-home-page__work-origin-icon' },
-												renderLucideIcon( h, repo.origin === 'github' ? 'github' : 'briefcase-business', {
-													className: 'hdc-home-page__work-origin-icon-svg',
-													size: 14,
-												} )
+											renderLucideIcon( h, repo.origin === 'github' ? 'github' : 'briefcase-business', {
+												className: 'hdc-home-page__work-origin-icon-svg',
+												size: 14,
+											} )
 											),
 											h( 'span', {}, repo.language )
 										),
-										h( 'span', { className: 'hdc-home-page__badge' }, getHomeRepoBadge( repo ) )
+										h( 'span', { className: 'hdc-home-page__badge' }, getHomeRepoBadge( repo ) ),
+										getHomeRepoSourceBadge( repo, reposState.source )
+											? h( 'span', { className: 'hdc-home-page__badge hdc-home-page__badge--outline' }, getHomeRepoSourceBadge( repo, reposState.source ) )
+											: null
 									),
-									h( 'h3', { className: 'hdc-home-page__card-title' }, getHomeRepoTitle( repo, config.repoTitles ) ),
+									h( 'h3', { className: 'hdc-home-page__card-title' }, getHomeRepoTitle( repo ) ),
 									h( 'p', { className: 'hdc-home-page__card-copy hdc-home-page__card-copy--clamp' }, getHomeRepoSummary( repo ) ),
 									h(
 										'div',
@@ -869,16 +969,13 @@
 											h( 'span', { className: 'screen-reader-text' }, 'Updated:' ),
 											formatDate( repo.updatedAt )
 										),
-										h( 'span', { className: 'hdc-home-page__card-cta' }, getHomeRepoCtaLabel( repo ) )
+										h( 'span', { className: 'hdc-home-page__card-cta' }, getHomeRepoCtaLabel( repo ), renderActionArrow() )
 									)
 								);
 							} )
 						)
-						: h( SectionEmptyState, {
-							actionHref: ensureString( config.selectedWork.actionHref, '/work/' ),
-							actionLabel: ensureString( config.selectedWork.actionLabel, 'View all work' ),
+						: h( EmptyStateCard, {
 							description: selectedWorkEmptyDescription,
-							iconName: 'briefcase',
 							title: selectedWorkEmptyTitle,
 						} )
 			),
@@ -895,17 +992,21 @@
 					{ className: 'hdc-home-page__throughline-grid' },
 					h(
 						'div',
-						{ className: 'hdc-home-page__throughline-narrative' },
-						ensureArray( config.throughline.paragraphs ).map( function ( paragraph, index ) {
-							return h( 'p', { className: 'hdc-home-page__throughline-paragraph', key: 'tp-' + String( index ) }, ensureString( paragraph, '' ) );
-						} )
+						{ className: 'hdc-home-page__throughline-story surface-library-learning-paper' },
+						h(
+							'div',
+							{ className: 'hdc-home-page__throughline-narrative' },
+							ensureArray( config.throughline.paragraphs ).map( function ( paragraph, index ) {
+								return h( 'p', { className: 'hdc-home-page__throughline-paragraph', key: 'tp-' + String( index ) }, ensureString( paragraph, '' ) );
+							} )
+						)
 					),
 					h(
 						'div',
 						{ className: 'hdc-reveal', style: { '--reveal-index': 1 } },
 						h(
 							'div',
-							{ className: 'hdc-home-page__throughline-quote-card' },
+							{ className: 'hdc-home-page__throughline-quote-card surface-library-ember-topography' },
 							h(
 								'div',
 								{ className: 'hdc-home-page__throughline-quote-header' },
@@ -933,9 +1034,10 @@
 						'a',
 						{
 							className: 'hdc-home-page__section-link focus-ring',
-							href: ensureString( config.resumeSnapshot.actionHref, '/resume/' ),
+							href: normalizeAppPath( ensureString( config.resumeSnapshot.actionHref, '/resume/' ) ),
 						},
-						ensureString( config.resumeSnapshot.actionLabel, 'Interactive resume' )
+						ensureString( config.resumeSnapshot.actionLabel, 'Interactive resume' ),
+						renderActionArrow()
 					)
 				),
 					h(
@@ -990,12 +1092,13 @@
 											return h(
 												'a',
 												{
-													className: 'hdc-home-page__text-link focus-ring',
-													href: ensureString( normalizedLink.href, '/resume/' ),
-													key: ensureString( normalizedLink.href, 'resume-link-' + String( index ) ),
-												},
-												ensureString( normalizedLink.label, 'Learn more' )
-											);
+											className: 'hdc-home-page__text-link focus-ring',
+											href: normalizeAppPath( ensureString( normalizedLink.href, '/resume/' ) ),
+											key: ensureString( normalizedLink.href, 'resume-link-' + String( index ) ),
+										},
+										ensureString( normalizedLink.label, 'Learn more' ),
+										renderActionArrow()
+									);
 										} )
 									)
 									: null
@@ -1027,13 +1130,17 @@
 						'a',
 						{
 							className: 'hdc-home-page__section-link focus-ring',
-							href: ensureString( config.recentWriting.actionHref, '/blog/' ),
+							href: normalizeAppPath( ensureString( config.recentWriting.actionHref, '/blog/' ) ),
 						},
-						ensureString( config.recentWriting.actionLabel, 'All posts' )
+						ensureString( config.recentWriting.actionLabel, 'All posts' ),
+						renderActionArrow()
 					)
 				),
 				postsState.loading
-					? h( RecentWritingLoadingState, { count: config.blogCount } )
+					? h( RecentWritingLoadingState, {
+						description: recentWritingLoadingDescription,
+						title: recentWritingLoadingTitle,
+					} )
 					: postsState.items.length
 						? h(
 							'div',
@@ -1078,11 +1185,15 @@
 								);
 							} )
 						)
-						: h( SectionEmptyState, {
-							actionHref: ensureString( config.recentWriting.actionHref, '/blog/' ),
-							actionLabel: ensureString( config.recentWriting.actionLabel, 'All posts' ),
+						: postsState.error
+							? h( ErrorStateCard, {
+								buttonLabel: recentWritingRetryLabel,
+								description: recentWritingErrorDescription,
+								onButtonClick: handleRetryPosts,
+								title: recentWritingErrorTitle,
+							} )
+						: h( EmptyStateCard, {
 							description: recentWritingEmptyDescription,
-							iconName: 'file-text',
 							title: recentWritingEmptyTitle,
 						} )
 			),
@@ -1108,17 +1219,17 @@
 							h(
 								'a',
 								{
-									className: 'hdc-home-page__button focus-ring',
-									href: ensureString( config.contactCta.primaryCtaHref, '/contact/' ),
-								},
+								className: 'hdc-home-page__button focus-ring',
+								href: normalizeAppPath( ensureString( config.contactCta.primaryCtaHref, '/contact/' ) ),
+							},
 								ensureString( config.contactCta.primaryCtaLabel, 'Work with me' )
 							),
 							h(
 								'a',
 								{
-									className: 'hdc-home-page__button hdc-home-page__button--secondary focus-ring',
-									href: ensureString( config.contactCta.secondaryCtaHref, '/resume/' ),
-								},
+								className: 'hdc-home-page__button hdc-home-page__button--secondary focus-ring',
+								href: normalizeAppPath( ensureString( config.contactCta.secondaryCtaHref, '/resume/' ) ),
+							},
 								ensureString( config.contactCta.secondaryCtaLabel, 'View resume' )
 							)
 						)

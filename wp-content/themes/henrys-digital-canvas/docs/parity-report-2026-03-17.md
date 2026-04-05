@@ -1,5 +1,7 @@
 # Parity Report -- 2026-03-17
 
+> Historical snapshot: This dated document is retained for audit history and captures parity findings at a specific point in time. It may contain period-specific drifts, counts, or remediation status that no longer reflect the current theme state. For current workflow guidance, use `README.md`, `docs/PAGE_TO_BLOCK_MIGRATION_CHECKLIST.md`, `docs/CUTOVER_CHECKLIST.md`, and `docs/MIGRATION_PROGRESS.md`.
+
 Full batch parity check of the `henrys-digital-canvas` WordPress block theme against the React SPA source at `/home/azureuser/henry-s-digital-canvas/src/pages/`.
 
 ---

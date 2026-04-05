@@ -1,5 +1,7 @@
 # Incremental wp-scripts Integration for Parity-Fix Pipeline
 
+> Historical snapshot: This dated document is retained for planning or audit history and may contain period-specific assumptions, commands, file lists, test counts, or open issues. For current workflow guidance, use `README.md`, `docs/PAGE_TO_BLOCK_MIGRATION_CHECKLIST.md`, `docs/CUTOVER_CHECKLIST.md`, and `docs/MIGRATION_PROGRESS.md`.
+
 **Date:** 2026-03-15
 **Status:** Draft
 **Scope:** Add `@wordpress/scripts` build tooling to the henrys-digital-canvas theme, adopted incrementally as blocks are touched by the parity-fix pipeline.

@@ -1,5 +1,7 @@
 # Header & Footer Parity Remediation — Implementation Plan
 
+> Historical snapshot: This dated document is retained for planning or audit history and may contain period-specific assumptions, commands, file lists, test counts, or open issues. For current workflow guidance, use `README.md`, `docs/PAGE_TO_BLOCK_MIGRATION_CHECKLIST.md`, `docs/CUTOVER_CHECKLIST.md`, and `docs/MIGRATION_PROGRESS.md`.
+
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
 **Goal:** Close all parity gaps between the WordPress site-shell block + footer template part and their React source components (AppHeader, ThemeSwitcher, CommandPalette, AppFooter).

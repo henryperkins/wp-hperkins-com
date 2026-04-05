@@ -57,7 +57,11 @@ def merge_mode(light_vars, dark_overrides):
 def normalize(value):
     if value is None:
         return None
-    return re.sub(r"\s+", " ", value).strip()
+    value = re.sub(r"\s+", " ", value).strip()
+    value = re.sub(r"\(\s+", "(", value)
+    value = re.sub(r"\s+\)", ")", value)
+    value = re.sub(r"\s*,\s*", ", ", value)
+    return value
 
 
 VAR_PATTERN = re.compile(r"var\(--([a-z0-9-]+)\)")

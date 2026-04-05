@@ -201,8 +201,8 @@
 }
 
 .hdc-contact-form__input[aria-invalid="true"] {
-  border-color: hsl(var(--status-destructive));
-  box-shadow: 0 0 0 3px hsl(var(--status-destructive) / 0.12);
+  border-color: hsl(var(--destructive));
+  box-shadow: 0 0 0 3px hsl(var(--destructive) / 0.12);
 }
 
 .hdc-contact-form__textarea {
@@ -234,8 +234,8 @@
 }
 
 .hdc-contact-form__verification-shell[aria-invalid="true"] {
-  background: hsl(var(--status-destructive) / 0.05);
-  border-color: hsl(var(--status-destructive));
+  background: hsl(var(--destructive) / 0.05);
+  border-color: hsl(var(--destructive));
 }
 
 .hdc-contact-form__turnstile-widget {
@@ -250,7 +250,7 @@
 
 .hdc-contact-form__hint--error,
 .hdc-contact-form__error {
-  color: hsl(var(--status-destructive));
+  color: hsl(var(--text-danger));
 }
 
 .hdc-contact-form__submit {

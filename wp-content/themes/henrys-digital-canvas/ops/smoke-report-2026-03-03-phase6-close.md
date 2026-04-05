@@ -1,5 +1,7 @@
 # Smoke Cadence Report
 
+> Historical snapshot: This dated smoke report is retained for operational evidence and reflects the smoke suite, commands, and results at the time it was captured. For current runbooks and expected verification flow, use `README.md`, `docs/CUTOVER_CHECKLIST.md`, and `docs/MIGRATION_PROGRESS.md`.
+
 - Run date (UTC): 2026-03-03T05:15:39Z
 - Run label: phase6-close
 - Runner: `scripts/smoke_cadence.sh`

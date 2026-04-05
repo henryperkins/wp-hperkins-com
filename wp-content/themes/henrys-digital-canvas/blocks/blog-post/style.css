@@ -45,7 +45,7 @@
 
 .hdc-blog-post__state-title {
   color: hsl(var(--foreground));
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 1.45rem;
   margin: 0;
 }
@@ -91,9 +91,30 @@
   transition: width 120ms ease-out;
 }
 
-/* Entrance animation */
+/* Entrance animations with stagger support */
 .hdc-blog-post__root--entering {
-  animation: hdc-blog-post-enter var(--motion-duration-medium, 400ms) var(--motion-ease-standard, ease) both;
+  --animation-stagger-base: 0ms;
+  animation: hdc-blog-post-enter var(--motion-duration-medium) var(--motion-ease-standard) both;
+  animation-delay: var(--animation-stagger-base, 0ms);
+}
+
+/* Staggered entrance for content sections */
+.hdc-blog-post__root--entering .hdc-blog-post__header-card {
+  --animation-stagger-base: calc(var(--motion-duration-fast) * 0.5);
+  animation: hdc-blog-post-enter var(--motion-duration-medium) var(--motion-ease-standard) both;
+  animation-delay: var(--animation-stagger-base, 0ms);
+}
+
+.hdc-blog-post__root--entering .hdc-blog-post__content > * {
+  --animation-stagger-base: calc(var(--motion-duration-fast) * 1.5);
+  animation: hdc-blog-post-enter var(--motion-duration-medium) var(--motion-ease-standard) both;
+  animation-delay: calc(var(--animation-stagger-base, 0ms) + (var(--child-index, 0) * 60ms));
+}
+
+.hdc-blog-post__root--entering .hdc-blog-post__aside {
+  --animation-stagger-base: calc(var(--motion-duration-fast) * 2);
+  animation: hdc-blog-post-enter var(--motion-duration-medium) var(--motion-ease-standard) both;
+  animation-delay: var(--animation-stagger-base, 0ms);
 }
 
 @keyframes hdc-blog-post-enter {
@@ -107,13 +128,34 @@
   }
 }
 
+@keyframes hdc-blog-post-enter-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @keyframes hdc-blog-post-spin {
   from {
     transform: rotate(0deg);
   }
-
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
 
@@ -235,7 +277,7 @@
 
 .hdc-blog-post__title {
   color: hsl(var(--foreground));
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: var(--font-serif);
   font-size: clamp(1.9rem, 3.4vw, 2.9rem);
   line-height: 1.2;
   margin: 0;
@@ -299,7 +341,7 @@
 .hdc-blog-post__content h2,
 .hdc-blog-post__content h3 {
   color: hsl(var(--foreground));
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: var(--font-serif);
   margin: 1.5rem 0 0.65rem;
 }
 
@@ -346,6 +388,7 @@
 
 .hdc-blog-post__code-language {
   color: hsl(var(--text-meta));
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -359,7 +402,7 @@
 .hdc-blog-post__code code {
   color: hsl(var(--foreground));
   display: block;
-  font-family: "JetBrains Mono", Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 0.82rem;
   line-height: 1.55;
   white-space: pre;
@@ -442,6 +485,331 @@
   padding-top: 1rem;
 }
 
+.hdc-blog-post__comments-section {
+  margin-top: 3rem;
+}
+
+.hdc-blog-post__comments-card {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.hdc-blog-post__comments-header,
+.hdc-blog-post__comment-form-header,
+.hdc-blog-post__comments-heading-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.hdc-blog-post__comments-heading-group {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.hdc-blog-post__count-badge {
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-pill);
+  color: hsl(var(--text-meta));
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0.35rem 0.55rem;
+}
+
+.hdc-blog-post__comments-note,
+.hdc-blog-post__submit-message,
+.hdc-blog-post__comment-card {
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-control);
+}
+
+.hdc-blog-post__comments-note,
+.hdc-blog-post__submit-message {
+  color: hsl(var(--text-subtle));
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.95rem 1rem;
+}
+
+.hdc-blog-post__comments-note p,
+.hdc-blog-post__submit-message p {
+  margin: 0;
+}
+
+.hdc-blog-post__spinner {
+  animation: hdc-blog-post-spin 0.8s linear infinite;
+}
+
+.hdc-blog-post__comment-list,
+.hdc-blog-post__comment-children {
+  display: grid;
+  gap: 0.85rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hdc-blog-post__comment-children {
+  border-left: 1px solid hsl(var(--border));
+  margin-top: 0.75rem;
+  margin-left: 1rem;
+  padding-left: 1rem;
+}
+
+.hdc-blog-post__comment-children.is-deep {
+  margin-left: 0.45rem;
+  padding-left: 0.75rem;
+}
+
+.hdc-blog-post__comment-card {
+  padding: 1rem;
+}
+
+.hdc-blog-post__comment-row {
+  display: flex;
+  gap: 0.85rem;
+}
+
+.hdc-blog-post__comment-avatar {
+  align-items: center;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 999px;
+  display: inline-flex;
+  flex: 0 0 2.5rem;
+  height: 2.5rem;
+  justify-content: center;
+  overflow: hidden;
+  width: 2.5rem;
+}
+
+.hdc-blog-post__comment-avatar-image {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.hdc-blog-post__comment-avatar-fallback {
+  color: hsl(var(--text-meta));
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.hdc-blog-post__comment-body,
+.hdc-blog-post__comment-head,
+.hdc-blog-post__comment-actions,
+.hdc-blog-post__comment-form,
+.hdc-blog-post__comment-form-grid,
+.hdc-blog-post__verification-group,
+.hdc-blog-post__comment-form-footer {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.hdc-blog-post__comment-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.hdc-blog-post__comment-meta,
+.hdc-blog-post__comment-author-link,
+.hdc-blog-post__comment-link,
+.hdc-blog-post__reply-indicator {
+  color: hsl(var(--text-meta));
+  font-size: 0.8rem;
+}
+
+.hdc-blog-post__comment-author-link,
+.hdc-blog-post__comment-link,
+.hdc-blog-post__detail-link {
+  text-decoration: underline;
+  text-decoration-color: hsl(var(--border));
+  text-underline-offset: 0.22rem;
+}
+
+.hdc-blog-post__comment-author-link:hover,
+.hdc-blog-post__comment-author-link:focus-visible,
+.hdc-blog-post__comment-link:hover,
+.hdc-blog-post__comment-link:focus-visible,
+.hdc-blog-post__detail-link:hover,
+.hdc-blog-post__detail-link:focus-visible {
+  color: hsl(var(--link));
+  text-decoration-color: hsl(var(--link));
+}
+
+.hdc-blog-post__comment-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.hdc-blog-post__comment-reply {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: hsl(var(--text-meta));
+  cursor: pointer;
+  display: inline-flex;
+  gap: 0.35rem;
+  padding: 0;
+}
+
+.hdc-blog-post__comment-reply:hover,
+.hdc-blog-post__comment-reply:focus-visible {
+  color: hsl(var(--foreground));
+}
+
+.hdc-blog-post__comment-reply:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.hdc-blog-post__comment-content {
+  color: hsl(var(--text-body));
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.hdc-blog-post__comment-content p {
+  margin: 0;
+}
+
+.hdc-blog-post__comment-content p + p,
+.hdc-blog-post__comment-content ul,
+.hdc-blog-post__comment-content ol,
+.hdc-blog-post__comment-content blockquote {
+  margin-top: 0.75rem;
+}
+
+.hdc-blog-post__comment-content ul,
+.hdc-blog-post__comment-content ol {
+  padding-left: 1.2rem;
+}
+
+.hdc-blog-post__comment-content li {
+  margin-left: 0.35rem;
+}
+
+.hdc-blog-post__comment-content blockquote {
+  border-left: 2px solid hsl(var(--border));
+  color: hsl(var(--text-subtle));
+  font-style: italic;
+  padding-left: 0.8rem;
+}
+
+.hdc-blog-post__comment-form {
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-control);
+  padding: 1rem;
+}
+
+.hdc-blog-post__comment-form-row {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.hdc-blog-post__field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.hdc-blog-post__field-label {
+  color: hsl(var(--foreground));
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.hdc-blog-post__input,
+.hdc-blog-post__textarea {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-control);
+  color: hsl(var(--foreground));
+  font: inherit;
+  padding: 0.7rem 0.85rem;
+  width: 100%;
+}
+
+.hdc-blog-post__input:focus,
+.hdc-blog-post__textarea:focus {
+  border-color: hsl(var(--primary));
+  outline: 2px solid transparent;
+}
+
+.hdc-blog-post__textarea {
+  min-height: 8rem;
+  resize: vertical;
+}
+
+.hdc-blog-post__hint {
+  color: hsl(var(--text-meta));
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.hdc-blog-post__hint--error {
+  color: hsl(var(--destructive));
+}
+
+.hdc-blog-post__verification-shell {
+  background: hsl(var(--card));
+  border: 1px dashed hsl(var(--border));
+  border-radius: var(--radius-control);
+  min-height: 3rem;
+  padding: 0.75rem;
+}
+
+.hdc-blog-post__turnstile-widget {
+  min-height: 1.5rem;
+}
+
+.hdc-blog-post__comment-form-footer {
+  align-items: center;
+}
+
+.hdc-blog-post__submit-button {
+  align-items: center;
+  background: hsl(var(--foreground));
+  border: 1px solid hsl(var(--foreground));
+  border-radius: var(--radius-control);
+  color: hsl(var(--background));
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.9rem;
+  font-weight: 600;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.65rem 1rem;
+}
+
+.hdc-blog-post__submit-button:disabled {
+  cursor: default;
+  opacity: 0.65;
+}
+
+.hdc-blog-post__sr-only {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
 .hdc-blog-post__details-card {
   background: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(var(--secondary)) 100%);
   border: 1px solid hsl(var(--border));
@@ -474,7 +842,7 @@
 .hdc-blog-post__details-title,
 .hdc-blog-post__share-title {
   color: hsl(var(--foreground));
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 1.35rem;
   margin: 0.35rem 0 0;
 }
@@ -608,7 +976,7 @@
 
 .hdc-blog-post__related-title {
   color: hsl(var(--foreground));
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 1.35rem;
   margin: 0;
 }
@@ -783,6 +1151,22 @@
 }
 
 @media (min-width: 840px) {
+  .hdc-blog-post__comments-card,
+  .hdc-blog-post__comment-form {
+    padding: 1.25rem;
+  }
+
+  .hdc-blog-post__comment-form-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hdc-blog-post__comment-form-row > :nth-child(3),
+  .hdc-blog-post__comment-form-row > :nth-child(4),
+  .hdc-blog-post__comment-form-row > :nth-child(5),
+  .hdc-blog-post__comment-form-row > :nth-child(6) {
+    grid-column: 1 / -1;
+  }
+
   .hdc-blog-post__details-card {
     padding: 1.5rem;
   }
@@ -858,6 +1242,513 @@
   }
 
   .hdc-blog-post__state-icon.is-loading {
+    animation: none;
+  }
+}
+
+/* Enhanced focus states and interactive feedback */
+.hdc-blog-post__jump-nav-link:hover,
+.hdc-blog-post__jump-nav-link:focus-visible {
+  background: hsl(var(--primary) / 0.08);
+  border-color: hsl(var(--primary) / 0.45);
+  transform: translateX(0.25rem);
+}
+
+.hdc-blog-post__share-copy:hover,
+.hdc-blog-post__share-copy:focus-visible,
+.hdc-blog-post__share-link:hover,
+.hdc-blog-post__share-link:focus-visible {
+  background: hsl(var(--surface-hover));
+  border-color: hsl(var(--interactive-border-hover));
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-control);
+}
+
+.hdc-blog-post__detail-link:hover,
+.hdc-blog-post__detail-link:focus-visible {
+  color: hsl(var(--link));
+  text-decoration-color: hsl(var(--link));
+}
+
+.hdc-blog-post__code-copy:hover {
+  background: hsl(var(--primary) / 0.1);
+  border-color: hsl(var(--primary) / 0.45);
+}
+
+.hdc-blog-post__code-copy:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Comment thread animations */
+.hdc-blog-post__comment-card {
+  transition: transform var(--motion-duration-fast) var(--motion-ease-standard),
+              box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.hdc-blog-post__comment-card:hover {
+  transform: translateX(2px);
+  box-shadow: var(--shadow-surface-1);
+}
+
+.hdc-blog-post__comment-reply:hover,
+.hdc-blog-post__comment-reply:focus-visible {
+  background: hsl(var(--primary) / 0.1);
+  border-color: hsl(var(--primary) / 0.45);
+  transform: translateY(-1px);
+}
+
+/* Comment thread expansion animation */
+.hdc-blog-post__comment-children {
+  animation: hdc-blog-post-thread-enter var(--motion-duration-fast) var(--motion-ease-standard) both;
+}
+
+@keyframes hdc-blog-post-thread-enter {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+  }
+}
+
+/* ============================================================
+   JETPACK COMMENT COMPATIBILITY
+   Align custom comment system with Jetpack comment styling
+   ============================================================ */
+
+/* Jetpack comment likes integration */
+.jetpack-comment-likes-widget-wrapper {
+  margin: 0.75rem 0 0;
+}
+
+.comment-likes-widget {
+  margin: 0;
+}
+
+/* Comment subscription form (Jetpack) */
+.comment-subscription-form {
+  margin: 1rem 0 0;
+  padding: 0.75rem;
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-control);
+}
+
+.comment-subscription-form .subscribe-label {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  color: hsl(var(--text-body));
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.comment-subscription-form input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: hsl(var(--primary));
+  cursor: pointer;
+}
+
+.comment-subscription-form + .comment-subscription-form {
+  margin-top: 0.5rem;
+}
+
+/* Jetpack comment form iframe styling */
+.jetpack_remote_comment {
+  margin: 0;
+  border: none;
+  width: 100%;
+}
+
+/* Comment form loading state (Jetpack) */
+.comment-form iframe[src*="jetpack"] {
+  margin: 0;
+}
+
+/* Hide duplicate Jetpack comment form when custom form is present */
+.hdc-blog-post__comments-section ~ #commentform,
+.hdc-blog-post__comments-section ~ .comment-respond,
+.hdc-blog-post__comments-section ~ #respond {
+  display: none !important;
+}
+
+/* Jetpack social sharing in comments */
+.hdc-blog-post__comments-section .sharedaddy {
+  margin: 1rem 0;
+}
+
+.hdc-blog-post__comments-section .sharedaddy .sd-sharing {
+  border: none;
+  padding: 0;
+}
+
+.hdc-blog-post__comments-section .sharedaddy h3 {
+  color: hsl(var(--text-meta));
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Comment likes count badge (Jetpack) */
+.comment-like-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  background: hsl(var(--primary) / 0.1);
+  border: 1px solid hsl(var(--primary) / 0.2);
+  border-radius: var(--radius-pill);
+  color: hsl(var(--text-meta));
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.comment-like-count::before {
+  content: "";
+  width: 0.75rem;
+  height: 0.75rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.7;
+}
+
+/* Comment gravatar alignment (Jetpack) */
+.hdc-blog-post__comment-avatar .avatar {
+  margin: 0;
+  border: none;
+  border-radius: 50%;
+  padding: 0;
+  background-color: transparent;
+}
+
+/* Ensure Jetpack comment metadata displays properly */
+.hdc-blog-post__comment-card .comment-metadata,
+.hdc-blog-post__comment-card .comment-meta {
+  color: hsl(var(--text-meta));
+  font-size: 0.75rem;
+}
+
+/* Jetpack comment moderation notice */
+.hdc-blog-post__comments-section .comment-awaiting-moderation {
+  padding: 0.5rem 0.75rem;
+  background: hsl(var(--warning) / 0.1);
+  border: 1px solid hsl(var(--warning) / 0.2);
+  border-radius: var(--radius-control);
+  color: hsl(var(--warning));
+  font-size: 0.875rem;
+}
+
+/* Jetpack SSO comment login */
+.jetpack-sso-wrap {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-surface);
+  text-align: center;
+}
+
+.jetpack-sso-wrap a {
+  color: hsl(var(--link));
+  text-decoration: underline;
+}
+
+.jetpack-sso-wrap a:hover {
+  color: hsl(var(--link-hover));
+}
+
+/* Subscription modal styling */
+.jetpack-subscription-modal {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.jetpack-subscription-modal__modal-content {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-surface);
+  box-shadow: var(--shadow-overlay);
+}
+
+/* ============================================================
+   JETPACK DARK MODE COMPATIBILITY FIXES
+   Override Jetpack's hardcoded colors in theme dark mode
+   ============================================================ */
+
+/* Carousel lightbox dark mode overrides */
+[data-theme="dark"] .jp-carousel-overlay,
+[data-theme="dark"] .jp-carousel-container {
+  --jp-carousel-primary-color: hsl(var(--foreground));
+  --jp-carousel-primary-subtle-color: hsl(var(--text-meta));
+  --jp-carousel-bg-color: hsl(var(--background));
+  --jp-carousel-bg-faded-color: hsl(var(--secondary));
+  --jp-carousel-border-color: hsl(var(--border));
+}
+
+/* Fix hardcoded warning/error colors in dark mode */
+[data-theme="dark"] .jp-carousel-msg {
+  border-left-color: hsl(var(--warning));
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--foreground));
+}
+
+[data-theme="dark"] .jp-carousel-comment-post-error {
+  color: hsl(var(--destructive));
+}
+
+/* Fix placeholder text in dark mode */
+[data-theme="dark"] textarea#jp-carousel-comment-form-comment-field::placeholder,
+[data-theme="dark"] textarea#jp-carousel-comment-form-comment-field::-webkit-input-placeholder {
+  color: hsl(var(--text-meta));
+}
+
+/* Fix input backgrounds in carousel dark mode */
+[data-theme="dark"] textarea#jp-carousel-comment-form-comment-field,
+[data-theme="dark"] #jp-carousel-comment-form-commenting-as input {
+  background: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+  box-shadow: inset 2px 2px 2px hsl(var(--border) / 0.2);
+}
+
+/* Fix button styling in carousel dark mode */
+[data-theme="dark"] #jp-carousel-comment-form-button-submit {
+  background: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+[data-theme="dark"] #jp-carousel-comment-form-button-submit:hover,
+[data-theme="dark"] #jp-carousel-comment-form-button-submit:focus {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+/* Fix loading spinner in dark mode */
+[data-theme="dark"] .jp-carousel-spinner {
+  border-color: hsl(var(--border));
+  border-top-color: hsl(var(--primary));
+}
+
+/* Sharing buttons dark mode fixes */
+[data-theme="dark"] .sharedaddy .sd-button {
+  background: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+[data-theme="dark"] .sharedaddy .sd-button:hover {
+  background: hsl(var(--secondary));
+  border-color: hsl(var(--interactive-border-hover));
+}
+
+/* Fix Highlander theme conflicts in dark mode */
+[data-theme="dark"] body.highlander-dark .sd-button {
+  background: hsl(var(--card));
+  border-color: hsl(var(--border));
+}
+
+/* Comment likes widget dark mode fixes */
+[data-theme="dark"] .comment-likes-widget-placeholder::before {
+  filter: brightness(1.2);
+}
+
+[data-theme="dark"] .comment-likes-widget-placeholder .loading {
+  color: hsl(var(--text-meta));
+}
+
+/* Subscription form dark mode fixes */
+[data-theme="dark"] .comment-subscription-form {
+  background: hsl(var(--secondary));
+  border-color: hsl(var(--border));
+}
+
+[data-theme="dark"] .comment-subscription-form .subscribe-label {
+  color: hsl(var(--text-body));
+}
+
+/* Fix subscription modal in dark mode */
+[data-theme="dark"] .jetpack-subscription-modal {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Ensure proper contrast for Jetpack SSO */
+[data-theme="dark"] .jetpack-sso-wrap {
+  background: hsl(var(--secondary));
+  border-color: hsl(var(--border));
+}
+
+[data-theme="dark"] .jetpack-sso-wrap a {
+  color: hsl(var(--link));
+}
+
+[data-theme="dark"] .jetpack-sso-wrap a:hover {
+  color: hsl(var(--link-hover));
+}
+
+/* Fix avatars in dark mode */
+[data-theme="dark"] .jp-carousel-comment .avatar {
+  background-color: hsl(var(--secondary));
+}
+
+/* Code block enhancements */
+.hdc-blog-post__code-block {
+  transition: box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.hdc-blog-post__code-block:hover {
+  box-shadow: var(--shadow-surface-1);
+}
+
+.hdc-blog-post__code-block:hover .hdc-blog-post__code-copy {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hdc-blog-post__code-copy {
+  opacity: 0.7;
+  transform: translateY(-2px);
+  transition: opacity var(--motion-duration-fast) var(--motion-ease-standard),
+              transform var(--motion-duration-fast) var(--motion-ease-standard),
+              background-color var(--motion-duration-fast) var(--motion-ease-standard),
+              border-color var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+/* Loading state transitions */
+.hdc-blog-post__state-card {
+  transition: opacity var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+/* Scroll to top button animation */
+.hdc-blog-post__scroll-top-wrap {
+  animation: hdc-blog-post-fade-up var(--motion-duration-fast) var(--motion-ease-standard) both;
+}
+
+@keyframes hdc-blog-post-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hdc-blog-post__scroll-top:hover {
+  background: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+.hdc-blog-post__scroll-top:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Back link micro-interaction */
+.hdc-blog-post__back-link:hover {
+  color: hsl(var(--link));
+  transform: translateX(-0.15rem);
+}
+
+.hdc-blog-post__back-link-icon {
+  transition: transform var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.hdc-blog-post__back-link:hover .hdc-blog-post__back-link-icon {
+  transform: translateX(-0.15rem);
+}
+
+/* Related posts hover effect */
+.hdc-blog-post__related-card {
+  transition: transform var(--motion-duration-fast) var(--motion-ease-standard),
+              box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
+              border-color var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.hdc-blog-post__related-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-surface-1);
+  border-color: hsl(var(--interactive-border-hover));
+}
+
+/* Active jump nav indicator */
+.hdc-blog-post__jump-nav-link--active {
+  background: hsl(var(--primary) / 0.1);
+  border-color: hsl(var(--primary) / 0.45);
+  color: hsl(var(--foreground));
+  font-weight: 600;
+}
+
+.hdc-blog-post__jump-nav-link--active::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+/* Input focus enhancement */
+.hdc-blog-post__input:focus,
+.hdc-blog-post__textarea:focus {
+  background: hsl(var(--card));
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 1px hsl(var(--primary) / 0.15);
+  transform: translateY(-1px);
+}
+
+/* Submit button hover */
+.hdc-blog-post__submit-button:hover {
+  background: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-1px);
+}
+
+.hdc-blog-post__submit-button:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Tag hover effects */
+.hdc-blog-post__tag {
+  transition: background-color var(--motion-duration-fast) var(--motion-ease-standard),
+              transform var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.hdc-blog-post__tag:hover {
+  background: hsl(var(--primary) / 0.15);
+  transform: translateY(-1px);
+}
+
+/* Progress bar glow on dark mode */
+[data-theme="dark"] .hdc-blog-post__progress-fill {
+  box-shadow: 0 0 8px hsl(var(--primary) / 0.4);
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .hdc-blog-post__jump-nav-link:hover,
+  .hdc-blog-post__share-copy:hover,
+  .hdc-blog-post__share-link:hover,
+  .hdc-blog-post__comment-card:hover,
+  .hdc-blog-post__related-card:hover,
+  .hdc-blog-post__scroll-top:hover,
+  .hdc-blog-post__back-link:hover {
+    transform: none;
+  }
+
+  .hdc-blog-post__code-copy {
+    opacity: 1;
+    transform: none;
+  }
+
+  .hdc-blog-post__comment-children {
     animation: none;
   }
 }

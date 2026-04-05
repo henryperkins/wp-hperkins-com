@@ -1,34 +1,130 @@
 const { test, expect } = require('@playwright/test');
 
-const BLOG_SLUG = process.env.BLOG_SLUG || 'wordpress-ai-use-cases-developers-admins';
-const BLOG_CODE_SLUG = process.env.BLOG_CODE_SLUG || 'github-copilot-cli-a-practical-guide-to-using-copilot-in-your-terminal';
+const BLOG_SLUG = process.env.BLOG_SLUG || '';
+const BLOG_CODE_SLUG = process.env.BLOG_CODE_SLUG || '';
 const BLOG_MISSING_SLUG = process.env.BLOG_MISSING_SLUG || 'this-slug-should-not-exist';
 const WORK_DETAIL_REPO = process.env.WORK_DETAIL_REPO || 'henry-s-digital-canvas';
+const BLOG_LIST_LIMIT = 20;
 
-const ROUTES = [
-	{ path: '/', selector: '.hdc-home-page', status: 200 },
-	{ path: '/work/', selector: '.hdc-work-showcase', status: 200 },
-	{ path: `/work/${ WORK_DETAIL_REPO }/`, selector: '.hdc-work-detail', status: 200 },
-	{ path: '/resume/', selector: '.hdc-resume-overview', status: 200 },
-	{ path: '/resume/ats/', selector: '.hdc-resume-ats', status: 200 },
-	{ path: '/hobbies/', selector: '.hdc-hobbies-moments', status: 200 },
-	{ path: '/blog/', selector: '.hdc-blog-index', status: 200 },
-	{ path: `/blog/${ BLOG_SLUG }/`, selector: '.hdc-blog-post', status: 200 },
-	{ path: '/about/', selector: '.hdc-about-timeline', status: 200 },
-	{ path: '/contact/', selector: '.hdc-contact-form', status: 200 },
-	{ path: '/route-should-not-exist/', selector: '.hdc-not-found', status: 404 },
-];
+let blogFixtures = null;
+
+function ensureString(value, fallback = '') {
+	return typeof value === 'string' && value.trim() ? value.trim() : fallback;
+}
+
+function escapeHtmlAttribute(value) {
+	return String(value)
+		.replace(/&/g, '&amp;')
+		.replace(/"/g, '&quot;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;');
+}
+
+function buildExpectedBlogTitle(post) {
+	const baseTitle = ensureString(post && post.seoTitle) || ensureString(post && post.title) || 'Post Not Found';
+	return /henry perkins/i.test(baseTitle) ? baseTitle : `${ baseTitle } — Henry Perkins`;
+}
+
+function hasCodeBlocks(post) {
+	return /<(pre|code)\b/i.test(ensureString(post && post.contentHtml));
+}
+
+async function fetchJson(request, path) {
+	const response = await request.get(path);
+	if (!response.ok()) {
+		throw new Error(`Request failed for ${ path }: ${ response.status() }`);
+	}
+
+	return response.json();
+}
+
+async function resolveBlogFixtures(request) {
+	const listPayload = await fetchJson(request, `/wp-json/henrys-digital-canvas/v1/blog?limit=${ BLOG_LIST_LIMIT }`);
+	const posts = Array.isArray(listPayload && listPayload.posts)
+		? listPayload.posts.filter((post) => post && ensureString(post.slug))
+		: [];
+
+	if (!posts.length) {
+		throw new Error('Could not resolve a published blog post for browser smoke checks.');
+	}
+
+	const detailCache = new Map();
+
+	async function getDetail(slug) {
+		if (detailCache.has(slug)) {
+			return detailCache.get(slug);
+		}
+
+		const detail = await fetchJson(request, `/wp-json/henrys-digital-canvas/v1/blog/${ slug }`);
+		detailCache.set(slug, detail);
+		return detail;
+	}
+
+	const blogSlug = BLOG_SLUG || posts[0].slug;
+	const blogDetail = await getDetail(blogSlug);
+
+	let codeSlug = BLOG_CODE_SLUG;
+	if (!codeSlug) {
+		for (const post of posts) {
+			const detail = await getDetail(post.slug);
+			if (hasCodeBlocks(detail)) {
+				codeSlug = post.slug;
+				break;
+			}
+		}
+	}
+
+	const resolvedCodeSlug = codeSlug || blogSlug;
+	const codeDetail = resolvedCodeSlug === blogSlug ? blogDetail : await getDetail(resolvedCodeSlug);
+
+	return {
+		posts,
+		blogSlug,
+		blogDetail,
+		codeSlug: resolvedCodeSlug,
+		codeDetail,
+	};
+}
 
 test.describe('Henrys Digital Canvas browser smoke', () => {
+	test.beforeAll(async ({ request }) => {
+		blogFixtures = await resolveBlogFixtures(request);
+	});
+
 	test('route matrix renders expected blocks', async ({ page }) => {
-		for ( const route of ROUTES ) {
+		const routes = [
+			{ path: '/', selector: '.hdc-home-page', status: 200 },
+			{ path: '/work/', selector: '.hdc-work-showcase', status: 200 },
+			{ path: `/work/${ WORK_DETAIL_REPO }/`, selector: '.hdc-work-detail', status: 200 },
+			{ path: '/resume/', selector: '.hdc-resume-overview', status: 200 },
+			{ path: '/resume/ats/', selector: '.hdc-resume-ats', status: 200 },
+			{ path: '/hobbies/', selector: '.hdc-hobbies-moments', status: 200 },
+			{ path: '/blog/', selector: '.hdc-blog-index', status: 200 },
+			{ path: `/blog/${ blogFixtures.blogSlug }/`, selector: '.hdc-blog-post', status: 200 },
+			{ path: '/about/', selector: '.hdc-about-timeline', status: 200 },
+			{ path: '/contact/', selector: '.hdc-contact-form', status: 200 },
+			{ path: '/route-should-not-exist/', selector: '.hdc-not-found', status: 404 },
+		];
+
+		for ( const route of routes ) {
 			const response = await page.goto(route.path, { waitUntil: 'domcontentloaded' });
 			expect(response && response.status()).toBe(route.status);
 			await expect(page.locator(route.selector)).toHaveCount(1, { timeout: 20000 });
 		}
 	});
 
-	test('work signals panel renders stat cards', async ({ page }) => {
+	test('work signals panel renders stat cards and loads contributor metrics route', async ({ page }) => {
+		const signalResponses = [];
+		page.on('response', (response) => {
+			const url = response.url();
+			if (url.includes('/api/github/contributor-stats')) {
+				signalResponses.push({
+					status: response.status(),
+					url,
+				});
+			}
+		});
+
 		await page.goto('/work/', { waitUntil: 'domcontentloaded' });
 
 		const signalsSection = page.locator('.hdc-work-signals');
@@ -38,6 +134,13 @@ test.describe('Henrys Digital Canvas browser smoke', () => {
 		await expect
 			.poll(async () => statCards.count(), { timeout: 30000 })
 			.toBeGreaterThanOrEqual(1);
+
+		await expect
+			.poll(
+				async () => signalResponses.some((response) => response.status !== 404),
+				{ timeout: 30000 }
+			)
+			.toBeTruthy();
 	});
 
 	test('hobbies filters update querystring', async ({ page }) => {
@@ -54,7 +157,7 @@ test.describe('Henrys Digital Canvas browser smoke', () => {
 		await categoryButtons.nth(1).click();
 		await expect
 			.poll(async () => page.url(), { timeout: 8000 })
-			.toContain('category=');
+			.toContain('hdcCategory=');
 	});
 
 	test('contact validation and success states', async ({ page }) => {
@@ -81,7 +184,7 @@ test.describe('Henrys Digital Canvas browser smoke', () => {
 	});
 
 	test('blog progress and scroll-to-top behavior', async ({ page }) => {
-		await page.goto(`/blog/${ BLOG_SLUG }/`, { waitUntil: 'networkidle' });
+		await page.goto(`/blog/${ blogFixtures.blogSlug }/`, { waitUntil: 'networkidle' });
 
 		const progressFill = page.locator('.hdc-blog-post__progress-fill').first();
 		await expect(progressFill).toHaveCount(1, { timeout: 10000 });
@@ -110,7 +213,7 @@ test.describe('Henrys Digital Canvas browser smoke', () => {
 	});
 
 	test('blog detail enhances HTML code blocks with a toolbar and copy affordance', async ({ page }) => {
-		await page.goto(`/blog/${ BLOG_CODE_SLUG }/`, { waitUntil: 'networkidle' });
+		await page.goto(`/blog/${ blogFixtures.codeSlug }/`, { waitUntil: 'networkidle' });
 
 		await expect
 			.poll(async () => page.locator('.hdc-blog-post__code-toolbar').count(), { timeout: 10000 })
@@ -119,24 +222,24 @@ test.describe('Henrys Digital Canvas browser smoke', () => {
 		await expect(page.locator('.hdc-blog-post__code-language').first()).not.toHaveText('');
 	});
 
-	test('blog detail renders metadata, share, discussion, and canonical route metadata', async ({ page }) => {
-		const htmlResponse = await page.request.get('/blog/clarity-is-a-technical-skill/');
+	test('blog detail renders comments, share, related posts, and canonical route metadata', async ({ page }) => {
+		const htmlResponse = await page.request.get(`/blog/${ blogFixtures.blogSlug }/`);
 		expect(htmlResponse.ok()).toBeTruthy();
 		const html = await htmlResponse.text();
 
-		await page.goto('/blog/clarity-is-a-technical-skill/', { waitUntil: 'networkidle' });
+		await page.goto(`/blog/${ blogFixtures.blogSlug }/`, { waitUntil: 'networkidle' });
 
-		await expect(page.getByRole('heading', { level: 3, name: 'Metadata, source, and discussion' })).toBeVisible();
-		await expect(page.locator('.hdc-blog-post__detail-label')).toContainText(['Author', 'Published']);
-		await expect(page.getByRole('link', { name: 'Open original on WordPress' })).toBeVisible();
+		await expect(page.getByRole('heading', { level: 2, name: 'Comments' })).toBeVisible();
+		await expect(page.locator('.hdc-blog-post__comments-card')).toHaveCount(1);
 		await expect(page.getByRole('button', { name: 'Copy article link' })).toBeVisible();
 		await expect(page.getByRole('link', { name: 'Share on LinkedIn' })).toBeVisible();
 		await expect(page.getByRole('link', { name: /Comment on WordPress|Open original post/ })).toBeVisible();
+		await expect(page.locator('.hdc-blog-post__related')).toHaveCount(blogFixtures.posts.length > 1 ? 1 : 0);
 
-		expect(html).toContain('<link rel="canonical" href="https://hperkins.com/blog/clarity-is-a-technical-skill" />');
+		expect(html).toContain(`<link rel="canonical" href="https://hperkins.com/blog/${ blogFixtures.blogSlug }" />`);
 		expect(html).toContain('<meta property="og:type" content="article" />');
-		expect(html).toContain('<meta property="og:url" content="https://hperkins.com/blog/clarity-is-a-technical-skill" />');
-		expect(html).toContain('<meta name="twitter:title" content="Why Clarity Is a Critical Engineering Skill — Henry Perkins" />');
+		expect(html).toContain(`<meta property="og:url" content="https://hperkins.com/blog/${ blogFixtures.blogSlug }" />`);
+		expect(html).toContain(`<meta name="twitter:title" content="${ escapeHtmlAttribute(buildExpectedBlogTitle(blogFixtures.blogDetail)) }" />`);
 	});
 
 	test('blog and home media surfaces follow blog media contract', async ({ page }) => {
@@ -172,7 +275,7 @@ test.describe('Henrys Digital Canvas browser smoke', () => {
 			await expect(blogRowThumbs).toHaveCount(0);
 		}
 
-		const detailResponse = await page.request.get(`/wp-json/henrys-digital-canvas/v1/blog/${ BLOG_SLUG }`);
+		const detailResponse = await page.request.get(`/wp-json/henrys-digital-canvas/v1/blog/${ blogFixtures.blogSlug }`);
 		expect(detailResponse.ok()).toBeTruthy();
 		const detailPayload = await detailResponse.json();
 		const detailHasImage =
@@ -180,7 +283,7 @@ test.describe('Henrys Digital Canvas browser smoke', () => {
 			typeof detailPayload.featuredImageUrl === 'string' &&
 			detailPayload.featuredImageUrl.trim().length > 0;
 
-		await page.goto(`/blog/${ BLOG_SLUG }/`, { waitUntil: 'networkidle' });
+		await page.goto(`/blog/${ blogFixtures.blogSlug }/`, { waitUntil: 'networkidle' });
 		const detailHeroImage = page.locator('.hdc-blog-post__hero-image');
 		if (detailHasImage) {
 			await expect(detailHeroImage).toHaveCount(1, { timeout: 10000 });

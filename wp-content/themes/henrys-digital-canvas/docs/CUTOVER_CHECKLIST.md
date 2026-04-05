@@ -1,6 +1,6 @@
 # Henry's Digital Canvas Cutover Checklist
 
-Last updated: 2026-03-03 (UTC)
+Last updated: 2026-04-03 (UTC)
 
 ## Scope
 This checklist validates full-parity migration coverage for:
@@ -13,7 +13,7 @@ This checklist validates full-parity migration coverage for:
 
 ## Pre-Cutover Checks
 - Child theme active: `henrys-digital-canvas`.
-- Required route pages published: `about`, `work`, `resume`, `resume/ats`, `hobbies`, `blog`, `contact`.
+- Required route pages published: `home`, `about`, `work`, `resume`, `resume/ats`, `hobbies`, `blog`, `contact`.
 - Rewrite rules flushed after route/template updates.
 - Dynamic route templates active:
   - `page-work-detail.php`
@@ -24,24 +24,27 @@ Run from theme directory:
 
 ```bash
 npm install
-./scripts/full_smoke.sh
+npm run smoke:full
 ```
 
-Equivalent step-by-step sequence:
+Expanded manual verification sequence:
 
 ```bash
-./scripts/route_smoke.sh
-./scripts/api_smoke.sh
-./scripts/browser_smoke.sh
+npm run smoke:route
+npm run smoke:api
+npm run smoke:browser
 ./scripts/stylebook_audit.sh
 ./scripts/token_sync_audit.sh ~/henry-s-digital-canvas/src/index.css
+./scripts/utility_sync_audit.sh ~/henry-s-digital-canvas/src/index.css
 ```
 
 Expected result:
 - Route script: all routes return expected status and expected block marker class.
-- API script: all theme contract endpoints return HTTP 200.
-- Browser script: route + interaction regression tests pass (`6 passed`).
+- API script: all theme contract endpoints return HTTP 200 and contract field checks pass.
+- Browser script: Playwright route + interaction regression tests pass.
+- Stylebook audit: no parent-token leakage is reported.
 - Token sync audit: `PASS` status and no token mismatches against source `index.css`.
+- Utility sync audit: `PASS` status and no shared utility/keyframe drift against source `index.css`.
 
 ## Browser Regression Checks
 Validated (desktop + mobile):
@@ -81,7 +84,7 @@ If a cutover regression is detected:
 2. Re-activate known-good theme revision in WordPress.
 3. Flush rewrite rules:
    ```bash
-   wp rewrite flush --hard --allow-root
+   wp --path=/home/hperkins-wp/htdocs/wp.hperkins.com rewrite flush
    ```
 4. Re-run route/API smoke checks.
 5. If needed, roll back database/content using host backup or point-in-time restore.

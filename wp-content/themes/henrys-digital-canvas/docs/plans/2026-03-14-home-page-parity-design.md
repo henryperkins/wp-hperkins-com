@@ -1,5 +1,7 @@
 # Home Page Block Parity Design
 
+> Historical snapshot: This dated document is retained for planning or audit history and may contain period-specific assumptions, commands, file lists, test counts, or open issues. For current workflow guidance, use `README.md`, `docs/PAGE_TO_BLOCK_MIGRATION_CHECKLIST.md`, `docs/CUTOVER_CHECKLIST.md`, and `docs/MIGRATION_PROGRESS.md`.
+
 **Date**: 2026-03-14
 **Block**: `home-page`
 **Source**: `Home.tsx`

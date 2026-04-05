@@ -4,72 +4,31 @@
 	}
 
 	const el = element.createElement;
-	const Fragment = element.Fragment;
 	const __ = i18n.__;
 	const useBlockProps = blockEditor.useBlockProps;
-	const InspectorControls = blockEditor.InspectorControls;
-	const PanelBody = components.PanelBody;
-	const TextControl = components.TextControl;
-	const ToggleControl = components.ToggleControl;
 	const Notice = components.Notice;
+	const BLOG_HEADING = __( 'Blog', 'henrys-digital-canvas' );
+	const BLOG_DESCRIPTION = __( 'Writing on customer-facing engineering, AI workflows, WordPress delivery, and support-to-implementation systems.', 'henrys-digital-canvas' );
 
 	blocks.registerBlockType( 'henrys-digital-canvas/blog-index', {
-		edit: function Edit( props ) {
-			const attrs = props.attributes;
-			const setAttributes = props.setAttributes;
+		edit: function Edit() {
 			const blockProps = useBlockProps( {
 				className: 'hdc-blog-index-editor',
 			} );
 
 			return el(
-				Fragment,
-				{},
+				'div',
+				blockProps,
 				el(
-					InspectorControls,
-					{},
-					el(
-						PanelBody,
-						{
-							title: __( 'Blog Index Settings', 'henrys-digital-canvas' ),
-							initialOpen: true,
-						},
-						el( TextControl, {
-							label: __( 'Heading', 'henrys-digital-canvas' ),
-							value: attrs.heading,
-							onChange: function ( heading ) {
-								setAttributes( { heading: heading } );
-							},
-						} ),
-						el( TextControl, {
-							label: __( 'Description', 'henrys-digital-canvas' ),
-							value: attrs.description,
-							onChange: function ( description ) {
-								setAttributes( { description: description } );
-							},
-						} ),
-						el( ToggleControl, {
-							label: __( 'Show LinkedIn + contact CTA', 'henrys-digital-canvas' ),
-							checked: !! attrs.showNewsletterCta,
-							onChange: function ( showNewsletterCta ) {
-								setAttributes( { showNewsletterCta: showNewsletterCta } );
-							},
-						} )
-					)
+					Notice,
+					{
+						status: 'info',
+						isDismissible: false,
+					},
+					__( 'Frontend fetches /wp-json/henrys-digital-canvas/v1/blog and renders the React-matched featured and archive states.', 'henrys-digital-canvas' )
 				),
-				el(
-					'div',
-					blockProps,
-					el(
-						Notice,
-						{
-							status: 'info',
-							isDismissible: false,
-						},
-						__( 'Frontend fetches /wp-json/henrys-digital-canvas/v1/blog and renders featured + filterable post listings.', 'henrys-digital-canvas' )
-					),
-					el( 'h3', { className: 'hdc-blog-index-editor__title' }, attrs.heading || __( 'Blog', 'henrys-digital-canvas' ) ),
-					el( 'p', { className: 'hdc-blog-index-editor__description' }, attrs.description || __( 'Notes on engineering and product craft.', 'henrys-digital-canvas' ) )
-				)
+				el( 'h3', { className: 'hdc-blog-index-editor__title' }, BLOG_HEADING ),
+				el( 'p', { className: 'hdc-blog-index-editor__description' }, BLOG_DESCRIPTION )
 			);
 		},
 		save: function Save() {

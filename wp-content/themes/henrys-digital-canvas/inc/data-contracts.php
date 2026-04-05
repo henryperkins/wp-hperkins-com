@@ -397,6 +397,149 @@ function hdc_get_post_featured_media_fields( $post_id ) {
 }
 
 /**
+ * Derive a blog slug from a related post permalink.
+ *
+ * @param string $url Related post permalink.
+ * @return string
+ */
+function hdc_get_blog_slug_from_related_post_url( $url ) {
+	$path = wp_parse_url( (string) $url, PHP_URL_PATH );
+	if ( ! is_string( $path ) || '' === trim( $path ) ) {
+		return '';
+	}
+
+	$segments = array_values(
+		array_filter(
+			explode( '/', trim( $path, '/' ) )
+		)
+	);
+
+	if ( empty( $segments ) ) {
+		return '';
+	}
+
+	return sanitize_title( (string) end( $segments ) );
+}
+
+/**
+ * Normalize related blog post payloads into the shared contract shape.
+ *
+ * @param array $related_posts Related post payloads.
+ * @return array<int,array>
+ */
+function hdc_normalize_related_blog_posts_contract( $related_posts ) {
+	if ( ! is_array( $related_posts ) ) {
+		return array();
+	}
+
+	$normalized = array();
+	$seen_slugs = array();
+
+	foreach ( $related_posts as $related_post ) {
+		if ( ! is_array( $related_post ) ) {
+			continue;
+		}
+
+		$related_id = isset( $related_post['id'] ) ? absint( $related_post['id'] ) : 0;
+		$slug       = '';
+		if ( $related_id > 0 ) {
+			$slug = sanitize_title( (string) get_post_field( 'post_name', $related_id ) );
+		}
+
+		$wordpress_permalink = esc_url_raw( (string) ( $related_post['wordpressPermalink'] ?? $related_post['url'] ?? '' ) );
+		if ( '' === $slug ) {
+			$slug = hdc_get_blog_slug_from_related_post_url( $wordpress_permalink );
+		}
+
+		$title = html_entity_decode( sanitize_text_field( (string) ( $related_post['title'] ?? '' ) ), ENT_QUOTES, 'UTF-8' );
+		if ( '' === $slug || '' === $title || isset( $seen_slugs[ $slug ] ) ) {
+			continue;
+		}
+
+		$image = isset( $related_post['img'] ) && is_array( $related_post['img'] ) ? $related_post['img'] : array();
+
+		$normalized[] = array(
+			'id'                 => $related_id > 0 ? $related_id : null,
+			'slug'               => $slug,
+			'title'              => $title,
+			'excerpt'            => sanitize_text_field( (string) ( $related_post['excerpt'] ?? '' ) ),
+			'wordpressPermalink' => $wordpress_permalink,
+			'featuredImageAlt'   => sanitize_text_field( (string) ( $related_post['featuredImageAlt'] ?? $image['alt_text'] ?? '' ) ),
+			'featuredImageUrl'   => esc_url_raw( (string) ( $related_post['featuredImageUrl'] ?? $image['src'] ?? '' ) ),
+		);
+
+		$seen_slugs[ $slug ] = true;
+	}
+
+	return $normalized;
+}
+
+/**
+ * Resolve Jetpack-related posts for one WordPress blog post.
+ *
+ * @param int $post_id Post ID.
+ * @return array<int,array>
+ */
+function hdc_get_wordpress_related_blog_posts_contract( $post_id ) {
+	$post_id = absint( $post_id );
+	if ( $post_id <= 0 ) {
+		return array();
+	}
+
+	if ( ! class_exists( 'Jetpack_RelatedPosts' ) ) {
+		$jetpack_related_posts_file = WP_PLUGIN_DIR . '/jetpack/modules/related-posts/jetpack-related-posts.php';
+		if ( file_exists( $jetpack_related_posts_file ) ) {
+			require_once $jetpack_related_posts_file;
+		}
+	}
+
+	if ( ! class_exists( 'Jetpack_RelatedPosts' ) || ! method_exists( 'Jetpack_RelatedPosts', 'init_raw' ) ) {
+		return array();
+	}
+
+	$service = Jetpack_RelatedPosts::init_raw();
+	if ( ! is_object( $service ) || ! method_exists( $service, 'get_for_post_id' ) ) {
+		return array();
+	}
+
+	// Jetpack raw related-post clients expose this helper, but static analysis does not know the plugin type.
+	if ( method_exists( $service, 'set_query_name' ) ) {
+		/** @var object{set_query_name?:callable(string):mixed} $service */
+		$service->set_query_name( 'hdc_blog_detail_contract' );
+	}
+
+	$related_posts = $service->get_for_post_id(
+		$post_id,
+		array(
+			'size' => 2,
+		)
+	);
+
+	return hdc_normalize_related_blog_posts_contract( $related_posts );
+}
+
+/**
+ * Enrich one blog detail contract with related posts.
+ *
+ * @param array $post Blog post contract.
+ * @return array
+ */
+function hdc_enrich_blog_post_detail_contract( $post ) {
+	if ( ! is_array( $post ) || empty( $post['slug'] ) ) {
+		return is_array( $post ) ? $post : array();
+	}
+
+	$normalized_related_posts = hdc_normalize_related_blog_posts_contract( $post['relatedPosts'] ?? array() );
+	if ( empty( $normalized_related_posts ) && ! empty( $post['id'] ) ) {
+		$normalized_related_posts = hdc_get_wordpress_related_blog_posts_contract( (int) $post['id'] );
+	}
+
+	$post['relatedPosts'] = $normalized_related_posts;
+
+	return $post;
+}
+
+/**
  * Normalize one fallback blog entry into the API contract shape.
  *
  * @param array $post  Fallback post payload.
@@ -458,6 +601,7 @@ function hdc_normalize_fallback_blog_post_contract( $post, $index = 0 ) {
 	}
 
 	$post_id = isset( $post['id'] ) ? absint( $post['id'] ) : 0;
+	$related_posts = hdc_normalize_related_blog_posts_contract( $post['relatedPosts'] ?? array() );
 
 	return array(
 		'id'                  => $post_id,
@@ -485,6 +629,7 @@ function hdc_normalize_fallback_blog_post_contract( $post, $index = 0 ) {
 		'featuredImageUrl'    => hdc_resolve_fallback_media_url( (string) ( $post['featuredImageUrl'] ?? '' ) ),
 		'featuredImageAlt'    => sanitize_text_field( (string) ( $post['featuredImageAlt'] ?? '' ) ),
 		'featuredImageSrcSet' => trim( wp_strip_all_tags( (string) ( $post['featuredImageSrcSet'] ?? '' ) ) ),
+		'relatedPosts'        => $related_posts,
 	);
 }
 
@@ -739,7 +884,7 @@ function hdc_get_blog_post_by_slug_data_contract( $slug ) {
 	);
 
 	if ( is_array( $wp_posts ) && ! empty( $wp_posts ) ) {
-		return hdc_map_wp_post_to_blog_contract( $wp_posts[0], false );
+		return hdc_enrich_blog_post_detail_contract( hdc_map_wp_post_to_blog_contract( $wp_posts[0], false ) );
 	}
 
 	$fallback_posts = hdc_read_theme_json_file( '/data/blog-posts-fallback.json', array() );
@@ -750,7 +895,7 @@ function hdc_get_blog_post_by_slug_data_contract( $slug ) {
 	foreach ( $fallback_posts as $index => $post ) {
 		$normalized_post = hdc_normalize_fallback_blog_post_contract( $post, (int) $index );
 		if ( ! empty( $normalized_post ) && ( $normalized_post['slug'] ?? '' ) === $slug ) {
-			return $normalized_post;
+			return hdc_enrich_blog_post_detail_contract( $normalized_post );
 		}
 	}
 

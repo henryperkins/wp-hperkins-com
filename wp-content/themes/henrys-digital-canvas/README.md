@@ -21,6 +21,7 @@
 
 - `theme.json`: Gutenberg presets + global style defaults
 - `assets/css/design-system.css`: migrated token system and utility classes
+- `blocks/home-page/`: route-owned home page block (`henrys-digital-canvas/home-page`) for the hero, featured work, resume snapshot, and recent writing
 - `blocks/digital-canvas-feed/`: custom React-powered Gutenberg block (`henrys-digital-canvas/digital-canvas-feed`)
 - `blocks/work-showcase/`: custom React-powered Gutenberg block (`henrys-digital-canvas/work-showcase`)
 - `blocks/site-shell/`: shared shell block (`henrys-digital-canvas/site-shell`) for sticky header, theme switcher, mobile nav, and command launcher
@@ -35,14 +36,16 @@
 - `blocks/not-found/`: 404 block (`henrys-digital-canvas/not-found`) with path echo and recovery actions
 - `parts/header.html`: child theme header template part that mounts `site-shell`
 - `parts/footer.html`: child theme footer template part aligned with migrated visual shell
-- `templates/front-page.html`: wrapper template that renders the Home page's block content via `post-content`
+- `templates/front-page.html`: front-page wrapper that renders the Home page record via `post-content`
+- `templates/home.html`: posts-index fallback wrapper; `/blog/` remains page-backed while `page_for_posts` stays unset
 - `templates/index.html`: generic block template entrypoint that renders `post-content`
 - `templates/page-*.html`: wrapper templates for migrated static routes (`about`, `blog`, `work`, `resume`, `resume-ats`, `ats`, `hobbies`, `contact`) so page records, not templates, own the block composition
+- `templates/single.html`: native WordPress single-post template with migrated single-post styling
 - `templates/404.html`: dedicated 404 template using the `not-found` block
 - `page-work-detail.php`: dynamic route template for `/work/{repo}`
 - `page-blog-detail.php`: dynamic route template for `/blog/{slug}`
 - `scripts/sync_page_sources.sh`: repeatable WP-CLI migration that syncs static page `post_content`, unsets the native posts-page override, and removes stale Site Editor template overrides
-- `PAGE_TO_BLOCK_MIGRATION_CHECKLIST.md`: route-owner map and repeatable checklist for syncing React page changes into WordPress blocks
+- `docs/PAGE_TO_BLOCK_MIGRATION_CHECKLIST.md`: route-owner map and repeatable checklist for syncing React page changes into WordPress blocks
 - `styles/ember-dark.json`: dark style variation for Site Editor
 - `functions.php`: enqueues parent stylesheet, fonts, and migrated design system CSS in frontend + editor
 
@@ -60,6 +63,13 @@
   - open links in new tab
 
 The block is dynamic (`render.php`) and mounts a React frontend view (`view.js`) to fetch live data.
+
+- Insert block: `Home Page`
+- Block name: `henrys-digital-canvas/home-page`
+- Purpose:
+  - route-owned homepage hero and primary CTAs
+  - selected work, recent writing, and resume snapshot surfaces
+  - contract-backed home content wired for page parity
 
 - Insert block: `Work Showcase`
 - Block name: `henrys-digital-canvas/work-showcase`
@@ -172,7 +182,8 @@ The block is dynamic (`render.php`) and mounts a React frontend view (`view.js`)
 
 ## QA and cutover
 
-- Cutover runbook: `CUTOVER_CHECKLIST.md`
+- Page/block parity checklist: `docs/PAGE_TO_BLOCK_MIGRATION_CHECKLIST.md`
+- Cutover runbook: `docs/CUTOVER_CHECKLIST.md`
 - Repeatable smoke scripts:
   - `npm run sync:pages`
   - `./scripts/route_smoke.sh`

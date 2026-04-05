@@ -282,6 +282,150 @@
   --interactive-nav-active-foreground: var(--wpds-color-fg-interactive-brand-active);
   --interactive-nav-hover-surface: var(--wpds-color-bg-interactive-brand-weak);
   --interactive-nav-hover-foreground: var(--wpds-color-fg-interactive-neutral);
+
+  --hobbies-page-bg-start: hsl(36 54% 97%);
+  --hobbies-page-bg-end: hsl(34 48% 92%);
+  --hobbies-page-warm-glow: hsl(32 82% 54% / 0.18);
+  --hobbies-page-cool-glow: hsl(196 62% 54% / 0.08);
+  --hobbies-page-paper-glow: hsl(0 0% 100% / 0.58);
+  --hobbies-page-grain-line: hsl(34 22% 72% / 0.08);
+  --hobbies-hero-fade: hsl(36 44% 94% / 0.96);
+  --hobbies-jump-nav-title: hsl(28 16% 38%);
+  --hobbies-jump-nav-link-border: hsl(30 24% 78% / 0.72);
+  --hobbies-jump-nav-link-surface: hsl(0 0% 100% / 0.76);
+  --hobbies-jump-nav-link-foreground: hsl(var(--text-body));
+  --hobbies-jump-nav-link-hover-border: hsl(30 28% 68% / 0.28);
+  --hobbies-jump-nav-link-hover-surface: hsl(0 0% 100% / 0.86);
+  --hobbies-jump-nav-link-hover-foreground: hsl(var(--text-strong));
+  --hobbies-jump-nav-link-active-border: hsl(36 72% 50% / 0.24);
+  --hobbies-jump-nav-link-active-surface: linear-gradient(
+    180deg,
+    hsl(0 0% 100% / 0.92) 0%,
+    hsl(36 52% 94% / 0.96) 100%
+  );
+  --hobbies-jump-nav-link-active-foreground: hsl(var(--text-accent));
+  --hobbies-jump-nav-link-active-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.82),
+    0 8px 18px hsl(30 20% 56% / 0.08);
+  --hobbies-note-border: hsl(30 26% 76% / 0.74);
+  --hobbies-note-surface: linear-gradient(
+    180deg,
+    hsl(0 0% 100% / 0.96) 0%,
+    hsl(36 42% 95% / 0.98) 100%
+  );
+  --hobbies-note-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.84),
+    0 24px 46px hsl(30 28% 56% / 0.12);
+  --hobbies-note-overlay:
+    linear-gradient(180deg, hsl(0 0% 100% / 0.58) 0%, transparent 18%),
+    radial-gradient(72% 70% at 84% 10%, hsl(34 82% 56% / 0.16), transparent 58%),
+    radial-gradient(68% 74% at 10% 90%, hsl(192 72% 54% / 0.1), transparent 54%);
+  --hobbies-note-badge-border: hsl(30 26% 74% / 0.8);
+  --hobbies-note-badge-surface: hsl(0 0% 100% / 0.86);
+  --hobbies-note-badge-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.86),
+    0 10px 24px hsl(30 26% 56% / 0.1);
+  --hobbies-note-badge-foreground: hsl(30 30% 32%);
+  --hobbies-note-copy: hsl(var(--text-body));
+  --hobbies-note-title: hsl(var(--text-strong));
+  --hobbies-note-story: hsl(var(--text-body));
+  --hobbies-note-takeaway: hsl(28 28% 28%);
+  --hobbies-note-divider: hsl(30 24% 72% / 0.72);
+  --hobbies-section-surface: hsl(36 44% 95%);
+  --hobbies-section-title-color: hsl(var(--text-strong));
+  --hobbies-section-description-color: hsl(var(--text-body));
+  --hobbies-section-eyebrow-color: hsl(30 42% 32%);
+  --hobbies-section-rule-fade: hsl(30 18% 72% / 0.28);
+  --hobbies-section-count-border: hsl(30 24% 76% / 0.76);
+  --hobbies-section-count-surface: hsl(0 0% 100% / 0.86);
+  --hobbies-section-count-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.86),
+    0 10px 24px hsl(30 26% 56% / 0.1);
+  --hobbies-section-count-color: hsl(30 30% 32%);
+  --hobbies-card-shell-border: hsl(30 20% 82% / 0.74);
+  --hobbies-card-shell-highlight: hsl(0 0% 100% / 0.56);
+  --hobbies-card-hover-border: hsl(30 28% 68% / 0.4);
+  --hobbies-card-open-border: hsl(36 64% 48% / 0.28);
+  --hobbies-card-shell-shadow: var(--shadow-card);
+  --hobbies-card-shell-open-shadow: var(--shadow-surface-2);
+  --hobbies-card-title-color: hsl(var(--text-strong));
+  --hobbies-card-title-hover-color: hsl(var(--text-accent));
+  --hobbies-card-copy-color: hsl(var(--text-body));
+  --hobbies-card-strong-color: hsl(20 18% 20%);
+  --hobbies-footer-divider: hsl(30 22% 76% / 0.62);
+  --hobbies-footer-label-color: hsl(var(--text-meta));
+  --hobbies-footer-status-color: hsl(30 18% 38%);
+  --hobbies-badge-border: hsl(0 0% 100% / 0.78);
+  --hobbies-badge-surface: hsl(0 0% 100% / 0.8);
+  --hobbies-badge-highlight: hsl(0 0% 100% / 0.84);
+  --hobbies-pill-border: hsl(30 22% 74% / 0.54);
+  --hobbies-pill-surface: hsl(0 0% 100% / 0.54);
+  --hobbies-pill-highlight: hsl(0 0% 100% / 0.62);
+  --hobbies-pill-color: hsl(var(--text-meta));
+  --hobbies-pill-hover-border: hsl(36 70% 48% / 0.24);
+  --hobbies-pill-hover-surface: hsl(36 60% 93% / 0.74);
+  --hobbies-pill-hover-color: hsl(var(--text-accent));
+  --hobbies-artifact-border: hsl(30 22% 78% / 0.72);
+  --hobbies-artifact-surface: linear-gradient(
+    180deg,
+    hsl(0 0% 100% / 0.7),
+    hsl(36 36% 95% / 0.44)
+  );
+  --hobbies-artifact-highlight: hsl(0 0% 100% / 0.42);
+  --hobbies-artifact-shadow-tint: hsl(30 22% 58% / 0.08);
+  --hobbies-artifact-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.72),
+    0 16px 28px hsl(28 24% 56% / 0.08);
+  --hobbies-glimpse-border: hsl(30 22% 78% / 0.62);
+  --hobbies-glimpse-surface: linear-gradient(
+    180deg,
+    hsl(0 0% 100% / 0.56) 0%,
+    hsl(36 26% 96% / 0.34) 100%
+  );
+  --hobbies-glimpse-highlight: hsl(0 0% 100% / 0.66);
+  --hobbies-preview-takeaway-border: hsl(30 22% 74% / 0.6);
+  --hobbies-preview-takeaway-surface: hsl(36 58% 96% / 0.78);
+  --hobbies-preview-takeaway-label: hsl(var(--text-meta));
+  --hobbies-preview-takeaway-color: hsl(20 18% 22%);
+  --hobbies-story-border: hsl(30 22% 78% / 0.76);
+  --hobbies-story-surface: linear-gradient(
+    180deg,
+    hsl(0 0% 100% / 0.82) 0%,
+    hsl(36 26% 96% / 0.62) 100%
+  );
+  --hobbies-story-highlight: hsl(0 0% 100% / 0.76);
+  --hobbies-takeaway-surface: linear-gradient(
+    180deg,
+    hsl(36 60% 96% / 0.92) 0%,
+    hsl(36 24% 95% / 0.76) 100%
+  );
+  --hobbies-detail-divider: hsl(30 22% 76% / 0.78);
+  --hobbies-detail-media-rich: linear-gradient(
+    180deg,
+    hsl(38 78% 92% / 0.58) 0%,
+    hsl(0 0% 100% / 0.08) 100%
+  );
+  --hobbies-detail-editorial: linear-gradient(
+    180deg,
+    hsl(48 34% 90% / 0.48) 0%,
+    hsl(0 0% 100% / 0.08) 100%
+  );
+  --hobbies-media-placeholder-color: hsl(var(--text-strong));
+  --hobbies-media-placeholder-note: hsl(var(--text-body));
+  --hobbies-media-preview-filter: saturate(0.92) brightness(1.02);
+  --hobbies-media-detail-filter: saturate(0.96) brightness(0.98);
+  --hobbies-dev-accent: hsl(190 64% 40%);
+  --hobbies-dev-accent-soft: hsl(192 44% 30%);
+  --hobbies-dev-accent-glow: hsl(190 76% 46% / 0.14);
+  --hobbies-dev-accent-glow-strong: hsl(190 76% 46% / 0.2);
+  --hobbies-music-accent: hsl(34 82% 46%);
+  --hobbies-music-accent-soft: hsl(28 44% 32%);
+  --hobbies-music-accent-glow: hsl(34 86% 52% / 0.14);
+  --hobbies-music-accent-glow-strong: hsl(34 86% 52% / 0.2);
+  --hobbies-learning-accent: hsl(46 58% 42%);
+  --hobbies-learning-accent-soft: hsl(40 28% 30%);
+  --hobbies-learning-accent-glow: hsl(46 58% 42% / 0.14);
+  --hobbies-learning-accent-glow-strong: hsl(46 58% 42% / 0.2);
   --surface-tint-soft: 36 20% 92% / 0.3;
   --surface-tint-strong: 0 0% 100% / 0.7;
   --data-viz-bar: 38 92% 50% / 0.7;
@@ -498,6 +642,149 @@ body.is-dark-theme,
   --interactive-nav-active-foreground: var(--wpds-color-fg-interactive-brand-active);
   --interactive-nav-hover-surface: var(--wpds-color-bg-interactive-brand-weak);
   --interactive-nav-hover-foreground: var(--wpds-color-fg-interactive-neutral);
+
+  --hobbies-page-bg-start: hsl(222 34% 5%);
+  --hobbies-page-bg-end: hsl(220 34% 3%);
+  --hobbies-page-warm-glow: hsl(32 88% 56% / 0.08);
+  --hobbies-page-cool-glow: hsl(196 76% 50% / 0.04);
+  --hobbies-page-paper-glow: hsl(0 0% 100% / 0.06);
+  --hobbies-page-grain-line: hsl(36 14% 44% / 0.04);
+  --hobbies-hero-fade: hsl(220 30% 4% / 0.92);
+  --hobbies-jump-nav-title: hsl(34 32% 76%);
+  --hobbies-jump-nav-link-border: hsl(34 22% 32% / 0.4);
+  --hobbies-jump-nav-link-surface: hsl(222 18% 11% / 0.5);
+  --hobbies-jump-nav-link-foreground: hsl(var(--inverse-muted-foreground));
+  --hobbies-jump-nav-link-hover-border: hsl(34 72% 52% / 0.3);
+  --hobbies-jump-nav-link-hover-surface: hsl(222 18% 13% / 0.66);
+  --hobbies-jump-nav-link-hover-foreground: hsl(var(--inverse-foreground));
+  --hobbies-jump-nav-link-active-border: hsl(36 78% 56% / 0.34);
+  --hobbies-jump-nav-link-active-surface: linear-gradient(
+    180deg,
+    hsl(224 20% 16% / 0.84) 0%,
+    hsl(222 18% 13% / 0.78) 100%
+  );
+  --hobbies-jump-nav-link-active-foreground: hsl(42 48% 94%);
+  --hobbies-jump-nav-link-active-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.08),
+    0 10px 18px hsl(0 0% 0% / 0.18);
+  --hobbies-note-border: hsl(34 24% 28% / 0.64);
+  --hobbies-note-surface: linear-gradient(
+    180deg,
+    hsl(221 18% 11% / 0.96) 0%,
+    hsl(220 16% 9% / 0.98) 100%
+  );
+  --hobbies-note-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.04),
+    0 22px 42px hsl(0 0% 0% / 0.22);
+  --hobbies-note-overlay:
+    linear-gradient(180deg, hsl(0 0% 100% / 0.05) 0%, transparent 18%),
+    radial-gradient(72% 70% at 84% 10%, hsl(34 82% 56% / 0.1), transparent 58%);
+  --hobbies-note-badge-border: hsl(34 24% 38% / 0.44);
+  --hobbies-note-badge-surface: hsl(222 16% 12% / 0.82);
+  --hobbies-note-badge-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.06),
+    0 8px 18px hsl(0 0% 0% / 0.18);
+  --hobbies-note-badge-foreground: hsl(36 34% 84%);
+  --hobbies-note-copy: hsl(var(--inverse-muted-foreground));
+  --hobbies-note-title: hsl(var(--inverse-foreground));
+  --hobbies-note-story: hsl(var(--inverse-muted-foreground));
+  --hobbies-note-takeaway: hsl(var(--inverse-muted-foreground));
+  --hobbies-note-divider: hsl(34 20% 34% / 0.54);
+  --hobbies-section-surface: hsl(220 28% 5%);
+  --hobbies-section-title-color: hsl(var(--inverse-foreground));
+  --hobbies-section-description-color: hsl(var(--inverse-muted-foreground));
+  --hobbies-section-eyebrow-color: hsl(34 44% 70%);
+  --hobbies-section-rule-fade: hsl(34 12% 44% / 0.08);
+  --hobbies-section-count-border: hsl(34 24% 38% / 0.44);
+  --hobbies-section-count-surface: hsl(222 16% 12% / 0.82);
+  --hobbies-section-count-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.06),
+    0 8px 18px hsl(0 0% 0% / 0.18);
+  --hobbies-section-count-color: hsl(36 34% 84%);
+  --hobbies-card-shell-border: hsl(0 0% 100% / 0.08);
+  --hobbies-card-shell-highlight: hsl(0 0% 100% / 0.06);
+  --hobbies-card-hover-border: hsl(36 34% 44% / 0.24);
+  --hobbies-card-open-border: hsl(36 72% 58% / 0.34);
+  --hobbies-card-shell-shadow: var(--shadow-card);
+  --hobbies-card-shell-open-shadow: var(--shadow-surface-2);
+  --hobbies-card-title-color: hsl(0 0% 100% / 0.96);
+  --hobbies-card-title-hover-color: hsl(0 0% 100%);
+  --hobbies-card-copy-color: hsl(34 12% 80%);
+  --hobbies-card-strong-color: hsl(0 0% 100% / 0.92);
+  --hobbies-footer-divider: hsl(0 0% 100% / 0.08);
+  --hobbies-footer-label-color: hsl(36 18% 66%);
+  --hobbies-footer-status-color: hsl(36 16% 72%);
+  --hobbies-badge-border: hsl(0 0% 100% / 0.08);
+  --hobbies-badge-surface: hsl(0 0% 100% / 0.05);
+  --hobbies-badge-highlight: hsl(0 0% 100% / 0.05);
+  --hobbies-pill-border: hsl(0 0% 100% / 0.08);
+  --hobbies-pill-surface: hsl(0 0% 100% / 0.04);
+  --hobbies-pill-highlight: hsl(0 0% 100% / 0.04);
+  --hobbies-pill-color: hsl(36 24% 80%);
+  --hobbies-pill-hover-border: hsl(36 70% 56% / 0.28);
+  --hobbies-pill-hover-surface: hsl(0 0% 100% / 0.08);
+  --hobbies-pill-hover-color: hsl(0 0% 100%);
+  --hobbies-artifact-border: hsl(0 0% 100% / 0.08);
+  --hobbies-artifact-surface: linear-gradient(
+    180deg,
+    hsl(0 0% 100% / 0.05),
+    hsl(0 0% 100% / 0.01)
+  );
+  --hobbies-artifact-highlight: hsl(0 0% 100% / 0.08);
+  --hobbies-artifact-shadow-tint: hsl(0 0% 0% / 0.22);
+  --hobbies-artifact-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.05),
+    0 16px 28px hsl(0 0% 0% / 0.18);
+  --hobbies-glimpse-border: hsl(0 0% 100% / 0.08);
+  --hobbies-glimpse-surface: linear-gradient(
+    180deg,
+    hsl(0 0% 100% / 0.04) 0%,
+    hsl(0 0% 100% / 0.015) 100%
+  );
+  --hobbies-glimpse-highlight: hsl(0 0% 100% / 0.05);
+  --hobbies-preview-takeaway-border: hsl(0 0% 100% / 0.08);
+  --hobbies-preview-takeaway-surface: hsl(0 0% 100% / 0.05);
+  --hobbies-preview-takeaway-label: hsl(36 16% 68%);
+  --hobbies-preview-takeaway-color: hsl(0 0% 100% / 0.92);
+  --hobbies-story-border: hsl(0 0% 100% / 0.07);
+  --hobbies-story-surface: linear-gradient(
+    180deg,
+    hsl(0 0% 100% / 0.03) 0%,
+    hsl(0 0% 100% / 0.01) 100%
+  );
+  --hobbies-story-highlight: hsl(0 0% 100% / 0.04);
+  --hobbies-takeaway-surface: linear-gradient(
+    180deg,
+    hsl(0 0% 100% / 0.04) 0%,
+    hsl(0 0% 100% / 0.015) 100%
+  );
+  --hobbies-detail-divider: hsl(0 0% 100% / 0.08);
+  --hobbies-detail-media-rich: linear-gradient(
+    180deg,
+    hsl(38 18% 18% / 0.18) 0%,
+    hsl(0 0% 100% / 0.01) 100%
+  );
+  --hobbies-detail-editorial: linear-gradient(
+    180deg,
+    hsl(48 14% 20% / 0.14) 0%,
+    hsl(0 0% 100% / 0.01) 100%
+  );
+  --hobbies-media-placeholder-color: hsl(0 0% 100% / 0.92);
+  --hobbies-media-placeholder-note: hsl(36 18% 74%);
+  --hobbies-media-preview-filter: saturate(0.94) brightness(0.82);
+  --hobbies-media-detail-filter: saturate(0.98) brightness(0.9);
+  --hobbies-dev-accent: hsl(188 76% 60%);
+  --hobbies-dev-accent-soft: hsl(188 46% 76%);
+  --hobbies-dev-accent-glow: hsl(188 76% 60% / 0.1);
+  --hobbies-dev-accent-glow-strong: hsl(188 76% 60% / 0.16);
+  --hobbies-music-accent: hsl(38 82% 60%);
+  --hobbies-music-accent-soft: hsl(38 52% 78%);
+  --hobbies-music-accent-glow: hsl(38 82% 60% / 0.1);
+  --hobbies-music-accent-glow-strong: hsl(38 82% 60% / 0.16);
+  --hobbies-learning-accent: hsl(50 54% 60%);
+  --hobbies-learning-accent-soft: hsl(50 28% 76%);
+  --hobbies-learning-accent-glow: hsl(50 54% 60% / 0.1);
+  --hobbies-learning-accent-glow-strong: hsl(50 54% 60% / 0.16);
   --surface-tint-soft: 20 8% 12% / 0.3;
   --surface-tint-strong: 20 10% 8% / 0.72;
   --data-viz-bar: 38 92% 58% / 0.78;

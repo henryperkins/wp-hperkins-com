@@ -9,21 +9,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$defaults = array(
-	'heading'     => 'Blog',
-	'description' => 'Writing on customer-facing engineering, AI workflows, WordPress delivery, and support-to-implementation systems.',
-);
+$blog_heading     = __( 'Blog', 'henrys-digital-canvas' );
+$blog_description = __( 'Writing on customer-facing engineering, AI workflows, WordPress delivery, and support-to-implementation systems.', 'henrys-digital-canvas' );
+$social_links     = function_exists( 'hdc_get_social_links_data_contract' ) ? hdc_get_social_links_data_contract() : array();
+$github_url       = 'https://github.com/henryperkins';
+$linkedin_url     = 'https://linkedin.com/in/henryperkins';
 
-$attrs = wp_parse_args( $attributes, $defaults );
+foreach ( $social_links as $social_link ) {
+	$label = isset( $social_link['label'] ) ? sanitize_text_field( (string) $social_link['label'] ) : '';
+	$href  = isset( $social_link['href'] ) ? esc_url_raw( (string) $social_link['href'] ) : '';
+
+	if ( 'GitHub' === $label && '' !== $href ) {
+		$github_url = $href;
+	}
+
+	if ( 'LinkedIn' === $label && '' !== $href ) {
+		$linkedin_url = $href;
+	}
+}
 
 $config = array(
-	'heading'     => sanitize_text_field( $attrs['heading'] ),
-	'description' => sanitize_text_field( $attrs['description'] ),
 	'endpoint'          => esc_url_raw( add_query_arg( 'limit', 100, rest_url( 'henrys-digital-canvas/v1/blog' ) ) ),
 	'fallbackUrl'       => esc_url_raw( get_theme_file_uri( 'data/blog-posts-fallback.json' ) ),
 	'blogBaseUrl'       => esc_url_raw( home_url( '/blog/' ) ),
 	'contactUrl'        => esc_url_raw( home_url( '/contact/' ) ),
-	'linkedinUrl'       => 'https://linkedin.com/in/henryperkins',
+	'githubUrl'         => $github_url,
+	'linkedinUrl'       => $linkedin_url,
 );
 
 $inline_fallback_path = get_theme_file_path( 'data/blog-posts-fallback.json' );
@@ -42,7 +53,23 @@ $wrapper_attributes = get_block_wrapper_attributes(
 );
 ?>
 <section <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> data-config="<?php echo esc_attr( wp_json_encode( $config ) ); ?>"<?php if ( '' !== $inline_fallback_json ) : ?> data-fallback-payload="<?php echo esc_attr( $inline_fallback_json ); ?>"<?php endif; ?>>
-	<div class="hdc-blog-index__shell" data-hdc-blog-index-root>
-		<p class="hdc-blog-index__status"><?php esc_html_e( 'Loading posts…', 'henrys-digital-canvas' ); ?></p>
+	<div data-hdc-blog-index-root>
+		<div>
+			<section class="hdc-blog-index__hero ember-surface">
+				<div class="hdc-blog-index__hero-inner">
+					<header class="hdc-blog-index__intro">
+						<p class="hdc-blog-index__eyebrow"><?php esc_html_e( 'Writing', 'henrys-digital-canvas' ); ?></p>
+						<h1 class="hdc-blog-index__title"><?php echo esc_html( $blog_heading ); ?></h1>
+						<p class="hdc-blog-index__description"><?php echo esc_html( $blog_description ); ?></p>
+					</header>
+				</div>
+			</section>
+			<div class="hdc-blog-index__content">
+				<div class="hdc-blog-index__state-card">
+					<h2 class="hdc-blog-index__state-title"><?php esc_html_e( 'Loading posts', 'henrys-digital-canvas' ); ?></h2>
+					<p class="hdc-blog-index__state-description"><?php esc_html_e( 'Please wait while the latest posts are prepared.', 'henrys-digital-canvas' ); ?></p>
+				</div>
+			</div>
+		</div>
 	</div>
 </section>

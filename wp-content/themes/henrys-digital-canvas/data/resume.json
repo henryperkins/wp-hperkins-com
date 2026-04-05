@@ -1,10 +1,10 @@
 {
-  "headline": "Technical Consultant: AI, WordPress, and Developer Enablement",
-  "subheadline": "Where tech meets tenacity \u2014 and Java isn\u2019t just coffee.",
+  "headline": "Solutions Engineer | AI Workflows, WordPress, and API Integrations",
+  "subheadline": "Customer-facing technical delivery across implementation, support, documentation, and enablement.",
   "targetRoles": [
     "Solutions Engineer",
-    "Developer Support / Enablement",
-    "WordPress & AI Consultant"
+    "Implementation Engineer",
+    "Developer Enablement"
   ],
   "impactStrip": [
     {
@@ -12,29 +12,29 @@
       "label": "Customer-facing technical, support, community, and operations work"
     },
     {
-      "value": "3 projects",
-      "label": "Live or public proof across AI, Cloudflare, and WordPress"
+      "value": "3 public projects",
+      "label": "Live or public proof across AI workflows, Cloudflare, and WordPress"
     },
     {
-      "value": "End-to-end",
-      "label": "Ownership from discovery and scoping through launch support"
+      "value": "Discovery to launch",
+      "label": "Implementation ownership across scoping, delivery, and post-launch support"
     },
     {
-      "value": "Cross-team",
+      "value": "Support, product, engineering",
       "label": "Support, product, engineering, documentation, and community coverage"
     },
     {
-      "value": "WP + AI",
-      "label": "Workflow prototyping paired with durable web delivery"
+      "value": "AI, WordPress, Cloudflare",
+      "label": "AI-assisted workflows paired with durable web delivery"
     }
   ],
-  "summary": "Technical consultant focused on AI-assisted workflows, WordPress platforms, and customer-facing technical operations. I build integrations, documentation, and support workflows that reduce friction and make systems easier for teams and customers to use. Recent public work includes Prompt Forge, HPerkins.com, and the wp-hperkins-com WordPress portfolio stack.",
-  "differentiator": "I combine WordPress and TypeScript delivery with documentation, QA, and support habits \u2014 so teams ship systems that are easier to maintain, explain, and hand off after launch.",
+  "summary": "Customer-facing technologist focused on AI-assisted workflows, WordPress and WooCommerce delivery, API integrations, and technical documentation. I build implementation, onboarding, and support systems that reduce friction for customers and internal teams. Public proof of work includes Prompt Forge, HPerkins.com, and the wp-hperkins-com WordPress portfolio stack.",
+  "differentiator": "I combine support habits, WordPress delivery, TypeScript, and documentation work so teams can ship systems that are easier to maintain, explain, and hand off.",
   "capabilityMap": [
     {
       "category": "Customer Outcomes",
       "items": [
-        "Reduce onboarding friction with enablement, support, and clearer documentation",
+        "Reduce onboarding friction with support flows, enablement, and clearer documentation",
         "Turn escalations into reproducible issues and actionable next steps",
         "Translate customer conversations into product and service feedback loops",
         "Support developer and partner communities with practical education"
@@ -44,9 +44,9 @@
       "category": "Technical Delivery",
       "items": [
         "Ship WordPress, WooCommerce, and Cloudflare-backed web experiences",
-        "Prototype AI-assisted workflows with safe handoff and support guardrails",
-        "Integrate and debug REST APIs across publishing and support flows",
-        "Build reusable documentation that improves maintainability after launch"
+        "Build API-connected workflows and debugging paths across publishing and support systems",
+        "Prototype AI-assisted workflows with safe handoff and operational guardrails",
+        "Create reusable documentation that improves maintainability after launch"
       ]
     },
     {
@@ -65,9 +65,9 @@
       "title": "Independent Technology Consultant",
       "company": "Lakefront Digital",
       "location": "Greater Chicago Area, IL (Open to US remote)",
-      "period": "Oct 2022 - Present",
-      "highlights": [
-        "Scoped and delivered customer-facing workflow projects (WordPress builds, API integrations, documentation, and AI-assisted triage prototypes) from discovery through launch and post-launch support.",
+        "period": "Oct 2022 - Present",
+        "highlights": [
+        "Delivered customer-facing implementation projects across WordPress builds, API integrations, documentation, and AI-assisted workflow prototypes from discovery through launch and post-launch support.",
         "Built reusable documentation and API-connected automation that reduced manual handoffs and improved maintainability across client engagements.",
         "Shipped WordPress, WooCommerce, and Cloudflare-backed web experiences with structured content models, smoke-check automation, and deployment workflows."
       ]
@@ -119,10 +119,10 @@
         "Contributed to internal knowledge-base improvements by identifying patterns in support volume and documenting reusable solutions for the team."
       ]
     },
-    {
-      "id": "pagelines-community-manager",
-      "title": "Community Manager",
-      "company": "PageLines, Inc.",
+      {
+        "id": "pagelines-community-manager",
+        "title": "Developer Community Manager",
+        "company": "PageLines, Inc.",
       "location": "Remote",
       "period": "May 2012 - Oct 2012",
       "highlights": [
@@ -131,15 +131,15 @@
         "Translated community questions and feedback into clearer product priorities and developer guidance."
       ]
     },
-    {
-      "id": "micro-center-customer-service-rep",
-      "title": "Customer Service Representative",
-      "company": "Micro Center",
-      "location": "Illinois",
-      "period": "2009 - 2012",
-      "highlights": [
-        "Supported customers in a fast-paced retail technology environment where troubleshooting and clear communication directly affected satisfaction.",
-        "Contributed to loss prevention, internal communication, and inventory process improvements that kept store operations dependable."
+      {
+        "id": "micro-center-customer-service-rep",
+        "title": "Customer Service Representative / Sales Associate",
+        "company": "Micro Center",
+        "location": "Illinois",
+        "period": "2009 - 2012",
+        "highlights": [
+        "Supported customers in a fast-paced retail technology environment through troubleshooting, consultative product guidance, and service recovery.",
+        "Improved internal communication and inventory reliability through loss-prevention awareness and store-level process support."
       ]
     },
     {
@@ -157,8 +157,8 @@
   "projects": [
     {
       "name": "Prompt Forge",
-      "description": "Prompt platform for designing, iterating on, and organizing AI prompts.",
-      "impact": "Built a TypeScript-based prompt platform with a public repo, production deployment, and features for prompt building, storage, and community sharing.",
+      "description": "AI workflow platform for designing, iterating on, and organizing prompts.",
+      "impact": "Built a TypeScript-based AI workflow platform with a public repo, production deployment, and features for prompt building, storage, and community sharing.",
       "tech": [
         "TypeScript",
         "React",
@@ -209,12 +209,6 @@
       "degree": "Studies in Journalism & Mass Communications",
       "school": "Columbia College Chicago",
       "period": "2007 - 2008"
-    },
-    {
-      "id": "manteno-high-school",
-      "degree": "High School Diploma",
-      "school": "Manteno High School",
-      "period": "2001 - 2005"
     }
   ],
   "skills": [
@@ -223,28 +217,28 @@
       "items": [
         "TypeScript",
         "JavaScript",
-        "Python",
+        "React",
         "PHP",
-        "React"
+        "Python"
       ]
     },
     {
       "category": "AI & Automation",
       "items": [
         "OpenAI API integrations",
-        "AI prompt design",
-        "AI-assisted workflow prototyping"
+        "AI workflow prototyping",
+        "Prompt design",
+        "Workflow automation"
       ]
     },
     {
       "category": "WordPress & Web Delivery",
       "items": [
-        "WordPress.com",
-        "WordPress.org",
+        "WordPress",
         "WooCommerce",
-        "Tailwind CSS",
         "Cloudflare Workers",
-        "Vite"
+        "Vite",
+        "Tailwind CSS"
       ]
     },
     {
@@ -252,9 +246,9 @@
       "items": [
         "Technical support",
         "Escalation triage",
-        "Developer community management",
         "Documentation",
-        "Customer enablement"
+        "Customer onboarding",
+        "Developer enablement"
       ]
     },
     {
@@ -278,7 +272,5 @@
       ]
     }
   ],
-  "certifications": [
-    "Certified Professional Food Manager (CPFM), ServSafe (previously held)"
-  ]
+  "certifications": []
 }

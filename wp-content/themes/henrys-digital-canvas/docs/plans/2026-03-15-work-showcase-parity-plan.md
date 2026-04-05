@@ -1,5 +1,7 @@
 # Work Showcase Parity Remediation Plan
 
+> Historical snapshot: This dated document is retained for planning or audit history and may contain period-specific assumptions, commands, file lists, test counts, or open issues. For current workflow guidance, use `README.md`, `docs/PAGE_TO_BLOCK_MIGRATION_CHECKLIST.md`, `docs/CUTOVER_CHECKLIST.md`, and `docs/MIGRATION_PROGRESS.md`.
+
 > Manual implementation plan generated from `docs/plans/2026-03-15-work-showcase-parity-design.md` because the `writing-plans` skill is not available in this session.
 
 **Goal:** bring `work-showcase` back to React parity by removing WP-only block metadata, refreshing curated data, and fixing the remaining featured-card, focus-area, pending-list, and Engineering Signals gaps.

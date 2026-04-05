@@ -14,22 +14,6 @@
 			"full"
 		]
 	},
-	"attributes": {
-		"heading": {
-			"type": "string",
-			"default": "Resume",
-			"role": "content"
-		},
-		"intro": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"showAtsLink": {
-			"type": "boolean",
-			"default": true
-		}
-	},
 	"editorScript": "file:./index.js",
 	"viewScript": "file:./view.js",
 	"style": "file:./style.css",

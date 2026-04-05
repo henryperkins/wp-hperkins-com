@@ -43,10 +43,11 @@ function hdc_get_contact_client_ip() {
 /**
  * Verify a Turnstile token against Cloudflare.
  *
- * @param mixed $token Raw Turnstile token.
+ * @param mixed  $token           Raw Turnstile token.
+ * @param string $expected_action Expected Turnstile action.
  * @return array{outcome:string,errorCodes:array<int,string>}
  */
-function hdc_verify_turnstile_token( $token ) {
+function hdc_verify_turnstile_token( $token, $expected_action = '' ) {
 	$secret = hdc_get_turnstile_secret_key();
 	if ( '' === $secret ) {
 		return array(
@@ -68,6 +69,31 @@ function hdc_verify_turnstile_token( $token ) {
 			'outcome'    => 'invalid',
 			'errorCodes' => array( 'invalid-input-response' ),
 		);
+	}
+
+	$expected_action = sanitize_text_field( (string) $expected_action );
+	$preverified     = apply_filters( 'hdc_preverify_turnstile_token', null, $token, $expected_action );
+	if ( is_array( $preverified ) ) {
+		$outcome = sanitize_text_field( (string) ( $preverified['outcome'] ?? '' ) );
+		if ( in_array( $outcome, array( 'ok', 'invalid', 'unavailable' ), true ) ) {
+			$error_codes = isset( $preverified['errorCodes'] ) && is_array( $preverified['errorCodes'] )
+				? array_values(
+					array_filter(
+						array_map(
+							static function ( $error_code ) {
+								return sanitize_text_field( (string) $error_code );
+							},
+							$preverified['errorCodes']
+						)
+					)
+				)
+				: array();
+
+			return array(
+				'outcome'    => $outcome,
+				'errorCodes' => $error_codes,
+			);
+		}
 	}
 
 	$request_body = array(
@@ -141,7 +167,7 @@ function hdc_verify_turnstile_token( $token ) {
 	}
 
 	$action = sanitize_text_field( (string) ( $payload['action'] ?? '' ) );
-	if ( '' !== $action && 'contact' !== $action ) {
+	if ( '' !== $action && '' !== $expected_action && $expected_action !== $action ) {
 		return array(
 			'outcome'    => 'invalid',
 			'errorCodes' => array( 'action-mismatch' ),
@@ -151,6 +177,283 @@ function hdc_verify_turnstile_token( $token ) {
 	return array(
 		'outcome'    => 'ok',
 		'errorCodes' => array(),
+	);
+}
+
+/**
+ * Determine whether inline blog comment submission is available.
+ *
+ * @return bool
+ */
+function hdc_is_blog_comment_submit_enabled() {
+	return ! get_option( 'comment_registration' )
+		&& '' !== hdc_get_turnstile_site_key()
+		&& '' !== hdc_get_turnstile_secret_key();
+}
+
+/**
+ * Build the current request user agent string for comment submission.
+ *
+ * @return string
+ */
+function hdc_get_comment_request_user_agent() {
+	return sanitize_text_field( wp_unslash( (string) ( $_SERVER['HTTP_USER_AGENT'] ?? '' ) ) );
+}
+
+/**
+ * Map a comment object to the frontend blog comment payload.
+ *
+ * @param WP_Comment $comment Comment object.
+ * @return array<string,mixed>
+ */
+function hdc_map_wp_comment_to_blog_comment_payload( $comment ) {
+	$author_avatar_url = get_avatar_url(
+		$comment,
+		array(
+			'size' => 48,
+		)
+	);
+
+	return array(
+		'id'                => (int) $comment->comment_ID,
+		'date'              => mysql_to_rfc3339( (string) $comment->comment_date_gmt ),
+		'parent'            => (int) $comment->comment_parent,
+		'link'              => esc_url_raw( get_comment_link( $comment ) ),
+		'author_name'       => sanitize_text_field( (string) $comment->comment_author ),
+		'author_url'        => esc_url_raw( (string) $comment->comment_author_url ),
+		'author_avatar_urls'=> array_filter(
+			array(
+				'48' => esc_url_raw( (string) $author_avatar_url ),
+			)
+		),
+		'content'           => array(
+			'rendered' => wp_kses_post( apply_filters( 'comment_text', (string) $comment->comment_content, $comment ) ),
+		),
+	);
+}
+
+/**
+ * Normalize comment submission validation errors to frontend copy.
+ *
+ * @param WP_Error $error Submission error.
+ * @return WP_Error
+ */
+function hdc_normalize_blog_comment_submission_error( $error ) {
+	$code    = $error->get_error_code();
+	$message = wp_strip_all_tags( (string) $error->get_error_message() );
+	$status  = (int) $error->get_error_data();
+
+	if ( $status <= 0 ) {
+		$status = 400;
+	}
+
+	if ( 'comment_flood' === $code ) {
+		$message = __( 'Too many comment attempts. Please wait a few minutes and try again.', 'henrys-digital-canvas' );
+		$status  = 429;
+	} elseif ( in_array( $code, array( 'comment_closed', 'rest_comment_closed' ), true ) ) {
+		$message = __( 'Comments are currently closed on the original WordPress post.', 'henrys-digital-canvas' );
+		$status  = 400;
+	} elseif ( 'require_name_email' === $code ) {
+		$message = __( 'Please enter your name and email address.', 'henrys-digital-canvas' );
+		$status  = 400;
+	} elseif ( 'require_valid_email' === $code ) {
+		$message = __( 'Invalid email address', 'henrys-digital-canvas' );
+		$status  = 400;
+	} elseif ( 'require_valid_comment' === $code ) {
+		$message = __( 'Please add a comment.', 'henrys-digital-canvas' );
+		$status  = 400;
+	} elseif ( 'comment_duplicate' === $code && '' === trim( $message ) ) {
+		$message = __( 'Duplicate comment detected; it looks as though you have already said that.', 'henrys-digital-canvas' );
+		$status  = 409;
+	}
+
+	return new WP_Error(
+		$code,
+		'' !== trim( $message ) ? $message : __( 'WordPress rejected this comment. Please review your details and try again.', 'henrys-digital-canvas' ),
+		array(
+			'status' => $status,
+			'error'  => '' !== trim( $message ) ? $message : __( 'WordPress rejected this comment. Please review your details and try again.', 'henrys-digital-canvas' ),
+		)
+	);
+}
+
+/**
+ * Validate and submit a blog comment through WordPress core.
+ *
+ * @param array $payload Raw request payload.
+ * @return array|WP_Error
+ */
+function hdc_process_blog_comment_submission( $payload ) {
+	$service_unavailable_error = __( 'Comment submission is temporarily unavailable. Please use the original WordPress post for now.', 'henrys-digital-canvas' );
+	$verification_error        = __( 'Please complete the verification check and try again.', 'henrys-digital-canvas' );
+
+	$payload = array(
+		'postId'         => isset( $payload['postId'] ) ? absint( $payload['postId'] ) : 0,
+		'parentId'       => isset( $payload['parentId'] ) ? absint( $payload['parentId'] ) : 0,
+		'authorName'     => trim( (string) ( $payload['authorName'] ?? '' ) ),
+		'authorEmail'    => trim( (string) ( $payload['authorEmail'] ?? '' ) ),
+		'authorUrl'      => trim( (string) ( $payload['authorUrl'] ?? '' ) ),
+		'company'        => trim( (string) ( $payload['company'] ?? '' ) ),
+		'content'        => trim( (string) ( $payload['content'] ?? '' ) ),
+		'turnstileToken' => trim( (string) ( $payload['turnstileToken'] ?? '' ) ),
+	);
+
+	if ( '' !== $payload['company'] ) {
+		return array(
+			'success'          => true,
+			'moderationStatus' => 'pending',
+			'comment'          => null,
+		);
+	}
+
+	if ( $payload['postId'] <= 0 ) {
+		return new WP_Error(
+			'hdc_blog_comment_invalid_post',
+			__( 'A valid post is required', 'henrys-digital-canvas' ),
+			array(
+				'status' => 400,
+				'error'  => __( 'A valid post is required', 'henrys-digital-canvas' ),
+			)
+		);
+	}
+
+	if ( '' === $payload['authorName'] ) {
+		return new WP_Error(
+			'hdc_blog_comment_missing_name',
+			__( 'Please enter your name.', 'henrys-digital-canvas' ),
+			array(
+				'status' => 400,
+				'error'  => __( 'Please enter your name.', 'henrys-digital-canvas' ),
+			)
+		);
+	}
+
+	if ( strlen( $payload['authorName'] ) < 2 ) {
+		return new WP_Error(
+			'hdc_blog_comment_short_name',
+			__( 'Name must be at least 2 characters', 'henrys-digital-canvas' ),
+			array(
+				'status' => 400,
+				'error'  => __( 'Name must be at least 2 characters', 'henrys-digital-canvas' ),
+			)
+		);
+	}
+
+	if ( '' === $payload['authorEmail'] ) {
+		return new WP_Error(
+			'hdc_blog_comment_missing_email',
+			__( 'Please enter your email address.', 'henrys-digital-canvas' ),
+			array(
+				'status' => 400,
+				'error'  => __( 'Please enter your email address.', 'henrys-digital-canvas' ),
+			)
+		);
+	}
+
+	if ( ! is_email( $payload['authorEmail'] ) ) {
+		return new WP_Error(
+			'hdc_blog_comment_invalid_email',
+			__( 'Invalid email address', 'henrys-digital-canvas' ),
+			array(
+				'status' => 400,
+				'error'  => __( 'Invalid email address', 'henrys-digital-canvas' ),
+			)
+		);
+	}
+
+	if ( '' !== $payload['authorUrl'] ) {
+		$author_url = esc_url_raw( $payload['authorUrl'], array( 'http', 'https' ) );
+		if ( '' === $author_url ) {
+			return new WP_Error(
+				'hdc_blog_comment_invalid_url',
+				__( 'Website must be a valid http or https URL', 'henrys-digital-canvas' ),
+				array(
+					'status' => 400,
+					'error'  => __( 'Website must be a valid http or https URL', 'henrys-digital-canvas' ),
+				)
+			);
+		}
+
+		$payload['authorUrl'] = $author_url;
+	}
+
+	if ( '' === $payload['content'] ) {
+		return new WP_Error(
+			'hdc_blog_comment_missing_content',
+			__( 'Please add a comment.', 'henrys-digital-canvas' ),
+			array(
+				'status' => 400,
+				'error'  => __( 'Please add a comment.', 'henrys-digital-canvas' ),
+			)
+		);
+	}
+
+	if ( strlen( $payload['content'] ) < 10 ) {
+		return new WP_Error(
+			'hdc_blog_comment_short_content',
+			__( 'Comment must be at least 10 characters', 'henrys-digital-canvas' ),
+			array(
+				'status' => 400,
+				'error'  => __( 'Comment must be at least 10 characters', 'henrys-digital-canvas' ),
+			)
+		);
+	}
+
+	if ( ! hdc_is_blog_comment_submit_enabled() ) {
+		return new WP_Error(
+			'hdc_blog_comment_submit_unavailable',
+			$service_unavailable_error,
+			array(
+				'status' => 503,
+				'error'  => $service_unavailable_error,
+			)
+		);
+	}
+
+	$turnstile_verification = hdc_verify_turnstile_token( $payload['turnstileToken'], 'comment' );
+	if ( 'unavailable' === $turnstile_verification['outcome'] ) {
+		error_log( 'hdc_blog_comment_submission: Turnstile validation unavailable.' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		return new WP_Error(
+			'hdc_blog_comment_turnstile_unavailable',
+			$service_unavailable_error,
+			array(
+				'status' => 503,
+				'error'  => $service_unavailable_error,
+			)
+		);
+	}
+
+	if ( 'invalid' === $turnstile_verification['outcome'] ) {
+		return new WP_Error(
+			'hdc_blog_comment_turnstile_invalid',
+			$verification_error,
+			array(
+				'status' => 400,
+				'error'  => $verification_error,
+			)
+		);
+	}
+
+	$submission = wp_handle_comment_submission(
+		array(
+			'comment_post_ID' => $payload['postId'],
+			'comment_parent'  => $payload['parentId'],
+			'author'          => sanitize_text_field( $payload['authorName'] ),
+			'email'           => sanitize_email( $payload['authorEmail'] ),
+			'url'             => $payload['authorUrl'],
+			'comment'         => wp_unslash( $payload['content'] ),
+			'_wp_unfiltered_html_comment' => '',
+		)
+	);
+
+	if ( is_wp_error( $submission ) ) {
+		return hdc_normalize_blog_comment_submission_error( $submission );
+	}
+
+	return array(
+		'success'          => true,
+		'moderationStatus' => '1' === (string) $submission->comment_approved ? 'approved' : 'pending',
+		'comment'          => hdc_map_wp_comment_to_blog_comment_payload( $submission ),
 	);
 }
 
@@ -253,7 +556,7 @@ function hdc_process_contact_submission( $payload ) {
 
 	set_transient( $rate_limit_key, $attempt_count + 1, $rate_limit_window_seconds );
 
-	$turnstile_verification = hdc_verify_turnstile_token( $payload['turnstileToken'] );
+	$turnstile_verification = hdc_verify_turnstile_token( $payload['turnstileToken'], 'contact' );
 	if ( 'unavailable' === $turnstile_verification['outcome'] ) {
 		error_log( 'hdc_contact_submission: Turnstile validation unavailable.' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		return new WP_Error(
@@ -443,6 +746,70 @@ function hdc_register_data_contract_rest_routes() {
 				}
 
 				return rest_ensure_response( $post );
+			},
+		)
+	);
+
+	register_rest_route(
+		'henrys-digital-canvas/v1',
+		'/blog-comments/submit',
+		array(
+			'methods'             => WP_REST_Server::CREATABLE,
+			'permission_callback' => '__return_true',
+			'args'                => array(
+				'postId' => array(
+					'required'          => true,
+					'type'              => 'integer',
+					'sanitize_callback' => 'absint',
+				),
+				'parentId' => array(
+					'required'          => false,
+					'type'              => 'integer',
+					'sanitize_callback' => 'absint',
+				),
+				'authorName' => array(
+					'required'          => true,
+					'type'              => 'string',
+					'sanitize_callback' => 'sanitize_text_field',
+				),
+				'authorEmail' => array(
+					'required'          => true,
+					'type'              => 'string',
+					'sanitize_callback' => 'sanitize_text_field',
+				),
+				'authorUrl' => array(
+					'required'          => false,
+					'type'              => 'string',
+					'sanitize_callback' => 'sanitize_text_field',
+				),
+				'company' => array(
+					'required'          => false,
+					'type'              => 'string',
+					'sanitize_callback' => 'sanitize_text_field',
+				),
+				'content' => array(
+					'required'          => true,
+					'type'              => 'string',
+					'sanitize_callback' => 'sanitize_textarea_field',
+				),
+				'turnstileToken' => array(
+					'required'          => false,
+					'type'              => 'string',
+					'sanitize_callback' => 'sanitize_text_field',
+				),
+			),
+			'callback'            => static function ( WP_REST_Request $request ) {
+				$payload = $request->get_json_params();
+				if ( ! is_array( $payload ) ) {
+					$payload = $request->get_params();
+				}
+
+				$result = hdc_process_blog_comment_submission( is_array( $payload ) ? $payload : array() );
+				if ( is_wp_error( $result ) ) {
+					return $result;
+				}
+
+				return rest_ensure_response( $result );
 			},
 		)
 	);
@@ -716,11 +1083,13 @@ function hdc_get_github_request_headers() {
 /**
  * Fetch JSON from GitHub and normalize response metadata.
  *
- * @param string               $url Target URL.
+ * @param string               $url     Target URL.
  * @param array<string,string> $headers Request headers.
+ * @param array<string,mixed>  $options Request options.
  * @return array<string,mixed>
  */
-function hdc_fetch_github_json( $url, $headers ) {
+function hdc_fetch_github_json( $url, $headers, $options = array() ) {
+	$allow_accepted_empty_response = ! empty( $options['allow_accepted_empty_response'] );
 	$response = wp_remote_get(
 		$url,
 		array(
@@ -742,8 +1111,30 @@ function hdc_fetch_github_json( $url, $headers ) {
 
 	$status_code = (int) wp_remote_retrieve_response_code( $response );
 	$body        = wp_remote_retrieve_body( $response );
+
+	if ( $allow_accepted_empty_response && 202 === $status_code ) {
+		$trimmed_body = trim( (string) $body );
+		if ( '' === $trimmed_body ) {
+			return array(
+				'ok'       => true,
+				'status'   => $status_code,
+				'payload'  => array(),
+				'response' => $response,
+			);
+		}
+	}
+
 	$payload     = json_decode( (string) $body, true );
 	if ( JSON_ERROR_NONE !== json_last_error() ) {
+		if ( $allow_accepted_empty_response && 202 === $status_code ) {
+			return array(
+				'ok'       => true,
+				'status'   => $status_code,
+				'payload'  => array(),
+				'response' => $response,
+			);
+		}
+
 		return array(
 			'ok'       => false,
 			'status'   => 502,
@@ -1309,6 +1700,122 @@ function hdc_parse_requested_github_repo_names( $max_repos ) {
 }
 
 /**
+ * Normalize GitHub repo names into a stable cache-key fragment.
+ *
+ * @param array<int,string> $repo_names Requested repo names.
+ * @return array<int,string>
+ */
+function hdc_normalize_github_repo_names_for_cache( $repo_names ) {
+	if ( ! is_array( $repo_names ) ) {
+		return array();
+	}
+
+	$normalized = array();
+	foreach ( $repo_names as $repo_name ) {
+		$repo_name = strtolower( trim( sanitize_text_field( (string) $repo_name ) ) );
+		if ( '' === $repo_name || ! preg_match( '/^[a-z0-9._-]{1,100}$/', $repo_name ) ) {
+			continue;
+		}
+
+		$normalized[ $repo_name ] = true;
+	}
+
+	$normalized_repo_names = array_keys( $normalized );
+	sort( $normalized_repo_names, SORT_STRING );
+
+	return $normalized_repo_names;
+}
+
+/**
+ * Build a stable cache fragment for a GitHub repo-name set.
+ *
+ * @param array<int,string> $repo_names Requested repo names.
+ * @return string
+ */
+function hdc_build_github_repo_names_cache_fragment( $repo_names ) {
+	$normalized_repo_names = hdc_normalize_github_repo_names_for_cache( $repo_names );
+	return ! empty( $normalized_repo_names ) ? implode( '|', $normalized_repo_names ) : 'all';
+}
+
+/**
+ * Sanitize one GitHub contributor-week row.
+ *
+ * @param mixed $week Raw contributor week payload.
+ * @return array{weekStart:string,commits:int,additions:int,deletions:int}
+ */
+function hdc_sanitize_github_contributor_week( $week ) {
+	$week = is_array( $week ) ? $week : array();
+
+	$week_start = isset( $week['w'] ) && is_numeric( $week['w'] ) ? (int) $week['w'] : 0;
+	$commits    = isset( $week['c'] ) && is_numeric( $week['c'] ) ? max( 0, (int) $week['c'] ) : 0;
+	$additions  = isset( $week['a'] ) && is_numeric( $week['a'] ) ? max( 0, (int) $week['a'] ) : 0;
+	$deletions  = isset( $week['d'] ) && is_numeric( $week['d'] ) ? max( 0, (int) $week['d'] ) : 0;
+
+	return array(
+		'weekStart' => $week_start > 0 ? gmdate( 'c', $week_start ) : '',
+		'commits'   => $commits,
+		'additions' => $additions,
+		'deletions' => $deletions,
+	);
+}
+
+/**
+ * Sanitize one contributor entry from the GitHub contributor-stats endpoint.
+ *
+ * @param mixed  $payload  Raw contributors payload.
+ * @param string $username Configured GitHub username.
+ * @return array<string,mixed>|null
+ */
+function hdc_sanitize_github_contributor_stats( $payload, $username ) {
+	if ( ! is_array( $payload ) ) {
+		return null;
+	}
+
+	$username = strtolower( trim( (string) $username ) );
+	if ( '' === $username ) {
+		return null;
+	}
+
+	foreach ( $payload as $entry ) {
+		if ( ! is_array( $entry ) ) {
+			continue;
+		}
+
+		$author       = isset( $entry['author'] ) && is_array( $entry['author'] ) ? $entry['author'] : array();
+		$author_login = isset( $author['login'] ) && is_string( $author['login'] ) ? strtolower( trim( $author['login'] ) ) : '';
+		if ( '' === $author_login || $author_login !== $username ) {
+			continue;
+		}
+
+		$weeks               = array();
+		$last_year_commits   = 0;
+		$last_year_additions = 0;
+		$last_year_deletions = 0;
+		$weeks_payload       = isset( $entry['weeks'] ) && is_array( $entry['weeks'] ) ? array_slice( $entry['weeks'], -52 ) : array();
+
+		foreach ( $weeks_payload as $week_payload ) {
+			$week = hdc_sanitize_github_contributor_week( $week_payload );
+			$weeks[] = $week;
+			$last_year_commits   += $week['commits'];
+			$last_year_additions += $week['additions'];
+			$last_year_deletions += $week['deletions'];
+		}
+
+		$total_commits = isset( $entry['total'] ) && is_numeric( $entry['total'] ) ? max( 0, (int) $entry['total'] ) : $last_year_commits;
+
+		return array(
+			'weeks'             => $weeks,
+			'lastYearCommits'   => $last_year_commits,
+			'lastYearAdditions' => $last_year_additions,
+			'lastYearDeletions' => $last_year_deletions,
+			'totalCommits'      => max( $last_year_commits, $total_commits ),
+		);
+	}
+
+	return null;
+}
+
+/**
  * Backward-compatible non-REST GitHub repositories endpoint for `/api/github/repos`.
  *
  * @param WP $wp Current request.
@@ -1438,8 +1945,15 @@ function hdc_handle_legacy_github_language_summary_endpoint( $wp ) {
 		);
 	}
 
-	$max_repos       = hdc_clamp_int( $_GET['max_repos'] ?? null, 80, 1, 80 );
-	$cache_key       = 'hdc_legacy_github_language_summary_' . md5( $username . '|' . $max_repos );
+	$max_repos            = hdc_clamp_int( $_GET['max_repos'] ?? null, 80, 1, 80 );
+	$requested_repo_names = hdc_parse_requested_github_repo_names( $max_repos );
+	$cache_key            = 'hdc_legacy_github_language_summary_' . md5(
+		$username . '|' . (
+			! empty( $requested_repo_names )
+				? hdc_build_github_repo_names_cache_fragment( $requested_repo_names )
+				: 'max:' . $max_repos
+		)
+	);
 	$stale_cache_key = $cache_key . '_stale';
 	$cooldown_key    = 'hdc_legacy_github_language_summary_cooldown_' . md5( $username );
 	$cached          = get_transient( $cache_key );
@@ -1484,87 +1998,173 @@ function hdc_handle_legacy_github_language_summary_endpoint( $wp ) {
 	$headers                   = hdc_get_github_request_headers();
 	$latest_rate_limit_headers = array();
 	$repositories              = array();
-	$per_page                  = 100;
-	$page_limit                = 2;
+	if ( ! empty( $requested_repo_names ) ) {
+		foreach ( $requested_repo_names as $repo_name ) {
+			$repo_url                 = 'https://api.github.com/repos/' . rawurlencode( $username ) . '/' . rawurlencode( $repo_name );
+			$repo_result              = hdc_fetch_github_json( $repo_url, $headers );
+			$latest_rate_limit_headers = hdc_get_github_rate_limit_headers( $repo_result['response'] ?? null );
 
-	for ( $page = 1; $page <= $page_limit && count( $repositories ) < $max_repos; $page++ ) {
-		$list_url = add_query_arg(
-			array(
-				'per_page' => $per_page,
-				'page'     => $page,
-			),
-			'https://api.github.com/users/' . rawurlencode( $username ) . '/repos'
-		);
+			if ( empty( $repo_result['ok'] ) ) {
+				if ( hdc_is_rate_limited_github_result( $repo_result ) ) {
+					$cooldown = hdc_get_github_rate_limit_retry_after_seconds( $repo_result['response'] ?? null );
+					set_transient( $cooldown_key, $cooldown, $cooldown );
+					$latest_rate_limit_headers['retry-after'] = (string) $cooldown;
+				}
 
-		$page_result               = hdc_fetch_github_json( $list_url, $headers );
-		$latest_rate_limit_headers = hdc_get_github_rate_limit_headers( $page_result['response'] ?? null );
+				$error_message = hdc_extract_github_payload_message( $repo_result['payload'] ?? array() );
+				if ( '' === $error_message ) {
+					$error_message = __( 'GitHub language summary request failed.', 'henrys-digital-canvas' );
+				}
 
-		if ( empty( $page_result['ok'] ) ) {
-			if ( hdc_is_rate_limited_github_result( $page_result ) ) {
-				$cooldown = hdc_get_github_rate_limit_retry_after_seconds( $page_result['response'] ?? null );
-				set_transient( $cooldown_key, $cooldown, $cooldown );
-				$latest_rate_limit_headers['retry-after'] = (string) $cooldown;
-			}
+				if ( is_array( $stale_cached ) ) {
+					hdc_send_legacy_json_response(
+						503,
+						hdc_build_stale_github_language_summary_payload( $stale_cached, $error_message ),
+						'no-store, no-cache, must-revalidate, max-age=0',
+						$latest_rate_limit_headers
+					);
+				}
 
-			$error_message = hdc_extract_github_payload_message( $page_result['payload'] ?? array() );
-			if ( '' === $error_message ) {
-				$error_message = __( 'GitHub language summary request failed.', 'henrys-digital-canvas' );
-			}
-
-			if ( is_array( $stale_cached ) ) {
 				hdc_send_legacy_json_response(
-					503,
-					hdc_build_stale_github_language_summary_payload( $stale_cached, $error_message ),
+					(int) ( $repo_result['status'] ?? 502 ),
+					$repo_result['payload'] ?? array( 'error' => $error_message ),
 					'no-store, no-cache, must-revalidate, max-age=0',
 					$latest_rate_limit_headers
 				);
 			}
 
-			hdc_send_legacy_json_response(
-				(int) ( $page_result['status'] ?? 502 ),
-				$page_result['payload'] ?? array( 'error' => $error_message ),
-				'no-store, no-cache, must-revalidate, max-age=0',
-				$latest_rate_limit_headers
-			);
-		}
+			if ( ! is_array( $repo_result['payload'] ) ) {
+				if ( is_array( $stale_cached ) ) {
+					hdc_send_legacy_json_response(
+						503,
+						hdc_build_stale_github_language_summary_payload(
+							$stale_cached,
+							__( 'Showing cached language totals because GitHub returned an unexpected response.', 'henrys-digital-canvas' )
+						),
+						'no-store, no-cache, must-revalidate, max-age=0',
+						$latest_rate_limit_headers
+					);
+				}
 
-		if ( ! is_array( $page_result['payload'] ) ) {
-			if ( is_array( $stale_cached ) ) {
 				hdc_send_legacy_json_response(
-					503,
-					hdc_build_stale_github_language_summary_payload(
-						$stale_cached,
-						__( 'Showing cached language totals because GitHub returned an unexpected response.', 'henrys-digital-canvas' )
+					502,
+					array(
+						'error' => __( 'Unexpected GitHub response shape.', 'henrys-digital-canvas' ),
 					),
 					'no-store, no-cache, must-revalidate, max-age=0',
 					$latest_rate_limit_headers
 				);
 			}
 
-			hdc_send_legacy_json_response(
-				502,
+			$sanitized_repo = hdc_sanitize_github_repo( $repo_result['payload'] );
+			if ( empty( $sanitized_repo['name'] ) ) {
+				if ( is_array( $stale_cached ) ) {
+					hdc_send_legacy_json_response(
+						503,
+						hdc_build_stale_github_language_summary_payload(
+							$stale_cached,
+							__( 'Showing cached language totals because repository metadata was incomplete.', 'henrys-digital-canvas' )
+						),
+						'no-store, no-cache, must-revalidate, max-age=0',
+						$latest_rate_limit_headers
+					);
+				}
+
+				hdc_send_legacy_json_response(
+					502,
+					array(
+						'error' => __( 'Repository metadata is incomplete.', 'henrys-digital-canvas' ),
+					),
+					'no-store, no-cache, must-revalidate, max-age=0',
+					$latest_rate_limit_headers
+				);
+			}
+
+			$repositories[] = $sanitized_repo;
+		}
+	} else {
+		$per_page   = 100;
+		$page_limit = 2;
+
+		for ( $page = 1; $page <= $page_limit && count( $repositories ) < $max_repos; $page++ ) {
+			$list_url = add_query_arg(
 				array(
-					'error' => __( 'Unexpected GitHub response shape.', 'henrys-digital-canvas' ),
+					'per_page' => $per_page,
+					'page'     => $page,
 				),
-				'no-store, no-cache, must-revalidate, max-age=0',
-				$latest_rate_limit_headers
+				'https://api.github.com/users/' . rawurlencode( $username ) . '/repos'
 			);
-		}
 
-		$sanitized_page = array_map( 'hdc_sanitize_github_repo', $page_result['payload'] );
-		foreach ( $sanitized_page as $repo ) {
-			if ( ! is_array( $repo ) || empty( $repo['name'] ) || ! empty( $repo['fork'] ) || ! empty( $repo['archived'] ) ) {
-				continue;
+			$page_result               = hdc_fetch_github_json( $list_url, $headers );
+			$latest_rate_limit_headers = hdc_get_github_rate_limit_headers( $page_result['response'] ?? null );
+
+			if ( empty( $page_result['ok'] ) ) {
+				if ( hdc_is_rate_limited_github_result( $page_result ) ) {
+					$cooldown = hdc_get_github_rate_limit_retry_after_seconds( $page_result['response'] ?? null );
+					set_transient( $cooldown_key, $cooldown, $cooldown );
+					$latest_rate_limit_headers['retry-after'] = (string) $cooldown;
+				}
+
+				$error_message = hdc_extract_github_payload_message( $page_result['payload'] ?? array() );
+				if ( '' === $error_message ) {
+					$error_message = __( 'GitHub language summary request failed.', 'henrys-digital-canvas' );
+				}
+
+				if ( is_array( $stale_cached ) ) {
+					hdc_send_legacy_json_response(
+						503,
+						hdc_build_stale_github_language_summary_payload( $stale_cached, $error_message ),
+						'no-store, no-cache, must-revalidate, max-age=0',
+						$latest_rate_limit_headers
+					);
+				}
+
+				hdc_send_legacy_json_response(
+					(int) ( $page_result['status'] ?? 502 ),
+					$page_result['payload'] ?? array( 'error' => $error_message ),
+					'no-store, no-cache, must-revalidate, max-age=0',
+					$latest_rate_limit_headers
+				);
 			}
 
-			$repositories[] = $repo;
-			if ( count( $repositories ) >= $max_repos ) {
-				break 2;
-			}
-		}
+			if ( ! is_array( $page_result['payload'] ) ) {
+				if ( is_array( $stale_cached ) ) {
+					hdc_send_legacy_json_response(
+						503,
+						hdc_build_stale_github_language_summary_payload(
+							$stale_cached,
+							__( 'Showing cached language totals because GitHub returned an unexpected response.', 'henrys-digital-canvas' )
+						),
+						'no-store, no-cache, must-revalidate, max-age=0',
+						$latest_rate_limit_headers
+					);
+				}
 
-		if ( count( $page_result['payload'] ) < $per_page ) {
-			break;
+				hdc_send_legacy_json_response(
+					502,
+					array(
+						'error' => __( 'Unexpected GitHub response shape.', 'henrys-digital-canvas' ),
+					),
+					'no-store, no-cache, must-revalidate, max-age=0',
+					$latest_rate_limit_headers
+				);
+			}
+
+			$sanitized_page = array_map( 'hdc_sanitize_github_repo', $page_result['payload'] );
+			foreach ( $sanitized_page as $repo ) {
+				if ( ! is_array( $repo ) || empty( $repo['name'] ) || ! empty( $repo['fork'] ) || ! empty( $repo['archived'] ) ) {
+					continue;
+				}
+
+				$repositories[] = $repo;
+				if ( count( $repositories ) >= $max_repos ) {
+					break 2;
+				}
+			}
+
+			if ( count( $page_result['payload'] ) < $per_page ) {
+				break;
+			}
 		}
 	}
 
@@ -1801,6 +2401,156 @@ function hdc_handle_legacy_github_repo_proofs_endpoint( $wp ) {
 	);
 }
 add_action( 'parse_request', 'hdc_handle_legacy_github_repo_proofs_endpoint' );
+
+/**
+ * Backward-compatible non-REST GitHub contributor stats endpoint for `/api/github/contributor-stats`.
+ *
+ * @param WP $wp Current request.
+ * @return void
+ */
+function hdc_handle_legacy_github_contributor_stats_endpoint( $wp ) {
+	if ( ! isset( $wp->request ) || 'api/github/contributor-stats' !== trim( (string) $wp->request, '/' ) ) {
+		return;
+	}
+
+	$method = strtoupper( (string) ( $_SERVER['REQUEST_METHOD'] ?? 'GET' ) );
+	if ( 'OPTIONS' === $method ) {
+		hdc_send_legacy_json_response( 204, array(), 'no-store, no-cache, must-revalidate, max-age=0' );
+	}
+
+	if ( 'GET' !== $method ) {
+		hdc_send_legacy_json_response(
+			405,
+			array(
+				'error' => __( 'Method not allowed.', 'henrys-digital-canvas' ),
+			),
+			'no-store, no-cache, must-revalidate, max-age=0'
+		);
+	}
+
+	$username = hdc_resolve_github_username();
+	if ( is_wp_error( $username ) ) {
+		$error_data = $username->get_error_data();
+		hdc_send_legacy_json_response(
+			is_array( $error_data ) && ! empty( $error_data['status'] ) ? (int) $error_data['status'] : 400,
+			array(
+				'error' => $username->get_error_message(),
+			),
+			'no-store, no-cache, must-revalidate, max-age=0'
+		);
+	}
+
+	$max_repos = hdc_clamp_int( $_GET['max_repos'] ?? null, 9, 1, 12 );
+	$repo_names = hdc_parse_requested_github_repo_names( $max_repos );
+
+	if ( empty( $repo_names ) ) {
+		hdc_send_legacy_json_response(
+			400,
+			array(
+				'error' => __( 'At least one valid repo name must be provided using repo=<name>.', 'henrys-digital-canvas' ),
+			),
+			'no-store, no-cache, must-revalidate, max-age=0'
+		);
+	}
+
+	$cache_key = 'hdc_legacy_github_contributor_stats_' . md5( $username . '|' . hdc_build_github_repo_names_cache_fragment( $repo_names ) );
+	$cached    = get_transient( $cache_key );
+
+	if ( is_array( $cached ) ) {
+		hdc_send_legacy_json_response(
+			200,
+			$cached,
+			'public, max-age=120, s-maxage=300, stale-while-revalidate=86400'
+		);
+	}
+
+	$headers                   = hdc_get_github_request_headers();
+	$latest_rate_limit_headers = array();
+	$first_rate_limited_result = null;
+	$stats                     = array();
+	$failed_repo_count         = 0;
+	$computing_repo_count      = 0;
+
+	foreach ( $repo_names as $repo_name ) {
+		$contributors_url    = 'https://api.github.com/repos/' . rawurlencode( $username ) . '/' . rawurlencode( $repo_name ) . '/stats/contributors';
+		$contributors_result = hdc_fetch_github_json(
+			$contributors_url,
+			$headers,
+			array(
+				'allow_accepted_empty_response' => true,
+			)
+		);
+
+		if ( isset( $contributors_result['response'] ) ) {
+			$latest_rate_limit_headers = hdc_get_github_rate_limit_headers( $contributors_result['response'] );
+		}
+		if ( null === $first_rate_limited_result && hdc_is_rate_limited_github_result( $contributors_result ) ) {
+			$first_rate_limited_result = $contributors_result;
+		}
+
+		if ( 202 === (int) ( $contributors_result['status'] ?? 0 ) ) {
+			$stats[] = array(
+				'repo'   => $repo_name,
+				'status' => 'computing',
+			);
+			$computing_repo_count++;
+			continue;
+		}
+
+		if ( empty( $contributors_result['ok'] ) ) {
+			$stats[] = array(
+				'repo'   => $repo_name,
+				'status' => 'unavailable',
+				'error'  => hdc_extract_github_payload_message( $contributors_result['payload'] ?? array() ) ?: sprintf( 'Contributor stats request failed (status %d).', (int) ( $contributors_result['status'] ?? 0 ) ),
+			);
+			$failed_repo_count += 1;
+			continue;
+		}
+
+		$contributor_stats = hdc_sanitize_github_contributor_stats( $contributors_result['payload'], $username );
+		if ( ! is_array( $contributor_stats ) ) {
+			$stats[] = array(
+				'repo'   => $repo_name,
+				'status' => 'missing',
+			);
+			continue;
+		}
+
+		$stats[] = array(
+			'repo'             => $repo_name,
+			'status'           => 'ready',
+			'contributorStats' => $contributor_stats,
+		);
+	}
+
+	if ( $failed_repo_count === count( $stats ) && is_array( $first_rate_limited_result ) ) {
+		hdc_send_legacy_json_response(
+			(int) ( $first_rate_limited_result['status'] ?? 502 ),
+			$first_rate_limited_result['payload'] ?? array( 'error' => 'GitHub API request failed' ),
+			'no-store, no-cache, must-revalidate, max-age=0',
+			hdc_get_github_rate_limit_headers( $first_rate_limited_result['response'] ?? null )
+		);
+	}
+
+	$payload = array(
+		'username'           => $username,
+		'repoCount'          => count( $repo_names ),
+		'failedRepoCount'    => $failed_repo_count,
+		'computingRepoCount' => $computing_repo_count,
+		'partialData'        => $failed_repo_count > 0 || $computing_repo_count > 0,
+		'stats'              => $stats,
+	);
+
+	set_transient( $cache_key, $payload, $computing_repo_count > 0 ? 60 : 300 );
+
+	hdc_send_legacy_json_response(
+		200,
+		$payload,
+		'public, max-age=120, s-maxage=300, stale-while-revalidate=86400',
+		$latest_rate_limit_headers
+	);
+}
+add_action( 'parse_request', 'hdc_handle_legacy_github_contributor_stats_endpoint' );
 
 /**
  * Backward-compatible non-REST GitHub CI status endpoint for `/api/github/ci-status`.

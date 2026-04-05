@@ -1,0 +1,60 @@
+300:                                "background": "var(--wp--preset--color--accent-1)",
+301:                                "text": "var(--wp--preset--color--contrast)"
+305:                                    "background": "color-mix(in srgb, var(--wp--preset--color--accent-1) 85%, transparent)"
+420:                                "background": "var(--wp--preset--color--contrast)",
+425:                                    "background": "color-mix(in srgb, var(--wp--preset--color--contrast) 85%, transparent)"
+540:                                "background": "var(--wp--preset--color--accent-1)",
+541:                                "text": "var(--wp--preset--color--contrast)"
+545:                                    "background": "color-mix(in srgb, var(--wp--preset--color--accent-1) 85%, transparent)",
+546:                                    "text": "var(--wp--preset--color--contrast)"
+671:                                "background": "var(--wp--preset--color--accent-1)",
+672:                                "text": "var(--wp--preset--color--contrast)"
+676:                                    "background": "color-mix(in srgb, var(--wp--preset--color--accent-1) 85%, transparent)",
+697:                "fontSize": "var(--wp--preset--font-size--x-large)",
+707:                        "fontFamily": "var(--wp--preset--font-family--fira-code)",
+712:                        "text": "var(--wp--preset--color--accent-4)"
+724:                "text": "var(--wp--preset--color--contrast)"
+754:                "background": "var(--wp--preset--color--accent-5)",
+755:                "text": "var(--wp--preset--color--contrast)"
+960:                                "color": "var(--wp--preset--color--accent-5)",
+991:                                "background": "var(--wp--preset--color--accent-5)"
+1013:                        "text": "var(--wp--preset--color--contrast)"
+1047:                "fontFamily": "var(--wp--preset--font-family--fira-code)",
+1059:                        "text": "var(--wp--preset--color--accent-4)"
+1142:                "fontSize": "var(--wp--preset--font-size--x-large)"
+1432:                                "background": "var(--wp--preset--color--accent-1)",
+1433:                                "text": "var(--wp--preset--color--contrast)"
+1437:                                    "background": "color-mix(in srgb, var(--wp--preset--color--accent-1) 85%, transparent)"
+1552:                                "background": "var(--wp--preset--color--contrast)",
+1557:                                    "background": "color-mix(in srgb, var(--wp--preset--color--contrast) 85%, transparent)"
+1672:                                "background": "var(--wp--preset--color--accent-1)",
+1673:                                "text": "var(--wp--preset--color--contrast)"
+1677:                                    "background": "color-mix(in srgb, var(--wp--preset--color--accent-1) 85%, transparent)",
+1678:                                    "text": "var(--wp--preset--color--contrast)"
+1803:                                "background": "var(--wp--preset--color--accent-1)",
+1804:                                "text": "var(--wp--preset--color--contrast)"
+1808:                                    "background": "color-mix(in srgb, var(--wp--preset--color--accent-1) 85%, transparent)",
+2063:                                "background": "var(--wp--preset--color--accent-1)",
+2064:                                "text": "var(--wp--preset--color--contrast)"
+2068:                                    "background": "color-mix(in srgb, var(--wp--preset--color--accent-1) 85%, transparent)"
+2183:                                "background": "var(--wp--preset--color--contrast)",
+2188:                                    "background": "color-mix(in srgb, var(--wp--preset--color--contrast) 85%, transparent)"
+2303:                                "background": "var(--wp--preset--color--accent-1)",
+2304:                                "text": "var(--wp--preset--color--contrast)"
+2308:                                    "background": "color-mix(in srgb, var(--wp--preset--color--accent-1) 85%, transparent)",
+2309:                                    "text": "var(--wp--preset--color--contrast)"
+2434:                                "background": "var(--wp--preset--color--accent-1)",
+2435:                                "text": "var(--wp--preset--color--contrast)"
+2439:                                    "background": "color-mix(in srgb, var(--wp--preset--color--accent-1) 85%, transparent)",
+2578:                        "text": "var(--wp--preset--color--contrast)"
+2592:                        "text": "var(--wp--preset--color--contrast)"
+2604:                "text": "var(--wp--preset--color--contrast)",
+2605:                "background": "var(--wp--preset--color--accent-1)"
+2616:                "fontSize": "var(--wp--preset--font-size--medium)",
+2617:                "fontFamily": "var(--wp--preset--font-family--fira-code)",
+2639:                    "background": "color-mix(in srgb, var(--wp--preset--color--accent-1) 85%, transparent)",
+2640:                    "text": "var(--wp--preset--color--contrast)"
+2702:                "text": "var(--wp--preset--color--contrast)"
+2730:        "text": "var(--wp--preset--color--accent-4)"
+2733:        "fontFamily": "var(--wp--preset--font-family--fira-code)",
+2734:        "fontSize": "var(--wp--preset--font-size--medium)",

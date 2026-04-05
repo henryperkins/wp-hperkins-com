@@ -14,6 +14,12 @@
 	const CATEGORY_FILTERS = [ 'All', 'Development', 'Music', 'Learning' ];
 	const TIMEFRAME_FILTERS = [ 'All', 'Current', 'Recent', 'Planned' ];
 	const TIMEFRAME_ORDER = [ 'now', 'recently', 'next' ];
+	const CATEGORY_QUERY_PARAM = 'hdcCategory';
+	const LEGACY_CATEGORY_QUERY_PARAM = 'category';
+	const TIMEFRAME_QUERY_PARAM = 'hdcTimeframe';
+	const LEGACY_TIMEFRAME_QUERY_PARAM = 'timeframe';
+	const OPEN_QUERY_PARAM = 'hdcOpen';
+	const LEGACY_OPEN_QUERY_PARAM = 'open';
 
 	const CATEGORY_MAP = {
 		All: '',
@@ -106,6 +112,10 @@
 			fallbackUrl: ensureString( parsed.fallbackUrl, '' ),
 			inlineFallback: inlineFallback,
 		};
+	}
+
+	function getSearchParam( search, primaryKey, legacyKey ) {
+		return search.get( primaryKey ) || search.get( legacyKey ) || '';
 	}
 
 	function parseCategoryFilter( queryValue ) {
@@ -214,9 +224,9 @@
 			error: '',
 			items: [],
 		} );
-		const [ activeCategory, setActiveCategory ] = useState( parseCategoryFilter( search.get( 'category' ) ) );
-		const [ activeTimeframe, setActiveTimeframe ] = useState( parseTimeframeFilter( search.get( 'timeframe' ) ) );
-		const [ openId, setOpenId ] = useState( search.get( 'open' ) || null );
+		const [ activeCategory, setActiveCategory ] = useState( parseCategoryFilter( getSearchParam( search, CATEGORY_QUERY_PARAM, LEGACY_CATEGORY_QUERY_PARAM ) ) );
+		const [ activeTimeframe, setActiveTimeframe ] = useState( parseTimeframeFilter( getSearchParam( search, TIMEFRAME_QUERY_PARAM, LEGACY_TIMEFRAME_QUERY_PARAM ) ) );
+		const [ openId, setOpenId ] = useState( getSearchParam( search, OPEN_QUERY_PARAM, LEGACY_OPEN_QUERY_PARAM ) || null );
 
 		const signature = useMemo( function () {
 			return JSON.stringify( config );
@@ -325,16 +335,33 @@
 		useEffect(
 			function () {
 				const params = new URLSearchParams( window.location.search );
-				params.set( 'category', ( CATEGORY_MAP[ activeCategory ] || 'all' ) );
-				params.set( 'timeframe', ( TIMEFRAME_MAP[ activeTimeframe ] || 'all' ) );
+				const nextCategory = CATEGORY_MAP[ activeCategory ] || '';
+				const nextTimeframe = TIMEFRAME_MAP[ activeTimeframe ] || '';
 
-				if ( openId ) {
-					params.set( 'open', openId );
+				params.delete( LEGACY_CATEGORY_QUERY_PARAM );
+				params.delete( LEGACY_TIMEFRAME_QUERY_PARAM );
+				params.delete( LEGACY_OPEN_QUERY_PARAM );
+
+				if ( nextCategory ) {
+					params.set( CATEGORY_QUERY_PARAM, nextCategory );
 				} else {
-					params.delete( 'open' );
+					params.delete( CATEGORY_QUERY_PARAM );
 				}
 
-				const nextUrl = window.location.pathname + '?' + params.toString() + window.location.hash;
+				if ( nextTimeframe ) {
+					params.set( TIMEFRAME_QUERY_PARAM, nextTimeframe );
+				} else {
+					params.delete( TIMEFRAME_QUERY_PARAM );
+				}
+
+				if ( openId ) {
+					params.set( OPEN_QUERY_PARAM, openId );
+				} else {
+					params.delete( OPEN_QUERY_PARAM );
+				}
+
+				const nextQuery = params.toString();
+				const nextUrl = window.location.pathname + ( nextQuery ? '?' + nextQuery : '' ) + window.location.hash;
 				window.history.replaceState( {}, '', nextUrl );
 			},
 			[ activeCategory, activeTimeframe, openId ]

@@ -66,6 +66,16 @@ function hdc_enqueue_frontend_styles() {
 		hdc_asset_version( '/assets/css/background-library.css' )
 	);
 
+	// Load single post styles on single posts
+	if ( is_single() ) {
+		wp_enqueue_style(
+			'hdc-single-post',
+			get_stylesheet_directory_uri() . '/assets/css/single-post.css',
+			array( 'hdc-design-system' ),
+			hdc_asset_version( '/assets/css/single-post.css' )
+		);
+	}
+
 	wp_enqueue_script(
 		'hdc-shared-utils',
 		get_stylesheet_directory_uri() . '/assets/js/hdc-shared-utils.js',
@@ -480,6 +490,8 @@ function hdc_output_standard_route_metadata( $metadata, $default_canonical = '/'
 	$og_url         = hdc_get_absolute_metadata_url( (string) ( $open_graph['url'] ?? $default_canonical ) );
 	$og_image       = hdc_get_absolute_metadata_url( (string) ( $open_graph['image'] ?? '' ) );
 	$og_image_alt   = wp_strip_all_tags( (string) ( $open_graph['imageAlt'] ?? '' ) );
+	$og_image_width = isset( $open_graph['imageWidth'] ) ? absint( $open_graph['imageWidth'] ) : 0;
+	$og_image_height = isset( $open_graph['imageHeight'] ) ? absint( $open_graph['imageHeight'] ) : 0;
 
 	if ( '' !== $og_title ) {
 		printf( '<meta property="og:title" content="%s" />' . "\n", esc_attr( $og_title ) );
@@ -498,6 +510,12 @@ function hdc_output_standard_route_metadata( $metadata, $default_canonical = '/'
 	}
 	if ( '' !== $og_image_alt ) {
 		printf( '<meta property="og:image:alt" content="%s" />' . "\n", esc_attr( $og_image_alt ) );
+	}
+	if ( $og_image_width > 0 ) {
+		printf( '<meta property="og:image:width" content="%s" />' . "\n", esc_attr( (string) $og_image_width ) );
+	}
+	if ( $og_image_height > 0 ) {
+		printf( '<meta property="og:image:height" content="%s" />' . "\n", esc_attr( (string) $og_image_height ) );
 	}
 
 	$twitter_card        = sanitize_text_field( (string) ( $twitter['card'] ?? 'summary_large_image' ) );
@@ -582,6 +600,8 @@ function hdc_output_blog_index_metadata() {
 				'url'         => '/blog',
 				'image'       => $og_image,
 				'imageAlt'    => 'Henry Perkins blog and writing',
+				'imageWidth'  => 1536,
+				'imageHeight' => 1024,
 			),
 			'twitter'     => array(
 				'card'        => 'summary_large_image',

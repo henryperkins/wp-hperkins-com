@@ -28,7 +28,7 @@
 }
 
 .hdc-work-detail__source-warning {
-  color: hsl(var(--status-destructive));
+  color: hsl(var(--destructive));
 }
 
 .hdc-work-detail__small-meta--icon {

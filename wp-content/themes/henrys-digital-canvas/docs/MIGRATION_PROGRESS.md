@@ -1,10 +1,15 @@
 # Henry's Digital Canvas Migration Progress
 
-Last updated: 2026-03-08T21:30Z (UTC)
+Last updated: 2026-04-03T17:44Z (UTC)
 
-## Current Status Override (2026-03-05 UTC)
+## Current Status Override
+
+Status unchanged since 2026-03-05 UTC.
 
 This section is the current source of truth and supersedes older checkpoint language in this file that says "Complete", "Migration Complete", or "Full parity achieved".
+
+- Historical phase sections below intentionally preserve period-specific evidence, route inventories, and smoke-suite sizes from each checkpoint.
+- Use [`../README.md`](../README.md), [`CUTOVER_CHECKLIST.md`](CUTOVER_CHECKLIST.md), and [`PAGE_TO_BLOCK_MIGRATION_CHECKLIST.md`](PAGE_TO_BLOCK_MIGRATION_CHECKLIST.md) for current commands, workflow expectations, and operator runbooks.
 
 ### Status Model
 
@@ -1275,7 +1280,7 @@ Execute the final closeout loop from `PARITY_REMEDIATION_PLAN.md` Phase 6 with m
 
 ## Historical Migration Completion Checkpoint (Superseded)
 
-This checkpoint reflects the 2026-03-03 functional migration state and is retained for audit history. Current closeout status is defined in the "Current Status Override (2026-03-05 UTC)" section at the top of this file.
+This checkpoint reflects the 2026-03-03 functional migration state and is retained for audit history. Current closeout status is defined in the "Current Status Override" section at the top of this file.
 
 ### Final Inventory
 - **11 custom blocks** shipped with full functional parity.

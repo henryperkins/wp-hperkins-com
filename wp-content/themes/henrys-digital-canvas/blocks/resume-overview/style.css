@@ -2,6 +2,37 @@
   display: block;
 }
 
+.hdc-resume-overview__page-shell {
+  isolation: isolate;
+  position: relative;
+}
+
+.hdc-resume-overview__page-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hdc-resume-overview__page-shell::before {
+  background:
+    linear-gradient(180deg, hsl(var(--surface-1)) 0%, hsl(var(--background)) 18%, hsl(var(--surface-1)) 100%),
+    radial-gradient(44% 30% at 84% 16%, hsl(var(--warning) / 0.12), transparent 62%),
+    radial-gradient(54% 34% at 12% 40%, hsl(var(--info) / 0.1), transparent 72%),
+    url("../../assets/images/backgrounds/theme-surface-learning-paper.webp");
+  background-blend-mode: normal, screen, multiply, normal;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: auto, auto, auto, cover;
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+[data-theme="dark"] .hdc-resume-overview__page-shell::before {
+  opacity: 0;
+}
+
 .hdc-resume-overview__shell {
   margin: 0 auto;
   max-width: 64rem;
@@ -176,9 +207,12 @@
   box-shadow: var(--shadow-cta-hero);
 }
 
-.hdc-resume-overview__action--icon-only {
+.hdc-resume-overview__action--inverse-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: hsl(var(--inverse-foreground));
+  min-height: auto;
   padding: 0;
-  width: 2.25rem;
 }
 
 .hdc-resume-overview__action-icon,
@@ -229,6 +263,10 @@
   font-size: 0.875rem;
   line-height: 1.5;
   margin-top: 0.5rem;
+}
+
+.hdc-resume-overview__jump-nav-description {
+  display: none;
 }
 
 .hdc-resume-overview__jump-nav-nav {
@@ -308,6 +346,13 @@
   color: hsl(var(--primary-foreground));
 }
 
+.hdc-resume-overview__action--inverse-ghost:hover,
+.hdc-resume-overview__action--inverse-ghost:focus-visible {
+  background: transparent;
+  border-color: transparent;
+  color: hsl(var(--inverse-muted-foreground));
+}
+
 .hdc-resume-overview__hero .hdc-resume-overview__action:focus-visible {
   box-shadow:
     0 0 0 var(--focus-ring-width) hsl(var(--ring)),
@@ -364,6 +409,9 @@
 }
 
 .hdc-resume-overview__card.surface-inset-soft {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   transition: border-color var(--motion-duration-fast) var(--motion-ease-standard);
 }
 
@@ -373,7 +421,7 @@
 
 .hdc-resume-overview__capability-skills {
   border-top: 1px solid hsl(var(--border));
-  margin-top: 1.25rem;
+  margin-top: auto;
   padding-top: 1rem;
 }
 
@@ -428,12 +476,20 @@
   gap: 1rem;
 }
 
+.hdc-resume-overview__timeline-stack {
+  gap: 1rem;
+}
+
 .hdc-resume-overview__metrics {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .hdc-resume-overview__card {
   padding: 1.25rem;
+}
+
+.hdc-resume-overview__card--timeline {
+  padding: 1.5rem;
 }
 
 .hdc-resume-overview__card--soft {
@@ -555,6 +611,43 @@
   line-height: 1.5rem;
 }
 
+@keyframes hdc-resume-reveal-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hdc-resume-reveal-fade-up-soft {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hdc-resume-overview__reveal {
+  opacity: 0;
+}
+
+.hdc-resume-overview__reveal.is-visible {
+  animation: hdc-resume-reveal-fade-up var(--motion-duration-medium, 260ms) var(--motion-ease-standard, cubic-bezier(0.2, 0.8, 0.2, 1)) forwards;
+  animation-delay: calc(var(--reveal-index, 0) * calc(var(--motion-duration-fast, 160ms) / 2));
+}
+
+.hdc-resume-overview__reveal.hdc-resume-overview__reveal--fade-up-soft.is-visible {
+  animation-name: hdc-resume-reveal-fade-up-soft;
+}
+
 .hdc-resume-overview__card--project {
   overflow: hidden;
   padding: 0;
@@ -638,15 +731,27 @@
     scroll-margin-top: calc(7rem + var(--layout-admin-bar-offset));
   }
 
+  .hdc-resume-overview__jump-nav-description {
+    display: block;
+  }
+
   .hdc-resume-overview__capability,
   .hdc-resume-overview__skills {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 639px) {
   .hdc-resume-overview__shell {
     padding-inline: 1rem;
+  }
+
+  .hdc-resume-overview__page-shell::before {
+    background-image:
+      linear-gradient(180deg, hsl(var(--surface-1)) 0%, hsl(var(--background)) 18%, hsl(var(--surface-1)) 100%),
+      radial-gradient(44% 30% at 84% 16%, hsl(var(--warning) / 0.12), transparent 62%),
+      radial-gradient(54% 34% at 12% 40%, hsl(var(--info) / 0.1), transparent 72%),
+      url("../../assets/images/backgrounds/theme-surface-learning-paper-960.webp");
   }
 }
 
@@ -705,4 +810,14 @@
   color: hsl(var(--text-meta));
   font-size: 0.9rem;
   margin-top: 0.45rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hdc-resume-overview__reveal {
+    opacity: 1;
+  }
+
+  .hdc-resume-overview__reveal.is-visible {
+    animation: none;
+  }
 }
