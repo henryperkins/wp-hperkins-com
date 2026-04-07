@@ -1285,6 +1285,78 @@ function hdc_build_stale_github_language_summary_payload( $payload, $error_messa
 }
 
 /**
+ * Decorate a cached repository list payload for stale fallback responses.
+ *
+ * @param array  $payload Cached successful payload.
+ * @param string $error_message User-facing error message.
+ * @return array
+ */
+function hdc_build_stale_github_repos_payload( $payload, $error_message ) {
+	if ( ! is_array( $payload ) ) {
+		return array();
+	}
+
+	$normalized_payload = array_map( 'hdc_sanitize_github_repo', $payload );
+
+	if ( '' !== trim( $error_message ) ) {
+		header( 'X-HDC-GitHub-Repos-Stale-Reason: ' . sanitize_text_field( $error_message ) );
+	}
+
+	header( 'X-HDC-GitHub-Repos-Stale: 1' );
+
+	return $normalized_payload;
+}
+
+/**
+ * Load the committed GitHub repository fallback snapshot.
+ *
+ * @return array<int,array<string,mixed>>
+ */
+function hdc_get_github_repos_fallback_snapshot() {
+	$snapshot_path = get_theme_file_path( 'blocks/work-showcase/data/github-repos-fallback.json' );
+	if ( ! is_string( $snapshot_path ) || '' === $snapshot_path || ! file_exists( $snapshot_path ) ) {
+		return array();
+	}
+
+	$raw_snapshot = file_get_contents( $snapshot_path );
+	if ( false === $raw_snapshot || '' === trim( $raw_snapshot ) ) {
+		return array();
+	}
+
+	$decoded_snapshot = json_decode( $raw_snapshot, true );
+	if ( ! is_array( $decoded_snapshot ) ) {
+		return array();
+	}
+
+	$sanitized_snapshot = array();
+	foreach ( $decoded_snapshot as $repo ) {
+		$sanitized_repo = hdc_sanitize_github_repo( $repo );
+		if ( empty( $sanitized_repo['name'] ) || ! empty( $sanitized_repo['fork'] ) || ! empty( $sanitized_repo['archived'] ) ) {
+			continue;
+		}
+
+		$sanitized_snapshot[] = $sanitized_repo;
+	}
+
+	usort(
+		$sanitized_snapshot,
+		static function ( $left, $right ) {
+			$left_name  = isset( $left['name'] ) ? (string) $left['name'] : '';
+			$right_name = isset( $right['name'] ) ? (string) $right['name'] : '';
+
+			$comparison = strcasecmp( $left_name, $right_name );
+			if ( 0 !== $comparison ) {
+				return $comparison;
+			}
+
+			return strcmp( $left_name, $right_name );
+		}
+	);
+
+	return $sanitized_snapshot;
+}
+
+/**
  * Normalize GitHub repository shape for frontend consumers.
  *
  * @param mixed $repo Raw repository payload.
@@ -1319,6 +1391,7 @@ function hdc_sanitize_github_repo( $repo ) {
 		'name'              => isset( $repo['name'] ) && is_string( $repo['name'] ) ? $repo['name'] : '',
 		'description'       => isset( $repo['description'] ) && is_string( $repo['description'] ) ? $repo['description'] : null,
 		'language'          => isset( $repo['language'] ) && is_string( $repo['language'] ) ? $repo['language'] : null,
+		'size'              => isset( $repo['size'] ) && is_numeric( $repo['size'] ) ? (int) $repo['size'] : 0,
 		'stargazers_count'  => isset( $repo['stargazers_count'] ) && is_numeric( $repo['stargazers_count'] ) ? (int) $repo['stargazers_count'] : 0,
 		'forks_count'       => isset( $repo['forks_count'] ) && is_numeric( $repo['forks_count'] ) ? (int) $repo['forks_count'] : 0,
 		'open_issues_count' => isset( $repo['open_issues_count'] ) && is_numeric( $repo['open_issues_count'] ) ? (int) $repo['open_issues_count'] : 0,
@@ -1326,6 +1399,11 @@ function hdc_sanitize_github_repo( $repo ) {
 		'created_at'        => isset( $repo['created_at'] ) && is_string( $repo['created_at'] ) ? $repo['created_at'] : '',
 		'html_url'          => isset( $repo['html_url'] ) && is_string( $repo['html_url'] ) ? $repo['html_url'] : '',
 		'homepage'          => isset( $repo['homepage'] ) && is_string( $repo['homepage'] ) ? $repo['homepage'] : null,
+		'has_pages'         => ! empty( $repo['has_pages'] ),
+		'has_issues'        => ! empty( $repo['has_issues'] ),
+		'has_projects'      => ! empty( $repo['has_projects'] ),
+		'has_wiki'          => ! empty( $repo['has_wiki'] ),
+		'has_discussions'   => ! empty( $repo['has_discussions'] ),
 		'license'           => $license,
 		'topics'            => $topics,
 		'fork'              => ! empty( $repo['fork'] ),
@@ -1855,14 +1933,51 @@ function hdc_handle_legacy_github_repos_endpoint( $wp ) {
 
 	$per_page = hdc_clamp_int( $_GET['per_page'] ?? null, 100, 1, 100 );
 	$page     = hdc_clamp_int( $_GET['page'] ?? null, 1, 1, 1000 );
-	$cache_key = 'hdc_legacy_github_repos_' . md5( $username . '|' . $per_page . '|' . $page );
-	$cached    = get_transient( $cache_key );
+	$cache_key        = 'hdc_legacy_github_repos_' . md5( $username . '|' . $per_page . '|' . $page );
+	$stale_cache_key  = $cache_key . '_stale';
+	$cooldown_key     = 'hdc_legacy_github_repos_cooldown_' . md5( $username );
+	$cached           = get_transient( $cache_key );
+	$stale_cached     = get_transient( $stale_cache_key );
+	$fallback_snapshot = hdc_get_github_repos_fallback_snapshot();
+	$cooldown         = (int) get_transient( $cooldown_key );
 
 	if ( is_array( $cached ) ) {
 		hdc_send_legacy_json_response(
 			200,
 			$cached,
 			'public, max-age=120, s-maxage=300, stale-while-revalidate=86400'
+		);
+	}
+
+	if ( ! is_array( $stale_cached ) && ! empty( $fallback_snapshot ) ) {
+		$offset       = max( 0, ( $page - 1 ) * $per_page );
+		$stale_cached = array_slice( $fallback_snapshot, $offset, $per_page );
+	}
+
+	if ( $cooldown > 0 ) {
+		$cooldown_headers = array(
+			'retry-after' => (string) $cooldown,
+		);
+
+		if ( is_array( $stale_cached ) ) {
+			hdc_send_legacy_json_response(
+				200,
+				hdc_build_stale_github_repos_payload(
+					$stale_cached,
+					__( 'Showing cached project snapshot while GitHub is temporarily unavailable.', 'henrys-digital-canvas' )
+				),
+				'no-store, no-cache, must-revalidate, max-age=0',
+				$cooldown_headers
+			);
+		}
+
+		hdc_send_legacy_json_response(
+			503,
+			array(
+				'error' => __( 'GitHub repositories are temporarily unavailable.', 'henrys-digital-canvas' ),
+			),
+			'no-store, no-cache, must-revalidate, max-age=0',
+			$cooldown_headers
 		);
 	}
 
@@ -1878,6 +1993,26 @@ function hdc_handle_legacy_github_repos_endpoint( $wp ) {
 	$rate_limit_headers = hdc_get_github_rate_limit_headers( $result['response'] ?? null );
 
 	if ( empty( $result['ok'] ) ) {
+		if ( hdc_is_rate_limited_github_result( $result ) ) {
+			$cooldown = hdc_get_github_rate_limit_retry_after_seconds( $result['response'] ?? null );
+			set_transient( $cooldown_key, $cooldown, $cooldown );
+			$rate_limit_headers['retry-after'] = (string) $cooldown;
+		}
+
+		$error_message = hdc_extract_github_payload_message( $result['payload'] ?? array() );
+		if ( '' === $error_message ) {
+			$error_message = __( 'GitHub repository request failed.', 'henrys-digital-canvas' );
+		}
+
+		if ( is_array( $stale_cached ) ) {
+			hdc_send_legacy_json_response(
+				200,
+				hdc_build_stale_github_repos_payload( $stale_cached, $error_message ),
+				'no-store, no-cache, must-revalidate, max-age=0',
+				$rate_limit_headers
+			);
+		}
+
 		hdc_send_legacy_json_response(
 			(int) ( $result['status'] ?? 502 ),
 			$result['payload'] ?? array( 'error' => 'GitHub API request failed' ),
@@ -1887,6 +2022,18 @@ function hdc_handle_legacy_github_repos_endpoint( $wp ) {
 	}
 
 	if ( ! is_array( $result['payload'] ) ) {
+		if ( is_array( $stale_cached ) ) {
+			hdc_send_legacy_json_response(
+				200,
+				hdc_build_stale_github_repos_payload(
+					$stale_cached,
+					__( 'Showing cached project snapshot because GitHub returned an unexpected response.', 'henrys-digital-canvas' )
+				),
+				'no-store, no-cache, must-revalidate, max-age=0',
+				$rate_limit_headers
+			);
+		}
+
 		hdc_send_legacy_json_response(
 			502,
 			array( 'error' => 'Unexpected GitHub response shape' ),
@@ -1897,6 +2044,7 @@ function hdc_handle_legacy_github_repos_endpoint( $wp ) {
 
 	$sanitized_payload = array_map( 'hdc_sanitize_github_repo', $result['payload'] );
 	set_transient( $cache_key, $sanitized_payload, 120 );
+	set_transient( $stale_cache_key, $sanitized_payload, DAY_IN_SECONDS );
 
 	hdc_send_legacy_json_response(
 		200,

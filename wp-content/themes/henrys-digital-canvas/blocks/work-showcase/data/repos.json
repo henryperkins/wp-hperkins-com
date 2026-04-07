@@ -7,6 +7,7 @@
     "forks": 0,
     "updatedAt": "2026-03-05",
     "url": "https://github.com/henryperkins/tarot",
+    "defaultBranch": "master",
     "demoUrl": "https://tarot.lakefrontdev.com/",
     "topics": [
       "javascript",
@@ -27,6 +28,7 @@
     "forks": 0,
     "updatedAt": "2026-03-09",
     "url": "https://github.com/henryperkins/ai-cli-web-funnel",
+    "defaultBranch": "main",
     "topics": [
       "typescript",
       "cli",
@@ -47,6 +49,7 @@
     "forks": 0,
     "updatedAt": "2026-03-05",
     "url": "https://github.com/henryperkins/dj-judas",
+    "defaultBranch": "main",
     "topics": [
       "typescript",
       "ai",
@@ -65,6 +68,7 @@
     "forks": 0,
     "updatedAt": "2026-02-19",
     "url": "https://github.com/henryperkins/image-studio",
+    "defaultBranch": "main",
     "topics": [
       "typescript",
       "azure-openai",
@@ -78,17 +82,22 @@
   },
   {
     "name": "web-fetch",
-    "description": "Web content fetching and extraction utility built with TypeScript.",
+    "displayName": "Web Fetch MCP",
+    "description": "MCP server for safe, high-signal web browsing and content fetching for LLM agents — five tools (fetch, extract, chunk, compact, AI search), SSRF protection, and Cloudflare AI Search grounding.",
     "language": "TypeScript",
     "stars": 0,
     "forks": 0,
-    "updatedAt": "2026-01-23",
+    "updatedAt": "2026-03-24",
     "url": "https://github.com/henryperkins/web-fetch",
+    "defaultBranch": "master",
     "topics": [
       "typescript",
-      "web",
-      "fetch",
-      "scraping"
+      "mcp",
+      "web-fetch",
+      "llm",
+      "content-extraction",
+      "playwright",
+      "cloudflare"
     ],
     "featured": true,
     "origin": "curated",
@@ -97,20 +106,22 @@
   {
     "name": "ai-prompt-pro",
     "displayName": "Prompt Forge",
-    "description": "Full-stack AI prompt building and community platform with a structured builder, quality scoring, streaming Codex enhancement, private library, and a public community feed with profiles, upvotes, comments, and remix attribution.",
+    "description": "Structured prompt builder and community platform with quality scoring, GitHub App repository context, Neon-backed persistence, and a streaming Codex enhancement service.",
     "language": "TypeScript",
     "stars": 0,
     "forks": 0,
-    "updatedAt": "2026-03-12",
+    "updatedAt": "2026-03-23",
     "url": "https://github.com/henryperkins/ai-prompt-pro",
+    "defaultBranch": "main",
+    "homepage": "https://prompt.lakefrontdigital.io",
     "demoUrl": "https://prompt.lakefrontdigital.io",
     "topics": [
       "typescript",
       "react",
-      "ai",
       "prompts",
-      "neon-postgres",
-      "azure",
+      "neon",
+      "codex-sdk",
+      "github-app",
       "community"
     ],
     "featured": true,
@@ -118,18 +129,44 @@
     "access": "public"
   },
   {
-    "name": "wp-hperkins-com",
-    "description": "WordPress child theme and AI-plugin workspace powering hperkins.com, with custom blocks, REST contracts, and smoke checks.",
+    "name": "flavor-agent",
+    "displayName": "Flavor Agent",
+    "description": "WordPress plugin that adds grounded AI recommendations to Gutenberg editing flows, backed by retrieval and shared runtime APIs.",
     "language": "PHP",
     "stars": 0,
     "forks": 0,
-    "updatedAt": "2026-03-07",
-    "url": "https://github.com/henryperkins/wp-hperkins-com",
+    "updatedAt": "2026-03-24",
+    "url": "https://github.com/henryperkins/flavor-agent",
+    "defaultBranch": "master",
     "topics": [
       "wordpress",
+      "gutenberg",
       "php",
-      "portfolio",
-      "cms"
+      "ai",
+      "qdrant",
+      "cloudflare"
+    ],
+    "featured": false,
+    "origin": "curated",
+    "access": "public"
+  },
+  {
+    "name": "wp-hperkins-com",
+    "displayName": "WordPress Portfolio",
+    "description": "Public WordPress repository housing the henrys-digital-canvas block theme, REST contracts, dynamic work and blog routes, and live smoke checks for the portfolio site.",
+    "language": "PHP",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2026-03-19",
+    "url": "https://github.com/henryperkins/wp-hperkins-com",
+    "defaultBranch": "main",
+    "topics": [
+      "wordpress",
+      "block-theme",
+      "gutenberg",
+      "rest-api",
+      "playwright",
+      "portfolio"
     ],
     "featured": true,
     "origin": "curated",
@@ -137,22 +174,46 @@
   },
   {
     "name": "henry-s-digital-canvas",
-    "description": "React + TypeScript portfolio SPA deployed to Cloudflare Workers — showcases work, resume, blog, and AI project case studies.",
+    "displayName": "HPerkins.com",
+    "description": "Private React 19 + Vite 7 portfolio and Cloudflare Worker runtime with page-law enforcement, GitHub proof routes, and evidence-led work case studies.",
     "language": "TypeScript",
     "stars": 0,
     "forks": 0,
-    "updatedAt": "2026-03-08",
+    "updatedAt": "2026-04-05",
     "url": "https://hperkins.com",
     "topics": [
       "react",
-      "typescript",
-      "tailwindcss",
+      "vite",
       "cloudflare-workers",
-      "portfolio"
+      "page-laws",
+      "github-proofs",
+      "turnstile"
     ],
     "featured": true,
     "origin": "curated",
     "access": "private"
+  },
+  {
+    "name": "codex",
+    "displayName": "Codex Fork",
+    "description": "Public fork of OpenAI Codex used for targeted runtime and state work, including rollout memory-mode safeguards in the Rust agent runtime.",
+    "language": "Rust",
+    "stars": 0,
+    "forks": 0,
+    "updatedAt": "2026-03-19",
+    "url": "https://github.com/henryperkins/codex",
+    "defaultBranch": "main",
+    "topics": [
+      "rust",
+      "agents",
+      "cli",
+      "mcp",
+      "fork",
+      "runtime"
+    ],
+    "featured": false,
+    "origin": "curated",
+    "access": "public"
   },
   {
     "name": "docs",
@@ -162,6 +223,7 @@
     "forks": 0,
     "updatedAt": "2025-01-01",
     "url": "https://github.com/henryperkins/docs",
+    "defaultBranch": "main",
     "topics": [
       "python",
       "documentation",
@@ -181,6 +243,7 @@
     "forks": 0,
     "updatedAt": "2025-06-01",
     "url": "https://github.com/henryperkins/mobile-rag-app",
+    "defaultBranch": "main",
     "topics": [
       "react-native",
       "typescript",
@@ -200,6 +263,7 @@
     "forks": 0,
     "updatedAt": "2025-08-01",
     "url": "https://github.com/henryperkins/claude-code",
+    "defaultBranch": "main",
     "topics": [
       "javascript",
       "claude",
@@ -219,6 +283,7 @@
     "forks": 0,
     "updatedAt": "2025-07-01",
     "url": "https://github.com/henryperkins/agentic-rag",
+    "defaultBranch": "main",
     "topics": [
       "typescript",
       "rag",
@@ -238,6 +303,7 @@
     "forks": 0,
     "updatedAt": "2025-05-01",
     "url": "https://github.com/henryperkins/mystic-tarot",
+    "defaultBranch": "main",
     "topics": [
       "javascript",
       "tarot",
@@ -257,6 +323,7 @@
     "forks": 0,
     "updatedAt": "2025-04-01",
     "url": "https://github.com/henryperkins/bookmark-extension",
+    "defaultBranch": "main",
     "topics": [
       "javascript",
       "browser-extension",
@@ -276,6 +343,7 @@
     "forks": 0,
     "updatedAt": "2025-03-01",
     "url": "https://github.com/henryperkins/azure_chatapp",
+    "defaultBranch": "main",
     "topics": [
       "python",
       "azure",
@@ -283,7 +351,7 @@
       "jwt",
       "chat"
     ],
-    "featured": true,
+    "featured": false,
     "origin": "curated",
     "access": "public"
   },
@@ -295,6 +363,7 @@
     "forks": 0,
     "updatedAt": "2025-02-01",
     "url": "https://github.com/henryperkins/chatter",
+    "defaultBranch": "main",
     "topics": [
       "python",
       "flask",
@@ -314,6 +383,7 @@
     "forks": 0,
     "updatedAt": "2025-01-15",
     "url": "https://github.com/henryperkins/document-qa",
+    "defaultBranch": "main",
     "topics": [
       "python",
       "streamlit",
@@ -333,6 +403,7 @@
     "forks": 0,
     "updatedAt": "2025-06-15",
     "url": "https://github.com/henryperkins/video_processing_toolkit",
+    "defaultBranch": "main",
     "topics": [
       "python",
       "video",
@@ -352,6 +423,7 @@
     "forks": 0,
     "updatedAt": "2025-09-01",
     "url": "https://github.com/henryperkins/my-mcp-github",
+    "defaultBranch": "main",
     "topics": [
       "typescript",
       "mcp",
@@ -371,6 +443,7 @@
     "forks": 0,
     "updatedAt": "2025-04-15",
     "url": "https://github.com/henryperkins/newfolder",
+    "defaultBranch": "main",
     "topics": [
       "typescript",
       "document-management",
@@ -390,6 +463,7 @@
     "forks": 0,
     "updatedAt": "2025-02-15",
     "url": "https://github.com/henryperkins/real_time_chat_app",
+    "defaultBranch": "main",
     "topics": [
       "python",
       "azure",
@@ -409,6 +483,7 @@
     "forks": 0,
     "updatedAt": "2025-05-15",
     "url": "https://github.com/henryperkins/rememberliterally",
+    "defaultBranch": "main",
     "topics": [
       "python",
       "flask",
@@ -428,6 +503,7 @@
     "forks": 0,
     "updatedAt": "2025-01-10",
     "url": "https://github.com/henryperkins/simple",
+    "defaultBranch": "main",
     "topics": [
       "python",
       "documentation",

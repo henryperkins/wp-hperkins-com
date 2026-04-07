@@ -2224,14 +2224,25 @@
 					{ className: 'hdc-blog-post__comment-row' },
 					h(
 						'div',
-						{ className: 'hdc-blog-post__comment-avatar', 'aria-hidden': 'true' },
+						{
+							className: 'hdc-blog-post__comment-avatar',
+							'aria-hidden': 'true',
+						},
 						comment.authorAvatarUrl
 							? h( 'img', {
-								alt: '',
-								className: 'hdc-blog-post__comment-avatar-image',
-								src: comment.authorAvatarUrl,
-							} )
-							: h( 'span', { className: 'hdc-blog-post__comment-avatar-fallback' }, getAuthorInitials( comment.authorName ) )
+									alt: '',
+									className:
+										'hdc-blog-post__comment-avatar-image',
+									src: comment.authorAvatarUrl,
+							  } )
+							: h(
+									'span',
+									{
+										className:
+											'hdc-blog-post__comment-avatar-fallback',
+									},
+									getAuthorInitials( comment.authorName )
+							  )
 					),
 					h(
 						'div',
@@ -2245,44 +2256,56 @@
 								{ className: 'hdc-blog-post__comment-actions' },
 								comment.link
 									? h(
-										'a',
-										{
-											className: 'hdc-blog-post__comment-link',
-											href: comment.link,
-											rel: 'noopener noreferrer',
-											target: '_blank',
-										},
-										'View on WordPress'
-									)
-									: null,
-								args.commentsOpen && typeof args.onReply === 'function'
-									? h(
-										'button',
-										{
-											className: 'hdc-blog-post__comment-reply',
-											disabled: !! args.isReplyDisabled,
-											onClick: function () {
-												args.onReply( comment );
+											'a',
+											{
+												className:
+													'hdc-blog-post__comment-link',
+												href: comment.link,
+												rel: 'noopener noreferrer',
+												target: '_blank',
 											},
-											type: 'button',
-										},
-										renderLucideIcon( h, 'reply', { size: 14 } ),
-										h( 'span', null, 'Reply' )
-									)
+											'View on WordPress'
+									  )
+									: null,
+								args.commentsOpen &&
+									typeof args.onReply === 'function'
+									? h(
+											'button',
+											{
+												className:
+													'hdc-blog-post__comment-reply',
+												disabled:
+													!! args.isReplyDisabled,
+												onClick() {
+													args.onReply( comment );
+												},
+												type: 'button',
+											},
+											renderLucideIcon( h, 'reply', {
+												size: 14,
+											} ),
+											h( 'span', null, 'Reply' )
+									  )
 									: null
-								)
-							),
-							h( 'div', {
-								className: 'hdc-blog-post__comment-content',
-								dangerouslySetInnerHTML: { __html: comment.contentHtml },
-							} )
-						)
+							)
+						),
+						h( 'div', {
+							className: 'hdc-blog-post__comment-content',
+							dangerouslySetInnerHTML: {
+								__html: comment.contentHtml,
+							},
+						} )
 					)
-				),
-				comment.children.length
-					? h(
+				)
+			),
+			comment.children.length
+				? h(
 						'ol',
-						{ className: 'hdc-blog-post__comment-children' + ( depth >= 2 ? ' is-deep' : '' ) },
+						{
+							className:
+								'hdc-blog-post__comment-children' +
+								( depth >= 2 ? ' is-deep' : '' ),
+						},
 						comment.children.map( function ( childComment ) {
 							return renderCommentThreadItem( {
 								comment: childComment,
@@ -2292,16 +2315,19 @@
 								onReply: args.onReply,
 							} );
 						} )
-					)
-					: null
-			);
+				  )
+				: null
+		);
 	}
 
 	function BlogPostApp( props ) {
 		const config = props.config;
 		const initialSlug = inferSlugFromLocation( config.slug );
 		const initialPosts = getInlineFallbackPosts( config );
-		const initialPost = getInitialPostFromPosts( initialPosts, initialSlug );
+		const initialPost = getInitialPostFromPosts(
+			initialPosts,
+			initialSlug
+		);
 		const [ resolvedSlug, setResolvedSlug ] = useState( initialSlug );
 		const [ retryCount, setRetryCount ] = useState( 0 );
 		const [ state, setState ] = useState( function () {
@@ -2333,26 +2359,36 @@
 		} );
 		const [ commentFieldErrors, setCommentFieldErrors ] = useState( {} );
 		const [ commentReplyTarget, setCommentReplyTarget ] = useState( null );
-		const [ commentSubmitMessage, setCommentSubmitMessage ] = useState( '' );
+		const [ commentSubmitMessage, setCommentSubmitMessage ] =
+			useState( '' );
 		const [ commentSubmitError, setCommentSubmitError ] = useState( '' );
-		const [ isCommentSubmitting, setIsCommentSubmitting ] = useState( false );
-		const [ isCommentVerificationPending, setIsCommentVerificationPending ] = useState( false );
-		const [ commentTurnstileToken, setCommentTurnstileToken ] = useState( '' );
-		const [ commentTurnstileError, setCommentTurnstileError ] = useState( '' );
+		const [ isCommentSubmitting, setIsCommentSubmitting ] =
+			useState( false );
+		const [
+			isCommentVerificationPending,
+			setIsCommentVerificationPending,
+		] = useState( false );
+		const [ commentTurnstileToken, setCommentTurnstileToken ] =
+			useState( '' );
+		const [ commentTurnstileError, setCommentTurnstileError ] =
+			useState( '' );
 		const rootRef = useRef( null );
 		const shareCopyResetTimeoutRef = useRef( null );
 		const commentTurnstileControlRef = useRef( {
-			focus: function () {},
-			reset: function () {},
-			execute: function () {
+			focus() {},
+			reset() {},
+			execute() {
 				return false;
 			},
 		} );
 		const pendingCommentSubmissionRef = useRef( null );
 
-		const signature = useMemo( function () {
-			return JSON.stringify( config );
-		}, [ config ] );
+		const signature = useMemo(
+			function () {
+				return JSON.stringify( config );
+			},
+			[ config ]
+		);
 
 		useEffect(
 			function () {
@@ -2364,7 +2400,10 @@
 		useEffect(
 			function () {
 				const nextPosts = getInlineFallbackPosts( config );
-				const nextPost = getInitialPostFromPosts( nextPosts, resolvedSlug );
+				const nextPost = getInitialPostFromPosts(
+					nextPosts,
+					resolvedSlug
+				);
 
 				setState( function () {
 					return {
@@ -2387,7 +2426,9 @@
 				}
 
 				if ( state.post && state.post.title ) {
-					document.title = buildPageMetadataTitle( state.post.seoTitle || state.post.title );
+					document.title = buildPageMetadataTitle(
+						state.post.seoTitle || state.post.title
+					);
 					return;
 				}
 
@@ -2401,17 +2442,14 @@
 			[ state.errorType, state.isFetching, state.post ]
 		);
 
-		useEffect(
-			function () {
-				return function () {
-					if ( shareCopyResetTimeoutRef.current ) {
-						window.clearTimeout( shareCopyResetTimeoutRef.current );
-					}
-					pendingCommentSubmissionRef.current = null;
-				};
-			},
-			[]
-		);
+		useEffect( function () {
+			return function () {
+				if ( shareCopyResetTimeoutRef.current ) {
+					window.clearTimeout( shareCopyResetTimeoutRef.current );
+				}
+				pendingCommentSubmissionRef.current = null;
+			};
+		}, [] );
 
 		useEffect(
 			function () {
@@ -2446,23 +2484,36 @@
 						errorType: 'not-found',
 						post: null,
 						posts: getInlineFallbackPosts( config ),
-						hasPlaceholderData: getInlineFallbackPosts( config ).length > 0,
+						hasPlaceholderData:
+							getInlineFallbackPosts( config ).length > 0,
 					} );
 					return;
 				}
 
 				let cancelled = false;
-				const abortController = typeof AbortController === 'function' ? new AbortController() : null;
-				const requestOptions = abortController ? { signal: abortController.signal } : {};
+				const abortController =
+					typeof AbortController === 'function'
+						? new AbortController()
+						: null;
+				const requestOptions = abortController
+					? { signal: abortController.signal }
+					: {};
 
 				function shouldAbort( error ) {
-					return cancelled || ( abortController && abortController.signal.aborted ) || isAbortError( error );
+					return (
+						cancelled ||
+						( abortController && abortController.signal.aborted ) ||
+						isAbortError( error )
+					);
 				}
 
 				async function load() {
 					const inlinePosts = getInlineFallbackPosts( config );
 					setState( function () {
-						const nextPost = getInitialPostFromPosts( inlinePosts, resolvedSlug );
+						const nextPost = getInitialPostFromPosts(
+							inlinePosts,
+							resolvedSlug
+						);
 						return {
 							isFetching: true,
 							error: '',
@@ -2476,8 +2527,13 @@
 					let fallbackPosts = inlinePosts;
 					let listFetchFailed = false;
 					try {
-						const postsPayload = await fetchJson( config.postsEndpoint, requestOptions );
-						fallbackPosts = normalizePosts( resolveBlogPayload( postsPayload ) );
+						const postsPayload = await fetchJson(
+							config.postsEndpoint,
+							requestOptions
+						);
+						fallbackPosts = normalizePosts(
+							resolveBlogPayload( postsPayload )
+						);
 					} catch ( endpointError ) {
 						if ( shouldAbort( endpointError ) ) {
 							return;
@@ -2485,8 +2541,13 @@
 
 						listFetchFailed = true;
 						try {
-							const fallbackPayload = await fetchJson( config.fallbackUrl, requestOptions );
-							fallbackPosts = normalizePosts( resolveBlogPayload( fallbackPayload ) );
+							const fallbackPayload = await fetchJson(
+								config.fallbackUrl,
+								requestOptions
+							);
+							fallbackPosts = normalizePosts(
+								resolveBlogPayload( fallbackPayload )
+							);
 							listFetchFailed = false;
 						} catch ( fallbackError ) {
 							if ( shouldAbort( fallbackError ) ) {
@@ -2501,14 +2562,19 @@
 						return;
 					}
 
-					let currentPost = fallbackPosts.find( function ( item ) {
-						return item.slug === resolvedSlug;
-					} ) || null;
+					let currentPost =
+						fallbackPosts.find( function ( item ) {
+							return item.slug === resolvedSlug;
+						} ) || null;
 					let detailFetchError = null;
 
 					if ( currentPost ) {
 						try {
-							const postPayload = await fetchJson( config.endpointBase + encodeURIComponent( resolvedSlug ), requestOptions );
+							const postPayload = await fetchJson(
+								config.endpointBase +
+									encodeURIComponent( resolvedSlug ),
+								requestOptions
+							);
 							currentPost = normalizePost( postPayload, 0 );
 						} catch ( postError ) {
 							if ( shouldAbort( postError ) ) {
@@ -2520,7 +2586,11 @@
 						}
 					} else {
 						try {
-							const postPayload = await fetchJson( config.endpointBase + encodeURIComponent( resolvedSlug ), requestOptions );
+							const postPayload = await fetchJson(
+								config.endpointBase +
+									encodeURIComponent( resolvedSlug ),
+								requestOptions
+							);
 							currentPost = normalizePost( postPayload, 0 );
 						} catch ( postError ) {
 							if ( shouldAbort( postError ) ) {
@@ -2536,14 +2606,22 @@
 						return;
 					}
 
-					const hasFetchError = ( listFetchFailed && ! fallbackPosts.length ) || ( detailFetchError && ! isNotFoundError( detailFetchError ) && ! currentPost );
+					const hasFetchError =
+						( listFetchFailed && ! fallbackPosts.length ) ||
+						( detailFetchError &&
+							! isNotFoundError( detailFetchError ) &&
+							! currentPost );
 
 					if ( ! currentPost ) {
 						if ( ! cancelled ) {
 							setState( {
 								isFetching: false,
-								error: hasFetchError ? 'Could not load blog post.' : 'Post not found.',
-								errorType: hasFetchError ? 'fetch' : 'not-found',
+								error: hasFetchError
+									? 'Could not load blog post.'
+									: 'Post not found.',
+								errorType: hasFetchError
+									? 'fetch'
+									: 'not-found',
 								post: null,
 								posts: fallbackPosts,
 								hasPlaceholderData: inlinePosts.length > 0,
@@ -2552,9 +2630,11 @@
 						return;
 					}
 
-					const relatedSource = fallbackPosts.some( function ( item ) {
-						return item.slug === currentPost.slug;
-					} )
+					const relatedSource = fallbackPosts.some(
+						function ( item ) {
+							return item.slug === currentPost.slug;
+						}
+					)
 						? fallbackPosts
 						: [ currentPost ].concat( fallbackPosts );
 
@@ -2589,8 +2669,13 @@
 				}
 
 				let cancelled = false;
-				const abortController = typeof AbortController === 'function' ? new AbortController() : null;
-				const requestOptions = abortController ? { signal: abortController.signal } : {};
+				const abortController =
+					typeof AbortController === 'function'
+						? new AbortController()
+						: null;
+				const requestOptions = abortController
+					? { signal: abortController.signal }
+					: {};
 				setCommentsState( function ( currentState ) {
 					return Object.assign( {}, currentState, {
 						isLoading: true,
@@ -2599,35 +2684,44 @@
 					} );
 				} );
 
-				fetchBlogComments( config, state.post.id, requestOptions ).then( function ( result ) {
-					if ( cancelled ) {
-						return;
-					}
+				fetchBlogComments( config, state.post.id, requestOptions )
+					.then( function ( result ) {
+						if ( cancelled ) {
+							return;
+						}
 
-					setCommentsState( {
-						comments: result.comments,
-						isLoading: false,
-						isError: false,
-						isPartial: result.isPartial,
-						submitEnabled: !! config.commentSubmitEnabled && result.submitEnabled,
-						total: result.total,
-						totalPages: result.totalPages,
-					} );
-				} ).catch( function ( error ) {
-					if ( cancelled || ( abortController && abortController.signal.aborted ) || isAbortError( error ) ) {
-						return;
-					}
+						setCommentsState( {
+							comments: result.comments,
+							isLoading: false,
+							isError: false,
+							isPartial: result.isPartial,
+							submitEnabled:
+								!! config.commentSubmitEnabled &&
+								result.submitEnabled,
+							total: result.total,
+							totalPages: result.totalPages,
+						} );
+					} )
+					.catch( function ( error ) {
+						if (
+							cancelled ||
+							( abortController &&
+								abortController.signal.aborted ) ||
+							isAbortError( error )
+						) {
+							return;
+						}
 
-					setCommentsState( {
-						comments: [],
-						isLoading: false,
-						isError: true,
-						isPartial: false,
-						submitEnabled: false,
-						total: 0,
-						totalPages: 0,
+						setCommentsState( {
+							comments: [],
+							isLoading: false,
+							isError: true,
+							isPartial: false,
+							submitEnabled: false,
+							total: 0,
+							totalPages: 0,
+						} );
 					} );
-				} );
 
 				return function () {
 					cancelled = true;
@@ -2636,7 +2730,11 @@
 					}
 				};
 			},
-			[ config.commentSubmitEnabled, config.commentsEndpoint, state.post ? state.post.id : 0 ]
+			[
+				config.commentSubmitEnabled,
+				config.commentsEndpoint,
+				state.post ? state.post.id : 0,
+			]
 		);
 
 		useEffect(
@@ -2646,13 +2744,18 @@
 				}
 
 				function handleScroll() {
-					const total = document.documentElement.scrollHeight - window.innerHeight;
-					const nextProgress = total > 0 ? ( window.scrollY / total ) * 100 : 0;
+					const total =
+						document.documentElement.scrollHeight -
+						window.innerHeight;
+					const nextProgress =
+						total > 0 ? ( window.scrollY / total ) * 100 : 0;
 					setProgress( Math.max( 0, Math.min( 100, nextProgress ) ) );
 				}
 
 				handleScroll();
-				window.addEventListener( 'scroll', handleScroll, { passive: true } );
+				window.addEventListener( 'scroll', handleScroll, {
+					passive: true,
+				} );
 				window.addEventListener( 'resize', handleScroll );
 
 				return function () {
@@ -2670,50 +2773,81 @@
 					return;
 				}
 
-				var raf = requestAnimationFrame( function () {
-					var container = rootRef.current;
+				const raf = requestAnimationFrame( function () {
+					let container = rootRef.current;
 					if ( ! container ) {
 						container = document;
 					}
 
 					upgradeHtmlArticleCodeBlocks( container );
 
-					var codeBlocks = container.querySelectorAll( '.hdc-blog-post__code-block' );
+					const codeBlocks = container.querySelectorAll(
+						'.hdc-blog-post__code-block'
+					);
 					codeBlocks.forEach( function ( block ) {
-						var codeEl = block.querySelector( '.hdc-blog-post__code code' );
+						const codeEl = block.querySelector(
+							'.hdc-blog-post__code code'
+						);
 						if ( ! codeEl ) {
 							return;
 						}
 
-						var lang = block.getAttribute( 'data-language' ) || '';
+						const lang =
+							block.getAttribute( 'data-language' ) || '';
 						highlightCodeElement( codeEl, lang );
 
-						var copyButton = block.querySelector( '.hdc-blog-post__code-copy' );
-						if ( ! copyButton || copyButton.dataset.hdcBound === 'true' ) {
+						const copyButton = block.querySelector(
+							'.hdc-blog-post__code-copy'
+						);
+						if (
+							! copyButton ||
+							copyButton.dataset.hdcBound === 'true'
+						) {
 							return;
 						}
 
 						copyButton.dataset.hdcBound = 'true';
 						copyButton.addEventListener( 'click', function () {
-							var codeText = codeEl.textContent || '';
-							var copyText = copyButton.querySelector( '.hdc-blog-post__code-copy-text' );
+							const codeText = codeEl.textContent || '';
+							const copyText = copyButton.querySelector(
+								'.hdc-blog-post__code-copy-text'
+							);
 
-							copyCodeWithFallback( codeText ).then( function ( didCopy ) {
-								copyButton.setAttribute( 'data-copy-state', didCopy ? 'success' : 'error' );
-								copyButton.setAttribute( 'aria-label', didCopy ? 'Code copied' : 'Copy failed' );
-								if ( copyText ) {
-									copyText.textContent = didCopy ? 'Copied' : 'Error';
-								}
-
-								window.clearTimeout( copyButton._hdcCopyResetTimeout || 0 );
-								copyButton._hdcCopyResetTimeout = window.setTimeout( function () {
-									copyButton.setAttribute( 'data-copy-state', 'idle' );
-									copyButton.setAttribute( 'aria-label', 'Copy code block' );
+							copyCodeWithFallback( codeText ).then(
+								function ( didCopy ) {
+									copyButton.setAttribute(
+										'data-copy-state',
+										didCopy ? 'success' : 'error'
+									);
+									copyButton.setAttribute(
+										'aria-label',
+										didCopy ? 'Code copied' : 'Copy failed'
+									);
 									if ( copyText ) {
-										copyText.textContent = 'Copy';
+										copyText.textContent = didCopy
+											? 'Copied'
+											: 'Error';
 									}
-								}, 1800 );
-							} );
+
+									window.clearTimeout(
+										copyButton._hdcCopyResetTimeout || 0
+									);
+									copyButton._hdcCopyResetTimeout =
+										window.setTimeout( function () {
+											copyButton.setAttribute(
+												'data-copy-state',
+												'idle'
+											);
+											copyButton.setAttribute(
+												'aria-label',
+												'Copy code block'
+											);
+											if ( copyText ) {
+												copyText.textContent = 'Copy';
+											}
+										}, 1800 );
+								}
+							);
 						} );
 					} );
 				} );
@@ -2731,16 +2865,19 @@
 					return;
 				}
 
-				var existing = document.getElementById( 'hdc-blog-post-jsonld' );
+				const existing = document.getElementById(
+					'hdc-blog-post-jsonld'
+				);
 				if ( existing ) {
 					existing.remove();
 				}
 
-				var ld = {
+				const ld = {
 					'@context': 'https://schema.org',
 					'@type': 'BlogPosting',
 					headline: state.post.title,
-					description: state.post.seoDescription || state.post.excerpt,
+					description:
+						state.post.seoDescription || state.post.excerpt,
 					datePublished: state.post.date,
 					dateModified: state.post.modifiedDate || state.post.date,
 					author: {
@@ -2749,22 +2886,35 @@
 						url: state.post.authorUrl || undefined,
 					},
 					image: state.post.featuredImageUrl
-						? [ new URL( state.post.featuredImageUrl, window.location.origin ).href ]
+						? [
+								new URL(
+									state.post.featuredImageUrl,
+									window.location.origin
+								).href,
+						  ]
 						: undefined,
 					mainEntityOfPage: buildPortfolioBlogUrl( state.post.slug ),
 					url: buildPortfolioBlogUrl( state.post.slug ),
-					keywords: state.post.tags && state.post.tags.length ? state.post.tags.join( ', ' ) : undefined,
-					articleSection: state.post.categories && state.post.categories.length ? state.post.categories : undefined,
+					keywords:
+						state.post.tags && state.post.tags.length
+							? state.post.tags.join( ', ' )
+							: undefined,
+					articleSection:
+						state.post.categories && state.post.categories.length
+							? state.post.categories
+							: undefined,
 				};
 
-				var script = document.createElement( 'script' );
+				const script = document.createElement( 'script' );
 				script.type = 'application/ld+json';
 				script.id = 'hdc-blog-post-jsonld';
 				script.textContent = JSON.stringify( ld );
 				document.head.appendChild( script );
 
 				return function () {
-					var el = document.getElementById( 'hdc-blog-post-jsonld' );
+					const el = document.getElementById(
+						'hdc-blog-post-jsonld'
+					);
 					if ( el ) {
 						el.remove();
 					}
@@ -2779,19 +2929,22 @@
 					return [];
 				}
 
-				if ( state.post.relatedPosts && state.post.relatedPosts.length ) {
+				if (
+					state.post.relatedPosts &&
+					state.post.relatedPosts.length
+				) {
 					return state.post.relatedPosts.slice( 0, 2 );
 				}
 
-				var currentTags = ensureArray( state.post.tags );
-				var currentCategories = ensureArray( state.post.categories );
+				const currentTags = ensureArray( state.post.tags );
+				const currentCategories = ensureArray( state.post.categories );
 
 				function getSharedCount( current, candidate ) {
 					if ( ! current.length || ! candidate.length ) {
 						return 0;
 					}
 
-					var set = {};
+					const set = {};
 					current.forEach( function ( value ) {
 						set[ value ] = true;
 					} );
@@ -2807,9 +2960,17 @@
 					.map( function ( candidate ) {
 						return {
 							post: candidate,
-							sharedTags: getSharedCount( currentTags, ensureArray( candidate.tags ) ),
-							sharedCategories: getSharedCount( currentCategories, ensureArray( candidate.categories ) ),
-							publishedAt: parseDateValue( candidate.date ).getTime(),
+							sharedTags: getSharedCount(
+								currentTags,
+								ensureArray( candidate.tags )
+							),
+							sharedCategories: getSharedCount(
+								currentCategories,
+								ensureArray( candidate.categories )
+							),
+							publishedAt: parseDateValue(
+								candidate.date
+							).getTime(),
 						};
 					} )
 					.sort( function ( left, right ) {
@@ -2817,8 +2978,12 @@
 							return right.sharedTags - left.sharedTags;
 						}
 
-						if ( right.sharedCategories !== left.sharedCategories ) {
-							return right.sharedCategories - left.sharedCategories;
+						if (
+							right.sharedCategories !== left.sharedCategories
+						) {
+							return (
+								right.sharedCategories - left.sharedCategories
+							);
 						}
 
 						return right.publishedAt - left.publishedAt;
@@ -2832,13 +2997,17 @@
 		);
 		const markdownHeadings = useMemo(
 			function () {
-				return state.post && ! state.post.contentHtml ? getMarkdownHeadings( state.post.content ) : [];
+				return state.post && ! state.post.contentHtml
+					? getMarkdownHeadings( state.post.content )
+					: [];
 			},
 			[ state.post ]
 		);
 		const htmlArticleContent = useMemo(
 			function () {
-				return enhanceHtmlContent( state.post && state.post.contentHtml );
+				return enhanceHtmlContent(
+					state.post && state.post.contentHtml
+				);
 			},
 			[ state.post ]
 		);
@@ -2864,7 +3033,8 @@
 		const hasArticleSectionItems = articleSectionItems.length > 0;
 		const progressValue = Math.round( progress );
 		const isPostLookupPending = ! state.post && state.isFetching;
-		const hasPostLookupError = ! state.post && ! state.isFetching && state.errorType === 'fetch';
+		const hasPostLookupError =
+			! state.post && ! state.isFetching && state.errorType === 'fetch';
 		const commentTree = useMemo(
 			function () {
 				return buildCommentTree( commentsState.comments );
@@ -2877,23 +3047,34 @@
 					return [];
 				}
 
-				var tagLabels = {};
+				const tagLabels = {};
 				ensureArray( state.post.tags ).forEach( function ( tag ) {
 					tagLabels[ normalizeMetadataLabel( tag ) ] = true;
 				} );
 
-				return ensureArray( state.post.categories ).filter( function ( category, index, categories ) {
-					var normalizedCategory = normalizeMetadataLabel( category );
-					if ( ! normalizedCategory ) {
-						return false;
+				return ensureArray( state.post.categories ).filter(
+					function ( category, index, categories ) {
+						const normalizedCategory =
+							normalizeMetadataLabel( category );
+						if ( ! normalizedCategory ) {
+							return false;
+						}
+
+						const firstIndex = categories.findIndex(
+							function ( candidate ) {
+								return (
+									normalizeMetadataLabel( candidate ) ===
+									normalizedCategory
+								);
+							}
+						);
+
+						return (
+							firstIndex === index &&
+							! tagLabels[ normalizedCategory ]
+						);
 					}
-
-					var firstIndex = categories.findIndex( function ( candidate ) {
-						return normalizeMetadataLabel( candidate ) === normalizedCategory;
-					} );
-
-					return firstIndex === index && ! tagLabels[ normalizedCategory ];
-				} );
+				);
 			},
 			[ state.post ]
 		);
@@ -2910,7 +3091,7 @@
 		if ( hasPostLookupError ) {
 			return h( BlogPostErrorState, {
 				blogIndexUrl: config.blogIndexUrl,
-				onRetry: function () {
+				onRetry() {
 					setRetryCount( function ( currentValue ) {
 						return currentValue + 1;
 					} );
@@ -2919,7 +3100,9 @@
 		}
 
 		if ( ! state.post ) {
-			return h( BlogPostNotFoundState, { blogIndexUrl: config.blogIndexUrl } );
+			return h( BlogPostNotFoundState, {
+				blogIndexUrl: config.blogIndexUrl,
+			} );
 		}
 
 		const post = state.post;
@@ -2928,9 +3111,16 @@
 		const postHasUpdatedDate = hasUpdatedDate( post );
 		const shareUrl = buildPortfolioBlogUrl( post.slug || resolvedSlug );
 		const metaTitle = post.seoTitle || post.title;
-		const shareMessage = post.shareMessage || post.seoDescription || post.excerpt;
-		const postMetaSummary = post.seoDescription && post.seoDescription !== post.excerpt ? post.seoDescription : '';
-		const articlePreview = ( post.excerpt || '' ).trim() || ( post.seoDescription || '' ).trim() || '';
+		const shareMessage =
+			post.shareMessage || post.seoDescription || post.excerpt;
+		const postMetaSummary =
+			post.seoDescription && post.seoDescription !== post.excerpt
+				? post.seoDescription
+				: '';
+		const articlePreview =
+			( post.excerpt || '' ).trim() ||
+			( post.seoDescription || '' ).trim() ||
+			'';
 		const hasWordPressFooterDetails = !! postMetaSummary;
 		const shareLinkedInUrl = buildLinkedInShareUrl( shareUrl );
 		const shareEmailUrl = buildEmailShareUrl( {
@@ -2938,17 +3128,30 @@
 			title: metaTitle || 'Henry Perkins article',
 			url: shareUrl,
 		} );
-		const categoriesMeta = distinctCategories.length ? 'Filed under ' + distinctCategories.join( ', ' ) : '';
-		const discussionHref = post.discussionUrl || post.wordpressPermalink || '';
+		const categoriesMeta = distinctCategories.length
+			? 'Filed under ' + distinctCategories.join( ', ' )
+			: '';
+		const discussionHref =
+			post.discussionUrl || post.wordpressPermalink || '';
 		const hasWordPressThread = typeof post.id === 'number' && post.id > 0;
-		const resolvedRelatedPosts = relatedPosts.reduce( function ( resolved, related ) {
+		const resolvedRelatedPosts = relatedPosts.reduce( function (
+			resolved,
+			related
+		) {
 			const isMirroredPost = state.posts.some( function ( candidate ) {
-				return candidate.slug !== post.slug && candidate.slug === related.slug;
+				return (
+					candidate.slug !== post.slug &&
+					candidate.slug === related.slug
+				);
 			} );
 
 			if ( isMirroredPost ) {
 				resolved.push( {
-					href: config.blogIndexUrl.replace( /\/+$/, '' ) + '/' + related.slug + '/',
+					href:
+						config.blogIndexUrl.replace( /\/+$/, '' ) +
+						'/' +
+						related.slug +
+						'/',
 					key: related._key || related.slug,
 					linkType: 'internal',
 					post: related,
@@ -2967,26 +3170,41 @@
 
 			return resolved;
 		}, [] );
-		const isCommentsQuerySettled = ! commentsState.isLoading && ! commentsState.isError;
-		const publishedCommentCount = commentsState.total || commentsState.comments.length;
-		const shouldShowCommentCount = hasWordPressThread && isCommentsQuerySettled;
-		const canSubmitInline = hasWordPressThread && post.commentsOpen === true && isCommentsQuerySettled && commentsState.submitEnabled && !! config.turnstile.siteKey;
-		const shouldShowInlineSubmitFallback = hasWordPressThread && post.commentsOpen === true && isCommentsQuerySettled && ! canSubmitInline;
-		const discussionStatusDescription = post.commentsOpen === true
-			? 'Comments are open on the original WordPress post.'
-			: post.commentsOpen === false
+		const isCommentsQuerySettled =
+			! commentsState.isLoading && ! commentsState.isError;
+		const publishedCommentCount =
+			commentsState.total || commentsState.comments.length;
+		const shouldShowCommentCount =
+			hasWordPressThread && isCommentsQuerySettled;
+		const canSubmitInline =
+			hasWordPressThread &&
+			post.commentsOpen === true &&
+			isCommentsQuerySettled &&
+			commentsState.submitEnabled &&
+			!! config.turnstile.siteKey;
+		const shouldShowInlineSubmitFallback =
+			hasWordPressThread &&
+			post.commentsOpen === true &&
+			isCommentsQuerySettled &&
+			! canSubmitInline;
+		const discussionStatusDescription =
+			post.commentsOpen === true
+				? 'Comments are open on the original WordPress post.'
+				: post.commentsOpen === false
 				? 'Comments are currently closed on the original WordPress post.'
 				: 'Visit the original WordPress post to check discussion availability.';
 		const contentNode = post.contentHtml
 			? h( 'div', {
-				className: 'hdc-blog-post__content prose-custom',
-				dangerouslySetInnerHTML: { __html: htmlArticleContent.contentHtml },
-			} )
+					className: 'hdc-blog-post__content prose-custom',
+					dangerouslySetInnerHTML: {
+						__html: htmlArticleContent.contentHtml,
+					},
+			  } )
 			: h(
-				'div',
-				{ className: 'hdc-blog-post__content prose-custom' },
-				renderContentWithCode( post.content, markdownHeadings )
-			);
+					'div',
+					{ className: 'hdc-blog-post__content prose-custom' },
+					renderContentWithCode( post.content, markdownHeadings )
+			  );
 
 		function handleShareCopy() {
 			if ( shareCopyResetTimeoutRef.current ) {
@@ -2994,27 +3212,45 @@
 			}
 
 			const rootNode = rootRef.current || document;
-			const button = rootNode.querySelector( '.hdc-blog-post__share-copy' );
+			const button = rootNode.querySelector(
+				'.hdc-blog-post__share-copy'
+			);
 			if ( ! button ) {
 				return;
 			}
 
-			const textNode = button.querySelector( '.hdc-blog-post__share-copy-text' );
+			const textNode = button.querySelector(
+				'.hdc-blog-post__share-copy-text'
+			);
 			copyCodeWithFallback( shareUrl ).then( function ( didCopy ) {
-				button.setAttribute( 'data-copy-state', didCopy ? 'success' : 'error' );
-				button.setAttribute( 'aria-label', didCopy ? 'Article link copied' : 'Copy article link failed' );
+				button.setAttribute(
+					'data-copy-state',
+					didCopy ? 'success' : 'error'
+				);
+				button.setAttribute(
+					'aria-label',
+					didCopy ? 'Article link copied' : 'Copy article link failed'
+				);
 				if ( textNode ) {
-					textNode.textContent = didCopy ? 'Link copied' : 'Copy failed';
+					textNode.textContent = didCopy
+						? 'Link copied'
+						: 'Copy failed';
 				}
 
-				shareCopyResetTimeoutRef.current = window.setTimeout( function () {
-					button.setAttribute( 'data-copy-state', 'idle' );
-					button.setAttribute( 'aria-label', 'Copy article link' );
-					if ( textNode ) {
-						textNode.textContent = 'Copy article link';
-					}
-					shareCopyResetTimeoutRef.current = null;
-				}, COPY_FEEDBACK_DURATION_MS );
+				shareCopyResetTimeoutRef.current = window.setTimeout(
+					function () {
+						button.setAttribute( 'data-copy-state', 'idle' );
+						button.setAttribute(
+							'aria-label',
+							'Copy article link'
+						);
+						if ( textNode ) {
+							textNode.textContent = 'Copy article link';
+						}
+						shareCopyResetTimeoutRef.current = null;
+					},
+					COPY_FEEDBACK_DURATION_MS
+				);
 			} );
 		}
 
@@ -3047,7 +3283,10 @@
 				}
 				try {
 					const parsed = new URL( trimmed );
-					return parsed.protocol === 'http:' || parsed.protocol === 'https:' ? '' : 'Website must be a valid http or https URL';
+					return parsed.protocol === 'http:' ||
+						parsed.protocol === 'https:'
+						? ''
+						: 'Website must be a valid http or https URL';
 				} catch ( error ) {
 					return 'Website must be a valid http or https URL';
 				}
@@ -3085,13 +3324,30 @@
 
 		function validateCommentForm() {
 			const errors = {
-				authorName: validateCommentField( 'authorName', commentFormData.authorName ),
-				authorEmail: validateCommentField( 'authorEmail', commentFormData.authorEmail ),
-				authorUrl: validateCommentField( 'authorUrl', commentFormData.authorUrl ),
-				content: validateCommentField( 'content', commentFormData.content ),
+				authorName: validateCommentField(
+					'authorName',
+					commentFormData.authorName
+				),
+				authorEmail: validateCommentField(
+					'authorEmail',
+					commentFormData.authorEmail
+				),
+				authorUrl: validateCommentField(
+					'authorUrl',
+					commentFormData.authorUrl
+				),
+				content: validateCommentField(
+					'content',
+					commentFormData.content
+				),
 			};
 			setCommentFieldErrors( errors );
-			return ! errors.authorName && ! errors.authorEmail && ! errors.authorUrl && ! errors.content;
+			return (
+				! errors.authorName &&
+				! errors.authorEmail &&
+				! errors.authorUrl &&
+				! errors.content
+			);
 		}
 
 		function completeCommentSubmission( submission, token ) {
@@ -3100,39 +3356,64 @@
 			setCommentTurnstileError( '' );
 			setIsCommentSubmitting( true );
 
-			return submitComment( config, Object.assign( {}, submission, {
-				turnstileToken: token,
-			} ) ).then( function ( result ) {
-				setCommentSubmitMessage( result.moderationStatus === 'approved'
-					? 'Your comment is live and now appears in the discussion.'
-					: 'Your comment was submitted and is awaiting moderation before it appears here.' );
-				setCommentSubmitError( '' );
-				setCommentFormData( function ( currentState ) {
-					return Object.assign( {}, currentState, {
-						company: '',
-						content: '',
-					} );
-				} );
-				setCommentReplyTarget( null );
-				if ( result.comment && 'approved' === result.moderationStatus ) {
-					setCommentsState( function ( currentState ) {
-						const nextComments = dedupeComments( currentState.comments.concat( [ result.comment ] ) );
+			return submitComment(
+				config,
+				Object.assign( {}, submission, {
+					turnstileToken: token,
+				} )
+			)
+				.then( function ( result ) {
+					setCommentSubmitMessage(
+						result.moderationStatus === 'approved'
+							? 'Your comment is live and now appears in the discussion.'
+							: 'Your comment was submitted and is awaiting moderation before it appears here.'
+					);
+					setCommentSubmitError( '' );
+					setCommentFormData( function ( currentState ) {
 						return Object.assign( {}, currentState, {
-							comments: nextComments,
-							total: Math.max( currentState.total + 1, nextComments.length ),
-							totalPages: Math.max( currentState.totalPages, 1 ),
+							company: '',
+							content: '',
 						} );
 					} );
-				}
-			} ).catch( function ( error ) {
-				setCommentSubmitError( error instanceof Error ? error.message : 'Comment submission failed' );
-			} ).finally( function () {
-				pendingCommentSubmissionRef.current = null;
-				setIsCommentSubmitting( false );
-				setIsCommentVerificationPending( false );
-				setCommentTurnstileToken( '' );
-				commentTurnstileControlRef.current.reset();
-			} );
+					setCommentReplyTarget( null );
+					if (
+						result.comment &&
+						'approved' === result.moderationStatus
+					) {
+						setCommentsState( function ( currentState ) {
+							const nextComments = dedupeComments(
+								currentState.comments.concat( [
+									result.comment,
+								] )
+							);
+							return Object.assign( {}, currentState, {
+								comments: nextComments,
+								total: Math.max(
+									currentState.total + 1,
+									nextComments.length
+								),
+								totalPages: Math.max(
+									currentState.totalPages,
+									1
+								),
+							} );
+						} );
+					}
+				} )
+				.catch( function ( error ) {
+					setCommentSubmitError(
+						error instanceof Error
+							? error.message
+							: 'Comment submission failed'
+					);
+				} )
+				.finally( function () {
+					pendingCommentSubmissionRef.current = null;
+					setIsCommentSubmitting( false );
+					setIsCommentVerificationPending( false );
+					setCommentTurnstileToken( '' );
+					commentTurnstileControlRef.current.reset();
+				} );
 		}
 
 		function handleCommentSubmit( event ) {
@@ -3176,99 +3457,187 @@
 
 		return h(
 			'div',
-			{ ref: rootRef, className: 'hdc-blog-post__root' + ( prefersReducedMotion ? '' : ' hdc-blog-post__root--entering' ) },
+			{
+				ref: rootRef,
+				className:
+					'hdc-blog-post__root' +
+					( prefersReducedMotion
+						? ''
+						: ' hdc-blog-post__root--entering' ),
+			},
 			config.showProgress
 				? h(
-					'div',
-					{
-						className: 'hdc-blog-post__progress-track',
-						'aria-label': 'Reading progress',
-						'aria-valuemax': 100,
-						'aria-valuemin': 0,
-						'aria-valuenow': progressValue,
-						role: 'progressbar',
-					},
-					h( 'div', {
-						className: 'hdc-blog-post__progress-fill',
-						style: { width: String( progress ) + '%' },
-						'aria-hidden': 'true',
-					} )
-				)
+						'div',
+						{
+							className: 'hdc-blog-post__progress-track',
+							'aria-label': 'Reading progress',
+							'aria-valuemax': 100,
+							'aria-valuemin': 0,
+							'aria-valuenow': progressValue,
+							role: 'progressbar',
+						},
+						h( 'div', {
+							className: 'hdc-blog-post__progress-fill',
+							style: { width: String( progress ) + '%' },
+							'aria-hidden': 'true',
+						} )
+				  )
 				: null,
 			h(
 				'article',
 				{ className: 'hdc-blog-post__article' },
 				h(
 					'a',
-					{ className: 'hdc-blog-post__back-link', href: config.blogIndexUrl },
+					{
+						className: 'hdc-blog-post__back-link',
+						href: config.blogIndexUrl,
+					},
 					h(
 						'span',
-						{ className: 'hdc-blog-post__back-link-icon', 'aria-hidden': 'true' },
-						renderLucideIcon( h, 'arrow-left', { className: 'hdc-blog-post__back-link-icon-svg', size: 14 } )
+						{
+							className: 'hdc-blog-post__back-link-icon',
+							'aria-hidden': 'true',
+						},
+						renderLucideIcon( h, 'arrow-left', {
+							className: 'hdc-blog-post__back-link-icon-svg',
+							size: 14,
+						} )
 					),
 					h( 'span', null, 'Back to Blog' )
 				),
 				h(
 					'header',
-					{ className: 'hdc-blog-post__header' + ( post.featuredImageUrl ? ' has-image' : '' ) },
+					{
+						className:
+							'hdc-blog-post__header' +
+							( post.featuredImageUrl ? ' has-image' : '' ),
+					},
 					post.featuredImageUrl
 						? h(
-							'div',
-							{ className: 'hdc-blog-post__hero' },
-							h( 'img', {
-								alt: buildImageAlt( post ),
-								className: 'hdc-blog-post__hero-image',
-								decoding: 'async',
-								fetchPriority: 'high',
-								loading: 'eager',
-								onError: function ( event ) {
-									event.target.style.display = 'none';
-								},
-								sizes: '(min-width: 1536px) 1280px, (min-width: 1024px) 90vw, 100vw',
-								src: post.featuredImageUrl,
-								srcSet: post.featuredImageSrcSet || undefined,
-							} )
-						)
+								'div',
+								{ className: 'hdc-blog-post__hero' },
+								h( 'img', {
+									alt: buildImageAlt( post ),
+									className: 'hdc-blog-post__hero-image',
+									decoding: 'async',
+									fetchPriority: 'high',
+									loading: 'eager',
+									onError( event ) {
+										event.target.style.display = 'none';
+									},
+									sizes: '(min-width: 1536px) 1280px, (min-width: 1024px) 90vw, 100vw',
+									src: post.featuredImageUrl,
+									srcSet:
+										post.featuredImageSrcSet || undefined,
+								} )
+						  )
 						: null,
 					h(
 						'div',
-						{ className: 'hdc-blog-post__header-card surface-inset-soft' },
+						{
+							className:
+								'hdc-blog-post__header-card surface-inset-soft',
+						},
 						post.tags.length
 							? h(
-								'div',
-								{ className: 'hdc-blog-post__tags' },
-								post.tags.map( function ( tag ) {
-									return h( 'span', { className: 'hdc-blog-post__tag', key: post.slug + '-tag-' + tag }, tag );
-								} )
-							)
+									'div',
+									{ className: 'hdc-blog-post__tags' },
+									post.tags.map( function ( tag ) {
+										return h(
+											'span',
+											{
+												className: 'hdc-blog-post__tag',
+												key: post.slug + '-tag-' + tag,
+											},
+											tag
+										);
+									} )
+							  )
 							: null,
-						h( 'h1', { className: 'hdc-blog-post__title' }, post.title ),
-						articlePreview ? h( 'p', { className: 'hdc-blog-post__lede' }, articlePreview ) : null,
+						h(
+							'h1',
+							{ className: 'hdc-blog-post__title' },
+							post.title
+						),
+						articlePreview
+							? h(
+									'p',
+									{ className: 'hdc-blog-post__lede' },
+									articlePreview
+							  )
+							: null,
 						h(
 							'p',
 							{ className: 'hdc-blog-post__meta' },
-							h( 'time', { dateTime: post.date }, formatLongDateLabel( post.date ) ),
+							h(
+								'time',
+								{ dateTime: post.date },
+								formatLongDateLabel( post.date )
+							),
 							post.readingTime
 								? h(
-									'span',
-									{ className: 'hdc-blog-post__meta-icon' },
-									h(
 										'span',
-										{ className: 'hdc-blog-post__meta-icon-glyph', 'aria-hidden': 'true' },
-										renderLucideIcon( h, 'clock', { className: 'hdc-blog-post__meta-icon-svg', size: 12 } )
-									),
-									h( 'span', null, post.readingTime )
-								)
+										{
+											className:
+												'hdc-blog-post__meta-icon',
+										},
+										h(
+											'span',
+											{
+												className:
+													'hdc-blog-post__meta-icon-glyph',
+												'aria-hidden': 'true',
+											},
+											renderLucideIcon( h, 'clock', {
+												className:
+													'hdc-blog-post__meta-icon-svg',
+												size: 12,
+											} )
+										),
+										h( 'span', null, post.readingTime )
+								  )
 								: null,
-							renderInlineSeparated( [
-								authorLink
-									? h( 'span', null, 'By ', h( 'a', { className: 'hdc-blog-post__detail-link', href: authorLink, rel: 'noopener noreferrer', target: '_blank' }, authorLabel ) )
-									: 'By ' + authorLabel,
-								postHasUpdatedDate && post.modifiedDate
-									? h( 'span', null, 'Updated ', h( 'time', { dateTime: post.modifiedDate }, formatLongDateLabel( post.modifiedDate ) ) )
-									: null,
-								categoriesMeta || null,
-							], 'hdc-blog-post__meta-inline' )
+							renderInlineSeparated(
+								[
+									authorLink
+										? h(
+												'span',
+												null,
+												'By ',
+												h(
+													'a',
+													{
+														className:
+															'hdc-blog-post__detail-link',
+														href: authorLink,
+														rel: 'noopener noreferrer',
+														target: '_blank',
+													},
+													authorLabel
+												)
+										  )
+										: 'By ' + authorLabel,
+									postHasUpdatedDate && post.modifiedDate
+										? h(
+												'span',
+												null,
+												'Updated ',
+												h(
+													'time',
+													{
+														dateTime:
+															post.modifiedDate,
+													},
+													formatLongDateLabel(
+														post.modifiedDate
+													)
+												)
+										  )
+										: null,
+									categoriesMeta || null,
+								],
+								'hdc-blog-post__meta-inline'
+							)
 						)
 					)
 				),
@@ -3277,330 +3646,973 @@
 					{ className: 'hdc-blog-post__layout' },
 					hasArticleSectionItems
 						? h(
-							'aside',
-							{ className: 'hdc-blog-post__aside' },
-							h( SectionJumpNav, {
-								description: 'Skip directly to the main ideas in this article.',
-								items: articleSectionItems,
-							} )
-						)
+								'aside',
+								{ className: 'hdc-blog-post__aside' },
+								h( SectionJumpNav, {
+									description:
+										'Skip directly to the main ideas in this article.',
+									items: articleSectionItems,
+								} )
+						  )
 						: null,
+					h(
+						'div',
+						{ className: 'hdc-blog-post__content-shell' },
+						contentNode,
 						h(
-							'div',
-							{ className: 'hdc-blog-post__content-shell' },
-							contentNode,
+							'section',
+							{
+								'aria-labelledby': 'blog-comments-heading',
+								className: 'hdc-blog-post__comments-section',
+							},
 							h(
-								'section',
-								{ 'aria-labelledby': 'blog-comments-heading', className: 'hdc-blog-post__comments-section' },
+								'div',
+								{
+									className:
+										'hdc-blog-post__comments-card surface-inset-soft',
+								},
 								h(
 									'div',
-									{ className: 'hdc-blog-post__comments-card surface-inset-soft' },
+									{
+										className:
+											'hdc-blog-post__comments-header',
+									},
 									h(
 										'div',
-										{ className: 'hdc-blog-post__comments-header' },
+										{
+											className:
+												'hdc-blog-post__comments-heading-group',
+										},
+										h(
+											'p',
+											{
+												className:
+													'hdc-blog-post__eyebrow',
+											},
+											'Discussion'
+										),
 										h(
 											'div',
-											{ className: 'hdc-blog-post__comments-heading-group' },
-											h( 'p', { className: 'hdc-blog-post__eyebrow' }, 'Discussion' ),
+											{
+												className:
+													'hdc-blog-post__comments-heading-row',
+											},
 											h(
-												'div',
-												{ className: 'hdc-blog-post__comments-heading-row' },
-												h( 'h2', { className: 'hdc-blog-post__details-title', id: 'blog-comments-heading' }, 'Comments' ),
-												shouldShowCommentCount
-													? h( 'span', { className: 'hdc-blog-post__count-badge' }, publishedCommentCount === 1 ? '1 published comment' : String( publishedCommentCount ) + ' published comments' )
-													: null
+												'h2',
+												{
+													className:
+														'hdc-blog-post__details-title',
+													id: 'blog-comments-heading',
+												},
+												'Comments'
 											),
-											h(
-												'p',
-												{ className: 'hdc-blog-post__details-summary' },
-												hasWordPressThread
-													? 'Approved WordPress comments appear inline here so readers do not need to leave the article to follow the thread.'
-													: 'Discussion for this article still lives on the original WordPress post.'
-											)
+											shouldShowCommentCount
+												? h(
+														'span',
+														{
+															className:
+																'hdc-blog-post__count-badge',
+														},
+														publishedCommentCount ===
+															1
+															? '1 published comment'
+															: String(
+																	publishedCommentCount
+															  ) +
+																	' published comments'
+												  )
+												: null
 										),
-										discussionHref
-											? h(
+										h(
+											'p',
+											{
+												className:
+													'hdc-blog-post__details-summary',
+											},
+											hasWordPressThread
+												? 'Approved WordPress comments appear inline here so readers do not need to leave the article to follow the thread.'
+												: 'Discussion for this article still lives on the original WordPress post.'
+										)
+									),
+									discussionHref
+										? h(
 												'a',
 												{
-													className: 'hdc-blog-post__share-link',
+													className:
+														'hdc-blog-post__share-link',
 													href: discussionHref,
 													rel: 'noopener noreferrer',
 													target: '_blank',
 												},
-												h( 'span', { className: 'hdc-blog-post__share-link-icon', 'aria-hidden': 'true' }, renderLucideIcon( h, 'message-square', { size: 16 } ) ),
-												h( 'span', null, post.commentsOpen ? 'Comment on WordPress' : 'Open original post' )
-											)
-											: null
-									),
-									! hasWordPressThread
-										? h(
-											'div',
-											{ className: 'hdc-blog-post__comments-note' },
-											h( 'p', null, 'This mirrored article does not have an inline WordPress comment thread available yet.' ),
-											h( 'p', null, discussionStatusDescription )
-										)
-										: null,
-									hasWordPressThread && commentsState.isLoading
-										? h(
-											'div',
-											{ className: 'hdc-blog-post__comments-note', role: 'status' },
-											renderLucideIcon( h, 'loader-2', { className: 'hdc-blog-post__spinner', size: 16 } ),
-											h( 'span', null, 'Loading published comments from WordPress.' )
-										)
-										: null,
-									hasWordPressThread && commentsState.isError
-										? h(
-											'div',
-											{ className: 'hdc-blog-post__comments-note' },
-											h( 'p', null, 'Comments are temporarily unavailable here.' ),
-											discussionHref ? h( 'p', null, 'Open the original WordPress post to read or join the current discussion.' ) : null
-										)
-										: null,
-									hasWordPressThread && isCommentsQuerySettled && commentsState.isPartial
-										? h(
-											'div',
-											{ className: 'hdc-blog-post__comments-note' },
-											h( 'p', null, 'Very large WordPress threads are mirrored here in a capped inline view.' ),
-											discussionHref ? h( 'p', null, 'Open the original WordPress post to continue through the full discussion.' ) : null
-										)
-										: null,
-									hasWordPressThread && isCommentsQuerySettled && commentTree.length
-										? h(
-											'ol',
-											{ className: 'hdc-blog-post__comment-list' },
-											commentTree.map( function ( comment ) {
-												return renderCommentThreadItem( {
-													comment: comment,
-													commentsOpen: post.commentsOpen === true,
-													isReplyDisabled: isCommentSubmitting || isCommentVerificationPending,
-													onReply: function (nextReplyTarget ) {
-														setCommentReplyTarget( {
-															authorName: nextReplyTarget.authorName,
-															id: nextReplyTarget.id,
-														} );
+												h(
+													'span',
+													{
+														className:
+															'hdc-blog-post__share-link-icon',
+														'aria-hidden': 'true',
 													},
-												} );
-											} )
-										)
-										: null,
-									hasWordPressThread && isCommentsQuerySettled && ! commentTree.length
-										? h(
+													renderLucideIcon(
+														h,
+														'message-square',
+														{ size: 16 }
+													)
+												),
+												h(
+													'span',
+													null,
+													post.commentsOpen
+														? 'Comment on WordPress'
+														: 'Open original post'
+												)
+										  )
+										: null
+								),
+								! hasWordPressThread
+									? h(
 											'div',
-											{ className: 'hdc-blog-post__comments-note' },
-											h( 'p', null, 'No published comments are visible for this article yet.' ),
+											{
+												className:
+													'hdc-blog-post__comments-note',
+											},
+											h(
+												'p',
+												null,
+												'This mirrored article does not have an inline WordPress comment thread available yet.'
+											),
+											h(
+												'p',
+												null,
+												discussionStatusDescription
+											)
+									  )
+									: null,
+								hasWordPressThread && commentsState.isLoading
+									? h(
+											'div',
+											{
+												className:
+													'hdc-blog-post__comments-note',
+												role: 'status',
+											},
+											renderLucideIcon( h, 'loader-2', {
+												className:
+													'hdc-blog-post__spinner',
+												size: 16,
+											} ),
+											h(
+												'span',
+												null,
+												'Loading published comments from WordPress.'
+											)
+									  )
+									: null,
+								hasWordPressThread && commentsState.isError
+									? h(
+											'div',
+											{
+												className:
+													'hdc-blog-post__comments-note',
+											},
+											h(
+												'p',
+												null,
+												'Comments are temporarily unavailable here.'
+											),
+											discussionHref
+												? h(
+														'p',
+														null,
+														'Open the original WordPress post to read or join the current discussion.'
+												  )
+												: null
+									  )
+									: null,
+								hasWordPressThread &&
+									isCommentsQuerySettled &&
+									commentsState.isPartial
+									? h(
+											'div',
+											{
+												className:
+													'hdc-blog-post__comments-note',
+											},
+											h(
+												'p',
+												null,
+												'Very large WordPress threads are mirrored here in a capped inline view.'
+											),
+											discussionHref
+												? h(
+														'p',
+														null,
+														'Open the original WordPress post to continue through the full discussion.'
+												  )
+												: null
+									  )
+									: null,
+								hasWordPressThread &&
+									isCommentsQuerySettled &&
+									commentTree.length
+									? h(
+											'ol',
+											{
+												className:
+													'hdc-blog-post__comment-list',
+											},
+											commentTree.map(
+												function ( comment ) {
+													return renderCommentThreadItem(
+														{
+															comment,
+															commentsOpen:
+																post.commentsOpen ===
+																true,
+															isReplyDisabled:
+																isCommentSubmitting ||
+																isCommentVerificationPending,
+															onReply(
+																nextReplyTarget
+															) {
+																setCommentReplyTarget(
+																	{
+																		authorName:
+																			nextReplyTarget.authorName,
+																		id: nextReplyTarget.id,
+																	}
+																);
+															},
+														}
+													);
+												}
+											)
+									  )
+									: null,
+								hasWordPressThread &&
+									isCommentsQuerySettled &&
+									! commentTree.length
+									? h(
+											'div',
+											{
+												className:
+													'hdc-blog-post__comments-note',
+											},
+											h(
+												'p',
+												null,
+												'No published comments are visible for this article yet.'
+											),
 											canSubmitInline
-												? h( 'p', null, 'Be the first to start the discussion here. New comments appear inline after WordPress accepts them.' )
-												: h( 'p', null, post.commentsOpen === false ? 'Comments are currently closed on the original WordPress post.' : 'Visit the original WordPress post to check discussion availability.' )
-										)
-										: null,
-									canSubmitInline
-										? h(
+												? h(
+														'p',
+														null,
+														'Be the first to start the discussion here. New comments appear inline after WordPress accepts them.'
+												  )
+												: h(
+														'p',
+														null,
+														post.commentsOpen ===
+															false
+															? 'Comments are currently closed on the original WordPress post.'
+															: 'Visit the original WordPress post to check discussion availability.'
+												  )
+									  )
+									: null,
+								canSubmitInline
+									? h(
 											'div',
-											{ className: 'hdc-blog-post__comment-form' },
+											{
+												className:
+													'hdc-blog-post__comment-form',
+											},
 											h(
 												'div',
-												{ className: 'hdc-blog-post__comment-form-header' },
+												{
+													className:
+														'hdc-blog-post__comment-form-header',
+												},
 												h(
 													'div',
 													null,
-													h( 'h3', { className: 'hdc-blog-post__share-title' }, 'Join the discussion' ),
-													h( 'p', { className: 'hdc-blog-post__share-description' }, commentReplyTarget ? 'Replying to ' + commentReplyTarget.authorName + '. Your comment may appear immediately or after moderation.' : 'New comments appear here once WordPress accepts them. Some submissions may wait for moderation.' )
+													h(
+														'h3',
+														{
+															className:
+																'hdc-blog-post__share-title',
+														},
+														'Join the discussion'
+													),
+													h(
+														'p',
+														{
+															className:
+																'hdc-blog-post__share-description',
+														},
+														commentReplyTarget
+															? 'Replying to ' +
+																	commentReplyTarget.authorName +
+																	'. Your comment may appear immediately or after moderation.'
+															: 'New comments appear here once WordPress accepts them. Some submissions may wait for moderation.'
+													)
 												),
 												commentReplyTarget
 													? h(
-														'button',
-														{
-															className: 'hdc-blog-post__state-action',
-															disabled: isCommentSubmitting || isCommentVerificationPending,
-															onClick: function () {
-																setCommentReplyTarget( null );
+															'button',
+															{
+																className:
+																	'hdc-blog-post__state-action',
+																disabled:
+																	isCommentSubmitting ||
+																	isCommentVerificationPending,
+																onClick() {
+																	setCommentReplyTarget(
+																		null
+																	);
+																},
+																type: 'button',
 															},
-															type: 'button',
-														},
-														'Cancel reply'
-													)
+															'Cancel reply'
+													  )
 													: null
 											),
 											commentReplyTarget
-												? h( 'p', { className: 'hdc-blog-post__reply-indicator' }, 'Replying in-thread to ' + commentReplyTarget.authorName )
+												? h(
+														'p',
+														{
+															className:
+																'hdc-blog-post__reply-indicator',
+														},
+														'Replying in-thread to ' +
+															commentReplyTarget.authorName
+												  )
 												: null,
-											commentSubmitMessage ? h( 'div', { className: 'hdc-blog-post__submit-message' }, commentSubmitMessage ) : null,
-											commentSubmitError ? h( 'p', { className: 'hdc-blog-post__hint hdc-blog-post__hint--error', role: 'alert' }, commentSubmitError ) : null,
+											commentSubmitMessage
+												? h(
+														'div',
+														{
+															className:
+																'hdc-blog-post__submit-message',
+														},
+														commentSubmitMessage
+												  )
+												: null,
+											commentSubmitError
+												? h(
+														'p',
+														{
+															className:
+																'hdc-blog-post__hint hdc-blog-post__hint--error',
+															role: 'alert',
+														},
+														commentSubmitError
+												  )
+												: null,
 											h(
 												'form',
-												{ className: 'hdc-blog-post__comment-form-grid', onSubmit: handleCommentSubmit },
-												h( 'input', { 'aria-hidden': 'true', autoComplete: 'off', className: 'hdc-blog-post__sr-only', name: 'company', onChange: handleCommentFieldChange, tabIndex: -1, type: 'text', value: commentFormData.company } ),
+												{
+													className:
+														'hdc-blog-post__comment-form-grid',
+													onSubmit:
+														handleCommentSubmit,
+												},
+												h( 'input', {
+													'aria-hidden': 'true',
+													autoComplete: 'off',
+													className:
+														'hdc-blog-post__sr-only',
+													name: 'company',
+													onChange:
+														handleCommentFieldChange,
+													tabIndex: -1,
+													type: 'text',
+													value: commentFormData.company,
+												} ),
 												h(
 													'div',
-													{ className: 'hdc-blog-post__comment-form-row' },
+													{
+														className:
+															'hdc-blog-post__comment-form-row',
+													},
 													h(
 														'label',
-														{ className: 'hdc-blog-post__field', htmlFor: 'comment-author-name' },
-														h( 'span', { className: 'hdc-blog-post__field-label' }, 'Name' ),
-														h( 'input', { 'aria-invalid': commentFieldErrors.authorName ? 'true' : undefined, className: 'hdc-blog-post__input', disabled: isCommentSubmitting || isCommentVerificationPending, id: 'comment-author-name', name: 'authorName', onChange: handleCommentFieldChange, placeholder: 'Your name', type: 'text', value: commentFormData.authorName } ),
-														commentFieldErrors.authorName ? h( 'span', { className: 'hdc-blog-post__hint hdc-blog-post__hint--error', role: 'alert' }, commentFieldErrors.authorName ) : null
+														{
+															className:
+																'hdc-blog-post__field',
+															htmlFor:
+																'comment-author-name',
+														},
+														h(
+															'span',
+															{
+																className:
+																	'hdc-blog-post__field-label',
+															},
+															'Name'
+														),
+														h( 'input', {
+															'aria-invalid':
+																commentFieldErrors.authorName
+																	? 'true'
+																	: undefined,
+															className:
+																'hdc-blog-post__input',
+															disabled:
+																isCommentSubmitting ||
+																isCommentVerificationPending,
+															id: 'comment-author-name',
+															name: 'authorName',
+															onChange:
+																handleCommentFieldChange,
+															placeholder:
+																'Your name',
+															type: 'text',
+															value: commentFormData.authorName,
+														} ),
+														commentFieldErrors.authorName
+															? h(
+																	'span',
+																	{
+																		className:
+																			'hdc-blog-post__hint hdc-blog-post__hint--error',
+																		role: 'alert',
+																	},
+																	commentFieldErrors.authorName
+															  )
+															: null
 													),
 													h(
 														'label',
-														{ className: 'hdc-blog-post__field', htmlFor: 'comment-author-email' },
-														h( 'span', { className: 'hdc-blog-post__field-label' }, 'Email' ),
-														h( 'input', { 'aria-invalid': commentFieldErrors.authorEmail ? 'true' : undefined, className: 'hdc-blog-post__input', disabled: isCommentSubmitting || isCommentVerificationPending, id: 'comment-author-email', name: 'authorEmail', onChange: handleCommentFieldChange, placeholder: 'you@example.com', type: 'email', value: commentFormData.authorEmail } ),
+														{
+															className:
+																'hdc-blog-post__field',
+															htmlFor:
+																'comment-author-email',
+														},
+														h(
+															'span',
+															{
+																className:
+																	'hdc-blog-post__field-label',
+															},
+															'Email'
+														),
+														h( 'input', {
+															'aria-invalid':
+																commentFieldErrors.authorEmail
+																	? 'true'
+																	: undefined,
+															className:
+																'hdc-blog-post__input',
+															disabled:
+																isCommentSubmitting ||
+																isCommentVerificationPending,
+															id: 'comment-author-email',
+															name: 'authorEmail',
+															onChange:
+																handleCommentFieldChange,
+															placeholder:
+																'you@example.com',
+															type: 'email',
+															value: commentFormData.authorEmail,
+														} ),
 														commentFieldErrors.authorEmail
-															? h( 'span', { className: 'hdc-blog-post__hint hdc-blog-post__hint--error', role: 'alert' }, commentFieldErrors.authorEmail )
-															: h( 'span', { className: 'hdc-blog-post__hint' }, 'Not shown publicly — used for WordPress moderation only.' )
+															? h(
+																	'span',
+																	{
+																		className:
+																			'hdc-blog-post__hint hdc-blog-post__hint--error',
+																		role: 'alert',
+																	},
+																	commentFieldErrors.authorEmail
+															  )
+															: h(
+																	'span',
+																	{
+																		className:
+																			'hdc-blog-post__hint',
+																	},
+																	'Not shown publicly — used for WordPress moderation only.'
+															  )
 													)
 												),
 												h(
 													'label',
-													{ className: 'hdc-blog-post__field', htmlFor: 'comment-author-url' },
-													h( 'span', { className: 'hdc-blog-post__field-label' }, 'Website (optional)' ),
-													h( 'input', { 'aria-invalid': commentFieldErrors.authorUrl ? 'true' : undefined, className: 'hdc-blog-post__input', disabled: isCommentSubmitting || isCommentVerificationPending, id: 'comment-author-url', name: 'authorUrl', onChange: handleCommentFieldChange, placeholder: 'https://example.com', type: 'url', value: commentFormData.authorUrl } ),
-													commentFieldErrors.authorUrl ? h( 'span', { className: 'hdc-blog-post__hint hdc-blog-post__hint--error', role: 'alert' }, commentFieldErrors.authorUrl ) : null
+													{
+														className:
+															'hdc-blog-post__field',
+														htmlFor:
+															'comment-author-url',
+													},
+													h(
+														'span',
+														{
+															className:
+																'hdc-blog-post__field-label',
+														},
+														'Website (optional)'
+													),
+													h( 'input', {
+														'aria-invalid':
+															commentFieldErrors.authorUrl
+																? 'true'
+																: undefined,
+														className:
+															'hdc-blog-post__input',
+														disabled:
+															isCommentSubmitting ||
+															isCommentVerificationPending,
+														id: 'comment-author-url',
+														name: 'authorUrl',
+														onChange:
+															handleCommentFieldChange,
+														placeholder:
+															'https://example.com',
+														type: 'url',
+														value: commentFormData.authorUrl,
+													} ),
+													commentFieldErrors.authorUrl
+														? h(
+																'span',
+																{
+																	className:
+																		'hdc-blog-post__hint hdc-blog-post__hint--error',
+																	role: 'alert',
+																},
+																commentFieldErrors.authorUrl
+														  )
+														: null
 												),
 												h(
 													'label',
-													{ className: 'hdc-blog-post__field', htmlFor: 'comment-content' },
-													h( 'span', { className: 'hdc-blog-post__field-label' }, commentReplyTarget ? 'Reply' : 'Comment' ),
-													h( 'textarea', { 'aria-invalid': commentFieldErrors.content ? 'true' : undefined, className: 'hdc-blog-post__textarea', disabled: isCommentSubmitting || isCommentVerificationPending, id: 'comment-content', name: 'content', onChange: handleCommentFieldChange, placeholder: commentReplyTarget ? 'Write your reply...' : 'Write a comment that adds to the conversation...', rows: 4, value: commentFormData.content } ),
-													commentFieldErrors.content ? h( 'span', { className: 'hdc-blog-post__hint hdc-blog-post__hint--error', role: 'alert' }, commentFieldErrors.content ) : null
+													{
+														className:
+															'hdc-blog-post__field',
+														htmlFor:
+															'comment-content',
+													},
+													h(
+														'span',
+														{
+															className:
+																'hdc-blog-post__field-label',
+														},
+														commentReplyTarget
+															? 'Reply'
+															: 'Comment'
+													),
+													h( 'textarea', {
+														'aria-invalid':
+															commentFieldErrors.content
+																? 'true'
+																: undefined,
+														className:
+															'hdc-blog-post__textarea',
+														disabled:
+															isCommentSubmitting ||
+															isCommentVerificationPending,
+														id: 'comment-content',
+														name: 'content',
+														onChange:
+															handleCommentFieldChange,
+														placeholder:
+															commentReplyTarget
+																? 'Write your reply...'
+																: 'Write a comment that adds to the conversation...',
+														rows: 4,
+														value: commentFormData.content,
+													} ),
+													commentFieldErrors.content
+														? h(
+																'span',
+																{
+																	className:
+																		'hdc-blog-post__hint hdc-blog-post__hint--error',
+																	role: 'alert',
+																},
+																commentFieldErrors.content
+														  )
+														: null
 												),
 												h(
 													'div',
-													{ className: 'hdc-blog-post__verification-group' },
-													h( 'span', { className: 'hdc-blog-post__field-label', id: 'comment-verification-label' }, config.turnstile.label ),
+													{
+														className:
+															'hdc-blog-post__verification-group',
+													},
+													h(
+														'span',
+														{
+															className:
+																'hdc-blog-post__field-label',
+															id: 'comment-verification-label',
+														},
+														config.turnstile.label
+													),
 													h( TurnstileWidget, {
-														action: config.turnstile.action,
-														ariaDescribedBy: commentTurnstileError ? 'comment-verification-hint comment-verification-error' : 'comment-verification-hint',
-														ariaLabelledBy: 'comment-verification-label',
-														controlRef: commentTurnstileControlRef,
-														invalid: !! commentTurnstileError,
-														onError: function () {
-															pendingCommentSubmissionRef.current = null;
-															setIsCommentVerificationPending( false );
-															setCommentTurnstileToken( '' );
-															setCommentTurnstileError( config.turnstile.unavailableError );
+														action: config.turnstile
+															.action,
+														ariaDescribedBy:
+															commentTurnstileError
+																? 'comment-verification-hint comment-verification-error'
+																: 'comment-verification-hint',
+														ariaLabelledBy:
+															'comment-verification-label',
+														controlRef:
+															commentTurnstileControlRef,
+														invalid:
+															!! commentTurnstileError,
+														onError() {
+															pendingCommentSubmissionRef.current =
+																null;
+															setIsCommentVerificationPending(
+																false
+															);
+															setCommentTurnstileToken(
+																''
+															);
+															setCommentTurnstileError(
+																config.turnstile
+																	.unavailableError
+															);
 														},
-														onExpired: function () {
-															pendingCommentSubmissionRef.current = null;
-															setIsCommentVerificationPending( false );
-															setCommentTurnstileToken( '' );
-															setCommentTurnstileError( config.turnstile.expiredError );
+														onExpired() {
+															pendingCommentSubmissionRef.current =
+																null;
+															setIsCommentVerificationPending(
+																false
+															);
+															setCommentTurnstileToken(
+																''
+															);
+															setCommentTurnstileError(
+																config.turnstile
+																	.expiredError
+															);
 														},
-														onTokenChange: function ( token ) {
-															setCommentTurnstileToken( token );
+														onTokenChange( token ) {
+															setCommentTurnstileToken(
+																token
+															);
 															if ( ! token ) {
 																return;
 															}
 
-															setCommentTurnstileError( '' );
+															setCommentTurnstileError(
+																''
+															);
 
-															if ( pendingCommentSubmissionRef.current ) {
-																const pendingSubmission = pendingCommentSubmissionRef.current;
-																pendingCommentSubmissionRef.current = null;
-																completeCommentSubmission( pendingSubmission, token );
+															if (
+																pendingCommentSubmissionRef.current
+															) {
+																const pendingSubmission =
+																	pendingCommentSubmissionRef.current;
+																pendingCommentSubmissionRef.current =
+																	null;
+																completeCommentSubmission(
+																	pendingSubmission,
+																	token
+																);
 															}
 														},
-														siteKey: config.turnstile.siteKey,
+														siteKey:
+															config.turnstile
+																.siteKey,
 													} ),
-													h( 'span', { className: 'hdc-blog-post__hint', id: 'comment-verification-hint' }, config.turnstile.hint ),
-													commentTurnstileError ? h( 'span', { className: 'hdc-blog-post__hint hdc-blog-post__hint--error', id: 'comment-verification-error', role: 'alert' }, commentTurnstileError ) : null
+													h(
+														'span',
+														{
+															className:
+																'hdc-blog-post__hint',
+															id: 'comment-verification-hint',
+														},
+														config.turnstile.hint
+													),
+													commentTurnstileError
+														? h(
+																'span',
+																{
+																	className:
+																		'hdc-blog-post__hint hdc-blog-post__hint--error',
+																	id: 'comment-verification-error',
+																	role: 'alert',
+																},
+																commentTurnstileError
+														  )
+														: null
 												),
 												h(
 													'div',
-													{ className: 'hdc-blog-post__comment-form-footer' },
-													h( 'p', { className: 'hdc-blog-post__hint' }, 'By posting here, you are submitting to the original WordPress discussion.' ),
-													h( 'button', { className: 'hdc-blog-post__submit-button', disabled: isCommentSubmitting || isCommentVerificationPending, type: 'submit' }, isCommentSubmitting ? ( commentReplyTarget ? 'Posting reply...' : 'Posting comment...' ) : ( isCommentVerificationPending ? 'Verifying...' : ( commentReplyTarget ? 'Post reply' : 'Post comment' ) ) )
+													{
+														className:
+															'hdc-blog-post__comment-form-footer',
+													},
+													h(
+														'p',
+														{
+															className:
+																'hdc-blog-post__hint',
+														},
+														'By posting here, you are submitting to the original WordPress discussion.'
+													),
+													h(
+														'button',
+														{
+															className:
+																'hdc-blog-post__submit-button',
+															disabled:
+																isCommentSubmitting ||
+																isCommentVerificationPending,
+															type: 'submit',
+														},
+														isCommentSubmitting
+															? commentReplyTarget
+																? 'Posting reply...'
+																: 'Posting comment...'
+															: isCommentVerificationPending
+															? 'Verifying...'
+															: commentReplyTarget
+															? 'Post reply'
+															: 'Post comment'
+													)
 												)
 											)
-										)
-										: null,
-									shouldShowInlineSubmitFallback
-										? h(
+									  )
+									: null,
+								shouldShowInlineSubmitFallback
+									? h(
 											'div',
-											{ className: 'hdc-blog-post__comments-note' },
-											h( 'p', null, 'Inline comment submission is unavailable right now.' ),
-											discussionHref ? h( 'p', null, 'Use the original WordPress post to join the discussion.' ) : null
-										)
-										: null
-								)
-							),
+											{
+												className:
+													'hdc-blog-post__comments-note',
+											},
+											h(
+												'p',
+												null,
+												'Inline comment submission is unavailable right now.'
+											),
+											discussionHref
+												? h(
+														'p',
+														null,
+														'Use the original WordPress post to join the discussion.'
+												  )
+												: null
+									  )
+									: null
+							)
+						),
+						h(
+							'div',
+							{ className: 'hdc-blog-post__details-card' },
 							h(
 								'div',
-								{ className: 'hdc-blog-post__details-card' },
+								{ className: 'hdc-blog-post__share-panel' },
+								h(
+									'h3',
+									{ className: 'hdc-blog-post__share-title' },
+									'Share this article'
+								),
+								h(
+									'p',
+									{
+										className:
+											'hdc-blog-post__share-description',
+									},
+									'Share the canonical hperkins.com version of this article.'
+								),
 								h(
 									'div',
-									{ className: 'hdc-blog-post__share-panel' },
-									h( 'h3', { className: 'hdc-blog-post__share-title' }, 'Share this article' ),
-									h( 'p', { className: 'hdc-blog-post__share-description' }, 'Share the canonical hperkins.com version of this article.' ),
+									{
+										className:
+											'hdc-blog-post__share-actions',
+									},
 									h(
-										'div',
-										{ className: 'hdc-blog-post__share-actions' },
+										'button',
+										{
+											'aria-label': 'Copy article link',
+											className:
+												'hdc-blog-post__share-copy',
+											'data-copy-state': 'idle',
+											onClick: handleShareCopy,
+											type: 'button',
+										},
 										h(
-											'button',
+											'span',
 											{
-												'aria-label': 'Copy article link',
-												className: 'hdc-blog-post__share-copy',
-												'data-copy-state': 'idle',
-												onClick: handleShareCopy,
-												type: 'button',
+												className:
+													'hdc-blog-post__share-copy-icon',
+												'aria-hidden': 'true',
 											},
-											h( 'span', { className: 'hdc-blog-post__share-copy-icon', 'aria-hidden': 'true' }, renderLucideIcon( h, 'share-2', { size: 14 } ) ),
-											h( 'span', { className: 'hdc-blog-post__share-copy-text' }, 'Copy article link' )
+											renderLucideIcon( h, 'share-2', {
+												size: 14,
+											} )
 										),
-										h( 'a', { className: 'hdc-blog-post__share-link', href: shareLinkedInUrl, rel: 'noopener noreferrer', target: '_blank' }, h( 'span', { className: 'hdc-blog-post__share-link-icon', 'aria-hidden': 'true' }, renderLucideIcon( h, 'linkedin', { size: 14 } ) ), h( 'span', null, 'Share on LinkedIn' ) ),
-										h( 'a', { className: 'hdc-blog-post__share-link', href: shareEmailUrl }, h( 'span', { className: 'hdc-blog-post__share-link-icon', 'aria-hidden': 'true' }, renderLucideIcon( h, 'mail', { size: 14 } ) ), h( 'span', null, 'Email article' ) )
-									)
-								),
-								hasWordPressFooterDetails ? h( 'div', { className: 'hdc-blog-post__discussion-panel' }, h( 'p', { className: 'hdc-blog-post__share-description' }, postMetaSummary ) ) : null
-							),
-							resolvedRelatedPosts.length
-								? h(
-									'section',
-									{ className: 'hdc-blog-post__related' },
-									h( 'h3', { className: 'hdc-blog-post__related-title' }, 'Related Posts' ),
+										h(
+											'span',
+											{
+												className:
+													'hdc-blog-post__share-copy-text',
+											},
+											'Copy article link'
+										)
+									),
 									h(
-										'div',
-										{ className: 'hdc-blog-post__related-list' },
-										resolvedRelatedPosts.map( function ( relatedPost ) {
-											return h(
-												'a',
-												{
-													className: 'hdc-blog-post__related-card',
-													href: relatedPost.href,
-													key: relatedPost.key,
-													rel: relatedPost.linkType === 'external' ? 'noopener noreferrer' : undefined,
-													target: relatedPost.linkType === 'external' ? '_blank' : undefined,
-												},
-												h( 'h4', { className: 'hdc-blog-post__related-card-title' }, relatedPost.post.title ),
-												h( 'p', { className: 'hdc-blog-post__related-card-excerpt' }, relatedPost.post.excerpt )
-											);
-										} )
+										'a',
+										{
+											className:
+												'hdc-blog-post__share-link',
+											href: shareLinkedInUrl,
+											rel: 'noopener noreferrer',
+											target: '_blank',
+										},
+										h(
+											'span',
+											{
+												className:
+													'hdc-blog-post__share-link-icon',
+												'aria-hidden': 'true',
+											},
+											renderLucideIcon( h, 'linkedin', {
+												size: 14,
+											} )
+										),
+										h( 'span', null, 'Share on LinkedIn' )
+									),
+									h(
+										'a',
+										{
+											className:
+												'hdc-blog-post__share-link',
+											href: shareEmailUrl,
+										},
+										h(
+											'span',
+											{
+												className:
+													'hdc-blog-post__share-link-icon',
+												'aria-hidden': 'true',
+											},
+											renderLucideIcon( h, 'mail', {
+												size: 14,
+											} )
+										),
+										h( 'span', null, 'Email article' )
 									)
 								)
+							),
+							hasWordPressFooterDetails
+								? h(
+										'div',
+										{
+											className:
+												'hdc-blog-post__discussion-panel',
+										},
+										h(
+											'p',
+											{
+												className:
+													'hdc-blog-post__share-description',
+											},
+											postMetaSummary
+										)
+								  )
 								: null
-						)
-					)
-				),
-			config.showScrollTop && progressValue > 20
-				? h(
-					'div',
-					{ className: 'hdc-blog-post__scroll-top-wrap' },
-					h(
-						'button',
-						{
-							'aria-label': 'Scroll to top',
-							className: 'hdc-blog-post__scroll-top',
-							onClick: function () {
-								window.scrollTo( {
-									behavior: prefersReducedMotion ? 'auto' : 'smooth',
-									top: 0,
-								} );
-							},
-							type: 'button',
-						},
-						h( 'span', { className: 'hdc-blog-post__scroll-top-icon', 'aria-hidden': 'true' }, renderLucideIcon( h, 'chevron-up', { className: 'hdc-blog-post__scroll-top-icon-svg', size: 18 } ) )
+						),
+						resolvedRelatedPosts.length
+							? h(
+									'section',
+									{ className: 'hdc-blog-post__related' },
+									h(
+										'h3',
+										{
+											className:
+												'hdc-blog-post__related-title',
+										},
+										'Related Posts'
+									),
+									h(
+										'div',
+										{
+											className:
+												'hdc-blog-post__related-list',
+										},
+										resolvedRelatedPosts.map(
+											function ( relatedPost ) {
+												return h(
+													'a',
+													{
+														className:
+															'hdc-blog-post__related-card',
+														href: relatedPost.href,
+														key: relatedPost.key,
+														rel:
+															relatedPost.linkType ===
+															'external'
+																? 'noopener noreferrer'
+																: undefined,
+														target:
+															relatedPost.linkType ===
+															'external'
+																? '_blank'
+																: undefined,
+													},
+													h(
+														'h4',
+														{
+															className:
+																'hdc-blog-post__related-card-title',
+														},
+														relatedPost.post.title
+													),
+													h(
+														'p',
+														{
+															className:
+																'hdc-blog-post__related-card-excerpt',
+														},
+														relatedPost.post.excerpt
+													)
+												);
+											}
+										)
+									)
+							  )
+							: null
 					)
 				)
+			),
+			config.showScrollTop && progressValue > 20
+				? h(
+						'div',
+						{ className: 'hdc-blog-post__scroll-top-wrap' },
+						h(
+							'button',
+							{
+								'aria-label': 'Scroll to top',
+								className: 'hdc-blog-post__scroll-top',
+								onClick() {
+									window.scrollTo( {
+										behavior: prefersReducedMotion
+											? 'auto'
+											: 'smooth',
+										top: 0,
+									} );
+								},
+								type: 'button',
+							},
+							h(
+								'span',
+								{
+									className: 'hdc-blog-post__scroll-top-icon',
+									'aria-hidden': 'true',
+								},
+								renderLucideIcon( h, 'chevron-up', {
+									className:
+										'hdc-blog-post__scroll-top-icon-svg',
+									size: 18,
+								} )
+							)
+						)
+				  )
 				: null
 		);
 	}

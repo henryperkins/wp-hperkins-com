@@ -70,7 +70,7 @@
 							'henrys-digital-canvas'
 						)
 					),
-					el( 'p', { className: 'hdc-site-shell-editor__title' }, attrs.siteTitle || __( 'Henry T. Perkins', 'henrys-digital-canvas' ) )
+					el( 'p', { className: 'hdc-site-shell-editor__title' }, attrs.siteTitle || __( 'Henry Perkins', 'henrys-digital-canvas' ) )
 				)
 			);
 		},

@@ -1349,6 +1349,12 @@ body.admin-bar {
   word-wrap: normal !important;
 }
 
+/* Template wrappers should stack flush like the source layout. */
+.wp-site-blocks > .wp-block-template-part,
+.wp-site-blocks > .wp-block-group {
+  margin-block-start: 0;
+}
+
 .glass {
   backdrop-filter: blur(var(--overlay-blur-glass)) saturate(1.2);
   background: hsl(var(--card) / 0.7);

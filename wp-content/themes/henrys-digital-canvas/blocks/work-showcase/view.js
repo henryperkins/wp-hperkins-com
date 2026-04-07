@@ -559,6 +559,7 @@
 				'/api/github/language-summary'
 			),
 			localReposUrl: sanitizeString( parsed.localReposUrl, '' ),
+			workAssetsBaseUrl: sanitizeString( parsed.workAssetsBaseUrl, '' ),
 			repoCaseStudyDetailsUrl: sanitizeString( parsed.repoCaseStudyDetailsUrl, '' ),
 		};
 	}
@@ -785,10 +786,10 @@
 					: localRepo
 						? localRepo.topics
 						: [];
-			const localDescription = localRepo ? localRepo.description : '';
-			const description = hasCuratedDescription( localDescription )
-				? localDescription
-				: sanitizeString( repo.description, PLACEHOLDER_DESCRIPTION );
+			const description = sanitizeString(
+				localRepo ? localRepo.description : '',
+				sanitizeString( repo.description, PLACEHOLDER_DESCRIPTION )
+			);
 			const license =
 				repo.license &&
 				typeof repo.license === 'object' &&
@@ -812,23 +813,24 @@
 					license: license || ( localRepo ? localRepo.license : '' ),
 					topics: topics,
 					featured: localRepo ? !! localRepo.featured : false,
+					featuredPriority:
+						localRepo && typeof localRepo.featuredPriority === 'number'
+							? localRepo.featuredPriority
+							: undefined,
 					demoUrl: localRepo ? localRepo.demoUrl : '',
 					learned: localRepo ? localRepo.learned : '',
 					origin: 'github',
 					access: localRepo && localRepo.access ? localRepo.access : 'public',
 					accessNote: localRepo ? localRepo.accessNote : '',
 					role: localRepo && localRepo.role ? localRepo.role : inferRole( language, topics ),
-					whyItMatters: localRepo && localRepo.whyItMatters ? localRepo.whyItMatters : description,
-					shipped:
-						localRepo && localRepo.shipped
-							? localRepo.shipped
-							: 'Last updated ' + updatedAt,
+					whyItMatters: localRepo ? localRepo.whyItMatters : '',
+					shipped: localRepo ? localRepo.shipped : '',
 				} )
 			);
 		} );
 
 		if ( mergedRepos.length === 0 ) {
-			return localRepos.slice().sort( compareReposByUpdatedAtDesc );
+			return localRepos.slice();
 		}
 
 		const mergedNames = new Set(
@@ -841,9 +843,7 @@
 			return ! mergedNames.has( repo.name );
 		} );
 
-		return mergedRepos
-			.concat( missingLocalRepos )
-			.sort( compareReposByUpdatedAtDesc );
+		return mergedRepos.concat( missingLocalRepos );
 	}
 
 	function resolveRequestUrl( value ) {
@@ -859,6 +859,66 @@
 		if ( normalized.charAt( 0 ) === '/' && typeof window !== 'undefined' && window.location && window.location.origin ) {
 			return new URL( normalized, window.location.origin ).toString();
 		}
+
+		return normalized;
+	}
+
+	function resolveWorkAssetUrl( value, workAssetsBaseUrl ) {
+		const normalized = sanitizeString( value, '' );
+		const assetsBaseUrl = sanitizeString( workAssetsBaseUrl, '' );
+
+		if ( ! normalized ) {
+			return normalized;
+		}
+
+		if ( ! assetsBaseUrl || /^https?:\/\//i.test( normalized ) ) {
+			return normalized;
+		}
+
+		if ( 0 === normalized.indexOf( '/images/work/' ) ) {
+			return assetsBaseUrl + normalized.slice( '/images/work/'.length );
+		}
+
+		return normalized;
+	}
+
+	function resolveWorkAssetSrcSet( value, workAssetsBaseUrl ) {
+		return sanitizeString( value, '' )
+			.split( ',' )
+			.map( function (entry) {
+				var normalizedEntry = sanitizeString( entry, '' );
+				if ( ! normalizedEntry ) {
+					return '';
+				}
+
+				var parts = normalizedEntry.split( /\s+/ );
+				var url = parts.shift();
+				var descriptor = parts.join( ' ' );
+				var resolvedUrl = resolveWorkAssetUrl( url, workAssetsBaseUrl );
+
+				return descriptor ? resolvedUrl + ' ' + descriptor : resolvedUrl;
+			} )
+			.filter( Boolean )
+			.join( ', ' );
+	}
+
+	function resolveRepoVisualSet( visualSet, workAssetsBaseUrl ) {
+		if ( ! visualSet || typeof visualSet !== 'object' ) {
+			return visualSet;
+		}
+
+		var normalized = Object.assign( {}, visualSet );
+
+		[ 'architecture', 'cover', 'highlights', 'logo' ].forEach( function ( key ) {
+			if ( ! normalized[ key ] || typeof normalized[ key ] !== 'object' ) {
+				return;
+			}
+
+			normalized[ key ] = Object.assign( {}, normalized[ key ], {
+				src: resolveWorkAssetUrl( normalized[ key ].src, workAssetsBaseUrl ),
+				srcSet: resolveWorkAssetSrcSet( normalized[ key ].srcSet, workAssetsBaseUrl ),
+			} );
+		} );
 
 		return normalized;
 	}
@@ -904,23 +964,44 @@
 			);
 		}
 
-		return payload;
+		const staleHeader = response.headers.get( 'x-hdc-github-repos-stale' );
+		const staleReason = response.headers.get( 'x-hdc-github-repos-stale-reason' ) || '';
+		const isStale = staleHeader === '1';
+
+		return {
+			repos: payload,
+			stale: isStale,
+			source:
+				isStale && /rate limit|temporarily unavailable/i.test( staleReason )
+					? 'fallback-ratelimit'
+					: isStale
+						? 'fallback-error'
+						: 'live',
+		};
 	}
 
 	async function fetchGitHubRepos( config, localRepos ) {
 		const perPage = GITHUB_REPO_LIST_LIMIT;
 		const allRepos = [];
+		let source = 'live';
 
 		for ( let page = 1; page <= GITHUB_REPO_MAX_PAGES; page += 1 ) {
-			const pageRepos = await fetchGitHubReposProxyPage( config, perPage, page );
-			allRepos.push.apply( allRepos, pageRepos );
+			const pageResult = await fetchGitHubReposProxyPage( config, perPage, page );
+			allRepos.push.apply( allRepos, pageResult.repos );
 
-			if ( pageRepos.length < perPage ) {
+			if ( pageResult.source !== 'live' ) {
+				source = pageResult.source;
+			}
+
+			if ( pageResult.repos.length < perPage ) {
 				break;
 			}
 		}
 
-		return mapGitHubRepos( allRepos, localRepos );
+		return {
+			repos: mapGitHubRepos( allRepos, localRepos ),
+			source: source,
+		};
 	}
 
 	function getRepoProofRateLimitCooldownQueryKey( owner, repoNames ) {
@@ -1311,8 +1392,9 @@
 			source = 'fallback-ratelimit';
 		} else {
 			try {
-				repos = await fetchGitHubRepos( config, localRepos );
-				source = 'live';
+				const repoResult = await fetchGitHubRepos( config, localRepos );
+				repos = repoResult.repos;
+				source = repoResult.source;
 			} catch ( error ) {
 				if ( isRateLimitError( error ) ) {
 					source = 'fallback-ratelimit';
@@ -1346,7 +1428,11 @@
 			);
 			var visualsResponse = await fetch( visualsUrl );
 			if ( visualsResponse.ok ) {
-				WORK_VISUALS = await visualsResponse.json();
+				var visualsPayload = await visualsResponse.json();
+				WORK_VISUALS = Object.keys( visualsPayload || {} ).reduce( function ( acc, key ) {
+					acc[ key ] = resolveRepoVisualSet( visualsPayload[ key ], config.workAssetsBaseUrl );
+					return acc;
+				}, {} );
 			}
 		} catch ( _unused ) {
 			// Visual data is optional.
@@ -1565,7 +1651,7 @@
 									props.onViewChange( 'grid' );
 								},
 							},
-							'Grid'
+							'Grid view'
 						),
 						h(
 							'button',
@@ -1576,7 +1662,7 @@
 									props.onViewChange( 'timeline' );
 								},
 							},
-							'Timeline'
+							'Timeline view'
 						)
 					)
 				),
@@ -1610,6 +1696,82 @@
 					'p',
 					{ className: 'hdc-work-hint' },
 					'Case-study details are temporarily unavailable. Showing standard repository data.'
+				)
+				: null
+		);
+	}
+
+	function PendingReposPanel( props ) {
+		if ( props.pendingPreview.length === 0 && props.hiddenPendingCount === 0 ) {
+			return null;
+		}
+
+		const totalPendingCount = props.pendingPreview.length + props.hiddenPendingCount;
+		const previewLabel =
+			props.hiddenPendingCount > 0
+				? 'Preview ' + props.pendingPreview.length + ' of ' + totalPendingCount + ' repos'
+				: 'Preview ' + props.pendingPreview.length + ' repos';
+
+		return h(
+			'section',
+			{ className: 'hdc-work-pending' },
+			h(
+				'div',
+				{ className: 'hdc-work-pending-head' },
+				h(
+					'div',
+					null,
+					h( 'h3', { className: 'hdc-work-section-title' }, 'Additional Repositories' ),
+					h(
+						'p',
+						{ className: 'hdc-work-section-description' },
+						'These repositories are indexed, and detailed write-ups are in progress.'
+					)
+				),
+				h(
+					'button',
+					{
+						type: 'button',
+						className: 'hdc-work-button is-ghost',
+						onClick: props.onTogglePreview,
+					},
+					props.isPreviewVisible ? 'Hide list' : previewLabel
+				)
+			),
+			props.isPreviewVisible
+				? h(
+					Fragment,
+					null,
+					h(
+						'ul',
+						{ className: 'hdc-work-list' },
+						props.pendingPreview.map( function ( repo ) {
+							return h(
+								'li',
+								{ key: 'pending-' + repo.name, className: 'hdc-work-list-item' },
+								h(
+									'a',
+									{ className: 'hdc-work-pending-link', href: getWorkDetailUrl( repo.name ) },
+									h(
+										'div',
+										{ className: 'hdc-work-list-item-main' },
+										h( 'p', { className: 'hdc-work-list-item-title' }, getRepoDisplayName( repo ) ),
+										h( 'p', { className: 'hdc-work-list-item-text' }, repo.language )
+									),
+									h( 'time', { className: 'hdc-work-list-item-time', dateTime: repo.updatedAt }, formatDateLabel( repo.updatedAt ) )
+								)
+							);
+						} )
+					),
+					props.hiddenPendingCount > 0
+						? h(
+							'p',
+							{ className: 'hdc-work-hint' },
+							'+',
+							String( props.hiddenPendingCount ),
+							' more repositories in this filter.'
+						)
+						: null
 				)
 				: null
 		);
@@ -2577,84 +2739,6 @@
 		);
 	}
 
-	function PendingReposPanel( props ) {
-		if ( props.pendingPreview.length === 0 && props.hiddenPendingCount === 0 ) {
-			return null;
-		}
-
-		const totalPendingCount = props.pendingPreview.length + props.hiddenPendingCount;
-		const previewLabel =
-			props.hiddenPendingCount > 0
-				? 'Preview ' + props.pendingPreview.length + ' of ' + totalPendingCount + ' repos'
-				: 'Preview ' + props.pendingPreview.length + ' repos';
-
-		return h(
-			'section',
-			{ className: 'hdc-work-pending' },
-			h(
-				'div',
-				{ className: 'hdc-work-pending-head' },
-				h(
-					'div',
-					null,
-					h( 'h3', { className: 'hdc-work-section-title' }, 'Additional Repositories' ),
-					h(
-						'p',
-						{ className: 'hdc-work-section-description' },
-						'These repositories are indexed, but the write-ups are still in progress.'
-					)
-				),
-				h(
-					'button',
-					{
-						type: 'button',
-						className: 'hdc-work-button is-ghost',
-						onClick: props.onTogglePreview,
-					},
-					props.isPreviewVisible ? 'Hide list' : previewLabel
-				)
-			),
-			props.isPreviewVisible
-				? h(
-					Fragment,
-					null,
-					h(
-						'ul',
-						{ className: 'hdc-work-list' },
-						props.pendingPreview.map( function ( repo ) {
-							return h(
-								'li',
-								{ key: 'pending-' + repo.name, className: 'hdc-work-list-item' },
-								h(
-									'a',
-									{ className: 'hdc-work-pending-link', href: getWorkDetailUrl( repo.name ) },
-									h(
-										'div',
-										{ className: 'hdc-work-list-item-main' },
-										h( 'p', { className: 'hdc-work-list-item-title' }, getRepoDisplayName( repo ) ),
-										h( 'p', { className: 'hdc-work-list-item-text' }, repo.language )
-									),
-									h( 'time', { className: 'hdc-work-list-item-time', dateTime: repo.updatedAt }, formatDateLabel( repo.updatedAt ) )
-								)
-							);
-						} )
-					),
-					props.hiddenPendingCount > 0
-						? h(
-							'p',
-							{ className: 'hdc-work-hint' },
-							'+',
-							String( props.hiddenPendingCount ),
-							' more repositories in this filter.'
-						)
-						: null
-				)
-				: null
-		);
-	}
-
-
-
 	function WorkShowcaseApp( props ) {
 		const config = props.config;
 		const initialState = useMemo( function () {
@@ -2864,8 +2948,10 @@
 						);
 					} )
 					.sort( function ( a, b ) {
-						if ( a.featuredPriority !== b.featuredPriority ) {
-							return a.featuredPriority - b.featuredPriority;
+						const priorityA = typeof a.featuredPriority === 'number' ? a.featuredPriority : Number.MAX_SAFE_INTEGER;
+						const priorityB = typeof b.featuredPriority === 'number' ? b.featuredPriority : Number.MAX_SAFE_INTEGER;
+						if ( priorityA !== priorityB ) {
+							return priorityA - priorityB;
 						}
 						return compareReposByUpdatedAtDesc( a, b );
 					} )

@@ -1,14 +1,23 @@
 .hdc-home-page {
   display: block;
+  max-width: 100vw;
   position: relative;
+  width: 100vw;
+}
+
+.wp-block-post-content > .hdc-home-page.alignfull {
+  margin-left: calc(50% - 50vw) !important;
+  margin-right: calc(50% - 50vw) !important;
 }
 
 .hdc-home-page__shell {
+  box-sizing: border-box;
   isolation: isolate;
-  margin: 0 auto;
-  max-width: 1400px;
-  padding: 0 clamp(1.25rem, 3vw, 2rem) clamp(2.75rem, 6vw, 4rem);
+  margin: 0;
+  max-width: none;
+  padding: 0 0 clamp(2.75rem, 6vw, 4rem);
   position: relative;
+  width: 100%;
 }
 
 .hdc-home-page__shell > * {
@@ -45,12 +54,19 @@
   margin: 0;
 }
 
+.hdc-home-page__status {
+  box-sizing: border-box;
+  margin: 0 auto;
+  max-width: 1400px;
+  padding-inline: clamp(1.25rem, 3vw, 2rem);
+}
+
 .hdc-home-page__hero {
   background: hsl(var(--inverse-background));
   border-bottom: 1px solid hsl(var(--inverse-border));
   color: hsl(var(--inverse-foreground));
   margin-inline: calc(50% - 50vw);
-  min-height: max(34rem, calc(82svh - var(--layout-header-height)));
+  min-height: max(30rem, calc(82svh - var(--layout-header-height)));
   overflow: hidden;
   position: relative;
 }
@@ -64,17 +80,18 @@
 
 .hdc-home-page__hero-shell {
   align-items: center;
+  box-sizing: border-box;
   display: flex;
   margin: 0 auto;
-  max-width: 1400px;
+  max-width: 64rem;
   min-height: inherit;
-  padding: clamp(4.25rem, 10vw, 7rem) clamp(1.25rem, 3vw, 2rem) clamp(3.5rem, 8vw, 5.5rem);
+  padding: 4rem clamp(1.25rem, 3vw, 2rem) 4rem;
   position: relative;
   z-index: var(--layer-content);
 }
 
 .hdc-home-page__hero-content {
-  max-width: min(48rem, 100%);
+  max-width: 64rem;
   width: 100%;
 }
 
@@ -110,19 +127,19 @@
 
 .hdc-home-page__hero-title {
   color: hsl(var(--inverse-foreground));
-  font-size: clamp(3rem, 7vw, 5.75rem);
+  font-size: 2.25rem;
   letter-spacing: -0.02em;
-  line-height: 1.05;
-  max-width: 9ch;
+  line-height: 1.02;
+  font-weight: 700;
   text-shadow: var(--text-shadow-hero-title);
 }
 
 .hdc-home-page__hero-description {
   color: hsl(var(--inverse-muted-foreground));
-  font-size: clamp(1rem, 2vw, 1.25rem);
-  line-height: 1.7;
+  font-size: 1rem;
+  line-height: 1.625;
   margin: 1.25rem 0 0;
-  max-width: 38rem;
+  max-width: 36rem;
   text-shadow: var(--text-shadow-hero-body);
 }
 
@@ -136,7 +153,10 @@
 }
 
 .hdc-home-page__hero-actions {
-  margin-top: 2rem;
+  align-items: stretch;
+  flex-direction: column;
+  margin-top: 1.5rem;
+  width: 100%;
 }
 
 .hdc-home-page__button,
@@ -176,8 +196,8 @@
 
 .hdc-home-page__button--hero {
   box-shadow: var(--shadow-cta-hero);
-  min-height: 3.25rem;
-  padding: 0.95rem 1.35rem;
+  min-height: 2.75rem;
+  padding: 0.875rem 1.5rem;
 }
 
 .hdc-home-page__button--secondary {
@@ -206,9 +226,13 @@
 }
 
 .hdc-home-page__section {
+  box-sizing: border-box;
   display: grid;
   gap: 1rem;
-  padding-top: clamp(2.75rem, 6vw, 4rem);
+  margin: 0 auto;
+  max-width: 1400px;
+  padding-inline: clamp(1.25rem, 3vw, 2rem);
+  padding-top: 3rem;
 }
 
 .hdc-home-page__section:not(:first-child) {
@@ -260,7 +284,7 @@
 .hdc-home-page__throughline-story {
   border: 1px solid hsl(var(--border-emphasis));
   border-radius: var(--radius-surface);
-  padding: clamp(1.5rem, 3vw, 2.5rem);
+  padding: clamp(1.5rem, 3vw, 2rem);
 }
 
 .hdc-home-page__throughline-narrative {
@@ -298,9 +322,9 @@
 
 .hdc-home-page__throughline-quote-text {
   color: hsl(var(--text-accent));
-  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  font-size: 0.875rem;
   font-weight: 600;
-  line-height: 1.375;
+  line-height: 1.4;
   margin: 0;
 }
 
@@ -475,7 +499,7 @@
 }
 
 .hdc-home-page__card-title {
-  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-size: 1.25rem;
 }
 
 .hdc-home-page__card-title--row {
@@ -711,6 +735,10 @@
     flex-direction: row;
   }
 
+  .hdc-home-page__hero-actions {
+    width: auto;
+  }
+
   .hdc-home-page__cta-actions {
     width: auto;
   }
@@ -735,6 +763,20 @@
 }
 
 @media (min-width: 960px) {
+  .hdc-home-page__hero {
+    min-height: min(88svh, 52rem);
+  }
+
+  .hdc-home-page__hero-title {
+    font-size: 4.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .hdc-home-page__hero-description {
+    font-size: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+
   .hdc-home-page__resume-grid {
     grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
   }
@@ -764,11 +806,12 @@
 
 @media (max-width: 767px) {
   .hdc-home-page__hero {
-    min-height: max(30rem, calc(72svh - var(--layout-header-height)));
+    min-height: max(30rem, calc(82svh - var(--layout-header-height)));
   }
 
   .hdc-home-page__hero-shell {
-    padding-top: 3.5rem;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
   }
 }
 

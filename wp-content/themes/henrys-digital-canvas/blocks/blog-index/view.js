@@ -15,9 +15,12 @@
 	const utils = window.hdcSharedUtils || {};
 	const BLOG_PAGE_SIZE = 6;
 	const BLOG_HEADING = 'Blog';
-	const BLOG_DESCRIPTION = 'Writing on customer-facing engineering, AI workflows, WordPress delivery, and support-to-implementation systems.';
-	const BLOG_LOADING_DESCRIPTION = 'Please wait while the latest posts are prepared.';
-	const BLOG_ERROR_DESCRIPTION = 'The blog index could not be loaded right now. Try again in a moment.';
+	const BLOG_DESCRIPTION =
+		'Writing on customer-facing engineering, AI workflows, WordPress delivery, and support-to-implementation systems.';
+	const BLOG_LOADING_DESCRIPTION =
+		'Please wait while the latest posts are prepared.';
+	const BLOG_ERROR_DESCRIPTION =
+		'The blog index could not be loaded right now. Try again in a moment.';
 	const BLOG_DATE_FORMATTER = new Intl.DateTimeFormat( 'en-US', {
 		year: 'numeric',
 		month: 'short',
@@ -52,15 +55,20 @@
 
 	function parseConfig( section ) {
 		let parsed = {};
+
 		try {
-			parsed = JSON.parse( section.getAttribute( 'data-config' ) || '{}' );
+			parsed = JSON.parse(
+				section.getAttribute( 'data-config' ) || '{}'
+			);
 		} catch ( error ) {
 			parsed = {};
 		}
 
 		let inlineFallback = null;
+
 		try {
 			const raw = section.getAttribute( 'data-fallback-payload' );
+
 			if ( raw ) {
 				inlineFallback = JSON.parse( raw );
 			}
@@ -73,9 +81,15 @@
 			fallbackUrl: ensureString( parsed.fallbackUrl, '' ),
 			blogBaseUrl: ensureString( parsed.blogBaseUrl, '/blog/' ),
 			contactUrl: ensureString( parsed.contactUrl, '/contact/' ),
-			githubUrl: ensureString( parsed.githubUrl, 'https://github.com/henryperkins' ),
-			linkedinUrl: ensureString( parsed.linkedinUrl, 'https://linkedin.com/in/henryperkins' ),
-			inlineFallback: inlineFallback,
+			githubUrl: ensureString(
+				parsed.githubUrl,
+				'https://github.com/henryperkins'
+			),
+			linkedinUrl: ensureString(
+				parsed.linkedinUrl,
+				'https://linkedin.com/in/henryperkins'
+			),
+			inlineFallback,
 		};
 	}
 
@@ -90,7 +104,9 @@
 			},
 		} ).then( function ( response ) {
 			if ( ! response.ok ) {
-				throw new Error( 'Request failed with status ' + response.status );
+				throw new Error(
+					'Request failed with status ' + response.status
+				);
 			}
 
 			return response.json();
@@ -116,7 +132,11 @@
 	}
 
 	function resolveBlogPayload( payload ) {
-		if ( payload && typeof payload === 'object' && Array.isArray( payload.posts ) ) {
+		if (
+			payload &&
+			typeof payload === 'object' &&
+			Array.isArray( payload.posts )
+		) {
 			return {
 				source: ensureString( payload.source, 'unknown' ),
 				posts: payload.posts,
@@ -147,23 +167,33 @@
 		const excerpt = ensureString( post && post.excerpt, '' );
 		const readingTime = ensureString(
 			post && post.readingTime,
-			utils.estimateReadingTimeLabel ? utils.estimateReadingTimeLabel( contentHtml || content || excerpt ) : '1 min read'
+			utils.estimateReadingTimeLabel
+				? utils.estimateReadingTimeLabel(
+						contentHtml || content || excerpt
+				  )
+				: '1 min read'
 		);
 
 		return {
-			slug: ensureString( post && post.slug, 'post-' + String( index + 1 ) ),
+			slug: ensureString(
+				post && post.slug,
+				'post-' + String( index + 1 )
+			),
 			title: ensureString( post && post.title, 'Untitled Post' ),
-			excerpt: excerpt,
+			excerpt,
 			date: ensureString( post && post.date, '' ),
 			tags: tags.length ? tags : [ 'General' ],
 			featured: !! ( post && post.featured ),
-			readingTime: readingTime,
-			content: content,
-			contentHtml: contentHtml,
+			readingTime,
+			content,
+			contentHtml,
 			url: ensureString( post && post.url, '' ),
 			featuredImageUrl: ensureString( post && post.featuredImageUrl, '' ),
 			featuredImageAlt: ensureString( post && post.featuredImageAlt, '' ),
-			featuredImageSrcSet: ensureString( post && post.featuredImageSrcSet, '' ),
+			featuredImageSrcSet: ensureString(
+				post && post.featuredImageSrcSet,
+				''
+			),
 		};
 	}
 
@@ -171,21 +201,30 @@
 		return ensureArray( posts )
 			.map( normalizePost )
 			.sort( function ( left, right ) {
-				return parseDateValue( right.date ).getTime() - parseDateValue( left.date ).getTime();
+				return (
+					parseDateValue( right.date ).getTime() -
+					parseDateValue( left.date ).getTime()
+				);
 			} );
 	}
 
-	function buildPostUrl( post, config ) {
+	function buildPostUrl( post, blogBaseUrl ) {
 		if ( post && post.slug ) {
-			const base = ensureString( config.blogBaseUrl, '/blog/' ).replace( /\/+$/, '' );
-			return toAbsoluteUrl( base + '/' + encodeURIComponent( post.slug ) + '/' );
+			const base = ensureString( blogBaseUrl, '/blog/' ).replace(
+				/\/+$/,
+				''
+			);
+
+			return toAbsoluteUrl(
+				base + '/' + encodeURIComponent( post.slug ) + '/'
+			);
 		}
 
 		if ( post && post.url ) {
 			return toAbsoluteUrl( post.url );
 		}
 
-		return toAbsoluteUrl( ensureString( config.blogBaseUrl, '/blog/' ) );
+		return toAbsoluteUrl( ensureString( blogBaseUrl, '/blog/' ) );
 	}
 
 	function buildImageAlt( post ) {
@@ -204,7 +243,139 @@
 		}
 	}
 
-	var blogRevealObserver = null;
+	function getCopyButtonText( copyLabel ) {
+		if ( copyLabel === 'success' ) {
+			return 'Blog link copied';
+		}
+
+		if ( copyLabel === 'error' ) {
+			return 'Copy failed';
+		}
+
+		return 'Copy blog link';
+	}
+
+	function getCopyButtonIcon( copyLabel ) {
+		if ( copyLabel === 'success' ) {
+			return 'check';
+		}
+
+		return 'share-2';
+	}
+
+	function getCopyButtonClassName( copyLabel ) {
+		let className = 'hdc-blog-index__share-copy-btn';
+
+		if ( copyLabel === 'success' ) {
+			className += ' hdc-blog-index__share-copy-btn--success';
+		} else if ( copyLabel === 'error' ) {
+			className += ' hdc-blog-index__share-copy-btn--error';
+		}
+
+		return className;
+	}
+
+	function getPublishedPostCountLabel( postCount ) {
+		if ( postCount === 1 ) {
+			return '1 published note';
+		}
+
+		return postCount + ' published notes';
+	}
+
+	function getTopicCountLabel( allTagCount ) {
+		if ( allTagCount <= 1 ) {
+			return null;
+		}
+
+		return allTagCount - 1 + ' topics';
+	}
+
+	function getArchiveSummaryLabel(
+		filteredCount,
+		currentVisibleCount,
+		hasActiveArchiveFilters,
+		hasFeaturedPost
+	) {
+		if ( filteredCount > currentVisibleCount ) {
+			return 'Showing ' + currentVisibleCount + ' of ' + filteredCount;
+		}
+
+		if ( filteredCount === 0 ) {
+			if ( hasActiveArchiveFilters ) {
+				return 'No matching archive posts';
+			}
+
+			if ( hasFeaturedPost ) {
+				return 'Featured post only';
+			}
+
+			return 'No published posts yet';
+		}
+
+		if ( filteredCount === 1 ) {
+			return '1 archive post ready to read';
+		}
+
+		return filteredCount + ' archive posts ready to read';
+	}
+
+	function getBrowseDescription(
+		normalizedSearchLower,
+		normalizedSearchTrimmed,
+		activeTag,
+		filteredCount,
+		hasFeaturedPost
+	) {
+		if ( normalizedSearchLower ) {
+			return (
+				'Showing posts that match "' + normalizedSearchTrimmed + '".'
+			);
+		}
+
+		if ( activeTag !== 'All' ) {
+			return 'Showing posts tagged ' + activeTag + '.';
+		}
+
+		if ( filteredCount === 0 ) {
+			if ( hasFeaturedPost ) {
+				return 'The latest post is featured above. More posts will appear here as the archive grows.';
+			}
+
+			return 'Published posts will appear here once the archive is live.';
+		}
+
+		return 'Search by keyword or filter by topic to move through the archive.';
+	}
+
+	function getEmptyStateTitle( hasActiveArchiveFilters, hasFeaturedPost ) {
+		if ( hasActiveArchiveFilters ) {
+			return 'No posts found';
+		}
+
+		if ( hasFeaturedPost ) {
+			return 'Archive updating';
+		}
+
+		return 'No posts published yet';
+	}
+
+	function getEmptyStateDescription(
+		hasActiveArchiveFilters,
+		hasFeaturedPost
+	) {
+		if ( hasActiveArchiveFilters ) {
+			return 'Try a different keyword or clear active filters.';
+		}
+
+		if ( hasFeaturedPost ) {
+			return 'The latest post is featured above. More posts will appear here as the archive grows.';
+		}
+
+		return 'Published posts will appear here once they are available.';
+	}
+
+	let blogRevealObserver = null;
 
 	function initBlogReveals() {
 		if ( blogRevealObserver ) {
@@ -212,19 +383,21 @@
 			blogRevealObserver = null;
 		}
 
-		var elements = document.querySelectorAll( '.hdc-blog-reveal:not(.is-visible)' );
+		const elements = document.querySelectorAll(
+			'.hdc-blog-reveal:not(.is-visible)'
+		);
 		if ( ! elements.length ) {
 			return;
 		}
 
-		if ( typeof IntersectionObserver === 'undefined' ) {
+		if ( typeof window.IntersectionObserver === 'undefined' ) {
 			elements.forEach( function ( el ) {
 				el.classList.add( 'is-visible' );
 			} );
 			return;
 		}
 
-		blogRevealObserver = new IntersectionObserver(
+		blogRevealObserver = new window.IntersectionObserver(
 			function ( entries ) {
 				entries.forEach( function ( entry ) {
 					if ( entry.isIntersecting ) {
@@ -237,8 +410,10 @@
 		);
 
 		elements.forEach( function ( el ) {
-			var rect = el.getBoundingClientRect();
-			var isAboveFold = rect.top < window.innerHeight && rect.bottom > 0;
+			const rect = el.getBoundingClientRect();
+			const isAboveFold =
+				rect.top < window.innerHeight && rect.bottom > 0;
+
 			if ( isAboveFold ) {
 				el.classList.add( 'is-visible' );
 			} else {
@@ -249,13 +424,25 @@
 
 	function BlogSharePanel( props ) {
 		const shareUrl = toAbsoluteUrl( props.blogUrl || '/blog/' );
-		const copyState = useState( 'idle' );
-		const copyLabel = copyState[ 0 ];
-		const setCopyLabel = copyState[ 1 ];
+		const [ copyLabel, setCopyLabel ] = useState( 'idle' );
+		const buttonText = getCopyButtonText( copyLabel );
+		const buttonIcon = getCopyButtonIcon( copyLabel );
+		const buttonClass = getCopyButtonClassName( copyLabel );
+		const linkedInShareUrl =
+			'https://www.linkedin.com/sharing/share-offsite/?url=' +
+			encodeURIComponent( shareUrl );
+		const emailShareUrl =
+			'mailto:?subject=' +
+			encodeURIComponent( 'Blog \u2014 Henry Perkins' ) +
+			'&body=' +
+			encodeURIComponent( BLOG_DESCRIPTION + '\n\n' + shareUrl );
 
 		function handleCopy() {
-			if ( navigator.clipboard && navigator.clipboard.writeText ) {
-				navigator.clipboard.writeText( shareUrl ).then(
+			if (
+				window.navigator.clipboard &&
+				window.navigator.clipboard.writeText
+			) {
+				window.navigator.clipboard.writeText( shareUrl ).then(
 					function () {
 						setCopyLabel( 'success' );
 					},
@@ -266,6 +453,7 @@
 			} else {
 				try {
 					const ta = document.createElement( 'textarea' );
+
 					ta.value = shareUrl;
 					ta.style.position = 'fixed';
 					ta.style.opacity = '0';
@@ -274,7 +462,7 @@
 					document.execCommand( 'copy' );
 					document.body.removeChild( ta );
 					setCopyLabel( 'success' );
-				} catch ( err ) {
+				} catch ( error ) {
 					setCopyLabel( 'error' );
 				}
 			}
@@ -284,23 +472,19 @@
 			}, 2000 );
 		}
 
-		var buttonText = copyLabel === 'success' ? 'Blog link copied' : copyLabel === 'error' ? 'Copy failed' : 'Copy blog link';
-		var buttonIcon = copyLabel === 'success' ? 'check' : 'share-2';
-		var buttonClass = 'hdc-blog-index__share-copy-btn';
-		if ( copyLabel === 'success' ) {
-			buttonClass += ' hdc-blog-index__share-copy-btn--success';
-		} else if ( copyLabel === 'error' ) {
-			buttonClass += ' hdc-blog-index__share-copy-btn--error';
-		}
-
-		var linkedInShareUrl = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent( shareUrl );
-		var emailShareUrl = 'mailto:?subject=' + encodeURIComponent( 'Blog \u2014 Henry Perkins' ) + '&body=' + encodeURIComponent( BLOG_DESCRIPTION + '\n\n' + shareUrl );
-
 		return h(
 			'div',
 			{ className: 'hdc-blog-index__share-panel' },
-			h( 'h3', { className: 'hdc-blog-index__cta-title' }, 'Share the blog' ),
-			h( 'p', { className: 'hdc-blog-index__cta-description' }, 'Share the main blog landing page on LinkedIn or by email.' ),
+			h(
+				'h3',
+				{ className: 'hdc-blog-index__cta-title' },
+				'Share the blog'
+			),
+			h(
+				'p',
+				{ className: 'hdc-blog-index__cta-description' },
+				'Share the main blog landing page on LinkedIn or by email.'
+			),
 			h(
 				'div',
 				{ className: 'hdc-blog-index__share-actions' },
@@ -312,7 +496,9 @@
 						'aria-label': buttonText,
 						onClick: handleCopy,
 					},
-					utils.renderLucideIcon ? utils.renderLucideIcon( h, buttonIcon, { size: 14 } ) : null,
+					utils.renderLucideIcon
+						? utils.renderLucideIcon( h, buttonIcon, { size: 14 } )
+						: null,
 					h( 'span', {}, buttonText )
 				),
 				h(
@@ -323,7 +509,9 @@
 						target: '_blank',
 						rel: 'noopener noreferrer',
 					},
-					utils.renderLucideIcon ? utils.renderLucideIcon( h, 'linkedin', { size: 16 } ) : null,
+					utils.renderLucideIcon
+						? utils.renderLucideIcon( h, 'linkedin', { size: 16 } )
+						: null,
 					h( 'span', {}, 'Share on LinkedIn' )
 				),
 				h(
@@ -334,7 +522,9 @@
 						target: '_blank',
 						rel: 'noopener noreferrer',
 					},
-					utils.renderLucideIcon ? utils.renderLucideIcon( h, 'mail', { size: 16 } ) : null,
+					utils.renderLucideIcon
+						? utils.renderLucideIcon( h, 'mail', { size: 16 } )
+						: null,
 					h( 'span', {}, 'Email blog' )
 				)
 			)
@@ -343,6 +533,13 @@
 
 	function BlogIndexApp( props ) {
 		const config = props.config;
+		const endpoint = config.endpoint;
+		const fallbackUrl = config.fallbackUrl;
+		const blogBaseUrl = config.blogBaseUrl;
+		const contactUrl = config.contactUrl;
+		const githubUrl = config.githubUrl;
+		const linkedinUrl = config.linkedinUrl;
+		const inlineFallback = config.inlineFallback;
 		const [ state, setState ] = useState( {
 			loading: true,
 			error: '',
@@ -354,10 +551,6 @@
 		const [ visibleCount, setVisibleCount ] = useState( BLOG_PAGE_SIZE );
 		const [ retryCount, setRetryCount ] = useState( 0 );
 		const chipRefs = useRef( [] );
-
-		const signature = useMemo( function () {
-			return JSON.stringify( config );
-		}, [ config ] );
 
 		useEffect(
 			function () {
@@ -372,7 +565,7 @@
 					} );
 
 					try {
-						const payload = await fetchJson( config.endpoint );
+						const payload = await fetchJson( endpoint );
 						const resolved = resolveBlogPayload( payload );
 
 						if ( ! cancelled ) {
@@ -383,33 +576,43 @@
 								posts: normalizePosts( resolved.posts ),
 							} );
 						}
-						return;
 					} catch ( endpointError ) {
-						if ( config.inlineFallback ) {
-							var resolvedInline = resolveBlogPayload( config.inlineFallback );
+						if ( inlineFallback ) {
+							try {
+								const resolvedInline =
+									resolveBlogPayload( inlineFallback );
 
-							if ( ! cancelled ) {
-								setState( {
-									loading: false,
-									error: '',
-									source: resolvedInline.source || 'local',
-									posts: normalizePosts( resolvedInline.posts ),
-								} );
+								if ( ! cancelled ) {
+									setState( {
+										loading: false,
+										error: '',
+										source:
+											resolvedInline.source || 'local',
+										posts: normalizePosts(
+											resolvedInline.posts
+										),
+									} );
+								}
+
+								return;
+							} catch ( inlineFallbackError ) {
+								// Fall through to the static fallback URL.
 							}
-
-							return;
 						}
 
 						try {
-							const fallback = await fetchJson( config.fallbackUrl );
-							const resolvedFallback = resolveBlogPayload( fallback );
+							const fallback = await fetchJson( fallbackUrl );
+							const resolvedFallback =
+								resolveBlogPayload( fallback );
 
 							if ( ! cancelled ) {
 								setState( {
 									loading: false,
 									error: '',
 									source: resolvedFallback.source || 'local',
-									posts: normalizePosts( resolvedFallback.posts ),
+									posts: normalizePosts(
+										resolvedFallback.posts
+									),
 								} );
 							}
 						} catch ( fallbackError ) {
@@ -431,7 +634,7 @@
 					cancelled = true;
 				};
 			},
-			[ signature, retryCount ]
+			[ endpoint, fallbackUrl, inlineFallback, retryCount ]
 		);
 
 		const featured = useMemo(
@@ -440,9 +643,11 @@
 					return null;
 				}
 
-				return state.posts.find( function ( post ) {
-					return !! post.featured;
-				} ) || null;
+				return (
+					state.posts.find( function ( post ) {
+						return !! post.featured;
+					} ) || null
+				);
 			},
 			[ state.posts ]
 		);
@@ -472,7 +677,7 @@
 		);
 
 		function handleChipKeyDown( event, index, options ) {
-			var next = -1;
+			let next = -1;
 
 			if ( event.key === 'ArrowRight' || event.key === 'ArrowDown' ) {
 				event.preventDefault();
@@ -512,11 +717,17 @@
 				const normalizedSearch = search.trim().toLowerCase();
 
 				return archivePosts.filter( function ( post ) {
+					const normalizedTitle = post.title.toLowerCase();
+					const normalizedExcerpt = post.excerpt.toLowerCase();
+					const titleMatches =
+						normalizedTitle.indexOf( normalizedSearch ) !== -1;
+					const excerptMatches =
+						normalizedExcerpt.indexOf( normalizedSearch ) !== -1;
 					const matchesSearch =
-						! normalizedSearch ||
-						post.title.toLowerCase().indexOf( normalizedSearch ) !== -1 ||
-						post.excerpt.toLowerCase().indexOf( normalizedSearch ) !== -1;
-					const matchesTag = activeTag === 'All' || post.tags.indexOf( activeTag ) !== -1;
+						! normalizedSearch || titleMatches || excerptMatches;
+					const matchesTag =
+						activeTag === 'All' ||
+						post.tags.indexOf( activeTag ) !== -1;
 
 					return matchesSearch && matchesTag;
 				} );
@@ -533,156 +744,261 @@
 
 		const listedPosts = useMemo(
 			function () {
-				return featured ? [ featured ].concat( visiblePosts ) : visiblePosts;
+				return featured
+					? [ featured ].concat( visiblePosts )
+					: visiblePosts;
 			},
 			[ featured, visiblePosts ]
 		);
 
-		useEffect( function () {
-			requestAnimationFrame( function () {
-				initBlogReveals();
-			} );
-		}, [ state.loading, state.error, state.posts.length, visibleCount, search, activeTag ] );
+		useEffect(
+			function () {
+				const frameId = window.requestAnimationFrame( function () {
+					initBlogReveals();
+				} );
 
-		useEffect( function () {
-			var existing = document.getElementById( 'hdc-blog-jsonld' );
+				return function () {
+					window.cancelAnimationFrame( frameId );
+				};
+			},
+			[
+				state.loading,
+				state.error,
+				state.posts.length,
+				visibleCount,
+				search,
+				activeTag,
+			]
+		);
 
-			if ( existing ) {
-				existing.remove();
-			}
+		useEffect(
+			function () {
+				const existing = document.getElementById( 'hdc-blog-jsonld' );
 
-			if ( state.loading || ! listedPosts.length ) {
-				return;
-			}
-
-			var ld = {
-				'@context': 'https://schema.org',
-				'@type': 'ItemList',
-				itemListElement: listedPosts.map( function ( post, index ) {
-					return {
-						'@type': 'ListItem',
-						description: post.excerpt,
-						image: post.featuredImageUrl ? toAbsoluteUrl( post.featuredImageUrl ) : undefined,
-						name: post.title,
-						position: index + 1,
-						url: buildPostUrl( post, config ),
-					};
-				} ),
-			};
-
-			var script = document.createElement( 'script' );
-			script.type = 'application/ld+json';
-			script.id = 'hdc-blog-jsonld';
-			script.textContent = JSON.stringify( ld );
-			document.head.appendChild( script );
-
-			return function () {
-				var el = document.getElementById( 'hdc-blog-jsonld' );
-
-				if ( el ) {
-					el.remove();
+				if ( existing ) {
+					existing.remove();
 				}
-			};
-		}, [ state.loading, listedPosts, config.blogBaseUrl ] );
 
-		var hasBlogPosts = state.posts.length > 0;
-		var isBlogLookupPending = ! hasBlogPosts && state.loading;
-		var hasBlogLookupError = ! hasBlogPosts && !! state.error;
-		var latestPost = state.posts[ 0 ] || null;
-		var currentlyShowing = visiblePosts.length;
-		var normalizedSearchTrimmed = search.trim();
-		var normalizedSearchLower = normalizedSearchTrimmed.toLowerCase();
-		var hasActiveArchiveFilters = normalizedSearchLower.length > 0 || activeTag !== 'All';
-		var publishedPostCountLabel = state.posts.length === 1 ? '1 published note' : state.posts.length + ' published notes';
-		var topicCountLabel = allTags.length > 1 ? ( allTags.length - 1 ) + ' topics' : null;
-		var archiveSummaryLabel = filtered.length > visiblePosts.length
-			? 'Showing ' + currentlyShowing + ' of ' + filtered.length
-			: filtered.length === 0
-				? hasActiveArchiveFilters
-					? 'No matching archive posts'
-					: featured
-						? 'Featured post only'
-						: 'No published posts yet'
-				: filtered.length === 1
-					? '1 archive post ready to read'
-					: filtered.length + ' archive posts ready to read';
-		var browseDescription = normalizedSearchLower
-			? 'Showing posts that match "' + normalizedSearchTrimmed + '".'
-			: activeTag !== 'All'
-				? 'Showing posts tagged ' + activeTag + '.'
-				: filtered.length === 0
-					? featured
-						? 'The latest post is featured above. More posts will appear here as the archive grows.'
-						: 'Published posts will appear here once the archive is live.'
-					: 'Search by keyword or filter by topic to move through the archive.';
-		var emptyStateTitle = hasActiveArchiveFilters
-			? 'No posts found'
-			: featured
-				? 'Archive updating'
-				: 'No posts published yet';
-		var emptyStateDescription = hasActiveArchiveFilters
-			? 'Try a different keyword or clear active filters.'
-			: featured
-				? 'The latest post is featured above. More posts will appear here as the archive grows.'
-				: 'Published posts will appear here once they are available.';
+				if ( state.loading || ! listedPosts.length ) {
+					return;
+				}
 
-		var heroMeta = hasBlogPosts
+				const ld = {
+					'@context': 'https://schema.org',
+					'@type': 'ItemList',
+					itemListElement: listedPosts.map( function ( post, index ) {
+						return {
+							'@type': 'ListItem',
+							description: post.excerpt,
+							image: post.featuredImageUrl
+								? toAbsoluteUrl( post.featuredImageUrl )
+								: undefined,
+							name: post.title,
+							position: index + 1,
+							url: buildPostUrl( post, blogBaseUrl ),
+						};
+					} ),
+				};
+
+				const script = document.createElement( 'script' );
+
+				script.type = 'application/ld+json';
+				script.id = 'hdc-blog-jsonld';
+				script.textContent = JSON.stringify( ld );
+				document.head.appendChild( script );
+
+				return function () {
+					const el = document.getElementById( 'hdc-blog-jsonld' );
+
+					if ( el ) {
+						el.remove();
+					}
+				};
+			},
+			[ state.loading, listedPosts, blogBaseUrl ]
+		);
+
+		const hasBlogPosts = state.posts.length > 0;
+		const isBlogLookupPending = ! hasBlogPosts && state.loading;
+		const hasBlogLookupError = ! hasBlogPosts && !! state.error;
+		const latestPost = state.posts[ 0 ] || null;
+		const currentlyShowing = visiblePosts.length;
+		const normalizedSearchTrimmed = search.trim();
+		const normalizedSearchLower = normalizedSearchTrimmed.toLowerCase();
+		const hasActiveArchiveFilters =
+			normalizedSearchLower.length > 0 || activeTag !== 'All';
+		const publishedPostCountLabel = getPublishedPostCountLabel(
+			state.posts.length
+		);
+		const topicCountLabel = getTopicCountLabel( allTags.length );
+		const archiveSummaryLabel = getArchiveSummaryLabel(
+			filtered.length,
+			currentlyShowing,
+			hasActiveArchiveFilters,
+			!! featured
+		);
+		const browseDescription = getBrowseDescription(
+			normalizedSearchLower,
+			normalizedSearchTrimmed,
+			activeTag,
+			filtered.length,
+			!! featured
+		);
+		const emptyStateTitle = getEmptyStateTitle(
+			hasActiveArchiveFilters,
+			!! featured
+		);
+		const emptyStateDescription = getEmptyStateDescription(
+			hasActiveArchiveFilters,
+			!! featured
+		);
+
+		const latestMetaSeparator = latestPost
+			? h( 'span', {
+					className: 'hdc-blog-index__meta-sep',
+					'aria-hidden': 'true',
+			  } )
+			: null;
+		const latestMetaItem = latestPost
 			? h(
-				'span',
-				{ className: 'hdc-blog-index__hero-meta', 'data-contrast-probe': 'hero-meta-blog' },
-				h( 'span', { className: 'hdc-blog-index__hero-meta-item' }, publishedPostCountLabel ),
-				latestPost ? h( 'span', { className: 'hdc-blog-index__meta-sep', 'aria-hidden': 'true' } ) : null,
-				latestPost ? h( 'span', { className: 'hdc-blog-index__hero-meta-item' }, 'Latest ', h( 'time', { dateTime: latestPost.date }, formatDateLabel( latestPost.date ) ) ) : null,
-				topicCountLabel ? h( 'span', { className: 'hdc-blog-index__meta-sep', 'aria-hidden': 'true' } ) : null,
-				topicCountLabel ? h( 'span', { className: 'hdc-blog-index__hero-meta-item' }, topicCountLabel ) : null
-			)
+					'span',
+					{ className: 'hdc-blog-index__hero-meta-item' },
+					'Latest ',
+					h(
+						'time',
+						{ dateTime: latestPost.date },
+						formatDateLabel( latestPost.date )
+					)
+			  )
+			: null;
+		const topicMetaSeparator = topicCountLabel
+			? h( 'span', {
+					className: 'hdc-blog-index__meta-sep',
+					'aria-hidden': 'true',
+			  } )
+			: null;
+		const topicMetaItem = topicCountLabel
+			? h(
+					'span',
+					{ className: 'hdc-blog-index__hero-meta-item' },
+					topicCountLabel
+			  )
 			: null;
 
-		var heroNode = h(
+		let heroMeta = null;
+		if ( hasBlogPosts ) {
+			heroMeta = h(
+				'span',
+				{
+					className: 'hdc-blog-index__hero-meta',
+					'data-contrast-probe': 'hero-meta-blog',
+				},
+				h(
+					'span',
+					{ className: 'hdc-blog-index__hero-meta-item' },
+					publishedPostCountLabel
+				),
+				latestMetaSeparator,
+				latestMetaItem,
+				topicMetaSeparator,
+				topicMetaItem
+			);
+		}
+
+		const heroNode = h(
 			'section',
-			{ className: 'hdc-blog-index__hero ember-surface hdc-blog-reveal hdc-blog-reveal--fade-up-soft', style: { '--reveal-index': 0 } },
+			{
+				className:
+					'hdc-blog-index__hero ember-surface hdc-blog-reveal hdc-blog-reveal--fade-up-soft',
+				style: { '--reveal-index': 0 },
+			},
 			h(
 				'div',
 				{ className: 'hdc-blog-index__hero-inner' },
 				h(
 					'header',
 					{ className: 'hdc-blog-index__intro' },
-					h( 'p', { className: 'hdc-blog-index__eyebrow' }, 'Writing' ),
-					h( 'h1', { className: 'hdc-blog-index__title' }, BLOG_HEADING ),
-					h( 'p', { className: 'hdc-blog-index__description' }, BLOG_DESCRIPTION ),
+					h(
+						'p',
+						{ className: 'hdc-blog-index__eyebrow' },
+						'Writing'
+					),
+					h(
+						'h1',
+						{ className: 'hdc-blog-index__title' },
+						BLOG_HEADING
+					),
+					h(
+						'p',
+						{ className: 'hdc-blog-index__description' },
+						BLOG_DESCRIPTION
+					),
 					heroMeta
 				)
 			)
 		);
 
-		var loadingStateNode = h(
+		const loadingStateNode = h(
 			'div',
 			{ className: 'hdc-blog-index__state-card' },
 			h(
 				'span',
-				{ className: 'hdc-blog-index__state-icon-badge', 'aria-hidden': 'true' },
-				utils.renderLucideIcon ? utils.renderLucideIcon( h, 'loader-2', { className: 'hdc-blog-index__state-icon hdc-blog-index__spin', size: 18 } ) : null
+				{
+					className: 'hdc-blog-index__state-icon-badge',
+					'aria-hidden': 'true',
+				},
+				utils.renderLucideIcon
+					? utils.renderLucideIcon( h, 'loader-2', {
+							className:
+								'hdc-blog-index__state-icon hdc-blog-index__spin',
+							size: 18,
+					  } )
+					: null
 			),
-			h( 'h2', { className: 'hdc-blog-index__state-title' }, 'Loading posts' ),
-			h( 'p', { className: 'hdc-blog-index__state-description' }, BLOG_LOADING_DESCRIPTION )
+			h(
+				'h2',
+				{ className: 'hdc-blog-index__state-title' },
+				'Loading posts'
+			),
+			h(
+				'p',
+				{ className: 'hdc-blog-index__state-description' },
+				BLOG_LOADING_DESCRIPTION
+			)
 		);
 
-		var errorStateNode = h(
+		const errorStateNode = h(
 			'div',
 			{ className: 'hdc-blog-index__state-card' },
 			h(
 				'span',
-				{ className: 'hdc-blog-index__state-icon-badge', 'aria-hidden': 'true' },
-				utils.renderLucideIcon ? utils.renderLucideIcon( h, 'alert-circle', { className: 'hdc-blog-index__state-icon', size: 18 } ) : null
+				{
+					className: 'hdc-blog-index__state-icon-badge',
+					'aria-hidden': 'true',
+				},
+				utils.renderLucideIcon
+					? utils.renderLucideIcon( h, 'alert-circle', {
+							className: 'hdc-blog-index__state-icon',
+							size: 18,
+					  } )
+					: null
 			),
-			h( 'h2', { className: 'hdc-blog-index__state-title' }, 'Could not load blog posts' ),
-			h( 'p', { className: 'hdc-blog-index__state-description' }, BLOG_ERROR_DESCRIPTION ),
+			h(
+				'h2',
+				{ className: 'hdc-blog-index__state-title' },
+				'Could not load blog posts'
+			),
+			h(
+				'p',
+				{ className: 'hdc-blog-index__state-description' },
+				BLOG_ERROR_DESCRIPTION
+			),
 			h(
 				'button',
 				{
 					type: 'button',
 					className: 'hdc-blog-index__retry',
-					onClick: function () {
+					onClick() {
 						setRetryCount( function ( count ) {
 							return count + 1;
 						} );
@@ -692,19 +1008,14 @@
 			)
 		);
 
-		var featuredNode = featured
-			? h(
-				'a',
-				{
-					className: 'hdc-blog-index__featured ember-surface focus-ring hdc-blog-reveal',
-					href: buildPostUrl( featured, config ),
-					style: { '--reveal-index': 0 },
-				},
-				h( 'span', { className: 'hdc-blog-index__featured-pill' }, 'Featured' ),
-				featured.featuredImageUrl
-					? h(
+		let featuredNode = null;
+		if ( featured ) {
+			const featuredImageNode = featured.featuredImageUrl
+				? h(
 						'div',
-						{ className: 'hdc-blog-index__featured-image-wrap' },
+						{
+							className: 'hdc-blog-index__featured-image-wrap',
+						},
 						h( 'img', {
 							className: 'hdc-blog-index__featured-image',
 							src: featured.featuredImageUrl,
@@ -716,50 +1027,121 @@
 							decoding: 'async',
 							onError: hideBrokenImage,
 						} )
-					)
-					: null,
-				h( 'h2', { className: 'hdc-blog-index__featured-title', 'data-contrast-probe': 'ember-title-blog' }, featured.title ),
-				h( 'p', { className: 'hdc-blog-index__featured-excerpt' }, featured.excerpt ),
+				  )
+				: null;
+			const featuredClockIcon = utils.renderLucideIcon
+				? utils.renderLucideIcon( h, 'clock', { size: 12 } )
+				: null;
+			const featuredArrowIcon = utils.renderLucideIcon
+				? utils.renderLucideIcon( h, 'arrow-right', { size: 14 } )
+				: null;
+
+			featuredNode = h(
+				'a',
+				{
+					className:
+						'hdc-blog-index__featured ember-surface focus-ring hdc-blog-reveal',
+					href: buildPostUrl( featured, blogBaseUrl ),
+					style: { '--reveal-index': 0 },
+				},
+				h(
+					'span',
+					{ className: 'hdc-blog-index__featured-pill' },
+					'Featured'
+				),
+				featuredImageNode,
+				h(
+					'h2',
+					{
+						className: 'hdc-blog-index__featured-title',
+						'data-contrast-probe': 'ember-title-blog',
+					},
+					featured.title
+				),
+				h(
+					'p',
+					{ className: 'hdc-blog-index__featured-excerpt' },
+					featured.excerpt
+				),
 				h(
 					'div',
 					{ className: 'hdc-blog-index__featured-meta' },
-					utils.renderLucideIcon ? utils.renderLucideIcon( h, 'clock', { size: 12 } ) : null,
-					h( 'time', { dateTime: featured.date }, formatDateLabel( featured.date ) ),
+					featuredClockIcon,
+					h(
+						'time',
+						{ dateTime: featured.date },
+						formatDateLabel( featured.date )
+					),
 					h( 'span', {}, featured.readingTime || '' ),
 					h(
 						'span',
 						{ className: 'hdc-blog-index__featured-read' },
 						'Read ',
-						utils.renderLucideIcon ? utils.renderLucideIcon( h, 'arrow-right', { size: 14 } ) : null
+						featuredArrowIcon
 					)
 				)
-			)
-			: null;
+			);
+		}
 
-		var browseCardNode = h(
+		let contextualBadge = null;
+		if ( normalizedSearchLower ) {
+			contextualBadge = h(
+				'span',
+				{ className: 'hdc-blog-index__badge' },
+				'Search: ' + normalizedSearchTrimmed
+			);
+		} else if ( activeTag !== 'All' ) {
+			contextualBadge = h(
+				'span',
+				{ className: 'hdc-blog-index__badge' },
+				'Tag: ' + activeTag
+			);
+		} else if ( latestPost ) {
+			contextualBadge = h(
+				'span',
+				{ className: 'hdc-blog-index__badge' },
+				'Latest ' + formatDateLabel( latestPost.date )
+			);
+		}
+
+		const browseCardNode = h(
 			'section',
-			{ className: 'hdc-blog-index__browse-card surface-inset-soft hdc-blog-reveal', style: { '--reveal-index': 0 } },
+			{
+				className:
+					'hdc-blog-index__browse-card surface-inset-soft hdc-blog-reveal',
+				style: { '--reveal-index': 0 },
+			},
 			h(
 				'div',
 				{ className: 'hdc-blog-index__browse-header' },
 				h(
 					'div',
 					{ className: 'hdc-blog-index__browse-header-left' },
-					h( 'p', { className: 'hdc-blog-index__eyebrow' }, 'Browse the archive' ),
-					h( 'h2', { className: 'hdc-blog-index__section-title' }, 'All Posts' ),
-					h( 'p', { className: 'hdc-blog-index__browse-description' }, browseDescription )
+					h(
+						'p',
+						{ className: 'hdc-blog-index__eyebrow' },
+						'Browse the archive'
+					),
+					h(
+						'h2',
+						{ className: 'hdc-blog-index__section-title' },
+						'All Posts'
+					),
+					h(
+						'p',
+						{ className: 'hdc-blog-index__browse-description' },
+						browseDescription
+					)
 				),
 				h(
 					'div',
 					{ className: 'hdc-blog-index__browse-badges' },
-					h( 'span', { className: 'hdc-blog-index__badge' }, archiveSummaryLabel ),
-					normalizedSearchLower
-						? h( 'span', { className: 'hdc-blog-index__badge' }, 'Search: ' + normalizedSearchTrimmed )
-						: activeTag !== 'All'
-							? h( 'span', { className: 'hdc-blog-index__badge' }, 'Tag: ' + activeTag )
-							: latestPost
-								? h( 'span', { className: 'hdc-blog-index__badge' }, 'Latest ' + formatDateLabel( latestPost.date ) )
-								: null
+					h(
+						'span',
+						{ className: 'hdc-blog-index__badge' },
+						archiveSummaryLabel
+					),
+					contextualBadge
 				)
 			),
 			h(
@@ -768,13 +1150,18 @@
 				h(
 					'div',
 					{ className: 'hdc-blog-index__search-wrap' },
-					utils.renderLucideIcon ? utils.renderLucideIcon( h, 'search', { size: 16, className: 'hdc-blog-index__search-icon' } ) : null,
+					utils.renderLucideIcon
+						? utils.renderLucideIcon( h, 'search', {
+								size: 16,
+								className: 'hdc-blog-index__search-icon',
+						  } )
+						: null,
 					h( 'input', {
 						type: 'search',
 						className: 'hdc-blog-index__search',
 						placeholder: 'Search posts...',
 						value: search,
-						onChange: function ( event ) {
+						onChange( event ) {
 							setVisibleCount( BLOG_PAGE_SIZE );
 							setSearch( ensureString( event.target.value, '' ) );
 						},
@@ -799,15 +1186,21 @@
 								'aria-checked': isActive,
 								'data-state': isActive ? 'on' : 'off',
 								tabIndex: isActive ? 0 : -1,
-								className: 'hdc-blog-index__chip' + ( isActive ? ' is-active' : '' ),
-								onClick: function () {
+								className:
+									'hdc-blog-index__chip' +
+									( isActive ? ' is-active' : '' ),
+								onClick() {
 									setVisibleCount( BLOG_PAGE_SIZE );
 									setActiveTag( tag );
 								},
-								onKeyDown: function ( event ) {
-									handleChipKeyDown( event, tagIndex, allTags );
+								onKeyDown( event ) {
+									handleChipKeyDown(
+										event,
+										tagIndex,
+										allTags
+									);
 								},
-								ref: function ( node ) {
+								ref( node ) {
 									chipRefs.current[ tagIndex ] = node;
 								},
 								key: 'tag-' + tag,
@@ -819,72 +1212,127 @@
 			)
 		);
 
-		var archiveNode = filtered.length === 0
-			? h(
+		let archiveNode = null;
+		if ( filtered.length === 0 ) {
+			archiveNode = h(
 				'div',
 				{ className: 'hdc-blog-index__empty-state' },
 				h(
 					'div',
 					{ className: 'hdc-blog-index__empty-icon-badge' },
-					utils.renderLucideIcon ? utils.renderLucideIcon( h, 'inbox', { size: 20 } ) : null
+					utils.renderLucideIcon
+						? utils.renderLucideIcon( h, 'inbox', { size: 20 } )
+						: null
 				),
-				h( 'h2', { className: 'hdc-blog-index__empty-title' }, emptyStateTitle ),
-				h( 'p', { className: 'hdc-blog-index__empty-description' }, emptyStateDescription )
-			)
-			: h(
+				h(
+					'h2',
+					{ className: 'hdc-blog-index__empty-title' },
+					emptyStateTitle
+				),
+				h(
+					'p',
+					{ className: 'hdc-blog-index__empty-description' },
+					emptyStateDescription
+				)
+			);
+		} else {
+			archiveNode = h(
 				'div',
 				{},
 				h(
 					'div',
 					{ className: 'hdc-blog-index__list' },
 					visiblePosts.map( function ( post, postIndex ) {
-						return h(
-							'a',
-							{
-								className: 'hdc-blog-index__card focus-ring hdc-blog-reveal hdc-blog-reveal--fade-up-soft' + ( post.featuredImageUrl ? ' has-thumbnail' : '' ),
-								href: buildPostUrl( post, config ),
-								key: post.slug,
-								style: { '--reveal-index': postIndex },
-							},
-							post.featuredImageUrl
-								? h(
+						const thumbnailSrcSet =
+							post.featuredImageSrcSet || undefined;
+						const thumbnailSizes = '(min-width: 640px) 112px, 96px';
+						const thumbnailNode = post.featuredImageUrl
+							? h(
 									'div',
-									{ className: 'hdc-blog-index__card-thumb-wrap' },
+									{
+										className:
+											'hdc-blog-index__card-thumb-wrap',
+									},
 									h( 'img', {
 										className: 'hdc-blog-index__card-thumb',
 										src: post.featuredImageUrl,
-										srcSet: post.featuredImageSrcSet || undefined,
-										sizes: '(min-width: 640px) 112px, 96px',
+										srcSet: thumbnailSrcSet,
+										sizes: thumbnailSizes,
 										alt: buildImageAlt( post ),
 										loading: 'lazy',
 										decoding: 'async',
 										onError: hideBrokenImage,
 									} )
-								)
-								: null,
+							  )
+							: null;
+						const cardArrowIcon = utils.renderLucideIcon
+							? utils.renderLucideIcon( h, 'arrow-right', {
+									size: 14,
+							  } )
+							: null;
+
+						return h(
+							'a',
+							{
+								className:
+									'hdc-blog-index__card focus-ring hdc-blog-reveal hdc-blog-reveal--fade-up-soft' +
+									( post.featuredImageUrl
+										? ' has-thumbnail'
+										: '' ),
+								href: buildPostUrl( post, blogBaseUrl ),
+								key: post.slug,
+								style: { '--reveal-index': postIndex },
+							},
+							thumbnailNode,
 							h(
 								'div',
 								{ className: 'hdc-blog-index__card-main' },
-								h( 'h3', { className: 'hdc-blog-index__card-title' }, post.title ),
-								h( 'p', { className: 'hdc-blog-index__card-excerpt' }, post.excerpt ),
+								h(
+									'h3',
+									{ className: 'hdc-blog-index__card-title' },
+									post.title
+								),
+								h(
+									'p',
+									{
+										className:
+											'hdc-blog-index__card-excerpt',
+									},
+									post.excerpt
+								),
 								h(
 									'div',
 									{ className: 'hdc-blog-index__tags' },
 									post.tags.map( function ( tag ) {
-										return h( 'span', { className: 'hdc-blog-index__tag', key: post.slug + '-tag-' + tag }, tag );
+										return h(
+											'span',
+											{
+												className:
+													'hdc-blog-index__tag',
+												key: post.slug + '-tag-' + tag,
+											},
+											tag
+										);
 									} )
 								)
 							),
 							h(
 								'div',
 								{ className: 'hdc-blog-index__card-meta' },
-								h( 'time', { dateTime: post.date }, formatDateLabel( post.date ) ),
+								h(
+									'time',
+									{ dateTime: post.date },
+									formatDateLabel( post.date )
+								),
 								h( 'span', {}, post.readingTime || '' ),
 								h(
 									'span',
-									{ className: 'hdc-blog-index__featured-read' },
+									{
+										className:
+											'hdc-blog-index__featured-read',
+									},
 									'Read ',
-									utils.renderLucideIcon ? utils.renderLucideIcon( h, 'arrow-right', { size: 14 } ) : null
+									cardArrowIcon
 								)
 							)
 						);
@@ -892,26 +1340,30 @@
 				),
 				filtered.length > visiblePosts.length
 					? h(
-						'div',
-						{ className: 'hdc-blog-index__load-more' },
-						h(
-							'button',
-							{
-								type: 'button',
-								className: 'hdc-blog-index__load-more-btn',
-								onClick: function () {
-									setVisibleCount( function ( current ) {
-										return Math.min( current + BLOG_PAGE_SIZE, filtered.length );
-									} );
+							'div',
+							{ className: 'hdc-blog-index__load-more' },
+							h(
+								'button',
+								{
+									type: 'button',
+									className: 'hdc-blog-index__load-more-btn',
+									onClick() {
+										setVisibleCount( function ( current ) {
+											return Math.min(
+												current + BLOG_PAGE_SIZE,
+												filtered.length
+											);
+										} );
+									},
 								},
-							},
-							'Load more'
-						)
-					)
+								'Load more'
+							)
+					  )
 					: null
 			);
+		}
 
-		var ctaNode = h(
+		const ctaNode = h(
 			'section',
 			{ className: 'hdc-blog-index__cta surface-inset-soft' },
 			h(
@@ -920,12 +1372,24 @@
 				h(
 					'div',
 					{ className: 'hdc-blog-index__cta-left' },
-					h( 'p', { className: 'hdc-blog-index__eyebrow' }, 'Keep up with the work' ),
+					h(
+						'p',
+						{ className: 'hdc-blog-index__eyebrow' },
+						'Keep up with the work'
+					),
 					h(
 						'div',
 						{},
-						h( 'h3', { className: 'hdc-blog-index__cta-title' }, 'Stay updated' ),
-						h( 'p', { className: 'hdc-blog-index__cta-description' }, 'Follow the writing on LinkedIn, browse the work on GitHub, or reach out directly.' )
+						h(
+							'h3',
+							{ className: 'hdc-blog-index__cta-title' },
+							'Stay updated'
+						),
+						h(
+							'p',
+							{ className: 'hdc-blog-index__cta-description' },
+							'Follow the writing on LinkedIn, browse the work on GitHub, or reach out directly.'
+						)
 					),
 					h(
 						'div',
@@ -934,22 +1398,30 @@
 							'a',
 							{
 								className: 'hdc-blog-index__cta-social-link',
-								href: config.githubUrl,
+								href: githubUrl,
 								target: '_blank',
 								rel: 'noopener noreferrer',
 							},
-							utils.renderLucideIcon ? utils.renderLucideIcon( h, 'github', { size: 16 } ) : null,
+							utils.renderLucideIcon
+								? utils.renderLucideIcon( h, 'github', {
+										size: 16,
+								  } )
+								: null,
 							h( 'span', {}, 'GitHub' )
 						),
 						h(
 							'a',
 							{
 								className: 'hdc-blog-index__cta-social-link',
-								href: config.linkedinUrl,
+								href: linkedinUrl,
 								target: '_blank',
 								rel: 'noopener noreferrer',
 							},
-							utils.renderLucideIcon ? utils.renderLucideIcon( h, 'linkedin', { size: 16 } ) : null,
+							utils.renderLucideIcon
+								? utils.renderLucideIcon( h, 'linkedin', {
+										size: 16,
+								  } )
+								: null,
 							h( 'span', {}, 'LinkedIn' )
 						)
 					),
@@ -957,20 +1429,30 @@
 						'a',
 						{
 							className: 'hdc-blog-index__cta-secondary',
-							href: config.contactUrl,
+							href: contactUrl,
 						},
 						'Reach out'
 					)
 				),
-				h( BlogSharePanel, { blogUrl: config.blogBaseUrl } )
+				h( BlogSharePanel, { blogUrl: blogBaseUrl } )
 			)
 		);
 
-		var contentNode = isBlogLookupPending
-			? loadingStateNode
-			: hasBlogLookupError
-				? errorStateNode
-				: h( element.Fragment, {}, featuredNode, browseCardNode, archiveNode, ctaNode );
+		let contentNode = null;
+		if ( isBlogLookupPending ) {
+			contentNode = loadingStateNode;
+		} else if ( hasBlogLookupError ) {
+			contentNode = errorStateNode;
+		} else {
+			contentNode = h(
+				element.Fragment,
+				{},
+				featuredNode,
+				browseCardNode,
+				archiveNode,
+				ctaNode
+			);
+		}
 
 		return h(
 			'div',

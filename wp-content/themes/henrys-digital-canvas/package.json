@@ -9,6 +9,7 @@
     "lint:js": "wp-scripts lint-js",
     "format:js": "wp-scripts format",
     "sync:pages": "./scripts/sync_page_sources.sh",
+    "parity:site": "playwright test scripts/playwright/site-parity.spec.cjs",
     "smoke:route": "./scripts/route_smoke.sh",
     "smoke:api": "./scripts/api_smoke.sh",
     "smoke:browser": "./scripts/browser_smoke.sh",

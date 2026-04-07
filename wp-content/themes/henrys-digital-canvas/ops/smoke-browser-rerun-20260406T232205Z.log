@@ -1,0 +1,21 @@
+
+> henrys-digital-canvas-theme@0.1.0 smoke:browser
+> ./scripts/browser_smoke.sh
+
+Browser smoke against https://wp.hperkins.com
+
+Running 10 tests using 1 worker
+
+[1A[2K[1/10] scripts/playwright/browser-smoke.spec.cjs:94:2 › Henrys Digital Canvas browser smoke › route matrix renders expected blocks
+[1A[2K[2/10] scripts/playwright/browser-smoke.spec.cjs:116:2 › Henrys Digital Canvas browser smoke › work signals panel renders stat cards and loads contributor metrics route
+[1A[2K[3/10] scripts/playwright/browser-smoke.spec.cjs:146:2 › Henrys Digital Canvas browser smoke › hobbies filters update querystring
+[1A[2K[4/10] scripts/playwright/browser-smoke.spec.cjs:163:2 › Henrys Digital Canvas browser smoke › contact validation and success states
+[1A[2K[5/10] scripts/playwright/browser-smoke.spec.cjs:186:2 › Henrys Digital Canvas browser smoke › blog progress and scroll-to-top behavior
+[1A[2K[6/10] scripts/playwright/browser-smoke.spec.cjs:207:2 › Henrys Digital Canvas browser smoke › blog detail missing-post route renders the enhanced state card
+[1A[2K[7/10] scripts/playwright/browser-smoke.spec.cjs:215:2 › Henrys Digital Canvas browser smoke › blog detail enhances HTML code blocks with a toolbar and copy affordance
+[1A[2K[8/10] scripts/playwright/browser-smoke.spec.cjs:225:2 › Henrys Digital Canvas browser smoke › blog detail renders comments, share, related posts, and canonical route metadata
+[1A[2K[9/10] scripts/playwright/browser-smoke.spec.cjs:245:2 › Henrys Digital Canvas browser smoke › blog and home media surfaces follow blog media contract
+[1A[2K[10/10] scripts/playwright/browser-smoke.spec.cjs:305:2 › Henrys Digital Canvas browser smoke › not-found recovery, command palette, and mobile menu
+[1A[2K  10 passed (26.8s)
+
+Browser smoke passed.
