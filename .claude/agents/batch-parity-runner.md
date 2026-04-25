@@ -11,7 +11,7 @@ Run the parity-checker agent for every block in the theme and produce a single a
 
 ## Block List
 
-Read the "Custom Blocks" table in `/home/hperkins-wp/htdocs/wp.hperkins.com/CLAUDE.md` to get the full block-to-TSX mapping. Skip `digital-canvas-feed` (no dedicated TSX page).
+Read the "Custom Blocks" table in `/home/ubuntu/wp-hperkins-com/CLAUDE.md` to get the full block-to-TSX mapping. Skip `digital-canvas-feed` (no dedicated TSX page).
 
 Blocks to check (11 total):
 

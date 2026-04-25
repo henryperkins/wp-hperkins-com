@@ -4,8 +4,8 @@ Run parity checks across all theme blocks sequentially and produce an aggregated
 
 ## Project Context
 
-- **Theme dir**: `/home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/themes/henrys-digital-canvas/`
-- **React source root**: `/home/azureuser/henry-s-digital-canvas/src/`
+- **Theme dir**: `/home/ubuntu/wp-hperkins-com/wp-content/themes/henrys-digital-canvas/`
+- **React source root**: `/home/ubuntu/henry-s-digital-canvas/src/`
 
 ## Block List (12 total)
 

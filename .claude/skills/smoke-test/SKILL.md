@@ -7,7 +7,7 @@ description: Run smoke tests for the WordPress theme. Use after modifying blocks
 
 Run all commands from the theme directory:
 ```
-cd /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/themes/henrys-digital-canvas
+cd /home/ubuntu/wp-hperkins-com/wp-content/themes/henrys-digital-canvas
 ```
 
 ### Which suite to run

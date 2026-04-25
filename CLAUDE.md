@@ -2,9 +2,10 @@
 
 ## Project Overview
 
-Personal technical portfolio site for Henry Perkins, migrated from a React SPA to a WordPress block theme. The site runs on **WordPress 7.0-beta** with **PHP 8.4** and **Gutenberg 22.x** (check `wp plugin get gutenberg --field=version`).
+Personal technical portfolio site for Henry Perkins, migrated from a React SPA to a WordPress block theme. The local production install runs on **WordPress 6.9.4** with **PHP 8.5**, **MariaDB 11.8**, and **Gutenberg 23.x** (check `wp plugin get gutenberg --field=version`).
 
-- **Live URL**: https://wp.hperkins.com
+- **Current host URL**: http://209.97.147.66
+- **Target live URL**: https://wp.hperkins.com (switch after DNS points at this host and TLS is issued)
 - **Theme**: `henrys-digital-canvas` — block theme, child of `twentytwentyfive`
 - **Theme dir**: `wp-content/themes/henrys-digital-canvas/`
 
@@ -29,7 +30,7 @@ Personal technical portfolio site for Henry Perkins, migrated from a React SPA t
 
 All blocks are registered via `register_block_type_from_metadata()` from `blocks/<name>/block.json`. Each block MUST be identical in design and function to its corresponding TSX page in the source React app.
 
-**Source of truth**: `/home/azureuser/henry-s-digital-canvas/src/pages/`
+**Source of truth**: `/home/ubuntu/henry-s-digital-canvas/src/pages/`
 
 | Block | Source TSX page |
 |-------|-----------------|
@@ -58,7 +59,7 @@ Converted blocks use `*.asset.php` content hashes for cache-busting. Unconverted
 
 ## Source React App Reference
 
-**Source root**: `/home/azureuser/henry-s-digital-canvas/src/`
+**Source root**: `/home/ubuntu/henry-s-digital-canvas/src/`
 
 ### Template Part and Layout Mapping
 
@@ -171,7 +172,7 @@ Additional audit scripts:
 Always use the path flag:
 
 ```bash
-wp --path=/home/hperkins-wp/htdocs/wp.hperkins.com <command>
+wp --path=/home/ubuntu/wp-hperkins-com <command>
 ```
 
 ## Dev Setup
@@ -203,16 +204,18 @@ All 8 migration phases are `functional-migration-complete`. Parity remediation a
 
 ## Active Plugins
 
-ai, ai-provider-for-openai, cache-enabler, gutenberg, hdc-ai-media-modal, jetpack, mailpoet, mailpoet-premium, mcp-adapter, redis-cache, google-site-kit, wordpress-beta-tester
+cache-enabler, gutenberg, hdc-ai-media-modal
+
+Service-backed plugins such as Jetpack, Site Kit, MailPoet, Redis object cache, MCP adapter, and AI providers need their production credentials/infrastructure before activation. The public `ai` plugin currently requires WordPress 7.0, so do not activate it on the stable 6.9.x install.
 
 ## MCP Servers
 
-The WordPress MCP Adapter is configured in `.claude/settings.json` and exposes WP operations via the `mcp-adapter` plugin.
+The WordPress MCP Adapter entries in `.claude/settings.json` and `.mcp.json` point at this install, but the `mcp-adapter` plugin still needs to be installed and activated before those servers will run.
 
 ## Gotchas
 
-- After adding/changing rewrite rules, flush with: `wp --path=/home/hperkins-wp/htdocs/wp.hperkins.com rewrite flush`
-- After theme/plugin changes, clear caches: `wp --path=/home/hperkins-wp/htdocs/wp.hperkins.com cache flush` (object cache) + purge cache-enabler from admin
+- After adding/changing rewrite rules, flush with: `wp --path=/home/ubuntu/wp-hperkins-com rewrite flush`
+- After theme/plugin changes, clear caches: `wp --path=/home/ubuntu/wp-hperkins-com cache flush` (object cache) + purge cache-enabler from admin
 - `page-ats.html` and `page-resume-ats.html` both exist — `page-ats.html` may be a legacy duplicate
 - Classic PHP templates (`page-work-detail.php`, `page-blog-detail.php`) bypass the block template system — they're the only non-`.html` templates
 - Block `view.js` files are enqueued via `viewScript` in `block.json` — they only load on pages where the block appears

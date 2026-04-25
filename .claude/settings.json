@@ -3,11 +3,11 @@
     "wordpress": {
       "command": "wp",
       "args": [
-        "--path=/home/hperkins-wp/htdocs/wp.hperkins.com",
+        "--path=/home/ubuntu/wp-hperkins-com",
         "mcp-adapter",
         "serve",
         "--server=mcp-adapter-default-server",
-        "--user=hperkins"
+        "--user=hperkins_admin"
       ]
     },
     "context7": {
@@ -25,7 +25,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "case \"$CLAUDE_FILE_PATH\" in */wp-config.php|*/.env|*/package-lock.json) echo 'BLOCKED: Do not edit wp-config.php, .env, or lock files' >&2; exit 2;; /home/azureuser/henry-s-digital-canvas/*) echo 'BLOCKED: React source is read-only reference. Edit WP block files instead.' >&2; exit 2;; esac; exit 0",
+            "command": "case \"$CLAUDE_FILE_PATH\" in */wp-config.php|*/.env|*/package-lock.json) echo 'BLOCKED: Do not edit wp-config.php, .env, or lock files' >&2; exit 2;; /home/ubuntu/henry-s-digital-canvas/*) echo 'BLOCKED: React source is read-only reference. Edit WP block files instead.' >&2; exit 2;; esac; exit 0",
             "timeout": 5
           }
         ]
@@ -37,7 +37,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo \"$CLAUDE_FILE_PATH\" | grep -qE '/blocks/.*\\.(php|js|css)$' && cd /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/themes/henrys-digital-canvas && npm run smoke:route 2>&1 | tail -5 || exit 0",
+            "command": "echo \"$CLAUDE_FILE_PATH\" | grep -qE '/blocks/.*\\.(php|js|css)$' && cd /home/ubuntu/wp-hperkins-com/wp-content/themes/henrys-digital-canvas && npm run smoke:route 2>&1 | tail -5 || exit 0",
             "timeout": 30
           }
         ]

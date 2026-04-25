@@ -12,8 +12,8 @@ Compare a WordPress block's implementation against its source React TSX componen
 ## Inputs
 
 - Block name (e.g., `work-showcase`)
-- Block files: `/home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/themes/henrys-digital-canvas/blocks/<name>/`
-- Source TSX: `/home/azureuser/henry-s-digital-canvas/src/pages/<SourcePage>.tsx`
+- Block files: `/home/ubuntu/wp-hperkins-com/wp-content/themes/henrys-digital-canvas/blocks/<name>/`
+- Source TSX: `/home/ubuntu/henry-s-digital-canvas/src/pages/<SourcePage>.tsx`
 - Block-to-TSX mapping is in `CLAUDE.md` under "Custom Blocks"
 - Shared component mapping is in `CLAUDE.md` under "Shared Component Mapping"
 - Data source mapping is in `CLAUDE.md` under "Data Source Mapping"
