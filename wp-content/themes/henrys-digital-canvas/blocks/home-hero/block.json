@@ -1,0 +1,38 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "henrys-digital-canvas/home-hero",
+	"title": "Home - Hero",
+	"category": "widgets",
+	"icon": "admin-home",
+	"description": "Hero section of the home page. Eyebrow, headline, description, primary and secondary CTAs.",
+	"textdomain": "henrys-digital-canvas",
+	"parent": [ "henrys-digital-canvas/home-page" ],
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ],
+		"spacing": { "padding": true, "margin": true, "blockGap": true },
+		"border": { "color": true, "radius": true, "style": true, "width": true },
+		"color": { "background": true, "text": true, "gradients": true, "link": true },
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"textAlign": true,
+			"fontFamily": true,
+			"fontWeight": true
+		},
+		"dimensions": { "minHeight": true }
+	},
+	"attributes": {
+		"eyebrow": { "type": "string", "role": "content" },
+		"title": { "type": "string", "role": "content" },
+		"description": { "type": "string", "role": "content" },
+		"primaryCtaLabel": { "type": "string", "role": "content" },
+		"primaryCtaHref": { "type": "string", "role": "content" },
+		"secondaryCtaLabel": { "type": "string", "role": "content" },
+		"secondaryCtaHref": { "type": "string", "role": "content" }
+	},
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php",
+	"style": "file:./style.css"
+}
