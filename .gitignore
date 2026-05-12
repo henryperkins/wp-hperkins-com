@@ -10,6 +10,8 @@
 !/.claude/**
 !/codex/
 !/codex/**
+!/docs/
+!/docs/**
 
 # Custom WordPress code.
 !/wp-content/

@@ -1,1811 +1,1685 @@
 {
-  "henry-s-digital-canvas": {
-    "displayName": "HPerkins.com",
-    "role": "Craft",
-    "whyItMatters": "This portfolio is the public proof surface for the consulting work itself, so the presentation layer, runtime evidence, and editorial workflow all have to stay aligned.",
-    "problem": [
-      "The site needed to present consulting work as evidence-backed case studies instead of a flat gallery of repository links.",
-      "Proof points had to stay easy to refresh as repository metadata, WordPress content, and project narratives changed over time.",
-      "A public marketing surface still needed real runtime and release discipline behind the presentation layer."
-    ],
-    "approach": [
-      "Built the front end as a React 19 + Vite 7 SPA driven by structured repository, page, and resume data.",
-      "Added page-law manifests, route-specific laws, and a repository check script so page changes keep the intended structure and evidence model intact.",
-      "Used a Cloudflare Worker layer to proxy GitHub proof endpoints, front WordPress and contact routes, and keep operational logic outside the browser.",
-      "Expanded the Work and Work Detail flows around curated case-study data, code-tour quick look, and contrast-gated presentation checks."
-    ],
-    "result": [
-      "Work pages now read like maintained case studies with receipts, architecture notes, and code tours instead of a raw repository dump.",
-      "Page-level changes stay safer because the repo enforces page-law and contrast checks alongside lint, tests, and build validation.",
-      "The live portfolio has a dedicated runtime layer for GitHub proofs, WordPress content, and Turnstile-backed form handling."
-    ],
-    "highlights": [
-      "Page-law-governed editorial system",
-      "Cloudflare Worker proof and contact runtime",
-      "Work detail code-tour quick look",
-      "Contrast and deployment guardrails"
-    ],
-    "signals": [
-      "tested",
-      "typed",
-      "ci",
-      "docs",
-      "observability"
-    ],
-    "receipts": [
-      {
-        "label": "Runtime layer",
-        "value": "The Worker fronts health, contact, WordPress, and GitHub proof routes behind the portfolio UI."
-      },
-      {
-        "label": "Editorial guardrails",
-        "value": "Page-law resolution and the route check script keep page-specific structure and source files in sync."
-      },
-      {
-        "label": "Visual QA",
-        "value": "A dedicated contrast workflow checks page probes so presentation drift is caught before the site ships."
-      }
-    ],
-    "architecture": {
-      "summary": "React 19 + Vite 7 portfolio SPA backed by a Cloudflare Worker and page-law guardrails.",
-      "bullets": [
-        "Structured repository and content data power the home, work, detail, resume, and blog surfaces instead of hard-coded page fragments.",
-        "Page laws define route-specific constraints and are enforced by repository scripts so layout changes do not silently drift from intent.",
-        "The Cloudflare Worker handles GitHub proofs, WordPress and blog endpoints, contact submission, and health checks behind the public SPA."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "src/pages/Work.tsx",
-        "note": "Work showcase page that turns curated metadata into browseable case-study surfaces."
-      },
-      {
-        "path": "src/pages/WorkDetail.tsx",
-        "note": "Repository detail page that turns project data into narrative sections, receipts, and code-tour surfaces."
-      },
-      {
-        "path": "worker/index.ts",
-        "note": "Worker entry point for health, contact, WordPress, blog, and GitHub proof routes."
-      },
-      {
-        "path": "worker/routes/github.ts",
-        "note": "GitHub proof routes that feed releases, language, contributor, and file-preview evidence into the work surfaces."
-      },
-      {
-        "path": "scripts/check-page-laws.mjs",
-        "note": "Route-law verification script that keeps page-source changes aligned with the editorial ruleset."
-      }
-    ],
-    "shipped": "Added design-system guardrails with automated contrast auditing, token-drift detection, and page-law enforcement across all portfolio routes.",
-    "learned": "Treating a portfolio like a product surface made the docs, data model, runtime endpoints, and presentation rules reinforce each other instead of drift apart.",
-    "accessNote": "Source is private. Available for walkthrough on request."
-  },
-  "azure_chatapp": {
-    "displayName": "Azure Chat App",
-    "role": "Product",
-    "whyItMatters": "Shows a fuller Azure OpenAI app shape than a single chat form by combining auth, project scoping, knowledge routes, and telemetry wiring in one repo.",
-    "problem": [
-      "Needed a way to tie conversations and knowledge actions to individual users instead of anonymous prompts.",
-      "The app had to support project-scoped chat flows and related knowledge utilities from the same backend.",
-      "The repo also needed a consistent bootstrap story for structured logging and Sentry-style telemetry."
-    ],
-    "approach": [
-      "Implemented JWT auth and user session plumbing around the main chat experience.",
-      "Built backend routes for unified conversations and related project knowledge actions instead of a single completion endpoint.",
-      "Centralized structured logging and Sentry initialization in a shared bootstrap module."
-    ],
-    "result": [
-      "Users can sign in and work inside scoped chat and knowledge flows rather than an anonymous demo.",
-      "The codebase has clearer operational setup because telemetry bootstraps in one place.",
-      "The repository still reads as a development-oriented baseline, with explicit warnings about insecure or debug posture in parts of the stack."
-    ],
-    "highlights": [
-      "JWT auth around Azure OpenAI routes",
-      "Project-scoped conversation and knowledge flows",
-      "Centralized telemetry bootstrap"
-    ],
-    "signals": [
-      "tested",
-      "ci",
-      "docs",
-      "observability"
-    ],
-    "receipts": [
-      {
-        "label": "Telemetry bootstrap",
-        "value": "One bootstrap module initializes structured logging first and then configures Sentry with environment-aware sampling."
-      },
-      {
-        "label": "Auth and conversation wiring",
-        "value": "The app entrypoint and conversation routes tie JWT auth to persisted, project-scoped chat flows."
-      }
-    ],
-    "architecture": {
-      "summary": "Python web app that wraps Azure OpenAI chat behind JWT auth, scoped routes, and shared telemetry initialization.",
-      "bullets": [
-        "Auth middleware and session plumbing gate access to chat and knowledge endpoints.",
-        "Conversation routes handle project-scoped chat flows and persistence concerns on the backend.",
-        "Bootstrap utilities initialize structured logging and Sentry before the rest of the app starts."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "main.py",
-        "note": "Application entrypoint that wires middleware, routes, and runtime safeguards together."
-      },
-      {
-        "path": "auth.py",
-        "note": "Auth layer for JWT handling and user access control around the chat experience."
-      },
-      {
-        "path": "routes/unified_conversations.py",
-        "note": "Conversation route module for scoped chat and related project interactions."
-      },
-      {
-        "path": "utils/bootstrap.py",
-        "note": "Single bootstrap path for structured logging and Sentry configuration."
-      }
-    ],
-    "shipped": "Built a JWT-authenticated Azure OpenAI chat baseline with scoped conversation routes and telemetry wiring.",
-    "learned": "The repo reinforced that auth, route design, and observability have to be treated as first-class parts of an AI app, even when the product surface is still rough."
-  },
-  "chatter": {
-    "displayName": "Chatter",
-    "role": "Product",
-    "whyItMatters": "Shows how model-specific behavior changes the chat UX: reasoning models, streaming-capable models, and search helpers do not all behave the same way.",
-    "problem": [
-      "Needed a Flask chat surface that could work across several Azure OpenAI model types without pretending they shared the same capabilities.",
-      "Users still needed saved sessions, utility helpers like weather and search, and a readable web UI.",
-      "Operational logging mattered because the app coordinates chat, uploads, scraping, and model config."
-    ],
-    "approach": [
-      "Added a model configuration matrix that records per-model limits and whether streaming is supported.",
-      "Built Flask chat and session flows with multi-session history, utility routes, and Azure OpenAI integration.",
-      "Layered structured logging and client-event logging across the app to debug model and chat behavior."
-    ],
-    "result": [
-      "The app can change delivery behavior by model instead of claiming one-size-fits-all streaming.",
-      "o1-preview is handled as a non-streaming reasoning model, while supported models such as o3-mini can stream.",
-      "Users still get a multi-session chat experience with utility integrations and persisted state."
-    ],
-    "highlights": [
-      "Model-aware streaming rules",
-      "Multi-session Flask chat UI",
-      "Search and weather helper integrations"
-    ],
-    "signals": [
-      "tested",
-      "ci",
-      "docs",
-      "observability"
-    ],
-    "receipts": [
-      {
-        "label": "Capability guardrails",
-        "value": "The model config explicitly marks o1-preview and o1-mini as non-streaming while enabling streaming for supported models like o3-mini."
-      },
-      {
-        "label": "Operational visibility",
-        "value": "Structured logging and client-side event logging are wired through the chat stack for debugging and monitoring."
-      }
-    ],
-    "architecture": {
-      "summary": "Flask chat application with model-specific capability rules, persisted sessions, and utility integrations.",
-      "bullets": [
-        "Model configuration defines required params, token limits, and streaming support per deployment type.",
-        "Chat routes and messaging helpers manage session history, prompt delivery, and streamed or non-streamed response handling.",
-        "Logging modules capture backend and client events so behavior differences between models are easier to trace."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "config.py",
-        "note": "Model capability matrix and configuration rules that drive chat behavior by deployment type."
-      },
-      {
-        "path": "chat/chat_messaging.py",
-        "note": "Messaging logic for chat delivery, streaming behavior, and session flow control."
-      },
-      {
-        "path": "chat_api.py",
-        "note": "API surface that exposes the chat functionality and related helper integrations."
-      },
-      {
-        "path": "models/chat.py",
-        "note": "Data model for persisted chat state and conversation records."
-      }
-    ],
-    "shipped": "Built a model-aware Flask chat app with session history, utility helpers, and Azure OpenAI integration.",
-    "learned": "This repo made the integration constraint obvious: the UX has to match the real model contract, not the marketing shorthand."
-  },
-  "real_time_chat_app": {
-    "displayName": "Real-Time Chat App",
-    "role": "Product",
-    "whyItMatters": "Captures the architecture of an early real-time AI chat experiment, where room messaging and AI replies share the same Socket.IO flow.",
-    "problem": [
-      "Needed chat messages to move instantly between participants instead of relying on repeated page refreshes.",
-      "AI replies had to plug into the same room model and persistence layer as human messages.",
-      "The server still needed uploads, logging, and database wiring around the realtime core."
-    ],
-    "approach": [
-      "Built Flask-SocketIO room messaging around conversations, participants, and stored messages.",
-      "Integrated Azure OpenAI response generation inside the async send-message handler.",
-      "Added file logging, CORS and session configuration, and SQLAlchemy models to support a fuller app shell."
-    ],
-    "result": [
-      "The repo demonstrates the core room-join, message-persist, and AI-reply loop for a realtime chat app.",
-      "Conversation threads are stored instead of living only in browser memory.",
-      "The codebase is clearly unfinished: multiple files still contain merge markers, so it reads as a rough prototype rather than a finished shipped system."
-    ],
-    "highlights": [
-      "Flask-SocketIO room messaging",
-      "Persisted user and AI messages",
-      "Azure OpenAI reply loop inside chat flow"
-    ],
-    "signals": [
-      "ci",
-      "observability"
-    ],
-    "receipts": [
-      {
-        "label": "Message loop",
-        "value": "The socket handler checks room membership, stores the user message, requests an AI reply, stores it, and emits both sides of the conversation."
-      },
-      {
-        "label": "Ops scaffolding",
-        "value": "The app entrypoint configures file logging, uploads, CORS, and Socket.IO startup around the chat server."
-      }
-    ],
-    "architecture": {
-      "summary": "Prototype Flask-SocketIO chat stack with persisted conversations and Azure OpenAI reply generation.",
-      "bullets": [
-        "HTTP and Socket.IO layers share the same Flask app and SQLAlchemy-backed data model.",
-        "Socket handlers manage room membership, persistence, typing state, and AI reply emission.",
-        "Application startup wires logging, uploads, CORS, and config loading around the realtime layer."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "backend/app.py",
-        "note": "Main Flask application setup for logging, uploads, database init, and Socket.IO wiring."
-      },
-      {
-        "path": "backend/sockets/handlers.py",
-        "note": "Realtime message loop that validates participants, stores messages, and emits AI replies."
-      },
-      {
-        "path": "backend/routes/conversations.py",
-        "note": "Conversation route layer that complements the socket-based chat flow."
-      },
-      {
-        "path": "backend/azure_openai_config.py",
-        "note": "Azure OpenAI configuration layer used by the realtime assistant flow."
-      }
-    ],
-    "shipped": "Built a room-based Socket.IO chat prototype with Azure OpenAI responses and persisted threads.",
-    "learned": "The repo is a useful reminder that realtime architecture can be sound even when the surrounding product still needs cleanup and merge resolution."
-  },
-  "claude-code": {
-    "displayName": "Claude Code Chat",
-    "role": "Product",
-    "whyItMatters": "Shows how to move a CLI-centric model workflow into a browser surface without losing streaming, session history, or runtime guardrails.",
-    "problem": [
-      "Claude interactions were easier from a terminal than from a phone or lightweight browser client.",
-      "The app needed live streaming and conversation continuity instead of one-shot request and response forms.",
-      "Different runtimes had to be supported: direct Anthropic API use and an optional Claude CLI bridge."
-    ],
-    "approach": [
-      "Built a mobile-first React and Tailwind UI that connects to a Node and Express backend over WebSockets.",
-      "Stored sessions and messages in SQLite so conversation history survives across browser refreshes.",
-      "Added provider switching between Anthropic API and an optional Claude CLI runtime, plus lightweight auth and permission defaults."
-    ],
-    "result": [
-      "Claude conversations can be run from a browser-first interface instead of only through terminal tooling.",
-      "Streaming text and saved sessions make longer chats feel continuous on mobile and desktop.",
-      "Prometheus-style metrics and runtime guardrails make the server easier to inspect and safer to extend."
-    ],
-    "highlights": [
-      "WebSocket streaming bridge",
-      "Optional Claude CLI runtime",
-      "SQLite-backed session history"
-    ],
-    "signals": [
-      "tested",
-      "docs",
-      "observability"
-    ],
-    "receipts": [
-      {
-        "label": "Runtime flexibility",
-        "value": "The server supports both direct Anthropic API usage and an optional Claude CLI bridge with permission controls."
-      },
-      {
-        "label": "Operational signal",
-        "value": "Metrics helpers expose HTTP latency, request counters, and WebSocket activity for inspection."
-      }
-    ],
-    "architecture": {
-      "summary": "Browser chat UI backed by a Node service that streams Claude responses, persists sessions in SQLite, and can delegate to either API or CLI runtimes.",
-      "bullets": [
-        "React views handle mobile-first chat layout, settings, and streamed message assembly.",
-        "Server runtimes abstract provider choice between Anthropic API calls and the Claude CLI bridge.",
-        "SQLite stores sessions and messages while the metrics layer tracks HTTP and WebSocket behavior."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "web/src/ui/App.jsx",
-        "note": "Browser chat shell for mobile-first interaction, settings, and streamed response assembly."
-      },
-      {
-        "path": "server/src/runtime/claude.js",
-        "note": "Primary runtime bridge for direct Claude API integration."
-      },
-      {
-        "path": "server/src/runtime/claude_cli.js",
-        "note": "Optional CLI runtime bridge with permission and tool controls."
-      },
-      {
-        "path": "server/src/db.js",
-        "note": "SQLite session and message store used to persist chat history."
-      }
-    ],
-    "shipped": "Built a browser-first Claude chat app with streaming, saved sessions, and an optional CLI bridge.",
-    "learned": "Moving an AI workflow into the browser is mostly about state, runtime boundaries, and guardrails, not just message rendering."
-  },
-  "agentic-rag": {
-    "displayName": "Agentic RAG",
-    "role": "Systems",
-    "whyItMatters": "Shows the orchestration pieces that make RAG more than a single retrieve-and-answer call: query rewriting, routing, verification, and observability.",
-    "problem": [
-      "Single-pass retrieval struggles on ambiguous or multi-hop questions.",
-      "A useful prototype needed to stream agent progress and citations instead of only a final answer.",
-      "The stack needed hooks for evaluation and tracing without pretending every future layer was already production-ready."
-    ],
-    "approach": [
-      "Built a TypeScript coordinator that classifies queries, optionally rewrites them, retrieves evidence, and loops through verification before final output.",
-      "Combined hybrid retrieval, reranking, semantic caching, and server-sent event streams in the backend chat route.",
-      "Added OpenTelemetry bootstrap code and instrumentation helpers so the system can emit spans and events as it grows."
-    ],
-    "result": [
-      "The prototype can stream tokens, citations, rewrite events, and verification status from the same chat flow.",
-      "Local retrieval can be augmented with hybrid search and optional web search when the query calls for it.",
-      "The repo documents a large architecture, but the implementation is best read as a serious prototype with extension hooks rather than a finished enterprise platform."
-    ],
-    "highlights": [
-      "Query rewrite and routing coordinator",
-      "Hybrid retrieval plus reranking",
-      "Verification loops with SSE and OTEL hooks"
-    ],
-    "signals": [
-      "tested",
-      "typed",
-      "docs",
-      "observability"
-    ],
-    "receipts": [
-      {
-        "label": "Coordinator loop",
-        "value": "The orchestration coordinator handles caching, query rewriting, retrieval, generation, and bounded verification retries in one flow."
-      },
-      {
-        "label": "Tracing hook",
-        "value": "The OpenTelemetry config boots a Node SDK and exposes span helpers for retrieval and orchestration work."
-      }
-    ],
-    "architecture": {
-      "summary": "TypeScript RAG prototype that layers coordination, retrieval, verification, streaming, and tracing into the chat path.",
-      "bullets": [
-        "Chat routes emit server-sent events for planner logs, tokens, citations, and final answer state.",
-        "Coordinator services classify queries, manage rewrite and retrieval decisions, and run bounded verification loops.",
-        "Retrieval and observability modules provide hybrid search, reranking, caches, and OpenTelemetry helpers."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "backend/src/routes/chat.ts",
-        "note": "Chat route that streams orchestration events, tokens, citations, and final responses."
-      },
-      {
-        "path": "backend/src/services/orchestration/coordinator.ts",
-        "note": "Coordinator logic for query routing, rewrite handling, retrieval decisions, and verification loops."
-      },
-      {
-        "path": "backend/src/services/retrieval.ts",
-        "note": "Retrieval layer for hybrid search and evidence collection."
-      },
-      {
-        "path": "backend/src/config/otel.ts",
-        "note": "OpenTelemetry bootstrap and span helpers for runtime tracing."
-      }
-    ],
-    "shipped": "Built a TypeScript RAG prototype with rewrite, retrieval, reranking, verification, and streaming feedback.",
-    "learned": "The highest-leverage RAG improvements came from explicit coordination and verification, not from adding more architectural labels."
-  },
-  "mobile-rag-app": {
-    "displayName": "Mobile RAG App",
-    "role": "Systems",
-    "whyItMatters": "Shows what a mobile document assistant can realistically do on-device versus what still depends on remote model calls.",
-    "problem": [
-      "Users needed a phone-friendly way to ingest PDFs, text files, and images into a personal knowledge base.",
-      "Mobile storage and retrieval had to stay local and responsive instead of round-tripping every query through a server.",
-      "The app still needed OCR, embeddings, chat, and error reporting around model-backed features."
-    ],
-    "approach": [
-      "Built an Expo and React Native app that stores documents, chunks, and document centroids in local SQLite tables.",
-      "Added local parsing for text and PDFs, plus image OCR and embeddings via remote OpenAI calls.",
-      "Wrapped model-dependent code with pacing, retries, and Sentry instrumentation to make mobile failures easier to inspect."
-    ],
-    "result": [
-      "Documents and retrieval state live on-device, so the library remains browsable and searchable locally.",
-      "PDF, text, and image inputs all feed the same local chunk store and ranking flow.",
-      "The product is not fully offline: embeddings, OCR, and chat still rely on network calls to OpenAI services."
-    ],
-    "highlights": [
-      "Local SQLite document and chunk store",
-      "PDF, text, and image ingestion",
-      "OpenAI-backed embeddings with Sentry monitoring"
-    ],
-    "signals": [
-      "tested",
-      "typed",
-      "docs",
-      "observability"
-    ],
-    "receipts": [
-      {
-        "label": "Local retrieval path",
-        "value": "The vector database module stores documents, chunks, and per-document centroids in Expo SQLite for ranked local lookup."
-      },
-      {
-        "label": "Operational guardrails",
-        "value": "Sentry initialization and embedding backoff logic handle mobile model failures more explicitly than a demo-only app."
-      }
-    ],
-    "architecture": {
-      "summary": "React Native document assistant with local SQLite retrieval and remote model calls for embeddings, OCR, and chat.",
-      "bullets": [
-        "Document-processing utilities normalize text, PDF, and image inputs into chunked local records.",
-        "SQLite tables store documents, chunks, and centroid indexes used by the ranking path.",
-        "API helpers call OpenAI services for embeddings and OCR while Sentry captures runtime failures."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "App.tsx",
-        "note": "Top-level mobile app shell for the document assistant experience."
-      },
-      {
-        "path": "src/utils/vectorDb.ts",
-        "note": "Local SQLite storage and ranking logic for documents, chunks, and centroids."
-      },
-      {
-        "path": "src/utils/documentProcessing.ts",
-        "note": "Ingestion pipeline for text, PDF, and image assets before they enter local retrieval."
-      },
-      {
-        "path": "src/api/embeddings.ts",
-        "note": "Remote embedding client that powers the local ranking pipeline."
-      },
-      {
-        "path": "src/utils/sentry.ts",
-        "note": "Sentry bootstrap and error-reporting helpers for mobile runtime issues."
-      }
-    ],
-    "shipped": "Built a mobile document assistant with local retrieval, multi-format ingestion, and OpenAI-backed AI features.",
-    "learned": "The biggest design constraint on mobile was being explicit about which capabilities are truly local and which still need networked model calls."
-  },
-  "document-qa": {
-    "displayName": "Document QA",
-    "role": "Product",
-    "whyItMatters": "A useful reminder that some AI demos are intentionally tiny: this repo is a minimal upload-and-ask example, not a retrieval system.",
-    "problem": [
-      "Needed the smallest possible interface for asking questions about a local text document.",
-      "Non-technical users benefit from a no-install UI more than from a full search stack.",
-      "The example had to stay short enough to understand in one file."
-    ],
-    "approach": [
-      "Built a single-file Streamlit app that accepts a user API key, uploads a txt or md file, and asks a question.",
-      "Injected the full document text directly into a gpt-3.5-turbo chat completion request.",
-      "Streamed the model response back through Streamlit for immediate feedback."
-    ],
-    "result": [
-      "Small text documents can be queried through a very low-friction UI.",
-      "The implementation is easy to read and adapt because the whole flow lives in one file.",
-      "It does not do retrieval, citation grounding, or PDF support, so the case study stays intentionally modest."
-    ],
-    "highlights": [
-      "Single-file Streamlit app",
-      "Streamed GPT-3.5 response",
-      "Plain-text document upload flow"
-    ],
-    "signals": [
-      "docs"
-    ],
-    "receipts": [
-      {
-        "label": "Supported inputs",
-        "value": "The uploader only accepts txt and md files, keeping the example narrow and understandable."
-      },
-      {
-        "label": "Response path",
-        "value": "The app streams a gpt-3.5-turbo completion built from the full uploaded document text and the user's question."
-      }
-    ],
-    "architecture": {
-      "summary": "One-file Streamlit example that uploads a text document and streams a chat completion from its contents.",
-      "bullets": [
-        "Streamlit handles API-key input, file upload, and question entry in a single page.",
-        "The app reads the uploaded file directly into memory and appends the user's question.",
-        "OpenAI chat completions stream the answer back to the page without a retrieval layer."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "streamlit_app.py",
-        "note": "Single-file implementation of the upload, prompt assembly, and streamed response flow."
-      }
-    ],
-    "shipped": "Built a minimal Streamlit document-QA starter for small text files.",
-    "learned": "Not every repo should be narrated like a platform; sometimes the right description is simply small, readable starter."
-  },
-  "newfolder": {
-    "displayName": "Document Workspace",
-    "role": "Product",
-    "whyItMatters": "Shows a more grounded document workspace pattern where classic search and chat history are first-class, and vector search is only one optional layer.",
-    "problem": [
-      "Users needed one place to search documents, chat threads, and project context instead of jumping across separate surfaces.",
-      "Project-scoped workspaces needed permission-aware search rather than a single global index.",
-      "Semantic search had to behave as an optional enhancement instead of the only retrieval path."
-    ],
-    "approach": [
-      "Built a FastAPI backend that queries documents and chat messages from the same authenticated search route.",
-      "Added optional vector-search augmentation when embeddings and the vector service are configured.",
-      "Wired a TypeScript frontend to the document APIs so upload, browsing, and chat tools share the same workspace."
-    ],
-    "result": [
-      "Users can search documents and prior chats from one endpoint scoped to their project or account.",
-      "Keyword and metadata results work even when vector search is unavailable or unconfigured.",
-      "The repo suggests a broader RAG direction, but the strongest, clearest implementation today is the unified workspace and search layer."
-    ],
-    "highlights": [
-      "Project-scoped unified search",
-      "Documents and chats in one workspace",
-      "Optional vector-match augmentation"
-    ],
-    "signals": [
-      "typed",
-      "docs"
-    ],
-    "receipts": [
-      {
-        "label": "Unified search route",
-        "value": "The search endpoint returns document hits, chat hits, and semantic matches from one authenticated request."
-      },
-      {
-        "label": "Best-effort semantics",
-        "value": "Vector search only runs when an OpenAI key and the vector service are available; otherwise the app still returns document and chat results."
-      }
-    ],
-    "architecture": {
-      "summary": "Document workspace with authenticated project search across files, chat history, and optional vector matches.",
-      "bullets": [
-        "FastAPI search routes join project ownership checks with document and chat queries.",
-        "Search services combine SQL lookups with optional embedding and vector-store calls when configured.",
-        "TypeScript frontend utilities talk to the same workspace APIs for document browsing and chat-adjacent actions."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "backend/app/main.py",
-        "note": "Backend application entrypoint for the authenticated workspace service."
-      },
-      {
-        "path": "backend/app/routes/search.py",
-        "note": "Unified search route across documents, chats, and semantic matches."
-      },
-      {
-        "path": "backend/app/services/search_service.py",
-        "note": "Search service that combines SQL lookups with optional embedding-backed retrieval."
-      },
-      {
-        "path": "frontend/src/utils/documentApi.ts",
-        "note": "TypeScript client utilities for the document workspace APIs."
-      }
-    ],
-    "shipped": "Built a project-scoped document workspace with unified search across files, chats, and optional semantic results.",
-    "learned": "The repo highlighted that traditional search and workspace boundaries still matter even when you plan to add richer RAG features later."
-  },
-  "docs": {
-    "displayName": "Docs",
-    "role": "Craft",
-    "whyItMatters": "Useful as an internal tooling experiment: it explores how provider selection, chunking, and templates can automate repetitive documentation work.",
-    "problem": [
-      "Code docs were inconsistent and easy to postpone across Python repositories.",
-      "A single model provider was too limiting for experimentation and cost tradeoffs.",
-      "The output needed templates and process management, not just a one-off prompt."
-    ],
-    "approach": [
-      "Built a Python CLI that loads provider configs and can target Azure, Gemini, or OpenAI backends.",
-      "Added a documentation process manager to walk files, chunk source, call the chosen provider, and collect results.",
-      "Used a template manager to render Markdown outputs into consistent shapes."
-    ],
-    "result": [
-      "The repo produces a runnable experimentation surface for AI-assisted documentation generation.",
-      "Provider configuration, process management, and templating are separated clearly enough to iterate on them independently.",
-      "It is still rough: even the README metadata is placeholder-heavy, so this should be presented as experimental tooling rather than a mature product."
-    ],
-    "highlights": [
-      "Multi-provider model selection",
-      "Async documentation process manager",
-      "Template-based Markdown rendering"
-    ],
-    "signals": [
-      "docs",
-      "ci"
-    ],
-    "receipts": [
-      {
-        "label": "Provider routing",
-        "value": "The CLI can initialize Azure, Gemini, or OpenAI clients from the same configuration path."
-      },
-      {
-        "label": "Template layer",
-        "value": "The template manager caches Jinja templates for main, function, class, metric, and summary outputs."
-      }
-    ],
-    "architecture": {
-      "summary": "Experimental Python doc-generation pipeline built from provider selection, process management, and Jinja-based templates.",
-      "bullets": [
-        "CLI arguments control repository scope, provider choice, schema, concurrency, and output location.",
-        "Process managers walk files, prepare chunks, and coordinate model calls and metrics.",
-        "Template rendering assembles generated content into repeatable Markdown structures."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "main.py",
-        "note": "CLI entrypoint that selects providers, config, and repository scope for a documentation run."
-      },
-      {
-        "path": "language_functions/python_handler.py",
-        "note": "Language-specific handling for Python source during documentation generation."
-      },
-      {
-        "path": "process_manager.py",
-        "note": "Process manager for file traversal, chunking, and provider-call orchestration."
-      },
-      {
-        "path": "template_manager.py",
-        "note": "Template cache and renderer for Markdown documentation output."
-      }
-    ],
-    "shipped": "Built an experimental AI documentation generator with provider selection and template-driven output.",
-    "learned": "What mattered most here was decomposition: once provider choice, process management, and templating were separated, the rest of the experimentation became much cheaper."
-  },
-  "ai-prompt-pro": {
-    "displayName": "Prompt Forge",
-    "role": "Product",
-    "whyItMatters": "Shows prompt authoring as a real product surface: builder, persistence, community, and agent-backed enhancement all share one system instead of living in separate demos.",
-    "problem": [
-      "Prompt drafting, enhancement, and reuse were scattered across chat sessions, notes, and one-off demos with no durable product surface.",
-      "Users needed help turning rough ideas into structured builder fields without losing control of the final prompt.",
-      "The app needed a secure path for model-backed enhancement, saved prompts, community sharing, and optional repository context."
-    ],
-    "approach": [
-      "Built a React + TypeScript application with dedicated routes for builder, library, history, presets, community feed, user profiles, and support.",
-      "Added heuristic inference for role, tone, length, format, and constraints, plus quality scoring before any enhancement call runs.",
-      "Backed signed-in state with Neon Postgres via the Neon Data API and Neon Auth, while keeping local persistence for signed-out sessions.",
-      "Split the enhancement backend into focused modules for SSE prompt refinement, URL extraction, builder-field inference, and GitHub App-backed repository context."
-    ],
-    "result": [
-      "Prompt Forge runs as a production prompt workspace and community feed at prompt.lakefrontdigital.io.",
-      "The builder can score, infer, save, remix, and share prompts instead of acting like a one-shot demo.",
-      "The enhancement service handles authenticated streaming refinement plus repository-aware context collection for signed-in users.",
-      "Release gates now include docs freshness, typed front-end tests, and split frontend-service deployment workflows."
-    ],
-    "highlights": [
-      "Structured prompt builder with quality scoring",
-      "Heuristic prompt inference",
-      "GitHub App repository context",
-      "Neon-backed persistence with signed-out fallback",
-      "Streaming enhancement service",
-      "Community feed, profiles, and remix attribution"
-    ],
-    "signals": [
-      "typed",
-      "tested",
-      "ci",
-      "docs"
-    ],
-    "receipts": [
-      {
-        "label": "Builder state",
-        "value": "The main builder hook manages scoring, inferred fields, draft persistence, auth-aware saves, and remix context from one state path.",
-        "url": "https://github.com/henryperkins/ai-prompt-pro/blob/main/src/hooks/usePromptBuilder.ts"
-      },
-      {
-        "label": "Repository context",
-        "value": "The service exposes GitHub App install, callback, connection, file preview, and context-source routes for signed-in builders.",
-        "url": "https://github.com/henryperkins/ai-prompt-pro/blob/main/agent_service/github-routes.mjs"
-      },
-      {
-        "label": "Release hygiene",
-        "value": "The repo includes docs freshness checks and production verification scripts alongside the application build and test commands.",
-        "url": "https://github.com/henryperkins/ai-prompt-pro/blob/main/package.json"
-      }
-    ],
-    "architecture": {
-      "summary": "Route-based prompt workspace and community platform, backed by Neon Postgres and a multi-module enhancement service deployed separately from the frontend.",
-      "bullets": [
-        "Browser routes separate builder, library, community feed, user profiles, history, presets, and support flows with route-specific loading states.",
-        "Shared heuristics infer role, tone, length, format, and constraints from raw prompt text, while scoring logic grades drafts before enhancement.",
-        "The service handles provider resolution, bearer-session validation, rate limiting, URL extraction, repository context, and SSE enhancement orchestration.",
-        "Neon Postgres via the Neon Data API provides authenticated persistence, while localStorage remains available for signed-out use."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "src/App.tsx",
-        "note": "Lazy-loaded route shell for builder, library, community, profiles, history, presets, and support."
-      },
-      {
-        "path": "src/hooks/usePromptBuilder.ts",
-        "note": "Core prompt builder state management hook driving the builder workspace."
-      },
-      {
-        "path": "shared/builder-inference-heuristics.ts",
-        "note": "Shared heuristics that infer role, tone, format, and constraints from a draft prompt."
-      },
-      {
-        "path": "agent_service/codex_service.mjs",
-        "note": "Main Codex agent service entry point with auth, rate limiting, and SSE streaming."
-      },
-      {
-        "path": "agent_service/github-routes.mjs",
-        "note": "GitHub App context routes for installation, connection, file preview, and repository-backed builder context."
-      },
-      {
-        "path": "scripts/check-docs-freshness.mjs",
-        "note": "Freshness check that keeps documentation and linked references aligned with the shipped product surface."
-      }
-    ],
-    "shipped": "Shipped Prompt Forge as a production prompt builder and community platform with an Azure-hosted enhancement service and Neon-backed persistence.",
-    "learned": "The useful abstraction was not just prompt text; it was a durable prompt workspace with inference, persistence, community, and guarded enhancement boundaries."
-  },
-  "flavor-agent": {
-    "displayName": "Flavor Agent",
-    "role": "Product",
-    "whyItMatters": "Brings AI recommendations into Gutenberg so editors can stay in the flow instead of jumping to a separate tool.",
-    "problem": [
-      "Editors needed block, pattern, template, template-part, and navigation help without leaving Gutenberg.",
-      "Recommendations needed retrieval and grounding instead of stuffing full pattern catalogs into one prompt.",
-      "Because the plugin touches editor UX and provider settings, validation and repeatable tests had to be built in."
-    ],
-    "approach": [
-      "Mounted recommendation flows into five Gutenberg surfaces instead of sending users to a sidecar tool.",
-      "Shared the runtime through REST routes and 11 WordPress Abilities API capabilities.",
-      "Used Qdrant retrieval and Cloudflare AI Search grounding to keep recommendations scoped.",
-      "Added Docker, Playwright, PHPUnit, and Jest workflows around settings and editor flows."
-    ],
-    "result": [
-      "The plugin ships five editor-facing recommendation surfaces with activity history and inline undo.",
-      "Pattern and template suggestions stay grounded before the model ranks or returns results.",
-      "Settings, recommendation paths, and editor flows ship with repeatable validation and test coverage."
-    ],
-    "highlights": [
-      "Five Gutenberg recommendation surfaces",
-      "Qdrant and AI Search grounding",
-      "11 Abilities API capabilities",
-      "Undoable activity history",
-      "Docker, Playwright, and PHPUnit workflow"
-    ],
-    "signals": [
-      "tested",
-      "docs"
-    ],
-    "receipts": [
-      {
-        "label": "Recommendation surfaces",
-        "value": "Bootstrap wires the inspector, pattern, template, template-part, and navigation recommenders.",
-        "url": "https://github.com/henryperkins/flavor-agent/blob/master/flavor-agent.php"
-      },
-      {
-        "label": "Grounded ranking",
-        "value": "Pattern recommendations combine Qdrant retrieval, provider reranking, and Cloudflare AI Search grounding.",
-        "url": "https://github.com/henryperkins/flavor-agent/blob/master/docs/SOURCE_OF_TRUTH.md"
-      },
-      {
-        "label": "Verification loop",
-        "value": "PHPUnit, Jest, and Playwright cover settings, REST paths, provider validation, and core editor flows.",
-        "url": "https://github.com/henryperkins/flavor-agent/blob/master/tests/e2e/flavor-agent.smoke.spec.js"
-      }
-    ],
-    "architecture": {
-      "summary": "WordPress plugin with PHP settings and REST layers, JavaScript Gutenberg injections, and retrieval-backed AI services.",
-      "bullets": [
-        "PHP bootstrap registers lifecycle hooks, settings, REST controllers, abilities, and warming jobs.",
-        "Editor-side JavaScript injects recommenders into Gutenberg surfaces instead of routing users to a separate app.",
-        "Qdrant retrieval and Cloudflare AI Search grounding shape suggestions before they reach the editor."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "flavor-agent.php",
-        "note": "Plugin bootstrap for lifecycle hooks, settings, REST routes, abilities, and warming."
-      },
-      {
-        "path": "inc/REST/Agent_Controller.php",
-        "note": "REST controller for block, pattern, template, template-part, and navigation recommendations."
-      },
-      {
-        "path": "inc/Abilities/Registration.php",
-        "note": "Registers 11 Abilities API capabilities across editor and infrastructure features."
-      },
-      {
-        "path": "inc/Cloudflare/AISearchClient.php",
-        "note": "Cloudflare AI Search client for docs grounding, caching, and prewarm jobs."
-      },
-      {
-        "path": "src/store/index.js",
-        "note": "Central data store for recommendation state, apply and undo, and activity history."
-      },
-      {
-        "path": "tests/e2e/flavor-agent.smoke.spec.js",
-        "note": "Playwright smoke coverage for apply and undo, pattern badges, and Site Editor template flows."
-      }
-    ],
-    "shipped": "Shipped a Gutenberg-native recommendation plugin with five editor surfaces, shared runtime capabilities, and inline undo history.",
-    "learned": "The hard part was making AI feel native to Gutenberg, with clear affordances, safe settings, and repeatable tests."
-  },
-  "codex": {
-    "displayName": "Codex Fork",
-    "role": "Systems",
-    "whyItMatters": "Useful as a fork-based systems case study: the authored work is narrow, but it sits inside a large Rust agent runtime where small state regressions are easy to miss.",
-    "problem": [
-      "Rollout replay could overwrite a deliberately polluted thread memory mode with enabled state.",
-      "That downgrade risk lived inside low-level runtime metadata handling rather than a visible CLI surface.",
-      "Any fix needed to stay small, explicit, and regression-tested inside the fork without pretending authorship of the entire upstream product."
-    ],
-    "approach": [
-      "Forked the open-source Codex repository and traced the issue to the Rust state runtime that persists thread metadata.",
-      "Added a guard in set_thread_memory_mode so rollout replay does not downgrade polluted memory mode back to enabled.",
-      "Locked the behavior with a focused async test around apply_rollout_items replay."
-    ],
-    "result": [
-      "The fork now preserves polluted memory mode during rollout replay instead of silently downgrading thread state.",
-      "The change stays localized to the runtime state layer, which keeps the fix reviewable inside a much larger codebase.",
-      "The repository remains clearly an upstream fork; the value here is the targeted systems patch and regression coverage, not authorship of Codex as a whole."
-    ],
-    "highlights": [
-      "Rust runtime-state patch",
-      "Replay invariant around thread memory mode",
-      "Focused regression test in a large upstream fork"
-    ],
-    "signals": [
-      "tested",
-      "typed",
-      "ci",
-      "docs"
-    ],
-    "receipts": [
-      {
-        "label": "Runtime guard",
-        "value": "threads.rs now short-circuits attempts to replace polluted memory mode with enabled during thread updates.",
-        "url": "https://github.com/henryperkins/codex/blob/main/codex-rs/state/src/runtime/threads.rs"
-      },
-      {
-        "label": "Regression coverage",
-        "value": "A new async test asserts apply_rollout_items does not downgrade polluted memory mode to enabled during replay.",
-        "url": "https://github.com/henryperkins/codex/blob/main/codex-rs/state/src/runtime/threads.rs"
-      },
-      {
-        "label": "Upstream context",
-        "value": "The wider repository still spans the Codex CLI, Rust runtime crates, npm wrapper, and CI workflows that this forked patch sits inside.",
-        "url": "https://github.com/henryperkins/codex/blob/main/README.md"
-      }
-    ],
-    "architecture": {
-      "summary": "Public fork of the Codex CLI and Rust runtime; this case study focuses on a targeted patch in codex-rs/state rather than the entire upstream system.",
-      "bullets": [
-        "The upstream repository spans CLI tooling, Rust runtime crates, SDKs, package wrappers, and CI workflows.",
-        "The authored change lives in codex-rs/state runtime metadata handling for threads and rollout replay.",
-        "Keeping the patch narrow made it easier to reason about invariants inside a large agent codebase without forking the product direction itself."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "codex-rs/state/src/runtime/threads.rs",
-        "note": "Rust runtime file containing the memory-mode guard and the replay regression test."
-      },
-      {
-        "path": "README.md",
-        "note": "Repository overview showing the broader CLI and runtime surface that the forked patch lives inside."
-      },
-      {
-        "path": ".github/workflows/rust-ci.yml",
-        "note": "Rust CI workflow that frames the verification environment around the runtime crates."
-      }
-    ],
-    "shipped": "Patched my Codex fork so rollout replay preserves polluted memory mode and locked the behavior with a focused regression test.",
-    "learned": "In stateful agent runtimes, memory-mode transitions need explicit invariants; otherwise replay paths can silently erase intent.",
-    "accessNote": "This is a public fork of openai/codex. The case study covers the runtime-state work in my fork, not authorship of the upstream product."
-  },
-  "ai-cli-web-funnel": {
-    "displayName": "Forge",
-    "role": "Systems",
-    "whyItMatters": "Replaces fragmented copy-paste CLI addon installation with a governed product flow spanning catalog discovery, dependency-aware install planning, runtime verification, security governance, profile bundles, and a user-facing CLI — modeled after CurseForge for CLI ecosystems.",
-    "problem": [
-      "CLI addons (MCP servers, skills, plugins) were distributed through scattered docs with manual copy-paste installation and no central discovery.",
-      "There was no way to plan, verify, or roll back installs — teams had no visibility into what actually reached runtime.",
-      "Security and governance were afterthoughts: no trust gates, no audit trails, and no SLO measurement across the install funnel."
-    ],
-    "approach": [
-      "Built a TypeScript monorepo (four apps, five packages) with a control-plane HTTP server, standalone runtime daemon, VS Code Copilot adapter, and a user-facing forge CLI.",
-      "Implemented a four-stage deterministic funnel — discover, plan, apply, verify — with update, remove, and rollback, idempotent replay, conflict detection, and append-only audit trails across 17 Postgres migrations.",
-      "Added hybrid retrieval (Postgres BM25 + Qdrant semantic search), outbox-driven event dispatch with dead-letter replay, security trust gates, SLO rollups, and profile bundle orchestration.",
-      "Made the runtime daemon a standalone process with its own HTTP API, process registry, stdio launcher, HTTP probe client (SSE + Streamable HTTP), Dockerfile, and docker-compose service.",
-      "Layered comprehensive testing: unit, integration, integration-db (Docker-provisioned Postgres), e2e, and contract tests, with CI covering typecheck, tests, governance drift, and migration verification."
-    ],
-    "result": [
-      "Full install lifecycle shipped: discover → plan → apply → verify, plus update, remove, and rollback with idempotent replay semantics.",
-      "Security governance enforces trust gates, reporter scoring, and appeal workflows with deterministic SLO measurement across 10 metric families.",
-      "Profile bundles let users export, import, and batch-install curated addon sets with aggregate status tracking.",
-      "Standalone runtime daemon runs as its own process with HTTP API, process registry, health probes, and Docker support.",
-      "User-facing forge CLI wraps the control-plane API for search, plan, install, verify, update, remove, rollback, and profile operations.",
-      "Release candidate v0.2.0-rc.1 reached with fail-closed GA readiness gate, pilot-to-GA runbook, and gap assessment completed."
-    ],
-    "highlights": [
-      "Four-stage install funnel (discover → plan → apply → verify)",
-      "Hybrid BM25 + semantic retrieval with graceful fallback",
-      "Outbox-driven event dispatch with dead-letter replay",
-      "Security trust gates and SLO rollups",
-      "Profile bundle orchestration",
-      "Standalone runtime daemon with HTTP API and Docker support",
-      "User-facing forge CLI",
-      "Fail-closed GA readiness gate and pilot-to-GA runbook"
-    ],
-    "signals": [
-      "typed",
-      "tested",
-      "ci",
-      "docs"
-    ],
-    "receipts": [
-      {
-        "label": "CI baseline",
-        "value": "Forge CI runs typecheck, unit/integration/contract tests, governance drift checks, and migration verification across the monorepo.",
-        "url": "https://github.com/henryperkins/ai-cli-web-funnel/blob/main/.github/workflows/forge-ci.yml"
-      },
-      {
-        "label": "Retrieval stack",
-        "value": "The control plane bootstraps BM25, Qdrant semantic search, and embedding-backed retrieval from a single bootstrap path.",
-        "url": "https://github.com/henryperkins/ai-cli-web-funnel/blob/main/apps/control-plane/src/retrieval-bootstrap.ts"
-      },
-      {
-        "label": "GA readiness gate",
-        "value": "Fail-closed GA readiness gate validates lifecycle, security, and operational criteria with a pilot-to-GA runbook and gap assessment.",
-        "url": "https://github.com/henryperkins/ai-cli-web-funnel/blob/main/scripts/validate-ga-readiness.mjs"
-      }
-    ],
-    "architecture": {
-      "summary": "TypeScript monorepo with four apps (control plane, runtime daemon, forge CLI, VS Code adapter) and five packages backed by Postgres and Qdrant.",
-      "bullets": [
-        "The control plane exposes v1 HTTP APIs for catalog search, install lifecycle (plan/apply/verify/update/remove/rollback), profiles, and security governance.",
-        "The standalone runtime daemon runs as its own process with an HTTP API (/v1/runtime/start, /verify, /stop, /status, /health), process registry, stdio launcher, and HTTP probe client.",
-        "The forge CLI wraps the control-plane API for end-user addon management (search, plan, install, verify, update, remove, rollback, profiles).",
-        "Five shared packages provide catalog connectors (GitHub, npm, PyPI, docs), hybrid retrieval ranking, security governance (trust gates, SLO rollups, outbox dispatch), policy engine, and typed contracts.",
-        "17 forward-only Postgres migrations enforce deterministic ordering, idempotent replay, and append-only audit across all lifecycle stages."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "apps/control-plane/src/server.ts",
-        "note": "Control-plane entry point: HTTP APIs, startup validation, readiness checks, and install lifecycle orchestration."
-      },
-      {
-        "path": "apps/runtime-daemon/src/daemon-main.ts",
-        "note": "Standalone runtime daemon entry point with HTTP server, process registry, and graceful shutdown."
-      },
-      {
-        "path": "apps/runtime-daemon/src/daemon-http-app.ts",
-        "note": "Runtime daemon HTTP API for start, verify, stop, status, and health endpoints."
-      },
-      {
-        "path": "apps/control-plane/src/install-lifecycle.ts",
-        "note": "Core install lifecycle engine: plan, apply, verify, update, remove, and rollback with idempotent replay."
-      },
-      {
-        "path": "packages/security-governance/src/slo-rollup.ts",
-        "note": "Deterministic SLO metric computation across 10 families including funnel KPIs and cold-start success rates."
-      },
-      {
-        "path": "apps/control-plane/src/profile-routes.ts",
-        "note": "Profile bundle API: create, export, import, and batch-install curated addon sets."
-      }
-    ],
-    "shipped": "Reached release candidate v0.2.0-rc.1 with full install lifecycle, security governance, profile bundles, standalone runtime daemon, forge CLI, and fail-closed GA readiness gate.",
-    "learned": "A strict four-stage funnel (discover → plan → apply → verify) with idempotent replay at every boundary kept the system predictable even as it grew to span four apps, five packages, security governance, profile orchestration, and outbox-driven event dispatch."
-  },
-  "web-fetch": {
-    "displayName": "Web Fetch MCP",
-    "role": "Systems",
-    "whyItMatters": "LLM agents need safe, structured web content, and the hard part is normalizing real pages, enforcing security boundaries, and building a scoped knowledge base — not issuing HTTP requests.",
-    "problem": [
-      "LLM agents fetching web content faced SSRF risks, prompt injection, and inconsistent formats that polluted context windows.",
-      "One-off fetch scripts could not be reused across agent runtimes or exposed as standardized tool surfaces.",
-      "Agents needed more than raw extraction: semantic chunking, intelligent compaction, and a conversation-scoped knowledge base for follow-up queries."
-    ],
-    "approach": [
-      "Built an MCP server exposing five tools over stdio: fetch, extract, chunk, compact, and AI search query.",
-      "Added an SSRF guard that blocks private IPs and validates DNS, a prompt injection detector, a content sanitizer, and per-host rate limiting.",
-      "Separated HTTP fetching from six format-specific extractors (HTML, Markdown, PDF, JSON, XML, plain text) with optional Playwright rendering for SPAs.",
-      "Integrated Cloudflare AI Search for a conversation-scoped knowledge base that indexes fetched content and supports semantic follow-up queries.",
-      "Added intelligent compaction modes (structural, salience, map-reduce, question-focused) backed by Cloudflare AI Gateway."
-    ],
-    "result": [
-      "Agents get safe, normalized web content from a standards-compliant MCP server instead of ad hoc scripts.",
-      "The security layer (SSRF guard, injection detection, rate limiting) makes the server suitable for use with untrusted URLs.",
-      "Fetched content automatically populates a scoped knowledge base that agents can query across turns without re-fetching.",
-      "The processing pipeline — extract, chunk, compact — lets agents control context size and relevance instead of dumping raw HTML into prompts."
-    ],
-    "highlights": [
-      "Five MCP tools: fetch, extract, chunk, compact, AI search",
-      "SSRF guard with DNS rebinding prevention",
-      "Six format-specific extractors plus Playwright SPA rendering",
-      "Conversation-scoped Cloudflare AI Search knowledge base",
-      "Intelligent compaction via AI Gateway"
-    ],
-    "signals": [
-      "tested",
-      "typed",
-      "docs"
-    ],
-    "receipts": [
-      {
-        "label": "MCP tool surface",
-        "value": "The server registers five tools, six prompts, and a resource store with TTL caching over the MCP stdio transport.",
-        "url": "https://github.com/henryperkins/web-fetch/blob/master/src/index.ts"
-      },
-      {
-        "label": "Security boundary",
-        "value": "The SSRF guard blocks private IPs, loopback, and link-local addresses, and validates DNS resolution before any fetch executes.",
-        "url": "https://github.com/henryperkins/web-fetch/blob/master/src/security/ssrf-guard.ts"
-      },
-      {
-        "label": "Test coverage",
-        "value": "Twenty-three test files cover the full pipeline from fetch through extraction, chunking, compaction, and AI search integration."
-      }
-    ],
-    "architecture": {
-      "summary": "TypeScript MCP server with five tools, a security layer, six format extractors, semantic processing, and Cloudflare AI Search integration.",
-      "bullets": [
-        "The MCP entrypoint registers fetch, extract, chunk, compact, and AI search query tools plus prompts, resource handlers, and completions.",
-        "A security layer enforces SSRF protection, prompt injection detection, content sanitization, and per-host rate limits before any content reaches the agent.",
-        "Six extractors normalize HTML, Markdown, PDF, JSON, XML, and plain text into a common LLMPacket format, with optional Playwright rendering for SPAs.",
-        "Cloudflare AI Search integration uploads fetched content to R2 and indexes it into a conversation-scoped knowledge base for semantic follow-up queries."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "src/index.ts",
-        "note": "MCP server entrypoint registering all five tools, six prompts, resource handlers, and completions."
-      },
-      {
-        "path": "src/tools/fetch.ts",
-        "note": "Core fetch tool: SSRF check, robots.txt, HTTP or Playwright fetch, extract, normalize, and AI Search ingest."
-      },
-      {
-        "path": "src/security/ssrf-guard.ts",
-        "note": "SSRF protection blocking private IPs and preventing DNS rebinding before any request executes."
-      },
-      {
-        "path": "src/ai-search/index.ts",
-        "note": "Cloudflare R2 upload and AI Search query integration for the conversation-scoped knowledge base."
-      },
-      {
-        "path": "src/processing/chunker.ts",
-        "note": "Semantic content chunking that respects heading and code block boundaries."
-      }
-    ],
-    "shipped": "Shipped an MCP server for safe, structured web browsing with five tools, SSRF protection, and a conversation-scoped AI Search knowledge base.",
-    "learned": "The hard part of web fetching for agents is not the HTTP request; it is the security boundary, format normalization, and the ability to build a scoped knowledge base that survives across turns."
-  },
-  "tarot": {
-    "displayName": "Tableu",
-    "role": "Product",
-    "whyItMatters": "Demonstrates practical integration of AI interpretation into a consumer-facing interactive experience with clear UX affordances.",
-    "problem": [
-      "Existing tarot apps offered static card lookups with no personalized context.",
-      "Users had no way to ask follow-up questions about their readings.",
-      "Card spread logic and AI interpretation were tightly coupled, making iteration slow."
-    ],
-    "approach": [
-      "Built a JavaScript front end with modular spread layouts and card selection flows.",
-      "Integrated AI-powered interpretation that considers card position, orientation, and spread context.",
-      "Separated card data, spread logic, and interpretation prompts to allow independent iteration."
-    ],
-    "result": [
-      "Readings feel personalized and contextual rather than generic card-definition lookups.",
-      "New spread types can be added without touching interpretation logic.",
-      "User engagement improved with interactive card selection and position-aware AI responses."
-    ],
-    "highlights": [
-      "Position-aware AI interpretations",
-      "Modular spread layout system",
-      "Context-rich reading prompts"
-    ],
-    "signals": [
-      "tested",
-      "ci",
-      "docs"
-    ],
-    "receipts": [
-      {
-        "label": "Reading flow coverage",
-        "value": "Playwright covers the core journey from spread selection to reveal, narrative delivery, and save behavior.",
-        "url": "https://github.com/henryperkins/tarot/blob/master/e2e/tarot-reading.spec.js"
-      },
-      {
-        "label": "Narrative backend",
-        "value": "The reading function layers context inference, safety checks, entitlements, evaluation gates, and Azure Responses streaming into a single endpoint.",
-        "url": "https://github.com/henryperkins/tarot/blob/master/functions/api/tarot-reading.js"
-      }
-    ],
-    "architecture": {
-      "summary": "Hybrid web/native tarot platform backed by Cloudflare functions and Azure OpenAI narrative services.",
-      "bullets": [
-        "An Expo WebView shell reuses the deployed web experience for native mobile distribution.",
-        "Cloudflare function handlers assemble reading context, safety checks, entitlements, and streaming AI narration.",
-        "Node and Playwright suites protect the core reading, accessibility, and evaluation gates."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "App.tsx",
-        "note": "Expo shell that wraps the deployed web experience for native mobile delivery."
-      },
-      {
-        "path": "functions/api/tarot-reading.js",
-        "note": "Primary reading endpoint that assembles context, safety, evaluation, and streaming response behavior."
-      },
-      {
-        "path": "functions/lib/azureResponses.js",
-        "note": "Azure Responses configuration and request-normalization layer for the narrative backend."
-      },
-      {
-        "path": "e2e/tarot-reading.spec.js",
-        "note": "High-value end-to-end coverage for the core reading journey and streamed narrative behavior."
-      }
-    ],
-    "shipped": "Shipped a streaming tarot reading pipeline with Azure OpenAI narration, ritual UX, and end-to-end reading tests.",
-    "learned": "Balancing ritual UX with explicit evaluation and safety gates made the app feel mystical without treating production quality as optional."
-  },
-  "mystic-tarot": {
-    "displayName": "Mystic Tarot",
-    "role": "Product",
-    "whyItMatters": "Shows how much of a creative product comes from presentation, pacing, and persistence around the AI call, not just the generated text.",
-    "problem": [
-      "A tarot app needs ceremony and visual identity, not just card lookup results.",
-      "Users needed a way to revisit readings instead of treating them as disposable outputs.",
-      "The reading backend had to support both AI-backed and local narrative paths."
-    ],
-    "approach": [
-      "Built animated spread and reveal flows with celestial styling throughout the interface.",
-      "Implemented a reading endpoint that returns the narrative, provider used, and spread analysis metadata.",
-      "Added journal persistence through auth-backed API calls with a localStorage fallback when users are not signed in."
-    ],
-    "result": [
-      "Readings feel more like a ritualized product experience than a form submission.",
-      "Saved entries and local fallbacks make the journal usable even when auth or API paths are limited.",
-      "The AI narration is request and response based rather than streamed, so the product story stays grounded in the actual implementation."
-    ],
-    "highlights": [
-      "Animated spread and reveal choreography",
-      "Azure or local reading provider path",
-      "Journal persistence with local fallback"
-    ],
-    "signals": [
-      "tested",
-      "docs"
-    ],
-    "receipts": [
-      {
-        "label": "Journal resilience",
-        "value": "The journal hook saves through the API when authenticated and falls back to localStorage when it is not."
-      },
-      {
-        "label": "Reading payload",
-        "value": "The reading endpoint returns the narrative, provider, themes, context, and spread-analysis metadata from one response."
-      }
-    ],
-    "architecture": {
-      "summary": "Front-end tarot experience backed by a reading endpoint and journal system with auth and local fallbacks.",
-      "bullets": [
-        "React views handle spread selection, ritual states, card reveals, and formatted reading display.",
-        "API handlers assemble the reading response and report which provider path was used.",
-        "Journal utilities persist entries through authenticated routes or browser storage depending on session state."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "src/TarotReading.jsx",
-        "note": "Main reading experience with ritual state, reveal pacing, and reading presentation."
-      },
-      {
-        "path": "src/components/Card.jsx",
-        "note": "Card component used inside the animated spread and reveal flow."
-      },
-      {
-        "path": "functions/api/tarot-reading.js",
-        "note": "Reading endpoint that returns the narrative, provider, and spread-analysis payload."
-      },
-      {
-        "path": "src/hooks/useJournal.js",
-        "note": "Journal persistence layer with authenticated and localStorage-backed paths."
-      }
-    ],
-    "shipped": "Built an animated tarot reading experience with API-backed narratives and journal persistence.",
-    "learned": "The memorable part of a creative AI app is often the pacing around the response, not the raw model call."
-  },
-  "dj-judas": {
-    "displayName": "The Voices of Judah",
-    "role": "Product",
-    "whyItMatters": "Shows how a performer brand can be translated into a production web experience that combines storytelling, booking, and commerce rather than a static promo site.",
-    "problem": [
-      "A performer site needed to do more than present bio copy; it had to support discovery, bookings, catalog browsing, and platform follow-through.",
-      "Mobile visitors needed a fast path from landing content to booking and streaming destinations.",
-      "Commerce and operational flows needed a backend that could grow beyond a brochure site."
-    ],
-    "approach": [
-      "Built a React + TypeScript front end on Cloudflare Workers with SPA navigation, social integrations, and section-based landing experiences.",
-      "Implemented a mobile-friendly booking flow with persisted form state, validation, and submission support.",
-      "Integrated a Medusa backend and end-to-end test coverage for storefront and checkout-adjacent behavior."
-    ],
-    "result": [
-      "The site now supports artist storytelling, booking intent capture, and product discovery in one surface.",
-      "Booking UX became more reliable on mobile thanks to local persistence and explicit validation states.",
-      "Commerce and support flows can evolve independently through the Medusa backend and dedicated E2E checks."
-    ],
-    "highlights": [
-      "Mobile-first booking workflow",
-      "Cloudflare-hosted React storefront",
-      "Medusa commerce integration"
-    ],
-    "signals": [
-      "typed",
-      "tested",
-      "ci",
-      "docs"
-    ],
-    "receipts": [
-      {
-        "label": "Booking flow",
-        "value": "The booking form persists draft input locally, validates required fields, and submits through a dedicated request flow.",
-        "url": "https://github.com/henryperkins/dj-judas/blob/main/src/react-app/components/BookingForm.tsx"
-      },
-      {
-        "label": "Release confidence",
-        "value": "Playwright coverage and the e2e-tests workflow exercise checkout, social sharing, and platform integrations.",
-        "url": "https://github.com/henryperkins/dj-judas/blob/main/.github/workflows/e2e-tests.yml"
-      }
-    ],
-    "architecture": {
-      "summary": "React storefront on Cloudflare Workers with performer-focused landing sections, booking capture, and Medusa-backed commerce.",
-      "bullets": [
-        "The SPA shell handles navigation, error boundaries, theme state, and social-provider initialization.",
-        "Landing components split the performer experience into hero, media, events, services, and booking sections.",
-        "A Medusa backend supports catalog and commerce workflows while E2E tests protect critical flows."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "src/react-app/App.tsx",
-        "note": "Top-level SPA shell for navigation, error boundaries, theme state, and social-provider setup."
-      },
-      {
-        "path": "src/react-app/components/EnhancedLandingPageV2.tsx",
-        "note": "Main landing experience that orchestrates hero, media, events, services, and booking sections."
-      },
-      {
-        "path": "src/react-app/components/BookingForm.tsx",
-        "note": "Mobile-friendly inquiry form with validation, local persistence, and submission state handling."
-      },
-      {
-        "path": "e2e/checkout-flow.spec.ts",
-        "note": "Regression coverage for storefront checkout behavior alongside the rest of the performer experience."
-      }
-    ],
-    "shipped": "Shipped a performer site with booking capture, social platform routing, and Medusa-backed commerce scaffolding.",
-    "learned": "Combining artist storytelling, inquiry capture, and storefront behavior in one product highlighted where content design and operational UX need to meet."
-  },
-  "image-studio": {
-    "displayName": "Image Studio",
-    "role": "Product",
-    "whyItMatters": "Shows how one product can wrap multiple modern media-model workflows, from image generation and edits to vision analysis and Sora prompt creation.",
-    "problem": [
-      "Image generation, editing, vision analysis, and video prompting were split across separate tools and inconsistent APIs.",
-      "Media workflows needed a reusable server boundary for Azure OpenAI and related model calls.",
-      "The UI needed to manage a growing local asset library while still showing progress and analytics around long-running tasks."
-    ],
-    "approach": [
-      "Built a TypeScript server that wraps Azure OpenAI Responses API calls, image analysis schemas, and media-processing endpoints.",
-      "Added web components for generation, editing, image analysis, and Sora prompt and video flows on top of a shared API client.",
-      "Queued local analytics events and library actions so the browser app can track usage without blocking the core workflow."
-    ],
-    "result": [
-      "Users can generate, edit, analyze, and remix media from one workspace instead of stitching together separate tools.",
-      "Vision analysis can feed directly into richer prompt-building for image or Sora flows.",
-      "The repo is strongest as a multi-workflow media studio; claims about generic chunked-upload infrastructure were overstated."
-    ],
-    "highlights": [
-      "Azure OpenAI Responses and vision integrations",
-      "Sora prompt and video workflow",
-      "Local media library with queued analytics"
-    ],
-    "signals": [
-      "typed",
-      "tested",
-      "docs",
-      "observability"
-    ],
-    "receipts": [
-      {
-        "label": "Responses API wrapper",
-        "value": "The server has a dedicated Azure Responses client that normalizes GPT-5 text and image-style requests."
-      },
-      {
-        "label": "Client telemetry",
-        "value": "Analytics events are queued in localStorage and posted best-effort so UI tracking does not block the workflow."
-      }
-    ],
-    "architecture": {
-      "summary": "TypeScript media studio with a server-side model wrapper layer and a browser workspace for generation, analysis, and Sora flows.",
-      "bullets": [
-        "Server libraries normalize Azure OpenAI Responses and vision requests behind shared configs and error handling.",
-        "Web components compose generation, editing, analysis, and Sora-specific experiences on top of the same API surface.",
-        "Client utilities manage local media state, analytics, and long-running progress feedback around model jobs."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "server/src/index.ts",
-        "note": "Server entrypoint that exposes the media workflow APIs."
-      },
-      {
-        "path": "server/src/lib/responses-api.ts",
-        "note": "Azure Responses API wrapper used for GPT-5-backed generation workflows."
-      },
-      {
-        "path": "server/src/lib/vision-api.ts",
-        "note": "Vision analysis layer with structured outputs for media understanding."
-      },
-      {
-        "path": "web/src/components/SoraCreator.tsx",
-        "note": "Sora-specific client flow for reference analysis, prompt creation, and video generation."
-      },
-      {
-        "path": "web/src/lib/analytics.ts",
-        "note": "Queued client analytics path that records media workflow events without blocking the UI."
-      }
-    ],
-    "shipped": "Built a TypeScript media studio that combines Azure OpenAI image workflows, vision analysis, and Sora creation in one app.",
-    "learned": "Once a product spans several media models, the real work is unifying request shapes and workflow state rather than adding yet another generation button."
-  },
-  "my-mcp-github": {
-    "displayName": "MCP Azure AI Search",
-    "role": "Systems",
-    "whyItMatters": "Demonstrates a practical MCP bridge from Azure AI Search into agent tooling, with multiple transports and runtime discovery instead of one custom connector.",
-    "problem": [
-      "Agents needed a standard way to discover and invoke Azure AI Search capabilities without a bespoke integration per client.",
-      "Different clients wanted different transports: edge HTTP and SSE for remote use and stdio for local tooling.",
-      "The server also needed operational features like request correlation, logging, and Cloudflare runtime support."
-    ],
-    "approach": [
-      "Built dynamic MCP tool families for indexes, documents, data sources, indexers, skillsets, services, and knowledge agents.",
-      "Implemented both Cloudflare Worker and Node stdio entrypoints so the same system can serve remote and local clients.",
-      "Configured Cloudflare runtime features such as Durable Objects, observability, tail consumers, and request IDs for debugging."
-    ],
-    "result": [
-      "Clients can discover and invoke Azure AI Search operations through a single MCP surface.",
-      "HTTP, SSE, and stdio transports make the server usable across browser-like and local agent environments.",
-      "Operational visibility is stronger than a toy MCP demo because the runtime adds correlation IDs and Cloudflare observability support."
-    ],
-    "highlights": [
-      "Dynamic MCP tool families",
-      "HTTP, SSE, and stdio transports",
-      "Cloudflare Workers with observability"
-    ],
-    "signals": [
-      "tested",
-      "typed",
-      "ci",
-      "docs",
-      "observability"
-    ],
-    "receipts": [
-      {
-        "label": "Transport coverage",
-        "value": "The project ships a dynamic Cloudflare entrypoint and a separate Node stdio server for local MCP clients."
-      },
-      {
-        "label": "Edge ops support",
-        "value": "The Worker runtime adds request IDs, SSE-safe headers, Durable Objects, and Cloudflare observability configuration."
-      }
-    ],
-    "architecture": {
-      "summary": "Azure AI Search MCP server with dynamic tool registration across Cloudflare edge and Node stdio runtimes.",
-      "bullets": [
-        "Dynamic tool modules register search, document, datasource, indexer, skillset, and knowledge operations into the MCP surface.",
-        "Cloudflare entrypoints handle HTTP and SSE traffic, CORS, request correlation, and Worker runtime behavior.",
-        "Node stdio entrypoints support local MCP clients while sharing the same Azure Search tool context."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "src/index-dynamic.ts",
-        "note": "Cloudflare Worker entrypoint for dynamic MCP tools over HTTP and SSE."
-      },
-      {
-        "path": "src/index-stdio.ts",
-        "note": "Node stdio server entrypoint for local MCP client usage."
-      },
-      {
-        "path": "wrangler.jsonc",
-        "note": "Cloudflare runtime configuration for Durable Objects, observability, and deployment behavior."
-      },
-      {
-        "path": ".github/workflows/sync-to-azure-blob.yml",
-        "note": "Automation path for syncing project assets into Azure-backed infrastructure."
-      }
-    ],
-    "shipped": "Built an Azure AI Search MCP server with dynamic tools and both edge and stdio runtimes.",
-    "learned": "MCP becomes much more useful once discovery, transport, and operations are treated as part of the product instead of as afterthoughts."
-  },
-  "bookmark-extension": {
-    "displayName": "Bookmark Cleanup Extension",
-    "role": "Product",
-    "whyItMatters": "Shows a pragmatic browser-extension approach to knowledge cleanup: scan, flag likely duplicates, and keep a human review step.",
-    "problem": [
-      "Large bookmark libraries accumulate duplicates and inconsistent foldering faster than the native manager can handle.",
-      "Background scanning and cleanup jobs have to work within extension APIs and browser storage limits.",
-      "The review UI still needs to feel deliberate and accessible, not like a dump of raw similarity scores."
-    ],
-    "approach": [
-      "Built a service-worker orchestration layer for scans, duplicate checks, imports, enrichment, and folder suggestions.",
-      "Implemented duplicate detection utilities and job-state persistence around the bookmark graph.",
-      "Added a typed React popup dashboard for review queues, job progress, metrics, and accessibility helpers."
-    ],
-    "result": [
-      "Users get a review-driven cleanup flow instead of trying to manually diff huge bookmark trees.",
-      "Background jobs and stored queues make long-running cleanup work survive popup closures.",
-      "The product stays grounded in extension constraints by keeping the AI step as a signal inside a review workflow, not an automatic destructive action."
-    ],
-    "highlights": [
-      "Background bookmark job system",
-      "Duplicate detection plus folder suggestions",
-      "Typed React review dashboard"
-    ],
-    "signals": [
-      "tested",
-      "typed",
-      "docs"
-    ],
-    "receipts": [
-      {
-        "label": "Job orchestration",
-        "value": "The service worker wires scanning, dedupe, enrichment, import, and folder-suggestion jobs through browser storage and alarms."
-      },
-      {
-        "label": "Tooling baseline",
-        "value": "The repo includes Node tests plus ESLint coverage across JavaScript and TypeScript popup code."
-      }
-    ],
-    "architecture": {
-      "summary": "Edge extension with a background job system and a typed popup UI for review-driven bookmark cleanup.",
-      "bullets": [
-        "Service-worker code handles bookmark traversal, dedupe checks, queues, storage, notifications, and scheduled cleanup work.",
-        "Utility modules score likely duplicates and propose folder organization without collapsing the human review step.",
-        "Popup React components surface pending jobs, review queues, metrics, and accessibility-friendly controls."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "manifest.json",
-        "note": "Extension manifest defining permissions, runtime pieces, and popup wiring."
-      },
-      {
-        "path": "serviceWorker.js",
-        "note": "Background orchestration for bookmark scans, dedupe jobs, imports, and review queues."
-      },
-      {
-        "path": "utils/duplicateDetector.js",
-        "note": "Similarity-based duplicate detection utility used by the cleanup flow."
-      },
-      {
-        "path": "popup/src/App.tsx",
-        "note": "Typed React popup dashboard for job progress, review queues, and accessibility-aware controls."
-      }
-    ],
-    "shipped": "Built an Edge bookmark-cleanup extension with background job orchestration and a typed review dashboard.",
-    "learned": "For browser cleanup tools, the important product decision is not just detection quality; it is how much review friction you remove without taking unsafe actions."
-  },
-  "rememberliterally": {
-    "displayName": "Remember Literally",
-    "role": "Product",
-    "whyItMatters": "Useful as an example of a chat app that keeps working across several storage and model configurations, even though the repo metadata drifted badly.",
-    "problem": [
-      "Needed a lightweight web chat surface with optional user persistence rather than a fully managed auth platform.",
-      "The app had to support image uploads and model-selection controls from the same browser UI.",
-      "The backend needed to degrade gracefully when the database was unavailable."
-    ],
-    "approach": [
-      "Built a Flask app with login and user registration flows and chat endpoints around shared OpenAI helper utilities.",
-      "Added optional SQLAlchemy persistence, but kept an in-memory fallback path when database setup fails.",
-      "Implemented a browser UI that stores username, theme, conversation state, selected model, and advanced options locally."
-    ],
-    "result": [
-      "The app can still run as a demo even when database configuration is missing.",
-      "Users get model-selection and image-upload controls from the same simple chat surface.",
-      "The repo is clearly rough: the README and Bun scaffold describe a different project, so the case study has to follow the actual Flask implementation instead of the repository packaging."
-    ],
-    "highlights": [
-      "Flask chat with optional persistence",
-      "Image-upload and model-selection controls",
-      "Graceful fallback when DB setup fails"
-    ],
-    "signals": [],
-    "receipts": [
-      {
-        "label": "Fallback behavior",
-        "value": "The Flask app marks the database unavailable and drops to in-memory storage instead of failing hard at startup."
-      },
-      {
-        "label": "Browser state handling",
-        "value": "The client script stores conversation state, theme, selected model, and advanced options in localStorage while loading available deployments from the API."
-      }
-    ],
-    "architecture": {
-      "summary": "Flask chat application with optional database persistence, OpenAI helper utilities, and a stateful browser UI.",
-      "bullets": [
-        "App routes handle user registration, chat requests, streaming placeholders, and model discovery.",
-        "SQLAlchemy-backed storage is optional, with fallback utilities used when the database path is unavailable.",
-        "Frontend scripts manage username, local conversation state, image uploads, model choice, and theme preferences."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "app.py",
-        "note": "Main Flask application for chat routes, persistence setup, and startup fallback behavior."
-      },
-      {
-        "path": "utils/openai_helper.py",
-        "note": "Helper module for AI response generation and related model integration."
-      },
-      {
-        "path": "templates/index.html",
-        "note": "HTML shell for the browser chat experience."
-      },
-      {
-        "path": "static/js/chat.js",
-        "note": "Client-side state management for theme, conversation history, uploads, and model selection."
-      }
-    ],
-    "shipped": "Built a Flask chat prototype with optional persistence, image upload, and configurable model controls.",
-    "learned": "This audit was a good reminder that repo names, READMEs, and scaffolds can drift far away from the code that actually runs."
-  },
-  "simple": {
-    "displayName": "Simple Doc Generator",
-    "role": "Craft",
-    "whyItMatters": "Shows a more operational version of AI-assisted documentation generation, where extraction, orchestration, and monitoring are part of the same tool.",
-    "problem": [
-      "Generating useful docs from Python code requires more than dumping source into a prompt.",
-      "The tool needed visibility into system behavior and metrics while processing large repositories.",
-      "The extraction layer had to preserve structural details like classes, functions, variables, and dependencies."
-    ],
-    "approach": [
-      "Built a Python documentation generator around AST parsing, module extraction, and orchestrated doc generation.",
-      "Added dependency injection, monitoring, and metrics collection so long-running jobs can be inspected while they run.",
-      "Used typed models and exception flows throughout the core modules to keep the pipeline composable."
-    ],
-    "result": [
-      "The repo can extract structured code data and hand it to a documentation orchestration pipeline with monitoring around the run.",
-      "Operational helpers make it easier to debug and observe the generator than a single-script proof of concept.",
-      "The manual smoke script and rough edges mean it still reads as internal tooling, but the implementation is clearly not a text-extraction utility."
-    ],
-    "highlights": [
-      "AST-based code extraction",
-      "Monitoring and metrics pipeline",
-      "Dependency-injected doc orchestration"
-    ],
-    "signals": [
-      "typed",
-      "observability"
-    ],
-    "receipts": [
-      {
-        "label": "Operational layer",
-        "value": "The generator wires a system monitor and metrics collector into the documentation workflow instead of hiding runtime behavior."
-      },
-      {
-        "label": "Extraction depth",
-        "value": "The code extractor parses modules into classes, functions, variables, constants, dependencies, and metrics."
-      }
-    ],
-    "architecture": {
-      "summary": "Python documentation pipeline that combines AST extraction, orchestration, and runtime monitoring.",
-      "bullets": [
-        "Entry points configure dependencies, environment, and run-level monitoring before processing files.",
-        "Extraction modules parse Python source into structured elements and dependency information.",
-        "Documentation orchestrators consume that structured output while metrics and monitoring record the run."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "main.py",
-        "note": "CLI entrypoint that boots dependencies, monitoring, and the documentation run."
-      },
-      {
-        "path": "core/config.py",
-        "note": "Configuration model for the documentation generator and its runtime behavior."
-      },
-      {
-        "path": "core/monitoring.py",
-        "note": "Monitoring and metrics support for long-running documentation jobs."
-      },
-      {
-        "path": "core/extraction/code_extractor.py",
-        "note": "AST-based extraction layer that turns Python source into structured documentation inputs."
-      }
-    ],
-    "shipped": "Built an internal documentation generator with AST extraction and runtime monitoring around the workflow.",
-    "learned": "Instrumentation was as valuable as the generation logic itself because it exposed where the pipeline was actually spending time and failing."
-  },
-  "wp-hperkins-com": {
-    "displayName": "WordPress Portfolio",
-    "role": "Craft",
-    "whyItMatters": "Shows the portfolio translated into a WordPress block theme without giving up structured data contracts, dynamic routes, or operational checks.",
-    "problem": [
-      "The site needed a WordPress-native editing experience without collapsing the portfolio into generic templates.",
-      "Dynamic work and blog detail routes had to behave like the React source site while still living in WordPress.",
-      "A public theme repository needed fast smoke coverage because the site doubles as a live consulting surface."
-    ],
-    "approach": [
-      "Built the henrys-digital-canvas block theme as a child of twentytwentyfive inside a broader WordPress repository.",
-      "Mapped the React source pages to 13 custom blocks, structured JSON data, and theme REST endpoints under /wp-json/henrys-digital-canvas/v1/.",
-      "Added rewrite handling for /work/{repo} and /blog/{slug}, plus Turnstile-backed contact submission and smoke automation."
-    ],
-    "result": [
-      "The WordPress build preserves bespoke portfolio and blog flows while keeping editing inside Gutenberg.",
-      "Structured data contracts keep work, blog, resume, and contact blocks aligned across the theme.",
-      "Route, API, and browser smoke checks make live-site changes safer to ship."
-    ],
-    "highlights": [
-      "Custom block theme for portfolio parity",
-      "Dynamic work and blog detail routes",
-      "Structured data + REST contracts",
-      "Turnstile-backed contact route",
-      "Live smoke automation"
-    ],
-    "signals": [
-      "tested",
-      "ci",
-      "docs"
-    ],
-    "receipts": [
-      {
-        "label": "Theme runtime",
-        "value": "Theme bootstrap loads shared assets, block registration, and dynamic route handling for the portfolio theme.",
-        "url": "https://github.com/henryperkins/wp-hperkins-com/blob/main/wp-content/themes/henrys-digital-canvas/functions.php"
-      },
-      {
-        "label": "Data contract layer",
-        "value": "Theme REST routes expose structured content and Turnstile-verified contact handling under the henrys-digital-canvas namespace.",
-        "url": "https://github.com/henryperkins/wp-hperkins-com/blob/main/wp-content/themes/henrys-digital-canvas/inc/rest-api.php"
-      },
-      {
-        "label": "Deployment confidence",
-        "value": "The smoke-check workflow runs route, API, and browser smoke suites against the live theme on push and on a daily schedule.",
-        "url": "https://github.com/henryperkins/wp-hperkins-com/blob/main/wp-content/themes/henrys-digital-canvas/.github/workflows/smoke-check.yml"
-      }
-    ],
-    "architecture": {
-      "summary": "Custom WordPress child theme and REST layer that mirror the React portfolio's content model inside Gutenberg.",
-      "bullets": [
-        "The block theme and custom blocks recreate page-specific portfolio surfaces inside the WordPress editor instead of leaning on generic templates.",
-        "Rewrite and template logic support dynamic work and blog detail routes that match the React source site's URL model.",
-        "Server-rendered blocks like work-showcase combine local JSON contracts with GitHub proxy data, while the theme REST layer handles structured content and contact security."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "wp-content/themes/henrys-digital-canvas/functions.php",
-        "note": "Theme bootstrap for assets, block registration, and dynamic route setup inside the custom child theme."
-      },
-      {
-        "path": "wp-content/themes/henrys-digital-canvas/inc/data-contracts.php",
-        "note": "Structured theme data contracts used to keep block inputs and front-end rendering predictable."
-      },
-      {
-        "path": "wp-content/themes/henrys-digital-canvas/inc/rest-api.php",
-        "note": "Theme REST layer for structured data delivery, contact handling, and Turnstile-backed verification."
-      },
-      {
-        "path": "wp-content/themes/henrys-digital-canvas/blocks/work-showcase/render.php",
-        "note": "Server-rendered work block that wires GitHub proxy endpoints to structured local case-study data."
-      },
-      {
-        "path": "wp-content/themes/henrys-digital-canvas/.github/workflows/smoke-check.yml",
-        "note": "Live-site smoke workflow covering route, API, and browser checks for the theme."
-      }
-    ],
-    "shipped": "Shipped a public WordPress repository for the portfolio theme with custom blocks, dynamic routes, and live smoke automation.",
-    "learned": "Replatforming into WordPress only worked when the block theme, structured contracts, and regression checks were treated as one system."
-  },
-  "video_processing_toolkit": {
-    "displayName": "Video Processing Toolkit",
-    "role": "Systems",
-    "whyItMatters": "Shows a practical multimodal CLI pipeline for turning raw video into tags and structured metadata.",
-    "problem": [
-      "Manual review does not scale when you need descriptions, tags, and search-ready metadata across many videos.",
-      "A useful tool needed scene detection and model analysis, not just ffmpeg wrappers.",
-      "Results had to land in a structured format that downstream systems can ingest."
-    ],
-    "approach": [
-      "Built a workflow script that downloads or loads video assets, extracts metadata, and runs scene detection.",
-      "Called Qwen2-VL for scene-level descriptions and paired that with tagging and classification utilities.",
-      "Exported the combined output as JSON so the toolkit can feed cataloging or retrieval systems."
-    ],
-    "result": [
-      "Video processing becomes a repeatable CLI workflow instead of a manual inspection task.",
-      "Scene descriptions and tags make the output more useful for search and indexing than raw timestamps alone.",
-      "The repo is best described as a toolkit rather than a polished platform service."
-    ],
-    "highlights": [
-      "Scene detection pipeline",
-      "Qwen2-VL description pass",
-      "JSON export for downstream indexing"
-    ],
-    "signals": [
-      "docs"
-    ],
-    "receipts": [
-      {
-        "label": "Workflow orchestration",
-        "value": "The main workflow coordinates ingest, metadata extraction, scene analysis, and export from one CLI path."
-      },
-      {
-        "label": "Model-backed tagging",
-        "value": "Analysis and tagging modules turn scene outputs into descriptions, labels, and structured JSON records."
-      }
-    ],
-    "architecture": {
-      "summary": "CLI-first video analysis pipeline that chains scene detection, Qwen2-VL inference, tagging, and JSON export.",
-      "bullets": [
-        "Workflow modules coordinate input handling, metadata extraction, and scene segmentation.",
-        "Model wrappers generate scene descriptions that feed tagging and classification utilities.",
-        "Export steps serialize the resulting metadata into JSON for downstream search or catalog flows."
-      ]
-    },
-    "keyFiles": [
-      {
-        "path": "workflow.py",
-        "note": "Main CLI workflow that coordinates ingest, analysis, and export steps."
-      },
-      {
-        "path": "analysis.py",
-        "note": "Analysis layer for scene processing and metadata derivation."
-      },
-      {
-        "path": "qwen_model.py",
-        "note": "Qwen2-VL model wrapper used for multimodal scene understanding."
-      },
-      {
-        "path": "tagging.py",
-        "note": "Tagging and classification utilities that shape the final output records."
-      }
-    ],
-    "shipped": "Built a CLI toolkit for scene detection, Qwen2-VL analysis, tagging, and JSON export.",
-    "learned": "For multimodal tooling, the downstream data contract matters as much as the model call because that is what makes the output reusable."
-  }
+	"henry-s-digital-canvas": {
+		"displayName": "HPerkins.com",
+		"role": "Craft",
+		"whyItMatters": "This portfolio is the public proof surface for the consulting work itself, so the presentation layer, runtime evidence, and editorial workflow all have to stay aligned.",
+		"problem": [
+			"The site needed to present consulting work as evidence-backed case studies instead of a flat gallery of repository links.",
+			"Proof points had to stay easy to refresh as repository metadata, WordPress content, and project narratives changed over time.",
+			"A public marketing surface still needed real runtime and release discipline behind the presentation layer."
+		],
+		"approach": [
+			"Built the front end as a React 19 + Vite 7 SPA driven by structured repository, page, and resume data.",
+			"Added page-law manifests, route-specific laws, and a repository check script so page changes keep the intended structure and evidence model intact.",
+			"Used a Cloudflare Worker layer to proxy GitHub proof endpoints, front WordPress and contact routes, and keep operational logic outside the browser.",
+			"Expanded the Work and Work Detail flows around curated case-study data, code-tour quick look, and contrast-gated presentation checks."
+		],
+		"result": [
+			"Work pages now read like maintained case studies with receipts, architecture notes, and code tours instead of a raw repository dump.",
+			"Page-level changes stay safer because the repo enforces page-law and contrast checks alongside lint, tests, and build validation.",
+			"The live portfolio has a dedicated runtime layer for GitHub proofs, WordPress content, and Turnstile-backed form handling."
+		],
+		"highlights": [
+			"Page-law-governed editorial system",
+			"Cloudflare Worker proof and contact runtime",
+			"Work detail code-tour quick look",
+			"Contrast and deployment guardrails"
+		],
+		"signals": [
+			"tested",
+			"typed",
+			"ci",
+			"docs",
+			"observability"
+		],
+		"receipts": [
+			{
+				"label": "Runtime layer",
+				"value": "The Worker fronts health, contact, WordPress, and GitHub proof routes behind the portfolio UI."
+			},
+			{
+				"label": "Editorial guardrails",
+				"value": "Page-law resolution and the route check script keep page-specific structure and source files in sync."
+			},
+			{
+				"label": "Visual QA",
+				"value": "A dedicated contrast workflow checks page probes so presentation drift is caught before the site ships."
+			}
+		],
+		"architecture": {
+			"summary": "React 19 + Vite 7 portfolio SPA backed by a Cloudflare Worker and page-law guardrails.",
+			"bullets": [
+				"Structured repository and content data power the home, work, detail, resume, and blog surfaces instead of hard-coded page fragments.",
+				"Page laws define route-specific constraints and are enforced by repository scripts so layout changes do not silently drift from intent.",
+				"The Cloudflare Worker handles GitHub proofs, WordPress and blog endpoints, contact submission, and health checks behind the public SPA."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "src/pages/Work.tsx",
+				"note": "Work showcase page that turns curated metadata into browseable case-study surfaces."
+			},
+			{
+				"path": "src/pages/WorkDetail.tsx",
+				"note": "Repository detail page that turns project data into narrative sections, receipts, and code-tour surfaces."
+			},
+			{
+				"path": "worker/index.ts",
+				"note": "Worker entry point for health, contact, WordPress, blog, and GitHub proof routes."
+			},
+			{
+				"path": "worker/routes/github.ts",
+				"note": "GitHub proof routes that feed releases, language, contributor, and file-preview evidence into the work surfaces."
+			},
+			{
+				"path": "scripts/check-page-laws.mjs",
+				"note": "Route-law verification script that keeps page-source changes aligned with the editorial ruleset."
+			}
+		],
+		"shipped": "Added design-system guardrails with automated contrast auditing, token-drift detection, and page-law enforcement across all portfolio routes.",
+		"learned": "Treating a portfolio like a product surface made the docs, data model, runtime endpoints, and presentation rules reinforce each other instead of drift apart.",
+		"accessNote": "Source is private. Available for walkthrough on request.",
+		"relatedPosts": [
+			"design-systems-that-actually-work"
+		]
+	},
+	"azure_chatapp": {
+		"displayName": "Azure Chat App",
+		"role": "Product",
+		"whyItMatters": "Shows a fuller Azure OpenAI app shape than a single chat form by combining auth, project scoping, knowledge routes, and telemetry wiring in one repo.",
+		"problem": [
+			"Needed a way to tie conversations and knowledge actions to individual users instead of anonymous prompts.",
+			"The app had to support project-scoped chat flows and related knowledge utilities from the same backend.",
+			"The repo also needed a consistent bootstrap story for structured logging and Sentry-style telemetry."
+		],
+		"approach": [
+			"Implemented JWT auth and user session plumbing around the main chat experience.",
+			"Built backend routes for unified conversations and related project knowledge actions instead of a single completion endpoint.",
+			"Centralized structured logging and Sentry initialization in a shared bootstrap module."
+		],
+		"result": [
+			"Users can sign in and work inside scoped chat and knowledge flows rather than an anonymous demo.",
+			"The codebase has clearer operational setup because telemetry bootstraps in one place.",
+			"The repository still reads as a development-oriented baseline, with explicit warnings about insecure or debug posture in parts of the stack."
+		],
+		"highlights": [
+			"JWT auth around Azure OpenAI routes",
+			"Project-scoped conversation and knowledge flows",
+			"Centralized telemetry bootstrap"
+		],
+		"signals": [
+			"tested",
+			"ci",
+			"docs",
+			"observability"
+		],
+		"receipts": [
+			{
+				"label": "Telemetry bootstrap",
+				"value": "One bootstrap module initializes structured logging first and then configures Sentry with environment-aware sampling."
+			},
+			{
+				"label": "Auth and conversation wiring",
+				"value": "The app entrypoint and conversation routes tie JWT auth to persisted, project-scoped chat flows."
+			}
+		],
+		"architecture": {
+			"summary": "Python web app that wraps Azure OpenAI chat behind JWT auth, scoped routes, and shared telemetry initialization.",
+			"bullets": [
+				"Auth middleware and session plumbing gate access to chat and knowledge endpoints.",
+				"Conversation routes handle project-scoped chat flows and persistence concerns on the backend.",
+				"Bootstrap utilities initialize structured logging and Sentry before the rest of the app starts."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "main.py",
+				"note": "Application entrypoint that wires middleware, routes, and runtime safeguards together."
+			},
+			{
+				"path": "auth.py",
+				"note": "Auth layer for JWT handling and user access control around the chat experience."
+			},
+			{
+				"path": "routes/unified_conversations.py",
+				"note": "Conversation route module for scoped chat and related project interactions."
+			},
+			{
+				"path": "utils/bootstrap.py",
+				"note": "Single bootstrap path for structured logging and Sentry configuration."
+			}
+		],
+		"shipped": "Built a JWT-authenticated Azure OpenAI chat baseline with scoped conversation routes and telemetry wiring.",
+		"learned": "The repo reinforced that auth, route design, and observability have to be treated as first-class parts of an AI app, even when the product surface is still rough."
+	},
+	"chatter": {
+		"displayName": "Chatter",
+		"role": "Product",
+		"whyItMatters": "Shows how model-specific behavior changes the chat UX: reasoning models, streaming-capable models, and search helpers do not all behave the same way.",
+		"problem": [
+			"Needed a Flask chat surface that could work across several Azure OpenAI model types without pretending they shared the same capabilities.",
+			"Users still needed saved sessions, utility helpers like weather and search, and a readable web UI.",
+			"Operational logging mattered because the app coordinates chat, uploads, scraping, and model config."
+		],
+		"approach": [
+			"Added a model configuration matrix that records per-model limits and whether streaming is supported.",
+			"Built Flask chat and session flows with multi-session history, utility routes, and Azure OpenAI integration.",
+			"Layered structured logging and client-event logging across the app to debug model and chat behavior."
+		],
+		"result": [
+			"The app can change delivery behavior by model instead of claiming one-size-fits-all streaming.",
+			"o1-preview is handled as a non-streaming reasoning model, while supported models such as o3-mini can stream.",
+			"Users still get a multi-session chat experience with utility integrations and persisted state."
+		],
+		"highlights": [
+			"Model-aware streaming rules",
+			"Multi-session Flask chat UI",
+			"Search and weather helper integrations"
+		],
+		"signals": [
+			"tested",
+			"ci",
+			"docs",
+			"observability"
+		],
+		"receipts": [
+			{
+				"label": "Capability guardrails",
+				"value": "The model config explicitly marks o1-preview and o1-mini as non-streaming while enabling streaming for supported models like o3-mini."
+			},
+			{
+				"label": "Operational visibility",
+				"value": "Structured logging and client-side event logging are wired through the chat stack for debugging and monitoring."
+			}
+		],
+		"architecture": {
+			"summary": "Flask chat application with model-specific capability rules, persisted sessions, and utility integrations.",
+			"bullets": [
+				"Model configuration defines required params, token limits, and streaming support per deployment type.",
+				"Chat routes and messaging helpers manage session history, prompt delivery, and streamed or non-streamed response handling.",
+				"Logging modules capture backend and client events so behavior differences between models are easier to trace."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "config.py",
+				"note": "Model capability matrix and configuration rules that drive chat behavior by deployment type."
+			},
+			{
+				"path": "chat/chat_messaging.py",
+				"note": "Messaging logic for chat delivery, streaming behavior, and session flow control."
+			},
+			{
+				"path": "chat_api.py",
+				"note": "API surface that exposes the chat functionality and related helper integrations."
+			},
+			{
+				"path": "models/chat.py",
+				"note": "Data model for persisted chat state and conversation records."
+			}
+		],
+		"shipped": "Built a model-aware Flask chat app with session history, utility helpers, and Azure OpenAI integration.",
+		"learned": "This repo made the integration constraint obvious: the UX has to match the real model contract, not the marketing shorthand."
+	},
+	"real_time_chat_app": {
+		"displayName": "Real-Time Chat App",
+		"role": "Product",
+		"whyItMatters": "Captures the architecture of an early real-time AI chat experiment, where room messaging and AI replies share the same Socket.IO flow.",
+		"problem": [
+			"Needed chat messages to move instantly between participants instead of relying on repeated page refreshes.",
+			"AI replies had to plug into the same room model and persistence layer as human messages.",
+			"The server still needed uploads, logging, and database wiring around the realtime core."
+		],
+		"approach": [
+			"Built Flask-SocketIO room messaging around conversations, participants, and stored messages.",
+			"Integrated Azure OpenAI response generation inside the async send-message handler.",
+			"Added file logging, CORS and session configuration, and SQLAlchemy models to support a fuller app shell."
+		],
+		"result": [
+			"The repo demonstrates the core room-join, message-persist, and AI-reply loop for a realtime chat app.",
+			"Conversation threads are stored instead of living only in browser memory.",
+			"The codebase is clearly unfinished: multiple files still contain merge markers, so it reads as a rough prototype rather than a finished shipped system."
+		],
+		"highlights": [
+			"Flask-SocketIO room messaging",
+			"Persisted user and AI messages",
+			"Azure OpenAI reply loop inside chat flow"
+		],
+		"signals": [
+			"ci",
+			"observability"
+		],
+		"receipts": [
+			{
+				"label": "Message loop",
+				"value": "The socket handler checks room membership, stores the user message, requests an AI reply, stores it, and emits both sides of the conversation."
+			},
+			{
+				"label": "Ops scaffolding",
+				"value": "The app entrypoint configures file logging, uploads, CORS, and Socket.IO startup around the chat server."
+			}
+		],
+		"architecture": {
+			"summary": "Prototype Flask-SocketIO chat stack with persisted conversations and Azure OpenAI reply generation.",
+			"bullets": [
+				"HTTP and Socket.IO layers share the same Flask app and SQLAlchemy-backed data model.",
+				"Socket handlers manage room membership, persistence, typing state, and AI reply emission.",
+				"Application startup wires logging, uploads, CORS, and config loading around the realtime layer."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "backend/app.py",
+				"note": "Main Flask application setup for logging, uploads, database init, and Socket.IO wiring."
+			},
+			{
+				"path": "backend/sockets/handlers.py",
+				"note": "Realtime message loop that validates participants, stores messages, and emits AI replies."
+			},
+			{
+				"path": "backend/routes/conversations.py",
+				"note": "Conversation route layer that complements the socket-based chat flow."
+			},
+			{
+				"path": "backend/azure_openai_config.py",
+				"note": "Azure OpenAI configuration layer used by the realtime assistant flow."
+			}
+		],
+		"shipped": "Built a room-based Socket.IO chat prototype with Azure OpenAI responses and persisted threads.",
+		"learned": "The repo is a useful reminder that realtime architecture can be sound even when the surrounding product still needs cleanup and merge resolution."
+	},
+	"agentic-rag": {
+		"displayName": "Agentic RAG",
+		"role": "Systems",
+		"whyItMatters": "Shows the orchestration pieces that make RAG more than a single retrieve-and-answer call: query rewriting, routing, verification, and observability.",
+		"problem": [
+			"Single-pass retrieval struggles on ambiguous or multi-hop questions.",
+			"A useful prototype needed to stream agent progress and citations instead of only a final answer.",
+			"The stack needed hooks for evaluation and tracing without pretending every future layer was already production-ready."
+		],
+		"approach": [
+			"Built a TypeScript coordinator that classifies queries, optionally rewrites them, retrieves evidence, and loops through verification before final output.",
+			"Combined hybrid retrieval, reranking, semantic caching, and server-sent event streams in the backend chat route.",
+			"Added OpenTelemetry bootstrap code and instrumentation helpers so the system can emit spans and events as it grows."
+		],
+		"result": [
+			"The prototype can stream tokens, citations, rewrite events, and verification status from the same chat flow.",
+			"Local retrieval can be augmented with hybrid search and optional web search when the query calls for it.",
+			"The repo documents a large architecture, but the implementation is best read as a serious prototype with extension hooks rather than a finished enterprise platform."
+		],
+		"highlights": [
+			"Query rewrite and routing coordinator",
+			"Hybrid retrieval plus reranking",
+			"Verification loops with SSE and OTEL hooks"
+		],
+		"signals": [
+			"tested",
+			"typed",
+			"docs",
+			"observability"
+		],
+		"receipts": [
+			{
+				"label": "Coordinator loop",
+				"value": "The orchestration coordinator handles caching, query rewriting, retrieval, generation, and bounded verification retries in one flow."
+			},
+			{
+				"label": "Tracing hook",
+				"value": "The OpenTelemetry config boots a Node SDK and exposes span helpers for retrieval and orchestration work."
+			}
+		],
+		"architecture": {
+			"summary": "TypeScript RAG prototype that layers coordination, retrieval, verification, streaming, and tracing into the chat path.",
+			"bullets": [
+				"Chat routes emit server-sent events for planner logs, tokens, citations, and final answer state.",
+				"Coordinator services classify queries, manage rewrite and retrieval decisions, and run bounded verification loops.",
+				"Retrieval and observability modules provide hybrid search, reranking, caches, and OpenTelemetry helpers."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "backend/src/routes/chat.ts",
+				"note": "Chat route that streams orchestration events, tokens, citations, and final responses."
+			},
+			{
+				"path": "backend/src/services/orchestration/coordinator.ts",
+				"note": "Coordinator logic for query routing, rewrite handling, retrieval decisions, and verification loops."
+			},
+			{
+				"path": "backend/src/services/retrieval.ts",
+				"note": "Retrieval layer for hybrid search and evidence collection."
+			},
+			{
+				"path": "backend/src/config/otel.ts",
+				"note": "OpenTelemetry bootstrap and span helpers for runtime tracing."
+			}
+		],
+		"shipped": "Built a TypeScript RAG prototype with rewrite, retrieval, reranking, verification, and streaming feedback.",
+		"learned": "The highest-leverage RAG improvements came from explicit coordination and verification, not from adding more architectural labels."
+	},
+	"mobile-rag-app": {
+		"displayName": "Mobile RAG App",
+		"role": "Systems",
+		"whyItMatters": "Shows what a mobile document assistant can realistically do on-device versus what still depends on remote model calls.",
+		"problem": [
+			"Users needed a phone-friendly way to ingest PDFs, text files, and images into a personal knowledge base.",
+			"Mobile storage and retrieval had to stay local and responsive instead of round-tripping every query through a server.",
+			"The app still needed OCR, embeddings, chat, and error reporting around model-backed features."
+		],
+		"approach": [
+			"Built an Expo and React Native app that stores documents, chunks, and document centroids in local SQLite tables.",
+			"Added local parsing for text and PDFs, plus image OCR and embeddings via remote OpenAI calls.",
+			"Wrapped model-dependent code with pacing, retries, and Sentry instrumentation to make mobile failures easier to inspect."
+		],
+		"result": [
+			"Documents and retrieval state live on-device, so the library remains browsable and searchable locally.",
+			"PDF, text, and image inputs all feed the same local chunk store and ranking flow.",
+			"The product is not fully offline: embeddings, OCR, and chat still rely on network calls to OpenAI services."
+		],
+		"highlights": [
+			"Local SQLite document and chunk store",
+			"PDF, text, and image ingestion",
+			"OpenAI-backed embeddings with Sentry monitoring"
+		],
+		"signals": [
+			"tested",
+			"typed",
+			"docs",
+			"observability"
+		],
+		"receipts": [
+			{
+				"label": "Local retrieval path",
+				"value": "The vector database module stores documents, chunks, and per-document centroids in Expo SQLite for ranked local lookup."
+			},
+			{
+				"label": "Operational guardrails",
+				"value": "Sentry initialization and embedding backoff logic handle mobile model failures more explicitly than a demo-only app."
+			}
+		],
+		"architecture": {
+			"summary": "React Native document assistant with local SQLite retrieval and remote model calls for embeddings, OCR, and chat.",
+			"bullets": [
+				"Document-processing utilities normalize text, PDF, and image inputs into chunked local records.",
+				"SQLite tables store documents, chunks, and centroid indexes used by the ranking path.",
+				"API helpers call OpenAI services for embeddings and OCR while Sentry captures runtime failures."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "App.tsx",
+				"note": "Top-level mobile app shell for the document assistant experience."
+			},
+			{
+				"path": "src/utils/vectorDb.ts",
+				"note": "Local SQLite storage and ranking logic for documents, chunks, and centroids."
+			},
+			{
+				"path": "src/utils/documentProcessing.ts",
+				"note": "Ingestion pipeline for text, PDF, and image assets before they enter local retrieval."
+			},
+			{
+				"path": "src/api/embeddings.ts",
+				"note": "Remote embedding client that powers the local ranking pipeline."
+			},
+			{
+				"path": "src/utils/sentry.ts",
+				"note": "Sentry bootstrap and error-reporting helpers for mobile runtime issues."
+			}
+		],
+		"shipped": "Built a mobile document assistant with local retrieval, multi-format ingestion, and OpenAI-backed AI features.",
+		"learned": "The biggest design constraint on mobile was being explicit about which capabilities are truly local and which still need networked model calls."
+	},
+	"document-qa": {
+		"displayName": "Document QA",
+		"role": "Product",
+		"whyItMatters": "A useful reminder that some AI demos are intentionally tiny: this repo is a minimal upload-and-ask example, not a retrieval system.",
+		"problem": [
+			"Needed the smallest possible interface for asking questions about a local text document.",
+			"Non-technical users benefit from a no-install UI more than from a full search stack.",
+			"The example had to stay short enough to understand in one file."
+		],
+		"approach": [
+			"Built a single-file Streamlit app that accepts a user API key, uploads a txt or md file, and asks a question.",
+			"Injected the full document text directly into a gpt-3.5-turbo chat completion request.",
+			"Streamed the model response back through Streamlit for immediate feedback."
+		],
+		"result": [
+			"Small text documents can be queried through a very low-friction UI.",
+			"The implementation is easy to read and adapt because the whole flow lives in one file.",
+			"It does not do retrieval, citation grounding, or PDF support, so the case study stays intentionally modest."
+		],
+		"highlights": [
+			"Single-file Streamlit app",
+			"Streamed GPT-3.5 response",
+			"Plain-text document upload flow"
+		],
+		"signals": [
+			"docs"
+		],
+		"receipts": [
+			{
+				"label": "Supported inputs",
+				"value": "The uploader only accepts txt and md files, keeping the example narrow and understandable."
+			},
+			{
+				"label": "Response path",
+				"value": "The app streams a gpt-3.5-turbo completion built from the full uploaded document text and the user's question."
+			}
+		],
+		"architecture": {
+			"summary": "One-file Streamlit example that uploads a text document and streams a chat completion from its contents.",
+			"bullets": [
+				"Streamlit handles API-key input, file upload, and question entry in a single page.",
+				"The app reads the uploaded file directly into memory and appends the user's question.",
+				"OpenAI chat completions stream the answer back to the page without a retrieval layer."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "streamlit_app.py",
+				"note": "Single-file implementation of the upload, prompt assembly, and streamed response flow."
+			}
+		],
+		"shipped": "Built a minimal Streamlit document-QA starter for small text files.",
+		"learned": "Not every repo should be narrated like a platform; sometimes the right description is simply small, readable starter."
+	},
+	"docs": {
+		"displayName": "Docs",
+		"role": "Craft",
+		"whyItMatters": "Useful as an internal tooling experiment: it explores how provider selection, chunking, and templates can automate repetitive documentation work.",
+		"problem": [
+			"Code docs were inconsistent and easy to postpone across Python repositories.",
+			"A single model provider was too limiting for experimentation and cost tradeoffs.",
+			"The output needed templates and process management, not just a one-off prompt."
+		],
+		"approach": [
+			"Built a Python CLI that loads provider configs and can target Azure, Gemini, or OpenAI backends.",
+			"Added a documentation process manager to walk files, chunk source, call the chosen provider, and collect results.",
+			"Used a template manager to render Markdown outputs into consistent shapes."
+		],
+		"result": [
+			"The repo produces a runnable experimentation surface for AI-assisted documentation generation.",
+			"Provider configuration, process management, and templating are separated clearly enough to iterate on them independently.",
+			"It is still rough: even the README metadata is placeholder-heavy, so this should be presented as experimental tooling rather than a mature product."
+		],
+		"highlights": [
+			"Multi-provider model selection",
+			"Async documentation process manager",
+			"Template-based Markdown rendering"
+		],
+		"signals": [
+			"docs",
+			"ci"
+		],
+		"receipts": [
+			{
+				"label": "Provider routing",
+				"value": "The CLI can initialize Azure, Gemini, or OpenAI clients from the same configuration path."
+			},
+			{
+				"label": "Template layer",
+				"value": "The template manager caches Jinja templates for main, function, class, metric, and summary outputs."
+			}
+		],
+		"architecture": {
+			"summary": "Experimental Python doc-generation pipeline built from provider selection, process management, and Jinja-based templates.",
+			"bullets": [
+				"CLI arguments control repository scope, provider choice, schema, concurrency, and output location.",
+				"Process managers walk files, prepare chunks, and coordinate model calls and metrics.",
+				"Template rendering assembles generated content into repeatable Markdown structures."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "main.py",
+				"note": "CLI entrypoint that selects providers, config, and repository scope for a documentation run."
+			},
+			{
+				"path": "language_functions/python_handler.py",
+				"note": "Language-specific handling for Python source during documentation generation."
+			},
+			{
+				"path": "process_manager.py",
+				"note": "Process manager for file traversal, chunking, and provider-call orchestration."
+			},
+			{
+				"path": "template_manager.py",
+				"note": "Template cache and renderer for Markdown documentation output."
+			}
+		],
+		"shipped": "Built an experimental AI documentation generator with provider selection and template-driven output.",
+		"learned": "What mattered most here was decomposition: once provider choice, process management, and templating were separated, the rest of the experimentation became much cheaper."
+	},
+	"ai-prompt-pro": {
+		"displayName": "Prompt Forge",
+		"role": "Product",
+		"whyItMatters": "Shows prompt authoring as a real product surface: builder, persistence, community, and agent-backed enhancement all share one system instead of living in separate demos.",
+		"problem": [
+			"Prompt drafting, enhancement, and reuse were scattered across chat sessions, notes, and one-off demos with no durable product surface.",
+			"Users needed help turning rough ideas into structured builder fields without losing control of the final prompt.",
+			"The app needed a secure path for model-backed enhancement, saved prompts, community sharing, and optional repository context."
+		],
+		"approach": [
+			"Built a React + TypeScript application with dedicated routes for builder, library, history, presets, community feed, user profiles, and support.",
+			"Added heuristic inference for role, tone, length, format, and constraints, plus quality scoring before any enhancement call runs.",
+			"Backed signed-in state with Neon Postgres via the Neon Data API and Neon Auth, while keeping local persistence for signed-out sessions.",
+			"Split the enhancement backend into focused modules for SSE prompt refinement, URL extraction, builder-field inference, and GitHub App-backed repository context."
+		],
+		"result": [
+			"Prompt Forge runs as a production prompt workspace and community feed at prompt.lakefrontdigital.io.",
+			"The builder can score, infer, save, remix, and share prompts instead of acting like a one-shot demo.",
+			"The enhancement service handles authenticated streaming refinement plus repository-aware context collection for signed-in users.",
+			"Release gates now include docs freshness, typed front-end tests, and split frontend-service deployment workflows."
+		],
+		"highlights": [
+			"Structured prompt builder with quality scoring",
+			"Heuristic prompt inference",
+			"GitHub App repository context",
+			"Neon-backed persistence with signed-out fallback",
+			"Streaming enhancement service",
+			"Community feed, profiles, and remix attribution"
+		],
+		"signals": [
+			"typed",
+			"tested",
+			"ci",
+			"docs"
+		],
+		"receipts": [
+			{
+				"label": "Builder state",
+				"value": "The main builder hook manages scoring, inferred fields, draft persistence, auth-aware saves, and remix context from one state path.",
+				"url": "https://github.com/henryperkins/ai-prompt-pro/blob/main/src/hooks/usePromptBuilder.ts"
+			},
+			{
+				"label": "Repository context",
+				"value": "The service exposes GitHub App install, callback, connection, file preview, and context-source routes for signed-in builders.",
+				"url": "https://github.com/henryperkins/ai-prompt-pro/blob/main/agent_service/github-routes.mjs"
+			},
+			{
+				"label": "Release hygiene",
+				"value": "The repo includes docs freshness checks and production verification scripts alongside the application build and test commands.",
+				"url": "https://github.com/henryperkins/ai-prompt-pro/blob/main/package.json"
+			}
+		],
+		"architecture": {
+			"summary": "Route-based prompt workspace and community platform, backed by Neon Postgres and a multi-module enhancement service deployed separately from the frontend.",
+			"bullets": [
+				"Browser routes separate builder, library, community feed, user profiles, history, presets, and support flows with route-specific loading states.",
+				"Shared heuristics infer role, tone, length, format, and constraints from raw prompt text, while scoring logic grades drafts before enhancement.",
+				"The service handles provider resolution, bearer-session validation, rate limiting, URL extraction, repository context, and SSE enhancement orchestration.",
+				"Neon Postgres via the Neon Data API provides authenticated persistence, while localStorage remains available for signed-out use."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "src/App.tsx",
+				"note": "Lazy-loaded route shell for builder, library, community, profiles, history, presets, and support."
+			},
+			{
+				"path": "src/hooks/usePromptBuilder.ts",
+				"note": "Core prompt builder state management hook driving the builder workspace."
+			},
+			{
+				"path": "shared/builder-inference-heuristics.ts",
+				"note": "Shared heuristics that infer role, tone, format, and constraints from a draft prompt."
+			},
+			{
+				"path": "agent_service/codex_service.mjs",
+				"note": "Main Codex agent service entry point with auth, rate limiting, and SSE streaming."
+			},
+			{
+				"path": "agent_service/github-routes.mjs",
+				"note": "GitHub App context routes for installation, connection, file preview, and repository-backed builder context."
+			},
+			{
+				"path": "scripts/check-docs-freshness.mjs",
+				"note": "Freshness check that keeps documentation and linked references aligned with the shipped product surface."
+			}
+		],
+		"shipped": "Shipped Prompt Forge as a production prompt builder and community platform with an Azure-hosted enhancement service and Neon-backed persistence.",
+		"learned": "The useful abstraction was not just prompt text; it was a durable prompt workspace with inference, persistence, community, and guarded enhancement boundaries.",
+		"relatedPosts": [
+			"building-ai-powered-content-pipeline"
+		]
+	},
+	"flavor-agent": {
+		"displayName": "Flavor Agent",
+		"role": "Product",
+		"whyItMatters": "Brings AI recommendations into Gutenberg so editors can stay in the flow instead of jumping to a separate tool.",
+		"problem": [
+			"Editors needed block, pattern, template, template-part, and navigation help without leaving Gutenberg.",
+			"Recommendations needed retrieval and grounding instead of stuffing full pattern catalogs into one prompt.",
+			"Because the plugin touches editor UX and provider settings, validation and repeatable tests had to be built in."
+		],
+		"approach": [
+			"Mounted recommendation flows into five Gutenberg surfaces instead of sending users to a sidecar tool.",
+			"Shared the runtime through REST routes and 11 WordPress Abilities API capabilities.",
+			"Used Qdrant retrieval and Cloudflare AI Search grounding to keep recommendations scoped.",
+			"Added Docker, Playwright, PHPUnit, and Jest workflows around settings and editor flows."
+		],
+		"result": [
+			"The plugin ships five editor-facing recommendation surfaces with activity history and inline undo.",
+			"Pattern and template suggestions stay grounded before the model ranks or returns results.",
+			"Settings, recommendation paths, and editor flows ship with repeatable validation and test coverage."
+		],
+		"highlights": [
+			"Five Gutenberg recommendation surfaces",
+			"Qdrant and AI Search grounding",
+			"11 Abilities API capabilities",
+			"Undoable activity history",
+			"Docker, Playwright, and PHPUnit workflow"
+		],
+		"signals": [
+			"tested",
+			"docs"
+		],
+		"receipts": [
+			{
+				"label": "Recommendation surfaces",
+				"value": "Bootstrap wires the inspector, pattern, template, template-part, and navigation recommenders.",
+				"url": "https://github.com/henryperkins/flavor-agent/blob/master/flavor-agent.php"
+			},
+			{
+				"label": "Grounded ranking",
+				"value": "Pattern recommendations combine Qdrant retrieval, provider reranking, and Cloudflare AI Search grounding.",
+				"url": "https://github.com/henryperkins/flavor-agent/blob/master/docs/SOURCE_OF_TRUTH.md"
+			},
+			{
+				"label": "Verification loop",
+				"value": "PHPUnit, Jest, and Playwright cover settings, REST paths, provider validation, and core editor flows.",
+				"url": "https://github.com/henryperkins/flavor-agent/blob/master/tests/e2e/flavor-agent.smoke.spec.js"
+			}
+		],
+		"architecture": {
+			"summary": "WordPress plugin with PHP settings and REST layers, JavaScript Gutenberg injections, and retrieval-backed AI services.",
+			"bullets": [
+				"PHP bootstrap registers lifecycle hooks, settings, REST controllers, abilities, and warming jobs.",
+				"Editor-side JavaScript injects recommenders into Gutenberg surfaces instead of routing users to a separate app.",
+				"Qdrant retrieval and Cloudflare AI Search grounding shape suggestions before they reach the editor."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "flavor-agent.php",
+				"note": "Plugin bootstrap for lifecycle hooks, settings, REST routes, abilities, and warming."
+			},
+			{
+				"path": "inc/REST/Agent_Controller.php",
+				"note": "REST controller for block, pattern, template, template-part, and navigation recommendations."
+			},
+			{
+				"path": "inc/Abilities/Registration.php",
+				"note": "Registers 11 Abilities API capabilities across editor and infrastructure features."
+			},
+			{
+				"path": "inc/Cloudflare/AISearchClient.php",
+				"note": "Cloudflare AI Search client for docs grounding, caching, and prewarm jobs."
+			},
+			{
+				"path": "src/store/index.js",
+				"note": "Central data store for recommendation state, apply and undo, and activity history."
+			},
+			{
+				"path": "tests/e2e/flavor-agent.smoke.spec.js",
+				"note": "Playwright smoke coverage for apply and undo, pattern badges, and Site Editor template flows."
+			}
+		],
+		"shipped": "Shipped a Gutenberg-native recommendation plugin with five editor surfaces, shared runtime capabilities, and inline undo history.",
+		"learned": "The hard part was making AI feel native to Gutenberg, with clear affordances, safe settings, and repeatable tests."
+	},
+	"codex": {
+		"displayName": "Codex Fork",
+		"role": "Systems",
+		"whyItMatters": "Useful as a fork-based systems case study: the authored work is narrow, but it sits inside a large Rust agent runtime where small state regressions are easy to miss.",
+		"problem": [
+			"Rollout replay could overwrite a deliberately polluted thread memory mode with enabled state.",
+			"That downgrade risk lived inside low-level runtime metadata handling rather than a visible CLI surface.",
+			"Any fix needed to stay small, explicit, and regression-tested inside the fork without pretending authorship of the entire upstream product."
+		],
+		"approach": [
+			"Forked the open-source Codex repository and traced the issue to the Rust state runtime that persists thread metadata.",
+			"Added a guard in set_thread_memory_mode so rollout replay does not downgrade polluted memory mode back to enabled.",
+			"Locked the behavior with a focused async test around apply_rollout_items replay."
+		],
+		"result": [
+			"The fork now preserves polluted memory mode during rollout replay instead of silently downgrading thread state.",
+			"The change stays localized to the runtime state layer, which keeps the fix reviewable inside a much larger codebase.",
+			"The repository remains clearly an upstream fork; the value here is the targeted systems patch and regression coverage, not authorship of Codex as a whole."
+		],
+		"highlights": [
+			"Rust runtime-state patch",
+			"Replay invariant around thread memory mode",
+			"Focused regression test in a large upstream fork"
+		],
+		"signals": [
+			"tested",
+			"typed",
+			"ci",
+			"docs"
+		],
+		"receipts": [
+			{
+				"label": "Runtime guard",
+				"value": "threads.rs now short-circuits attempts to replace polluted memory mode with enabled during thread updates.",
+				"url": "https://github.com/henryperkins/codex/blob/main/codex-rs/state/src/runtime/threads.rs"
+			},
+			{
+				"label": "Regression coverage",
+				"value": "A new async test asserts apply_rollout_items does not downgrade polluted memory mode to enabled during replay.",
+				"url": "https://github.com/henryperkins/codex/blob/main/codex-rs/state/src/runtime/threads.rs"
+			},
+			{
+				"label": "Upstream context",
+				"value": "The wider repository still spans the Codex CLI, Rust runtime crates, npm wrapper, and CI workflows that this forked patch sits inside.",
+				"url": "https://github.com/henryperkins/codex/blob/main/README.md"
+			}
+		],
+		"architecture": {
+			"summary": "Public fork of the Codex CLI and Rust runtime; this case study focuses on a targeted patch in codex-rs/state rather than the entire upstream system.",
+			"bullets": [
+				"The upstream repository spans CLI tooling, Rust runtime crates, SDKs, package wrappers, and CI workflows.",
+				"The authored change lives in codex-rs/state runtime metadata handling for threads and rollout replay.",
+				"Keeping the patch narrow made it easier to reason about invariants inside a large agent codebase without forking the product direction itself."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "codex-rs/state/src/runtime/threads.rs",
+				"note": "Rust runtime file containing the memory-mode guard and the replay regression test."
+			},
+			{
+				"path": "README.md",
+				"note": "Repository overview showing the broader CLI and runtime surface that the forked patch lives inside."
+			},
+			{
+				"path": ".github/workflows/rust-ci.yml",
+				"note": "Rust CI workflow that frames the verification environment around the runtime crates."
+			}
+		],
+		"shipped": "Patched my Codex fork so rollout replay preserves polluted memory mode and locked the behavior with a focused regression test.",
+		"learned": "In stateful agent runtimes, memory-mode transitions need explicit invariants; otherwise replay paths can silently erase intent.",
+		"accessNote": "This is a public fork of openai/codex. The case study covers the runtime-state work in my fork, not authorship of the upstream product."
+	},
+	"ai-cli-web-funnel": {
+		"displayName": "Forge",
+		"role": "Systems",
+		"whyItMatters": "Replaces fragmented copy-paste CLI addon installation with a governed product flow spanning catalog discovery, dependency-aware install planning, runtime verification, security governance, profile bundles, and a user-facing CLI — modeled after CurseForge for CLI ecosystems.",
+		"problem": [
+			"CLI addons (MCP servers, skills, plugins) were distributed through scattered docs with manual copy-paste installation and no central discovery.",
+			"There was no way to plan, verify, or roll back installs — teams had no visibility into what actually reached runtime.",
+			"Security and governance were afterthoughts: no trust gates, no audit trails, and no SLO measurement across the install funnel."
+		],
+		"approach": [
+			"Built a TypeScript monorepo (four apps, five packages) with a control-plane HTTP server, standalone runtime daemon, VS Code Copilot adapter, and a user-facing forge CLI.",
+			"Implemented a four-stage deterministic funnel — discover, plan, apply, verify — with update, remove, and rollback, idempotent replay, conflict detection, and append-only audit trails across 17 Postgres migrations.",
+			"Added hybrid retrieval (Postgres BM25 + Qdrant semantic search), outbox-driven event dispatch with dead-letter replay, security trust gates, SLO rollups, and profile bundle orchestration.",
+			"Made the runtime daemon a standalone process with its own HTTP API, process registry, stdio launcher, HTTP probe client (SSE + Streamable HTTP), Dockerfile, and docker-compose service.",
+			"Layered comprehensive testing: unit, integration, integration-db (Docker-provisioned Postgres), e2e, and contract tests, with CI covering typecheck, tests, governance drift, and migration verification."
+		],
+		"result": [
+			"Full install lifecycle shipped: discover → plan → apply → verify, plus update, remove, and rollback with idempotent replay semantics.",
+			"Security governance enforces trust gates, reporter scoring, and appeal workflows with deterministic SLO measurement across 10 metric families.",
+			"Profile bundles let users export, import, and batch-install curated addon sets with aggregate status tracking.",
+			"Standalone runtime daemon runs as its own process with HTTP API, process registry, health probes, and Docker support.",
+			"User-facing forge CLI wraps the control-plane API for search, plan, install, verify, update, remove, rollback, and profile operations.",
+			"Release candidate v0.2.0-rc.1 reached with fail-closed GA readiness gate, pilot-to-GA runbook, and gap assessment completed."
+		],
+		"highlights": [
+			"Four-stage install funnel (discover → plan → apply → verify)",
+			"Hybrid BM25 + semantic retrieval with graceful fallback",
+			"Outbox-driven event dispatch with dead-letter replay",
+			"Security trust gates and SLO rollups",
+			"Profile bundle orchestration",
+			"Standalone runtime daemon with HTTP API and Docker support",
+			"User-facing forge CLI",
+			"Fail-closed GA readiness gate and pilot-to-GA runbook"
+		],
+		"signals": [
+			"typed",
+			"tested",
+			"ci",
+			"docs"
+		],
+		"receipts": [
+			{
+				"label": "CI baseline",
+				"value": "Forge CI runs typecheck, unit/integration/contract tests, governance drift checks, and migration verification across the monorepo.",
+				"url": "https://github.com/henryperkins/ai-cli-web-funnel/blob/main/.github/workflows/forge-ci.yml"
+			},
+			{
+				"label": "Retrieval stack",
+				"value": "The control plane bootstraps BM25, Qdrant semantic search, and embedding-backed retrieval from a single bootstrap path.",
+				"url": "https://github.com/henryperkins/ai-cli-web-funnel/blob/main/apps/control-plane/src/retrieval-bootstrap.ts"
+			},
+			{
+				"label": "GA readiness gate",
+				"value": "Fail-closed GA readiness gate validates lifecycle, security, and operational criteria with a pilot-to-GA runbook and gap assessment.",
+				"url": "https://github.com/henryperkins/ai-cli-web-funnel/blob/main/scripts/validate-ga-readiness.mjs"
+			}
+		],
+		"architecture": {
+			"summary": "TypeScript monorepo with four apps (control plane, runtime daemon, forge CLI, VS Code adapter) and five packages backed by Postgres and Qdrant.",
+			"bullets": [
+				"The control plane exposes v1 HTTP APIs for catalog search, install lifecycle (plan/apply/verify/update/remove/rollback), profiles, and security governance.",
+				"The standalone runtime daemon runs as its own process with an HTTP API (/v1/runtime/start, /verify, /stop, /status, /health), process registry, stdio launcher, and HTTP probe client.",
+				"The forge CLI wraps the control-plane API for end-user addon management (search, plan, install, verify, update, remove, rollback, profiles).",
+				"Five shared packages provide catalog connectors (GitHub, npm, PyPI, docs), hybrid retrieval ranking, security governance (trust gates, SLO rollups, outbox dispatch), policy engine, and typed contracts.",
+				"17 forward-only Postgres migrations enforce deterministic ordering, idempotent replay, and append-only audit across all lifecycle stages."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "apps/control-plane/src/server.ts",
+				"note": "Control-plane entry point: HTTP APIs, startup validation, readiness checks, and install lifecycle orchestration."
+			},
+			{
+				"path": "apps/runtime-daemon/src/daemon-main.ts",
+				"note": "Standalone runtime daemon entry point with HTTP server, process registry, and graceful shutdown."
+			},
+			{
+				"path": "apps/runtime-daemon/src/daemon-http-app.ts",
+				"note": "Runtime daemon HTTP API for start, verify, stop, status, and health endpoints."
+			},
+			{
+				"path": "apps/control-plane/src/install-lifecycle.ts",
+				"note": "Core install lifecycle engine: plan, apply, verify, update, remove, and rollback with idempotent replay."
+			},
+			{
+				"path": "packages/security-governance/src/slo-rollup.ts",
+				"note": "Deterministic SLO metric computation across 10 families including funnel KPIs and cold-start success rates."
+			},
+			{
+				"path": "apps/control-plane/src/profile-routes.ts",
+				"note": "Profile bundle API: create, export, import, and batch-install curated addon sets."
+			}
+		],
+		"shipped": "Reached release candidate v0.2.0-rc.1 with full install lifecycle, security governance, profile bundles, standalone runtime daemon, forge CLI, and fail-closed GA readiness gate.",
+		"learned": "A strict four-stage funnel (discover → plan → apply → verify) with idempotent replay at every boundary kept the system predictable even as it grew to span four apps, five packages, security governance, profile orchestration, and outbox-driven event dispatch."
+	},
+	"web-fetch": {
+		"displayName": "Web Fetch MCP",
+		"role": "Systems",
+		"whyItMatters": "LLM agents need safe, structured web content, and the hard part is normalizing real pages, enforcing security boundaries, and building a scoped knowledge base — not issuing HTTP requests.",
+		"problem": [
+			"LLM agents fetching web content faced SSRF risks, prompt injection, and inconsistent formats that polluted context windows.",
+			"One-off fetch scripts could not be reused across agent runtimes or exposed as standardized tool surfaces.",
+			"Agents needed more than raw extraction: semantic chunking, intelligent compaction, and a conversation-scoped knowledge base for follow-up queries."
+		],
+		"approach": [
+			"Built an MCP server exposing five tools over stdio: fetch, extract, chunk, compact, and AI search query.",
+			"Added an SSRF guard that blocks private IPs and validates DNS, a prompt injection detector, a content sanitizer, and per-host rate limiting.",
+			"Separated HTTP fetching from six format-specific extractors (HTML, Markdown, PDF, JSON, XML, plain text) with optional Playwright rendering for SPAs.",
+			"Integrated Cloudflare AI Search for a conversation-scoped knowledge base that indexes fetched content and supports semantic follow-up queries.",
+			"Added intelligent compaction modes (structural, salience, map-reduce, question-focused) backed by Cloudflare AI Gateway."
+		],
+		"result": [
+			"Agents get safe, normalized web content from a standards-compliant MCP server instead of ad hoc scripts.",
+			"The security layer (SSRF guard, injection detection, rate limiting) makes the server suitable for use with untrusted URLs.",
+			"Fetched content automatically populates a scoped knowledge base that agents can query across turns without re-fetching.",
+			"The processing pipeline — extract, chunk, compact — lets agents control context size and relevance instead of dumping raw HTML into prompts."
+		],
+		"highlights": [
+			"Five MCP tools: fetch, extract, chunk, compact, AI search",
+			"SSRF guard with DNS rebinding prevention",
+			"Six format-specific extractors plus Playwright SPA rendering",
+			"Conversation-scoped Cloudflare AI Search knowledge base",
+			"Intelligent compaction via AI Gateway"
+		],
+		"signals": [
+			"tested",
+			"typed",
+			"docs"
+		],
+		"receipts": [
+			{
+				"label": "MCP tool surface",
+				"value": "The server registers five tools, six prompts, and a resource store with TTL caching over the MCP stdio transport.",
+				"url": "https://github.com/henryperkins/web-fetch/blob/master/src/index.ts"
+			},
+			{
+				"label": "Security boundary",
+				"value": "The SSRF guard blocks private IPs, loopback, and link-local addresses, and validates DNS resolution before any fetch executes.",
+				"url": "https://github.com/henryperkins/web-fetch/blob/master/src/security/ssrf-guard.ts"
+			},
+			{
+				"label": "Test coverage",
+				"value": "Twenty-three test files cover the full pipeline from fetch through extraction, chunking, compaction, and AI search integration."
+			}
+		],
+		"architecture": {
+			"summary": "TypeScript MCP server with five tools, a security layer, six format extractors, semantic processing, and Cloudflare AI Search integration.",
+			"bullets": [
+				"The MCP entrypoint registers fetch, extract, chunk, compact, and AI search query tools plus prompts, resource handlers, and completions.",
+				"A security layer enforces SSRF protection, prompt injection detection, content sanitization, and per-host rate limits before any content reaches the agent.",
+				"Six extractors normalize HTML, Markdown, PDF, JSON, XML, and plain text into a common LLMPacket format, with optional Playwright rendering for SPAs.",
+				"Cloudflare AI Search integration uploads fetched content to R2 and indexes it into a conversation-scoped knowledge base for semantic follow-up queries."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "src/index.ts",
+				"note": "MCP server entrypoint registering all five tools, six prompts, resource handlers, and completions."
+			},
+			{
+				"path": "src/tools/fetch.ts",
+				"note": "Core fetch tool: SSRF check, robots.txt, HTTP or Playwright fetch, extract, normalize, and AI Search ingest."
+			},
+			{
+				"path": "src/security/ssrf-guard.ts",
+				"note": "SSRF protection blocking private IPs and preventing DNS rebinding before any request executes."
+			},
+			{
+				"path": "src/ai-search/index.ts",
+				"note": "Cloudflare R2 upload and AI Search query integration for the conversation-scoped knowledge base."
+			},
+			{
+				"path": "src/processing/chunker.ts",
+				"note": "Semantic content chunking that respects heading and code block boundaries."
+			}
+		],
+		"shipped": "Shipped an MCP server for safe, structured web browsing with five tools, SSRF protection, and a conversation-scoped AI Search knowledge base.",
+		"learned": "The hard part of web fetching for agents is not the HTTP request; it is the security boundary, format normalization, and the ability to build a scoped knowledge base that survives across turns."
+	},
+	"tarot": {
+		"displayName": "Tableu",
+		"role": "Product",
+		"whyItMatters": "Demonstrates practical integration of AI interpretation into a consumer-facing interactive experience with clear UX affordances.",
+		"problem": [
+			"Existing tarot apps offered static card lookups with no personalized context.",
+			"Users had no way to ask follow-up questions about their readings.",
+			"Card spread logic and AI interpretation were tightly coupled, making iteration slow."
+		],
+		"approach": [
+			"Built a JavaScript front end with modular spread layouts and card selection flows.",
+			"Integrated AI-powered interpretation that considers card position, orientation, and spread context.",
+			"Separated card data, spread logic, and interpretation prompts to allow independent iteration."
+		],
+		"result": [
+			"Readings feel personalized and contextual rather than generic card-definition lookups.",
+			"New spread types can be added without touching interpretation logic.",
+			"User engagement improved with interactive card selection and position-aware AI responses."
+		],
+		"highlights": [
+			"Position-aware AI interpretations",
+			"Modular spread layout system",
+			"Context-rich reading prompts"
+		],
+		"signals": [
+			"tested",
+			"ci",
+			"docs"
+		],
+		"receipts": [
+			{
+				"label": "Reading flow coverage",
+				"value": "Playwright covers the core journey from spread selection to reveal, narrative delivery, and save behavior.",
+				"url": "https://github.com/henryperkins/tarot/blob/master/e2e/tarot-reading.spec.js"
+			},
+			{
+				"label": "Narrative backend",
+				"value": "The reading function layers context inference, safety checks, entitlements, evaluation gates, and Azure Responses streaming into a single endpoint.",
+				"url": "https://github.com/henryperkins/tarot/blob/master/functions/api/tarot-reading.js"
+			}
+		],
+		"architecture": {
+			"summary": "Hybrid web/native tarot platform backed by Cloudflare functions and Azure OpenAI narrative services.",
+			"bullets": [
+				"An Expo WebView shell reuses the deployed web experience for native mobile distribution.",
+				"Cloudflare function handlers assemble reading context, safety checks, entitlements, and streaming AI narration.",
+				"Node and Playwright suites protect the core reading, accessibility, and evaluation gates."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "App.tsx",
+				"note": "Expo shell that wraps the deployed web experience for native mobile delivery."
+			},
+			{
+				"path": "functions/api/tarot-reading.js",
+				"note": "Primary reading endpoint that assembles context, safety, evaluation, and streaming response behavior."
+			},
+			{
+				"path": "functions/lib/azureResponses.js",
+				"note": "Azure Responses configuration and request-normalization layer for the narrative backend."
+			},
+			{
+				"path": "e2e/tarot-reading.spec.js",
+				"note": "High-value end-to-end coverage for the core reading journey and streamed narrative behavior."
+			}
+		],
+		"shipped": "Shipped a streaming tarot reading pipeline with Azure OpenAI narration, ritual UX, and end-to-end reading tests.",
+		"learned": "Balancing ritual UX with explicit evaluation and safety gates made the app feel mystical without treating production quality as optional."
+	},
+	"mystic-tarot": {
+		"displayName": "Mystic Tarot",
+		"role": "Product",
+		"whyItMatters": "Shows how much of a creative product comes from presentation, pacing, and persistence around the AI call, not just the generated text.",
+		"problem": [
+			"A tarot app needs ceremony and visual identity, not just card lookup results.",
+			"Users needed a way to revisit readings instead of treating them as disposable outputs.",
+			"The reading backend had to support both AI-backed and local narrative paths."
+		],
+		"approach": [
+			"Built animated spread and reveal flows with celestial styling throughout the interface.",
+			"Implemented a reading endpoint that returns the narrative, provider used, and spread analysis metadata.",
+			"Added journal persistence through auth-backed API calls with a localStorage fallback when users are not signed in."
+		],
+		"result": [
+			"Readings feel more like a ritualized product experience than a form submission.",
+			"Saved entries and local fallbacks make the journal usable even when auth or API paths are limited.",
+			"The AI narration is request and response based rather than streamed, so the product story stays grounded in the actual implementation."
+		],
+		"highlights": [
+			"Animated spread and reveal choreography",
+			"Azure or local reading provider path",
+			"Journal persistence with local fallback"
+		],
+		"signals": [
+			"tested",
+			"docs"
+		],
+		"receipts": [
+			{
+				"label": "Journal resilience",
+				"value": "The journal hook saves through the API when authenticated and falls back to localStorage when it is not."
+			},
+			{
+				"label": "Reading payload",
+				"value": "The reading endpoint returns the narrative, provider, themes, context, and spread-analysis metadata from one response."
+			}
+		],
+		"architecture": {
+			"summary": "Front-end tarot experience backed by a reading endpoint and journal system with auth and local fallbacks.",
+			"bullets": [
+				"React views handle spread selection, ritual states, card reveals, and formatted reading display.",
+				"API handlers assemble the reading response and report which provider path was used.",
+				"Journal utilities persist entries through authenticated routes or browser storage depending on session state."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "src/TarotReading.jsx",
+				"note": "Main reading experience with ritual state, reveal pacing, and reading presentation."
+			},
+			{
+				"path": "src/components/Card.jsx",
+				"note": "Card component used inside the animated spread and reveal flow."
+			},
+			{
+				"path": "functions/api/tarot-reading.js",
+				"note": "Reading endpoint that returns the narrative, provider, and spread-analysis payload."
+			},
+			{
+				"path": "src/hooks/useJournal.js",
+				"note": "Journal persistence layer with authenticated and localStorage-backed paths."
+			}
+		],
+		"shipped": "Built an animated tarot reading experience with API-backed narratives and journal persistence.",
+		"learned": "The memorable part of a creative AI app is often the pacing around the response, not the raw model call."
+	},
+	"dj-judas": {
+		"displayName": "The Voices of Judah",
+		"role": "Product",
+		"whyItMatters": "Shows how a performer brand can be translated into a production web experience that combines storytelling, booking, and commerce rather than a static promo site.",
+		"problem": [
+			"A performer site needed to do more than present bio copy; it had to support discovery, bookings, catalog browsing, and platform follow-through.",
+			"Mobile visitors needed a fast path from landing content to booking and streaming destinations.",
+			"Commerce and operational flows needed a backend that could grow beyond a brochure site."
+		],
+		"approach": [
+			"Built a React + TypeScript front end on Cloudflare Workers with SPA navigation, social integrations, and section-based landing experiences.",
+			"Implemented a mobile-friendly booking flow with persisted form state, validation, and submission support.",
+			"Integrated a Medusa backend and end-to-end test coverage for storefront and checkout-adjacent behavior."
+		],
+		"result": [
+			"The site now supports artist storytelling, booking intent capture, and product discovery in one surface.",
+			"Booking UX became more reliable on mobile thanks to local persistence and explicit validation states.",
+			"Commerce and support flows can evolve independently through the Medusa backend and dedicated E2E checks."
+		],
+		"highlights": [
+			"Mobile-first booking workflow",
+			"Cloudflare-hosted React storefront",
+			"Medusa commerce integration"
+		],
+		"signals": [
+			"typed",
+			"tested",
+			"ci",
+			"docs"
+		],
+		"receipts": [
+			{
+				"label": "Booking flow",
+				"value": "The booking form persists draft input locally, validates required fields, and submits through a dedicated request flow.",
+				"url": "https://github.com/henryperkins/dj-judas/blob/main/src/react-app/components/BookingForm.tsx"
+			},
+			{
+				"label": "Release confidence",
+				"value": "Playwright coverage and the e2e-tests workflow exercise checkout, social sharing, and platform integrations.",
+				"url": "https://github.com/henryperkins/dj-judas/blob/main/.github/workflows/e2e-tests.yml"
+			}
+		],
+		"architecture": {
+			"summary": "React storefront on Cloudflare Workers with performer-focused landing sections, booking capture, and Medusa-backed commerce.",
+			"bullets": [
+				"The SPA shell handles navigation, error boundaries, theme state, and social-provider initialization.",
+				"Landing components split the performer experience into hero, media, events, services, and booking sections.",
+				"A Medusa backend supports catalog and commerce workflows while E2E tests protect critical flows."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "src/react-app/App.tsx",
+				"note": "Top-level SPA shell for navigation, error boundaries, theme state, and social-provider setup."
+			},
+			{
+				"path": "src/react-app/components/EnhancedLandingPageV2.tsx",
+				"note": "Main landing experience that orchestrates hero, media, events, services, and booking sections."
+			},
+			{
+				"path": "src/react-app/components/BookingForm.tsx",
+				"note": "Mobile-friendly inquiry form with validation, local persistence, and submission state handling."
+			},
+			{
+				"path": "e2e/checkout-flow.spec.ts",
+				"note": "Regression coverage for storefront checkout behavior alongside the rest of the performer experience."
+			}
+		],
+		"shipped": "Shipped a performer site with booking capture, social platform routing, and Medusa-backed commerce scaffolding.",
+		"learned": "Combining artist storytelling, inquiry capture, and storefront behavior in one product highlighted where content design and operational UX need to meet."
+	},
+	"image-studio": {
+		"displayName": "Image Studio",
+		"role": "Product",
+		"whyItMatters": "Shows how one product can wrap multiple modern media-model workflows, from image generation and edits to vision analysis and Sora prompt creation.",
+		"problem": [
+			"Image generation, editing, vision analysis, and video prompting were split across separate tools and inconsistent APIs.",
+			"Media workflows needed a reusable server boundary for Azure OpenAI and related model calls.",
+			"The UI needed to manage a growing local asset library while still showing progress and analytics around long-running tasks."
+		],
+		"approach": [
+			"Built a TypeScript server that wraps Azure OpenAI Responses API calls, image analysis schemas, and media-processing endpoints.",
+			"Added web components for generation, editing, image analysis, and Sora prompt and video flows on top of a shared API client.",
+			"Queued local analytics events and library actions so the browser app can track usage without blocking the core workflow."
+		],
+		"result": [
+			"Users can generate, edit, analyze, and remix media from one workspace instead of stitching together separate tools.",
+			"Vision analysis can feed directly into richer prompt-building for image or Sora flows.",
+			"The repo is strongest as a multi-workflow media studio; claims about generic chunked-upload infrastructure were overstated."
+		],
+		"highlights": [
+			"Azure OpenAI Responses and vision integrations",
+			"Sora prompt and video workflow",
+			"Local media library with queued analytics"
+		],
+		"signals": [
+			"typed",
+			"tested",
+			"docs",
+			"observability"
+		],
+		"receipts": [
+			{
+				"label": "Responses API wrapper",
+				"value": "The server has a dedicated Azure Responses client that normalizes GPT-5 text and image-style requests."
+			},
+			{
+				"label": "Client telemetry",
+				"value": "Analytics events are queued in localStorage and posted best-effort so UI tracking does not block the workflow."
+			}
+		],
+		"architecture": {
+			"summary": "TypeScript media studio with a server-side model wrapper layer and a browser workspace for generation, analysis, and Sora flows.",
+			"bullets": [
+				"Server libraries normalize Azure OpenAI Responses and vision requests behind shared configs and error handling.",
+				"Web components compose generation, editing, analysis, and Sora-specific experiences on top of the same API surface.",
+				"Client utilities manage local media state, analytics, and long-running progress feedback around model jobs."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "server/src/index.ts",
+				"note": "Server entrypoint that exposes the media workflow APIs."
+			},
+			{
+				"path": "server/src/lib/responses-api.ts",
+				"note": "Azure Responses API wrapper used for GPT-5-backed generation workflows."
+			},
+			{
+				"path": "server/src/lib/vision-api.ts",
+				"note": "Vision analysis layer with structured outputs for media understanding."
+			},
+			{
+				"path": "web/src/components/SoraCreator.tsx",
+				"note": "Sora-specific client flow for reference analysis, prompt creation, and video generation."
+			},
+			{
+				"path": "web/src/lib/analytics.ts",
+				"note": "Queued client analytics path that records media workflow events without blocking the UI."
+			}
+		],
+		"shipped": "Built a TypeScript media studio that combines Azure OpenAI image workflows, vision analysis, and Sora creation in one app.",
+		"learned": "Once a product spans several media models, the real work is unifying request shapes and workflow state rather than adding yet another generation button."
+	},
+	"my-mcp-github": {
+		"displayName": "MCP Azure AI Search",
+		"role": "Systems",
+		"whyItMatters": "Demonstrates a practical MCP bridge from Azure AI Search into agent tooling, with multiple transports and runtime discovery instead of one custom connector.",
+		"problem": [
+			"Agents needed a standard way to discover and invoke Azure AI Search capabilities without a bespoke integration per client.",
+			"Different clients wanted different transports: edge HTTP and SSE for remote use and stdio for local tooling.",
+			"The server also needed operational features like request correlation, logging, and Cloudflare runtime support."
+		],
+		"approach": [
+			"Built dynamic MCP tool families for indexes, documents, data sources, indexers, skillsets, services, and knowledge agents.",
+			"Implemented both Cloudflare Worker and Node stdio entrypoints so the same system can serve remote and local clients.",
+			"Configured Cloudflare runtime features such as Durable Objects, observability, tail consumers, and request IDs for debugging."
+		],
+		"result": [
+			"Clients can discover and invoke Azure AI Search operations through a single MCP surface.",
+			"HTTP, SSE, and stdio transports make the server usable across browser-like and local agent environments.",
+			"Operational visibility is stronger than a toy MCP demo because the runtime adds correlation IDs and Cloudflare observability support."
+		],
+		"highlights": [
+			"Dynamic MCP tool families",
+			"HTTP, SSE, and stdio transports",
+			"Cloudflare Workers with observability"
+		],
+		"signals": [
+			"tested",
+			"typed",
+			"ci",
+			"docs",
+			"observability"
+		],
+		"receipts": [
+			{
+				"label": "Transport coverage",
+				"value": "The project ships a dynamic Cloudflare entrypoint and a separate Node stdio server for local MCP clients."
+			},
+			{
+				"label": "Edge ops support",
+				"value": "The Worker runtime adds request IDs, SSE-safe headers, Durable Objects, and Cloudflare observability configuration."
+			}
+		],
+		"architecture": {
+			"summary": "Azure AI Search MCP server with dynamic tool registration across Cloudflare edge and Node stdio runtimes.",
+			"bullets": [
+				"Dynamic tool modules register search, document, datasource, indexer, skillset, and knowledge operations into the MCP surface.",
+				"Cloudflare entrypoints handle HTTP and SSE traffic, CORS, request correlation, and Worker runtime behavior.",
+				"Node stdio entrypoints support local MCP clients while sharing the same Azure Search tool context."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "src/index-dynamic.ts",
+				"note": "Cloudflare Worker entrypoint for dynamic MCP tools over HTTP and SSE."
+			},
+			{
+				"path": "src/index-stdio.ts",
+				"note": "Node stdio server entrypoint for local MCP client usage."
+			},
+			{
+				"path": "wrangler.jsonc",
+				"note": "Cloudflare runtime configuration for Durable Objects, observability, and deployment behavior."
+			},
+			{
+				"path": ".github/workflows/sync-to-azure-blob.yml",
+				"note": "Automation path for syncing project assets into Azure-backed infrastructure."
+			}
+		],
+		"shipped": "Built an Azure AI Search MCP server with dynamic tools and both edge and stdio runtimes.",
+		"learned": "MCP becomes much more useful once discovery, transport, and operations are treated as part of the product instead of as afterthoughts."
+	},
+	"bookmark-extension": {
+		"displayName": "Bookmark Cleanup Extension",
+		"role": "Product",
+		"whyItMatters": "Shows a pragmatic browser-extension approach to knowledge cleanup: scan, flag likely duplicates, and keep a human review step.",
+		"problem": [
+			"Large bookmark libraries accumulate duplicates and inconsistent foldering faster than the native manager can handle.",
+			"Background scanning and cleanup jobs have to work within extension APIs and browser storage limits.",
+			"The review UI still needs to feel deliberate and accessible, not like a dump of raw similarity scores."
+		],
+		"approach": [
+			"Built a service-worker orchestration layer for scans, duplicate checks, imports, enrichment, and folder suggestions.",
+			"Implemented duplicate detection utilities and job-state persistence around the bookmark graph.",
+			"Added a typed React popup dashboard for review queues, job progress, metrics, and accessibility helpers."
+		],
+		"result": [
+			"Users get a review-driven cleanup flow instead of trying to manually diff huge bookmark trees.",
+			"Background jobs and stored queues make long-running cleanup work survive popup closures.",
+			"The product stays grounded in extension constraints by keeping the AI step as a signal inside a review workflow, not an automatic destructive action."
+		],
+		"highlights": [
+			"Background bookmark job system",
+			"Duplicate detection plus folder suggestions",
+			"Typed React review dashboard"
+		],
+		"signals": [
+			"tested",
+			"typed",
+			"docs"
+		],
+		"receipts": [
+			{
+				"label": "Job orchestration",
+				"value": "The service worker wires scanning, dedupe, enrichment, import, and folder-suggestion jobs through browser storage and alarms."
+			},
+			{
+				"label": "Tooling baseline",
+				"value": "The repo includes Node tests plus ESLint coverage across JavaScript and TypeScript popup code."
+			}
+		],
+		"architecture": {
+			"summary": "Edge extension with a background job system and a typed popup UI for review-driven bookmark cleanup.",
+			"bullets": [
+				"Service-worker code handles bookmark traversal, dedupe checks, queues, storage, notifications, and scheduled cleanup work.",
+				"Utility modules score likely duplicates and propose folder organization without collapsing the human review step.",
+				"Popup React components surface pending jobs, review queues, metrics, and accessibility-friendly controls."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "manifest.json",
+				"note": "Extension manifest defining permissions, runtime pieces, and popup wiring."
+			},
+			{
+				"path": "serviceWorker.js",
+				"note": "Background orchestration for bookmark scans, dedupe jobs, imports, and review queues."
+			},
+			{
+				"path": "utils/duplicateDetector.js",
+				"note": "Similarity-based duplicate detection utility used by the cleanup flow."
+			},
+			{
+				"path": "popup/src/App.tsx",
+				"note": "Typed React popup dashboard for job progress, review queues, and accessibility-aware controls."
+			}
+		],
+		"shipped": "Built an Edge bookmark-cleanup extension with background job orchestration and a typed review dashboard.",
+		"learned": "For browser cleanup tools, the important product decision is not just detection quality; it is how much review friction you remove without taking unsafe actions."
+	},
+	"rememberliterally": {
+		"displayName": "Remember Literally",
+		"role": "Product",
+		"whyItMatters": "Useful as an example of a chat app that keeps working across several storage and model configurations, even though the repo metadata drifted badly.",
+		"problem": [
+			"Needed a lightweight web chat surface with optional user persistence rather than a fully managed auth platform.",
+			"The app had to support image uploads and model-selection controls from the same browser UI.",
+			"The backend needed to degrade gracefully when the database was unavailable."
+		],
+		"approach": [
+			"Built a Flask app with login and user registration flows and chat endpoints around shared OpenAI helper utilities.",
+			"Added optional SQLAlchemy persistence, but kept an in-memory fallback path when database setup fails.",
+			"Implemented a browser UI that stores username, theme, conversation state, selected model, and advanced options locally."
+		],
+		"result": [
+			"The app can still run as a demo even when database configuration is missing.",
+			"Users get model-selection and image-upload controls from the same simple chat surface.",
+			"The repo is clearly rough: the README and Bun scaffold describe a different project, so the case study has to follow the actual Flask implementation instead of the repository packaging."
+		],
+		"highlights": [
+			"Flask chat with optional persistence",
+			"Image-upload and model-selection controls",
+			"Graceful fallback when DB setup fails"
+		],
+		"signals": [],
+		"receipts": [
+			{
+				"label": "Fallback behavior",
+				"value": "The Flask app marks the database unavailable and drops to in-memory storage instead of failing hard at startup."
+			},
+			{
+				"label": "Browser state handling",
+				"value": "The client script stores conversation state, theme, selected model, and advanced options in localStorage while loading available deployments from the API."
+			}
+		],
+		"architecture": {
+			"summary": "Flask chat application with optional database persistence, OpenAI helper utilities, and a stateful browser UI.",
+			"bullets": [
+				"App routes handle user registration, chat requests, streaming placeholders, and model discovery.",
+				"SQLAlchemy-backed storage is optional, with fallback utilities used when the database path is unavailable.",
+				"Frontend scripts manage username, local conversation state, image uploads, model choice, and theme preferences."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "app.py",
+				"note": "Main Flask application for chat routes, persistence setup, and startup fallback behavior."
+			},
+			{
+				"path": "utils/openai_helper.py",
+				"note": "Helper module for AI response generation and related model integration."
+			},
+			{
+				"path": "templates/index.html",
+				"note": "HTML shell for the browser chat experience."
+			},
+			{
+				"path": "static/js/chat.js",
+				"note": "Client-side state management for theme, conversation history, uploads, and model selection."
+			}
+		],
+		"shipped": "Built a Flask chat prototype with optional persistence, image upload, and configurable model controls.",
+		"learned": "This audit was a good reminder that repo names, READMEs, and scaffolds can drift far away from the code that actually runs."
+	},
+	"simple": {
+		"displayName": "Simple Doc Generator",
+		"role": "Craft",
+		"whyItMatters": "Shows a more operational version of AI-assisted documentation generation, where extraction, orchestration, and monitoring are part of the same tool.",
+		"problem": [
+			"Generating useful docs from Python code requires more than dumping source into a prompt.",
+			"The tool needed visibility into system behavior and metrics while processing large repositories.",
+			"The extraction layer had to preserve structural details like classes, functions, variables, and dependencies."
+		],
+		"approach": [
+			"Built a Python documentation generator around AST parsing, module extraction, and orchestrated doc generation.",
+			"Added dependency injection, monitoring, and metrics collection so long-running jobs can be inspected while they run.",
+			"Used typed models and exception flows throughout the core modules to keep the pipeline composable."
+		],
+		"result": [
+			"The repo can extract structured code data and hand it to a documentation orchestration pipeline with monitoring around the run.",
+			"Operational helpers make it easier to debug and observe the generator than a single-script proof of concept.",
+			"The manual smoke script and rough edges mean it still reads as internal tooling, but the implementation is clearly not a text-extraction utility."
+		],
+		"highlights": [
+			"AST-based code extraction",
+			"Monitoring and metrics pipeline",
+			"Dependency-injected doc orchestration"
+		],
+		"signals": [
+			"typed",
+			"observability"
+		],
+		"receipts": [
+			{
+				"label": "Operational layer",
+				"value": "The generator wires a system monitor and metrics collector into the documentation workflow instead of hiding runtime behavior."
+			},
+			{
+				"label": "Extraction depth",
+				"value": "The code extractor parses modules into classes, functions, variables, constants, dependencies, and metrics."
+			}
+		],
+		"architecture": {
+			"summary": "Python documentation pipeline that combines AST extraction, orchestration, and runtime monitoring.",
+			"bullets": [
+				"Entry points configure dependencies, environment, and run-level monitoring before processing files.",
+				"Extraction modules parse Python source into structured elements and dependency information.",
+				"Documentation orchestrators consume that structured output while metrics and monitoring record the run."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "main.py",
+				"note": "CLI entrypoint that boots dependencies, monitoring, and the documentation run."
+			},
+			{
+				"path": "core/config.py",
+				"note": "Configuration model for the documentation generator and its runtime behavior."
+			},
+			{
+				"path": "core/monitoring.py",
+				"note": "Monitoring and metrics support for long-running documentation jobs."
+			},
+			{
+				"path": "core/extraction/code_extractor.py",
+				"note": "AST-based extraction layer that turns Python source into structured documentation inputs."
+			}
+		],
+		"shipped": "Built an internal documentation generator with AST extraction and runtime monitoring around the workflow.",
+		"learned": "Instrumentation was as valuable as the generation logic itself because it exposed where the pipeline was actually spending time and failing."
+	},
+	"wp-hperkins-com": {
+		"displayName": "WordPress Portfolio",
+		"role": "Craft",
+		"whyItMatters": "Shows the portfolio translated into a WordPress block theme without giving up structured data contracts, dynamic routes, or operational checks.",
+		"problem": [
+			"The site needed a WordPress-native editing experience without collapsing the portfolio into generic templates.",
+			"Dynamic work and blog detail routes had to behave like the React source site while still living in WordPress.",
+			"A public theme repository needed fast smoke coverage because the site doubles as a live consulting surface."
+		],
+		"approach": [
+			"Built the henrys-digital-canvas block theme as a child of twentytwentyfive inside a broader WordPress repository.",
+			"Mapped the React source pages to 13 custom blocks, structured JSON data, and theme REST endpoints under /wp-json/henrys-digital-canvas/v1/.",
+			"Added rewrite handling for /work/{repo} and /blog/{slug}, plus Turnstile-backed contact submission and smoke automation."
+		],
+		"result": [
+			"The WordPress build preserves bespoke portfolio and blog flows while keeping editing inside Gutenberg.",
+			"Structured data contracts keep work, blog, resume, and contact blocks aligned across the theme.",
+			"Route, API, and browser smoke checks make live-site changes safer to ship."
+		],
+		"highlights": [
+			"Custom block theme for portfolio parity",
+			"Dynamic work and blog detail routes",
+			"Structured data + REST contracts",
+			"Turnstile-backed contact route",
+			"Live smoke automation"
+		],
+		"signals": [
+			"tested",
+			"ci",
+			"docs"
+		],
+		"receipts": [
+			{
+				"label": "Theme runtime",
+				"value": "Theme bootstrap loads shared assets, block registration, and dynamic route handling for the portfolio theme.",
+				"url": "https://github.com/henryperkins/wp-hperkins-com/blob/main/wp-content/themes/henrys-digital-canvas/functions.php"
+			},
+			{
+				"label": "Data contract layer",
+				"value": "Theme REST routes expose structured content and Turnstile-verified contact handling under the henrys-digital-canvas namespace.",
+				"url": "https://github.com/henryperkins/wp-hperkins-com/blob/main/wp-content/themes/henrys-digital-canvas/inc/rest-api.php"
+			},
+			{
+				"label": "Deployment confidence",
+				"value": "The smoke-check workflow runs route, API, and browser smoke suites against the live theme on push and on a daily schedule.",
+				"url": "https://github.com/henryperkins/wp-hperkins-com/blob/main/wp-content/themes/henrys-digital-canvas/.github/workflows/smoke-check.yml"
+			}
+		],
+		"architecture": {
+			"summary": "Custom WordPress child theme and REST layer that mirror the React portfolio's content model inside Gutenberg.",
+			"bullets": [
+				"The block theme and custom blocks recreate page-specific portfolio surfaces inside the WordPress editor instead of leaning on generic templates.",
+				"Rewrite and template logic support dynamic work and blog detail routes that match the React source site's URL model.",
+				"Server-rendered blocks like work-showcase combine local JSON contracts with GitHub proxy data, while the theme REST layer handles structured content and contact security."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "wp-content/themes/henrys-digital-canvas/functions.php",
+				"note": "Theme bootstrap for assets, block registration, and dynamic route setup inside the custom child theme."
+			},
+			{
+				"path": "wp-content/themes/henrys-digital-canvas/inc/data-contracts.php",
+				"note": "Structured theme data contracts used to keep block inputs and front-end rendering predictable."
+			},
+			{
+				"path": "wp-content/themes/henrys-digital-canvas/inc/rest-api.php",
+				"note": "Theme REST layer for structured data delivery, contact handling, and Turnstile-backed verification."
+			},
+			{
+				"path": "wp-content/themes/henrys-digital-canvas/blocks/work-showcase/render.php",
+				"note": "Server-rendered work block that wires GitHub proxy endpoints to structured local case-study data."
+			},
+			{
+				"path": "wp-content/themes/henrys-digital-canvas/.github/workflows/smoke-check.yml",
+				"note": "Live-site smoke workflow covering route, API, and browser checks for the theme."
+			}
+		],
+		"shipped": "Shipped a public WordPress repository for the portfolio theme with custom blocks, dynamic routes, and live smoke automation.",
+		"learned": "Replatforming into WordPress only worked when the block theme, structured contracts, and regression checks were treated as one system.",
+		"relatedPosts": [
+			"design-systems-that-actually-work"
+		]
+	},
+	"video_processing_toolkit": {
+		"displayName": "Video Processing Toolkit",
+		"role": "Systems",
+		"whyItMatters": "Shows a practical multimodal CLI pipeline for turning raw video into tags and structured metadata.",
+		"problem": [
+			"Manual review does not scale when you need descriptions, tags, and search-ready metadata across many videos.",
+			"A useful tool needed scene detection and model analysis, not just ffmpeg wrappers.",
+			"Results had to land in a structured format that downstream systems can ingest."
+		],
+		"approach": [
+			"Built a workflow script that downloads or loads video assets, extracts metadata, and runs scene detection.",
+			"Called Qwen2-VL for scene-level descriptions and paired that with tagging and classification utilities.",
+			"Exported the combined output as JSON so the toolkit can feed cataloging or retrieval systems."
+		],
+		"result": [
+			"Video processing becomes a repeatable CLI workflow instead of a manual inspection task.",
+			"Scene descriptions and tags make the output more useful for search and indexing than raw timestamps alone.",
+			"The repo is best described as a toolkit rather than a polished platform service."
+		],
+		"highlights": [
+			"Scene detection pipeline",
+			"Qwen2-VL description pass",
+			"JSON export for downstream indexing"
+		],
+		"signals": [
+			"docs"
+		],
+		"receipts": [
+			{
+				"label": "Workflow orchestration",
+				"value": "The main workflow coordinates ingest, metadata extraction, scene analysis, and export from one CLI path."
+			},
+			{
+				"label": "Model-backed tagging",
+				"value": "Analysis and tagging modules turn scene outputs into descriptions, labels, and structured JSON records."
+			}
+		],
+		"architecture": {
+			"summary": "CLI-first video analysis pipeline that chains scene detection, Qwen2-VL inference, tagging, and JSON export.",
+			"bullets": [
+				"Workflow modules coordinate input handling, metadata extraction, and scene segmentation.",
+				"Model wrappers generate scene descriptions that feed tagging and classification utilities.",
+				"Export steps serialize the resulting metadata into JSON for downstream search or catalog flows."
+			]
+		},
+		"keyFiles": [
+			{
+				"path": "workflow.py",
+				"note": "Main CLI workflow that coordinates ingest, analysis, and export steps."
+			},
+			{
+				"path": "analysis.py",
+				"note": "Analysis layer for scene processing and metadata derivation."
+			},
+			{
+				"path": "qwen_model.py",
+				"note": "Qwen2-VL model wrapper used for multimodal scene understanding."
+			},
+			{
+				"path": "tagging.py",
+				"note": "Tagging and classification utilities that shape the final output records."
+			}
+		],
+		"shipped": "Built a CLI toolkit for scene detection, Qwen2-VL analysis, tagging, and JSON export.",
+		"learned": "For multimodal tooling, the downstream data contract matters as much as the model call because that is what makes the output reusable."
+	}
 }

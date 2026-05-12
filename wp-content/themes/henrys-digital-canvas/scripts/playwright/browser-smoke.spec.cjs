@@ -74,15 +74,11 @@ async function resolveBlogFixtures(request) {
 		}
 	}
 
-	const resolvedCodeSlug = codeSlug || blogSlug;
-	const codeDetail = resolvedCodeSlug === blogSlug ? blogDetail : await getDetail(resolvedCodeSlug);
-
 	return {
 		posts,
 		blogSlug,
 		blogDetail,
-		codeSlug: resolvedCodeSlug,
-		codeDetail,
+		codeSlug,
 	};
 }
 
@@ -213,6 +209,8 @@ test.describe('Henrys Digital Canvas browser smoke', () => {
 	});
 
 	test('blog detail enhances HTML code blocks with a toolbar and copy affordance', async ({ page }) => {
+		test.skip(!blogFixtures.codeSlug, 'No published blog post with an HTML code block is available.');
+
 		await page.goto(`/blog/${ blogFixtures.codeSlug }/`, { waitUntil: 'networkidle' });
 
 		await expect

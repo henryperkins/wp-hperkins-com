@@ -1264,15 +1264,6 @@
 
 			emptyState.hidden = totalVisibleItems !== 0;
 
-			if ( state.opened && highlightIndex < 0 ) {
-				const initialItems = getAllVisibleItems();
-
-				if ( initialItems.length ) {
-					highlightIndex = 0;
-					setHighlight( initialItems, highlightIndex );
-				}
-			}
-
 			if ( highlightIndex >= 0 ) {
 				const visibleItems = getAllVisibleItems();
 

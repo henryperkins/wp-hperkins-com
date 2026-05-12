@@ -53,6 +53,8 @@
 		docs: 'Docs',
 		observability: 'Observability',
 	};
+	const SIGNAL_ORDER = [ 'tested', 'typed', 'ci', 'docs', 'observability' ];
+	const WORK_LAST_REFINE_VIEW_STORAGE_KEY = 'work-last-refine-view';
 	const UI_TOPICS = new Set( [
 		'react',
 		'vue',
@@ -191,6 +193,104 @@
 		return parsed;
 	}
 
+	function parseWorkRole( value, validRoles ) {
+		const normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
+		if ( ! normalized ) {
+			return null;
+		}
+		const match = validRoles.find( function ( role ) {
+			return role.toLowerCase() === normalized;
+		} );
+		return match || null;
+	}
+
+	function parseWorkSignals( value ) {
+		if ( ! value || typeof value !== 'string' ) {
+			return [];
+		}
+		const requested = new Set(
+			value
+				.split( ',' )
+				.map( function ( token ) {
+					return token.trim().toLowerCase();
+				} )
+				.filter( Boolean )
+		);
+		return SIGNAL_ORDER.filter( function ( signal ) {
+			return requested.has( signal );
+		} );
+	}
+
+	function getNormalizedWorkSignals( signals ) {
+		const requested = new Set( ( signals || [] ).map( String ) );
+		return SIGNAL_ORDER.filter( function ( signal ) {
+			return requested.has( signal );
+		} );
+	}
+
+	function getWorkSignalsKey( signals ) {
+		return getNormalizedWorkSignals( signals ).join( ',' );
+	}
+
+	function buildSavedRefineViewSummary( savedView ) {
+		if ( ! savedView ) {
+			return '';
+		}
+		const parts = [];
+		if ( savedView.role ) {
+			parts.push( savedView.role );
+		}
+		if ( savedView.signals && savedView.signals.length > 0 ) {
+			parts.push(
+				savedView.signals
+					.map( function ( signal ) {
+						return SIGNAL_LABEL_MAP[ signal ] || signal;
+					} )
+					.join( ', ' )
+			);
+		}
+		return parts.join( ', ' );
+	}
+
+	function readSavedWorkRefineView() {
+		if ( typeof window === 'undefined' ) {
+			return null;
+		}
+		try {
+			if ( ! window.localStorage ) {
+				return null;
+			}
+			const raw = window.localStorage.getItem( WORK_LAST_REFINE_VIEW_STORAGE_KEY );
+			if ( ! raw ) {
+				return null;
+			}
+			const parsed = JSON.parse( raw );
+			const role = parseWorkRole(
+				typeof parsed.role === 'string' ? parsed.role : null,
+				ROLE_ORDER
+			);
+			const signals = Array.isArray( parsed.signals )
+				? parseWorkSignals( parsed.signals.join( ',' ) )
+				: parseWorkSignals( typeof parsed.signals === 'string' ? parsed.signals : null );
+			if ( ! role && signals.length === 0 ) {
+				return null;
+			}
+			return { role: role, signals: signals };
+		} catch ( error ) {
+			return null;
+		}
+	}
+
+	function isEditableTarget( target ) {
+		if ( ! target || ! target.tagName ) {
+			return false;
+		}
+		if ( target.isContentEditable ) {
+			return true;
+		}
+		return [ 'INPUT', 'SELECT', 'TEXTAREA' ].indexOf( target.tagName ) !== -1;
+	}
+
 	function buildWorkSearchParams( options ) {
 		const params = new URLSearchParams();
 		if ( options.filter !== DEFAULT_FILTER ) {
@@ -204,6 +304,13 @@
 		}
 		if ( options.view === 'grid' && options.page > 1 ) {
 			params.set( 'page', String( options.page ) );
+		}
+		if ( options.role ) {
+			params.set( 'role', options.role );
+		}
+		const normalizedSignals = getNormalizedWorkSignals( options.signals || [] );
+		if ( normalizedSignals.length > 0 ) {
+			params.set( 'signals', normalizedSignals.join( ',' ) );
 		}
 		return params;
 	}
@@ -232,6 +339,43 @@
 		} );
 	}
 
+	function getGitHubSignalSourceLabel( source ) {
+		if ( source === 'fallback-ratelimit' ) {
+			return 'Rate limited';
+		}
+		if ( source === 'fallback-offline' ) {
+			return 'Offline';
+		}
+		if ( source === 'fallback-error' ) {
+			return 'Unavailable';
+		}
+		return null;
+	}
+
+	function getGitHubSignalDegradationMessage( source, messages ) {
+		if ( source === 'fallback-ratelimit' ) {
+			return messages.rateLimit || null;
+		}
+		if ( source === 'fallback-offline' ) {
+			return messages.offline || null;
+		}
+		if ( source === 'fallback-error' ) {
+			return messages.error || null;
+		}
+		return null;
+	}
+
+	function getPreferredGitHubSignalDegradedSource( sources ) {
+		const list = Array.isArray( sources ) ? sources : [];
+		const priority = [ 'fallback-ratelimit', 'fallback-offline', 'fallback-error' ];
+		for ( let i = 0; i < priority.length; i++ ) {
+			if ( list.indexOf( priority[ i ] ) !== -1 ) {
+				return priority[ i ];
+			}
+		}
+		return null;
+	}
+
 	function getRepoRecord( recordsByRepoName, repoName ) {
 		return recordsByRepoName[ repoName ] || recordsByRepoName[ String( repoName ).toLowerCase() ] || null;
 	}
@@ -247,21 +391,25 @@
 	function readInitialWorkState() {
 		if ( typeof window === 'undefined' || ! window.location ) {
 			return {
-				filter: DEFAULT_FILTER,
-				sort: DEFAULT_SORT,
-				view: DEFAULT_VIEW,
-				page: 1,
-			};
-		}
-
-		const params = new URLSearchParams( window.location.search );
-		return {
-			filter: parseWorkFilter( params.get( 'language' ) ),
-			sort: parseWorkSort( params.get( 'sort' ) ),
-			view: parseWorkView( params.get( 'view' ) ),
-			page: parseWorkPage( params.get( 'page' ) ),
+			filter: DEFAULT_FILTER,
+			sort: DEFAULT_SORT,
+			view: DEFAULT_VIEW,
+			page: 1,
+			role: null,
+			signals: [],
 		};
 	}
+
+	const params = new URLSearchParams( window.location.search );
+	return {
+		filter: parseWorkFilter( params.get( 'language' ) ),
+		sort: parseWorkSort( params.get( 'sort' ) ),
+		view: parseWorkView( params.get( 'view' ) ),
+		page: parseWorkPage( params.get( 'page' ) ),
+		role: parseWorkRole( params.get( 'role' ), ROLE_ORDER ),
+		signals: parseWorkSignals( params.get( 'signals' ) ),
+	};
+}
 
 	function ensureArray( value ) {
 		return Array.isArray( value ) ? value : [];
@@ -499,8 +647,8 @@
 	}
 
 	function getSignalBadges( repo ) {
-		if ( repo.signals && repo.signals.length > 0 ) {
-			return repo.signals;
+		if ( Array.isArray( repo.signals ) && repo.signals.length > 0 ) {
+			return getNormalizedWorkSignals( repo.signals );
 		}
 
 		const inferred = [];
@@ -509,8 +657,8 @@
 			inferred.push( 'typed' );
 		}
 
-		const hasDocsTopic = repo.topics.some( function ( topic ) {
-			const normalized = String( topic ).toLowerCase();
+		const hasDocsTopic = ( repo.topics || [] ).some( function ( topic ) {
+			const normalized = String( topic || '' ).toLowerCase();
 			return [ 'documentation', 'docs', 'runbook', 'operations' ].indexOf( normalized ) !== -1;
 		} );
 		if ( hasDocsTopic ) {
@@ -1473,7 +1621,7 @@
 	function StatCard( props ) {
 		return h(
 			'article',
-			{ className: 'hdc-work-stat-card' },
+			{ className: classNames( 'hdc-work-stat-card', 'surface-inset-soft' ) },
 			h( 'p', { className: 'hdc-work-stat-label' }, props.label ),
 			h( 'p', { className: 'hdc-work-stat-value' }, props.value ),
 			props.children
@@ -1605,43 +1753,110 @@
 	}
 
 	function FiltersBar( props ) {
+		const activeFacetActions = [
+			props.value !== DEFAULT_FILTER
+				? { label: 'Language: ' + props.value, onClear: props.onClearLanguage }
+				: null,
+			props.activeRole ? { label: 'Role: ' + props.activeRole, onClear: props.onClearRole } : null,
+			props.activeSignals.length > 0
+				? {
+					label:
+						'Signals: ' +
+						props.activeSignals
+							.map( function ( signal ) {
+								return SIGNAL_LABEL_MAP[ signal ] || signal;
+							} )
+							.join( ', ' ),
+					onClear: props.onClearSignals,
+				}
+				: null,
+		].filter( Boolean );
+		const activeRefineFilterCount =
+			( props.activeRole ? 1 : 0 ) + ( props.activeSignals.length > 0 ? 1 : 0 );
+		const refineButtonLabel = activeRefineFilterCount > 0 ? 'Refine (' + activeRefineFilterCount + ')' : 'Refine';
+		const summaryLabel = 'Showing ' + props.matchingRepoCount + ' of ' + props.totalRepoCount;
+
 		return h(
 			'section',
-			{ className: 'hdc-work-filters' },
+			{ className: classNames( 'hdc-work-filters', 'surface-learning-paper' ) },
 			h(
 				'div',
-				{ className: 'hdc-work-filter-language' },
-				h( 'span', { className: 'hdc-work-control-label' }, 'Language' ),
+				{ className: 'hdc-work-filters-row' },
 				h(
 					'div',
-					{ className: 'hdc-work-chip-rail', role: 'group', 'aria-label': 'Filter by language' },
-					props.languages.map( function ( option ) {
-						return h(
+					{ className: 'hdc-work-filter-language' },
+					h( 'span', { className: 'hdc-work-control-label' }, 'Language' ),
+					h(
+						'div',
+						{ className: 'hdc-work-chip-rail', role: 'group', 'aria-label': 'Filter by language' },
+						props.languages.map( function ( option ) {
+							return h(
+								'button',
+								{
+									type: 'button',
+									key: option,
+									className: classNames( 'hdc-work-chip', props.value === option && 'is-active' ),
+									onClick: function () {
+										props.onFilterChange( option );
+									},
+									'aria-pressed': props.value === option ? 'true' : 'false',
+								},
+								option
+							);
+						} )
+					)
+				),
+				h(
+					'div',
+					{ className: 'hdc-work-filters-actions' },
+					props.canRestoreLastView
+						? h(
 							'button',
 							{
 								type: 'button',
-								key: option,
-								className: classNames( 'hdc-work-chip', props.value === option && 'is-active' ),
-								onClick: function () {
-									props.onFilterChange( option );
-								},
-								'aria-pressed': props.value === option ? 'true' : 'false',
+								className: 'hdc-work-button is-outline',
+								onClick: props.onRestoreLastView,
+								'aria-label': 'Restore your last view: ' + props.savedViewSummary,
 							},
-							option
-						);
-					} )
-				)
-			),
-			h(
-				'div',
-				{ className: 'hdc-work-filter-row' },
-				h(
-					'div',
-					{ className: 'hdc-work-control' },
-					h( 'span', { className: 'hdc-work-control-label' }, 'View' ),
+							'Your last view'
+						)
+						: null,
+					h(
+						'button',
+						{
+							type: 'button',
+							className: classNames(
+								'hdc-work-button',
+								'is-outline',
+								'hdc-work-refine-button',
+								props.isRefineOpen && 'is-open'
+							),
+							onClick: function () {
+								props.onRefineOpenChange( ! props.isRefineOpen );
+							},
+							'aria-expanded': props.isRefineOpen ? 'true' : 'false',
+						},
+						h(
+							'span',
+							{ className: 'hdc-work-refine-icon', 'aria-hidden': 'true' },
+							renderLucideIcon( h, 'sliders-horizontal', {
+								className: 'hdc-work-refine-icon-svg',
+								size: 14,
+							} )
+						),
+						h( 'span', null, refineButtonLabel ),
+						h(
+							'span',
+							{ className: 'hdc-work-refine-chevron', 'aria-hidden': 'true' },
+							renderLucideIcon( h, 'chevron-down', {
+								className: 'hdc-work-refine-chevron-svg',
+								size: 14,
+							} )
+						)
+					),
 					h(
 						'div',
-						{ className: 'hdc-work-view-toggle' },
+						{ className: 'hdc-work-view-toggle', role: 'group', 'aria-label': 'Choose repository view' },
 						h(
 							'button',
 							{
@@ -1650,6 +1865,7 @@
 								onClick: function () {
 									props.onViewChange( 'grid' );
 								},
+								'aria-pressed': props.view === 'grid' ? 'true' : 'false',
 							},
 							'Grid view'
 						),
@@ -1661,35 +1877,147 @@
 								onClick: function () {
 									props.onViewChange( 'timeline' );
 								},
+								'aria-pressed': props.view === 'timeline' ? 'true' : 'false',
 							},
 							'Timeline view'
 						)
-					)
-				),
-				props.view === 'grid'
-					? h(
-						'label',
-						{ className: 'hdc-work-control' },
-						h( 'span', { className: 'hdc-work-control-label' }, 'Sort' ),
-						h(
-							'select',
-							{
-								className: 'hdc-work-select',
-								value: props.sort,
-								onChange: function ( event ) {
-									props.onSortChange( event.target.value );
+					),
+					props.view === 'grid'
+						? h(
+							'label',
+							{ className: 'hdc-work-control hdc-work-control-sort' },
+							h( 'span', { className: 'hdc-work-control-label' }, 'Sort' ),
+							h(
+								'select',
+								{
+									className: 'hdc-work-select',
+									value: props.sort,
+									onChange: function ( event ) {
+										props.onSortChange( event.target.value );
+									},
+									'aria-label': 'Sort projects',
 								},
-							},
-							h( 'option', { value: 'stars' }, 'Sort by Stars' ),
-							h( 'option', { value: 'updated' }, 'Sort by Updated' )
+								h( 'option', { value: 'stars' }, 'Sort by Stars' ),
+								h( 'option', { value: 'updated' }, 'Sort by Updated' )
+							)
+						)
+						: h(
+							'p',
+							{ className: 'hdc-work-control-note' },
+							'Timeline is always newest-first.'
+						)
+				)
+			),
+			props.isRefineOpen
+				? h(
+					'div',
+					{
+						className: 'hdc-work-refine-panel',
+						role: 'region',
+						'aria-label': 'Refine work view',
+					},
+					h(
+						'div',
+						{ className: 'hdc-work-refine-section' },
+						h( 'p', { className: 'hdc-work-refine-section-label' }, 'Role' ),
+						h(
+							'div',
+							{ className: 'hdc-work-refine-roles', role: 'group', 'aria-label': 'Filter by role' },
+							[ null ].concat( ROLE_ORDER ).map( function ( role ) {
+								const value = role || '';
+								const label = role || 'All roles';
+								const isActive = ( role || null ) === props.activeRole;
+								return h(
+									'button',
+									{
+										type: 'button',
+										key: 'role-' + ( value || 'all' ),
+										className: classNames( 'hdc-work-chip', isActive && 'is-active' ),
+										onClick: function () {
+											props.onRoleChange( role || null );
+										},
+										'aria-pressed': isActive ? 'true' : 'false',
+									},
+									label
+								);
+							} )
+						)
+					),
+					h(
+						'fieldset',
+						{ className: 'hdc-work-refine-section hdc-work-refine-signals' },
+						h( 'legend', { className: 'hdc-work-refine-section-label' }, 'Signals' ),
+						h(
+							'div',
+							{ className: 'hdc-work-refine-signal-grid' },
+							SIGNAL_ORDER.map( function ( signal ) {
+								const checked = props.activeSignals.indexOf( signal ) !== -1;
+								return h(
+									'button',
+									{
+										type: 'button',
+										key: 'signal-' + signal,
+										className: classNames( 'hdc-work-chip', checked && 'is-active' ),
+										onClick: function () {
+											const next = checked
+												? props.activeSignals.filter( function ( entry ) {
+													return entry !== signal;
+												} )
+												: props.activeSignals.concat( [ signal ] );
+											props.onSignalsChange( next );
+										},
+										'aria-pressed': checked ? 'true' : 'false',
+									},
+									SIGNAL_LABEL_MAP[ signal ]
+								);
+							} )
 						)
 					)
-					: h(
-						'div',
-						{ className: 'hdc-work-control' },
-						h( 'span', { className: 'hdc-work-control-label' }, 'Sort' ),
-						h( 'p', { className: 'hdc-work-control-note' }, 'Timeline is always newest-first.' )
-					)
+				)
+				: null,
+			h(
+				'div',
+				{ className: 'hdc-work-filters-active', 'data-contrast-probe': 'work-filters-active' },
+				h(
+					'div',
+					{ className: 'hdc-work-filters-active-row' },
+					h(
+						'p',
+						{ 'aria-live': 'polite', 'aria-atomic': 'true', className: 'hdc-work-filters-summary' },
+						summaryLabel
+					),
+					activeFacetActions.length > 0
+						? h(
+							'div',
+							{ className: 'hdc-work-filters-facet-row' },
+							activeFacetActions
+								.map( function ( facet ) {
+									return h(
+										'button',
+										{
+											type: 'button',
+											key: 'facet-' + facet.label,
+											className: 'hdc-work-button is-outline hdc-work-facet-pill',
+											onClick: facet.onClear,
+										},
+										facet.label
+									);
+								} )
+								.concat( [
+									h(
+										'button',
+										{
+											type: 'button',
+											key: 'facet-clear-all',
+											className: 'hdc-work-button is-link',
+											onClick: props.onClearAllFilters,
+										},
+										'Clear all'
+									),
+								] )
+						)
+						: null
+				)
 			),
 			props.showDetailsUnavailableMessage
 				? h(
@@ -1714,7 +2042,7 @@
 
 		return h(
 			'section',
-			{ className: 'hdc-work-pending' },
+			{ className: classNames( 'hdc-work-pending', 'surface-ember-veil' ) },
 			h(
 				'div',
 				{ className: 'hdc-work-pending-head' },
@@ -1724,7 +2052,7 @@
 					h( 'h3', { className: 'hdc-work-section-title' }, 'Additional Repositories' ),
 					h(
 						'p',
-						{ className: 'hdc-work-section-description' },
+						{ className: 'hdc-work-section-description', 'data-contrast-probe': 'ember-body-work-pending' },
 						'These repositories are indexed, and detailed write-ups are in progress.'
 					)
 				),
@@ -1787,6 +2115,74 @@
 		var signalRepoNames = props.signalRepos.map( function ( repo ) {
 			return repo.name;
 		} );
+		var preferredSignalDegradedSource = getPreferredGitHubSignalDegradedSource( [
+			props.contributorStatsSource,
+			props.languageSummarySource,
+			props.ciStatusSource,
+			props.repoProofSource,
+		] );
+		var engineeringSignalNotice = preferredSignalDegradedSource
+			? getGitHubSignalDegradationMessage( preferredSignalDegradedSource, {
+				rateLimit:
+					'Some engineering signals are temporarily unavailable due to GitHub rate limiting. Repository browse data may still be live.',
+				offline:
+					"Some engineering signals are temporarily unavailable because you're offline. Repository browse data may still be cached.",
+				error:
+					'Some engineering signals are temporarily unavailable right now. Repository browse data may still be live.',
+			} )
+			: null;
+		var contributorStatsUnavailableMessage = getGitHubSignalDegradationMessage(
+			props.contributorStatsSource,
+			{
+				rateLimit: 'GitHub contributor commit stats are temporarily unavailable due to rate limiting.',
+				offline: "You're offline, so GitHub contributor commit stats are temporarily unavailable.",
+				error: 'GitHub contributor commit stats are temporarily unavailable right now.',
+			}
+		);
+		var languageSummaryUnavailableMessage = getGitHubSignalDegradationMessage(
+			props.languageSummarySource,
+			{
+				rateLimit: 'GitHub byte totals are temporarily unavailable due to rate limiting.',
+				offline: "You're offline, so GitHub byte totals are temporarily unavailable.",
+				error: 'GitHub byte totals are temporarily unavailable right now.',
+			}
+		);
+		var languageSummaryFallbackReason = getGitHubSignalDegradationMessage(
+			props.languageSummarySource,
+			{
+				rateLimit:
+					'GitHub byte totals are temporarily rate limited. Showing repo-size-weighted fallback data instead.',
+				offline:
+					"You're offline, so GitHub byte totals are unavailable. Showing repo-size-weighted fallback data instead.",
+				error:
+					'GitHub byte totals are temporarily unavailable. Showing repo-size-weighted fallback data instead.',
+			}
+		);
+		var deliveryDegradedSource = getPreferredGitHubSignalDegradedSource( [
+			props.ciStatusSource,
+			props.repoProofSource,
+		] );
+		var deliveryDegradationMessages = [
+			getGitHubSignalDegradationMessage( props.ciStatusSource, {
+				rateLimit: 'CI status is temporarily unavailable due to GitHub rate limiting.',
+				offline: "CI status is temporarily unavailable because you're offline.",
+				error: 'CI status is temporarily unavailable right now.',
+			} ),
+			getGitHubSignalDegradationMessage( props.repoProofSource, {
+				rateLimit:
+					'Community-health and release signals are temporarily unavailable due to GitHub rate limiting.',
+				offline:
+					"Community-health and release signals are temporarily unavailable because you're offline.",
+				error: 'Community-health and release signals are temporarily unavailable right now.',
+			} ),
+		].filter( Boolean );
+		var deliveryUnavailableMessage = deliveryDegradedSource
+			? getGitHubSignalDegradationMessage( deliveryDegradedSource, {
+				rateLimit: 'GitHub delivery signals are temporarily unavailable due to rate limiting.',
+				offline: "You're offline, so GitHub delivery signals are temporarily unavailable.",
+				error: 'GitHub delivery signals are temporarily unavailable right now.',
+			} )
+			: 'Live delivery signals are unavailable right now.';
 		var contributorEntries = signalRepoNames.map( function ( repoName ) {
 			return getRepoRecord( props.contributorStatsByRepo, repoName );
 		} );
@@ -1980,7 +2376,9 @@
 
 		var languageSummaryItems = isUsingSizeWeightedLanguageFallback
 			? [
-				'Fallback weighted by repo size across ' + fallbackLanguageRepos.length + ' active repos',
+				languageSummaryFallbackReason ||
+					'Showing repo-size-weighted fallback data instead of GitHub byte totals',
+				'Fallback weighted by repo size across ' + reposWithPositiveSize.length + ' active repos',
 				substantialRepos.length > 0 ? 'Excludes repos under ' + LANGUAGE_FALLBACK_MIN_REPO_SIZE_KB + ' KB' : null,
 			].filter( Boolean )
 			: [
@@ -2007,15 +2405,15 @@
 		var commitValue = ! hasTrackedPublicGitHubRepos
 			? 'N/A'
 			: lastYearCommits === null
-				? props.contributorStatsIsLoading
-					? 'Loading...'
-					: props.contributorStatsSource === 'live'
-						? computingRepoCount > 0
-							? 'Pending'
-							: hasOnlyMissingContributorStats
-								? 'No match'
-								: 'Unavailable'
-						: 'Unavailable'
+					? props.contributorStatsIsLoading
+						? 'Loading...'
+						: props.contributorStatsSource === 'live'
+							? computingRepoCount > 0
+								? 'Pending'
+								: hasOnlyMissingContributorStats
+									? 'No match'
+									: 'Unavailable'
+						: ( getGitHubSignalSourceLabel( props.contributorStatsSource ) || 'Unavailable' )
 				: formatWholeNumber( lastYearCommits ) + ' commits';
 		var hasActiveLanguageRepos = props.activeLanguageRepos.length > 0 || props.analyzedRepoCount > 0 || languageBreakdown.length > 0;
 		var primaryLanguageLabel = ! hasTrackedPublicGitHubRepos || ! hasActiveLanguageRepos
@@ -2026,7 +2424,7 @@
 					? 'Loading...'
 					: props.languageSummarySource === 'live'
 						? 'Pending'
-						: 'Unavailable';
+						: ( getGitHubSignalSourceLabel( props.languageSummarySource ) || 'Unavailable' );
 		var deliveryValue = ! hasTrackedPublicGitHubRepos
 			? 'N/A'
 			: ciSummary.availableRepoCount > 0
@@ -2035,20 +2433,29 @@
 					? formatWholeNumber( averageHealth ) + '% health'
 					: props.ciStatusIsLoading || props.repoProofIsLoading
 						? 'Loading...'
-						: props.ciStatusSource === 'live' || props.repoProofSource === 'live'
-							? 'Pending'
-							: 'Unavailable';
+						: deliveryDegradedSource
+							? ( getGitHubSignalSourceLabel( deliveryDegradedSource ) || 'Unavailable' )
+							: props.ciStatusSource === 'live' || props.repoProofSource === 'live'
+								? 'Pending'
+								: 'Unavailable';
 
 		return h(
 			'section',
 			{
-				className: classNames( 'hdc-work-signals', 'hdc-reveal' ),
+				className: classNames( 'hdc-work-signals', 'surface-ember-veil', 'hdc-reveal' ),
 				style: { '--reveal-index': 0 },
 			},
 			h( SectionIntro, {
-				title: 'Engineering Signals',
+				title: h( 'span', { 'data-contrast-probe': 'ember-heading-work' }, 'Engineering Signals' ),
 				description: 'Commit, code, delivery, and governance evidence across public GitHub work.',
 			} ),
+			engineeringSignalNotice
+				? h(
+					'p',
+					{ className: 'hdc-work-signal-notice' },
+					engineeringSignalNotice
+				)
+				: null,
 			h(
 				'div',
 				{ className: 'hdc-work-stats-grid' },
@@ -2083,7 +2490,14 @@
 									} ) ),
 									languageSummaryItems.length > 0 ? h( 'p', { className: 'hdc-work-stat-meta' }, h( InlineSeparatedList, { items: languageSummaryItems } ) ) : null
 								)
-								: h( 'span', { className: 'hdc-work-stat-meta' }, props.languageSummaryIsLoading ? 'Loading byte-weighted language totals from GitHub.' : 'Byte-weighted language totals are unavailable right now.' )
+								: h(
+									'span',
+									{ className: 'hdc-work-stat-meta' },
+									props.languageSummaryIsLoading
+										? 'Loading byte-weighted language totals from GitHub.'
+										: ( languageSummaryUnavailableMessage ||
+											'Byte-weighted language totals are unavailable right now.' )
+								)
 				),
 				h(
 					StatCard,
@@ -2099,7 +2513,7 @@
 								h( 'p', { className: 'hdc-work-stat-meta' }, h( InlineSeparatedList, { items: [ COMMIT_SPARKLINE_WINDOW_WEEKS + '-week sparkline', 'Active ' + activeWeeks + '/' + COMMIT_TOTAL_WINDOW_WEEKS + ' weeks', readyEntries.length + '/' + signalRepoNames.length + ' repos', computingRepoCount > 0 ? computingRepoCount + ' computing' : null, missingRepoCount > 0 ? missingRepoCount + ' without author match' : null, unavailableRepoCount > 0 ? unavailableRepoCount + ' unavailable' : null ].filter( Boolean ) } ) ),
 								commitPeakBucket && lastYearCommits > 0 ? h( 'p', { className: 'hdc-work-stat-meta' }, 'Peak recent volume was ', formatWholeNumber( commitPeakBucket.count ), ' ', commitPeakBucket.count === 1 ? 'commit' : 'commits', ' in ', commitPeakBucket.label.toLowerCase(), '.' ) : null
 							)
-							: h( 'span', { className: 'hdc-work-stat-meta' }, props.contributorStatsIsLoading ? 'Loading contributor commit and code-volume stats from GitHub.' : props.contributorStatsSource === 'live' ? computingRepoCount > 0 ? 'GitHub is still computing contributor stats for this portfolio.' : hasOnlyMissingContributorStats ? 'GitHub returned repository stats, but no matching author commit history was found for the tracked portfolio.' : 'Live contributor commit stats are unavailable right now.' : 'Live contributor commit stats are unavailable right now.' )
+							: h( 'span', { className: 'hdc-work-stat-meta' }, props.contributorStatsIsLoading ? 'Loading contributor commit and code-volume stats from GitHub.' : props.contributorStatsSource === 'live' ? computingRepoCount > 0 ? 'GitHub is still computing contributor stats for this portfolio.' : hasOnlyMissingContributorStats ? 'GitHub returned repository stats, but no matching author commit history was found for the tracked portfolio.' : 'Live contributor commit stats are unavailable right now.' : ( contributorStatsUnavailableMessage || 'Live contributor commit stats are unavailable right now.' ) )
 				),
 				h(
 					StatCard,
@@ -2112,9 +2526,18 @@
 								null,
 								deliveryItems.length > 0 ? h( 'p', { className: 'hdc-work-stat-meta' }, h( InlineSeparatedList, { items: deliveryItems } ) ) : null,
 								latestRelease ? h( 'p', { className: 'hdc-work-stat-meta' }, 'Latest release: ', latestRelease.repo, ' ', latestRelease.tagName, ' on ', formatDateLabel( latestRelease.publishedAt ), '.' ) : null,
-								deliveryCoverageItems.length > 0 ? h( 'p', { className: 'hdc-work-stat-meta' }, h( InlineSeparatedList, { items: deliveryCoverageItems } ) ) : null
+								deliveryCoverageItems.length > 0 ? h( 'p', { className: 'hdc-work-stat-meta' }, h( InlineSeparatedList, { items: deliveryCoverageItems } ) ) : null,
+								deliveryDegradationMessages.length > 0
+									? deliveryDegradationMessages.map( function ( message ) {
+										return h(
+											'p',
+											{ key: 'delivery-msg-' + message, className: 'hdc-work-stat-meta' },
+											message
+										);
+									} )
+									: null
 							)
-							: h( 'span', { className: 'hdc-work-stat-meta' }, props.ciStatusIsLoading || props.repoProofIsLoading ? 'Loading CI, release, and community-health signals from GitHub.' : 'Live delivery signals are unavailable right now.' )
+							: h( 'span', { className: 'hdc-work-stat-meta' }, props.ciStatusIsLoading || props.repoProofIsLoading ? 'Loading CI, release, and community-health signals from GitHub.' : deliveryUnavailableMessage )
 				)
 			)
 		);
@@ -2147,7 +2570,7 @@
 						'article',
 						{
 							key: 'featured-' + repo.name,
-							className: classNames( 'hdc-work-featured-card', 'hdc-reveal' ),
+							className: classNames( 'hdc-work-featured-card', 'surface-ember-veil', 'hdc-reveal' ),
 							style: { '--reveal-index': index },
 						},
 						h(
@@ -2160,6 +2583,8 @@
 									srcSet: visuals.cover.srcSet,
 									alt: visuals.cover.alt,
 									loading: 'lazy',
+									width: visuals.cover.width || undefined,
+									height: visuals.cover.height || undefined,
 									sizes: '(min-width: 1280px) 30vw, (min-width: 1024px) 33vw, 100vw',
 								} )
 								: null,
@@ -2172,7 +2597,7 @@
 									repo.role ? h( Badge, { variant: 'default' }, repo.role ) : null,
 									repo.access === 'private' ? h( Badge, { variant: 'secondary' }, 'Private' ) : null
 								),
-								h( 'time', { className: 'hdc-work-meta-time', dateTime: repo.updatedAt }, formatDateLabel( repo.updatedAt ) )
+								h( 'time', { className: 'hdc-work-meta-time', dateTime: repo.updatedAt, 'data-contrast-probe': 'ember-meta-work-featured' }, formatDateLabel( repo.updatedAt ) )
 							),
 							h( 'h4', { className: 'hdc-work-featured-title' }, getRepoDisplayName( repo ) ),
 							h( 'p', { className: 'hdc-work-featured-summary hdc-work-clamp-3' }, repo.whyItMatters || repo.description ),
@@ -2250,7 +2675,7 @@
 							'article',
 							{
 								key: 'role-' + group.role,
-								className: classNames( 'hdc-work-role-card', 'hdc-reveal', isExpanded && 'is-expanded' ),
+								className: classNames( 'hdc-work-role-card', 'surface-learning-paper', 'hdc-reveal', isExpanded && 'is-expanded' ),
 								style: { '--reveal-index': groupIndex },
 							},
 						h(
@@ -2360,7 +2785,7 @@
 					props.repos.map( function ( repo ) {
 						return h(
 							'li',
-							{ key: 'build-' + repo.name + '-' + repo.updatedAt, className: 'hdc-work-timeline-item' },
+							{ key: 'build-' + repo.name + '-' + repo.updatedAt, className: classNames( 'hdc-work-timeline-item', 'surface-learning-paper' ) },
 							h(
 								'div',
 								{ className: 'hdc-work-timeline-head' },
@@ -2424,7 +2849,7 @@
 		return h(
 			'article',
 			{
-				className: classNames( 'hdc-work-repo-card', 'hdc-reveal' ),
+				className: classNames( 'hdc-work-repo-card', 'surface-learning-paper', 'hdc-reveal' ),
 				style: { '--reveal-index': props.revealIndex || 0 },
 			},
 			h(
@@ -2445,17 +2870,17 @@
 								{ className: 'hdc-work-repo-origin-icon-svg', size: 14 }
 							)
 						),
-						h( Badge, { variant: 'secondary' }, h( LanguageBadge, { language: repo.language } ) ),
+						h( LanguageBadge, { language: repo.language } ),
 						repo.featured ? h( Badge, { variant: 'default' }, 'Featured' ) : null,
 						repo.access === 'private' ? h( Badge, { variant: 'secondary' }, 'Private' ) : null
 					),
 					h(
-						'h4',
+						'h3',
 						{ className: 'hdc-work-repo-title' },
 						h(
 							'a',
 							{
-								className: 'hdc-work-inline-link',
+								className: 'hdc-work-repo-title-link',
 								href: getWorkDetailUrl( repo.name ),
 							},
 							getRepoDisplayName( repo )
@@ -2463,7 +2888,7 @@
 					)
 				)
 			),
-			h( 'p', { className: 'hdc-work-repo-description' }, repo.description ),
+			h( 'p', { className: 'hdc-work-repo-description hdc-work-clamp-2' }, repo.description ),
 			hasMetadataBadges
 				? h(
 					'div',
@@ -2596,8 +3021,8 @@
 		if ( props.describedRepos.length === 0 ) {
 			return h( EmptyState, {
 				title: 'Descriptions in progress',
-				description:
-					'These repositories are indexed, but detailed summaries are still being curated.',
+					description:
+						'These repositories are available, but detailed summaries are still being curated.',
 			} );
 		}
 
@@ -2688,7 +3113,7 @@
 							const signalBadges = getSignalBadges( repo ).slice( 0, 3 );
 							return h(
 								'li',
-								{ key: 'timeline-' + repo.name, className: 'hdc-work-timeline-item' },
+							{ key: 'timeline-' + repo.name, className: classNames( 'hdc-work-timeline-item', 'surface-learning-paper' ) },
 								h(
 									'div',
 									{ className: 'hdc-work-timeline-head' },
@@ -2759,6 +3184,17 @@
 		const [ view, setView ] = useState( initialState.view );
 		const [ page, setPage ] = useState( initialState.page );
 		const [ showPendingRepos, setShowPendingRepos ] = useState( false );
+		const [ activeRole, setActiveRole ] = useState( initialState.role );
+		const [ activeSignals, setActiveSignals ] = useState( initialState.signals );
+		const [ isRefineOpen, setIsRefineOpen ] = useState(
+			Boolean( initialState.role ) || initialState.signals.length > 0
+		);
+		const [ savedRefineView, setSavedRefineView ] = useState( function () {
+			if ( initialState.role || initialState.signals.length > 0 ) {
+				return { role: initialState.role, signals: initialState.signals };
+			}
+			return readSavedWorkRefineView();
+		} );
 		var [ contributorStatsByRepo, setContributorStatsByRepo ] = useState( {} );
 		var [ contributorStatsSource, setContributorStatsSource ] = useState( 'loading' );
 		var [ languageByteTotals, setLanguageByteTotals ] = useState( [] );
@@ -2828,7 +3264,7 @@
 				: source === 'fallback-error'
 					? 'Live GitHub sync is unavailable right now. Showing cached project snapshot.'
 					: source === 'fallback-offline'
-						? 'You are offline, so live GitHub sync is unavailable. Showing cached project snapshot.'
+						? "You're offline, so live GitHub sync is unavailable. Showing cached project snapshot."
 						: null;
 		const effectiveSort = view === 'timeline' ? 'updated' : sort;
 
@@ -2866,11 +3302,43 @@
 			[ activeFilter, filter ]
 		);
 
+		const activeSignalsKey = useMemo(
+			function () {
+				return getWorkSignalsKey( activeSignals );
+			},
+			[ activeSignals ]
+		);
+		const hasActiveLanguageFilter = activeFilter !== DEFAULT_FILTER;
+		const hasActiveRoleFilter = activeRole !== null;
+		const hasActiveSignalFilters = activeSignals.length > 0;
+		const hasActiveBrowseFilters =
+			hasActiveLanguageFilter || hasActiveRoleFilter || hasActiveSignalFilters;
+		const savedRefineViewSummary = buildSavedRefineViewSummary( savedRefineView );
+		const canRestoreLastView =
+			! hasActiveRoleFilter &&
+			! hasActiveSignalFilters &&
+			savedRefineView !== null &&
+			savedRefineViewSummary.length > 0;
+
 		const filtered = useMemo(
 			function () {
 				return repos
 					.filter( function ( repo ) {
-						return activeFilter === DEFAULT_FILTER || normalizeLanguage( repo.language ) === activeFilter;
+						if ( activeFilter !== DEFAULT_FILTER && normalizeLanguage( repo.language ) !== activeFilter ) {
+							return false;
+						}
+						if ( activeRole !== null && repo.role !== activeRole ) {
+							return false;
+						}
+						if ( activeSignals.length > 0 ) {
+							const repoSignals = getSignalBadges( repo );
+							for ( let i = 0; i < activeSignals.length; i++ ) {
+								if ( repoSignals.indexOf( activeSignals[ i ] ) === -1 ) {
+									return false;
+								}
+							}
+						}
+						return true;
 					} )
 					.sort( function ( a, b ) {
 						if ( effectiveSort === 'stars' ) {
@@ -2883,7 +3351,7 @@
 						return compareReposByUpdatedAtDesc( a, b );
 					} );
 			},
-			[ repos, activeFilter, effectiveSort ]
+			[ repos, activeFilter, activeRole, activeSignalsKey, effectiveSort ]
 		);
 
 		const describedRepos = useMemo(
@@ -2959,7 +3427,7 @@
 			},
 			[ describedRepos ]
 		);
-		const showFeaturedCaseStudies = view === 'grid' && activeFilter === DEFAULT_FILTER && featuredCaseStudies.length > 0;
+		const showFeaturedCaseStudies = view === 'grid' && ! hasActiveBrowseFilters && featuredCaseStudies.length > 0;
 
 		const reposByRole = useMemo(
 			function () {
@@ -2976,7 +3444,7 @@
 			},
 			[ describedRepos ]
 		);
-		const showRoleGroups = view === 'grid' && activeFilter === DEFAULT_FILTER && reposByRole.length > 0;
+		const showRoleGroups = view === 'grid' && ! hasActiveBrowseFilters && reposByRole.length > 0;
 
 		const shippedTimeline = useMemo(
 			function () {
@@ -2988,17 +3456,6 @@
 					.slice( 0, 8 );
 			},
 			[ describedRepos ]
-		);
-
-		const recentlyUpdatedRepos = useMemo(
-			function () {
-				return repos
-					.filter( function ( repo ) {
-						return isUpdatedWithin( repo, SIGNAL_ACTIVITY_WINDOW_DAYS, now );
-					} )
-					.sort( compareReposByUpdatedAtDesc );
-			},
-			[ repos, now ]
 		);
 
 		const timelineRepos = useMemo(
@@ -3033,8 +3490,6 @@
 			[ visibleGitHubRepoNames ]
 		);
 
-		const recentRepoPreview = recentlyUpdatedRepos.slice( 0, 3 );
-
 		var signalRepos = useMemo( function () {
 			return repos.filter( function ( repo ) {
 				return repo.origin === 'github' && repo.access !== 'private';
@@ -3059,6 +3514,8 @@
 			} );
 		}, [ recentlyUpdatedGitHubSignalRepos ] );
 
+		const recentRepoPreview = recentlyUpdatedGitHubSignalRepos.slice( 0, 3 );
+
 
 		useEffect(
 			function () {
@@ -3071,6 +3528,8 @@
 					page: view === 'grid' ? safePage : 1,
 					sort: sort,
 					view: view,
+					role: activeRole,
+					signals: activeSignals,
 				} );
 				const nextSearch = nextParams.toString();
 				const currentUrl = new URL( window.location.href );
@@ -3081,7 +3540,7 @@
 				currentUrl.search = nextSearch;
 				window.history.replaceState( window.history.state, '', currentUrl.toString() );
 			},
-			[ activeFilter, safePage, sort, view ]
+			[ activeFilter, safePage, sort, view, activeRole, activeSignalsKey ]
 		);
 
 		useEffect(
@@ -3217,8 +3676,138 @@
 					window.cancelAnimationFrame( frameId );
 				};
 			},
-			[ loading, error, page, view, activeFilter ]
+			[ loading, error, page, view, activeFilter, activeRole, activeSignalsKey ]
 		);
+
+		useEffect(
+			function () {
+				function handleKeyDown( event ) {
+					if ( event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey ) {
+						return;
+					}
+					if (
+						event.target instanceof HTMLElement &&
+						event.target.closest( "[role='dialog']" )
+					) {
+						return;
+					}
+					if ( isEditableTarget( event.target ) ) {
+						return;
+					}
+
+					if ( event.key === '/' ) {
+						event.preventDefault();
+						const node = document.querySelector(
+							"[aria-label='Filter by language'] [aria-pressed='true']"
+						);
+						if ( node && typeof node.focus === 'function' ) {
+							node.focus();
+						}
+						return;
+					}
+
+					if ( event.key && event.key.toLowerCase() === 'r' ) {
+						event.preventDefault();
+						setIsRefineOpen( true );
+						return;
+					}
+
+					if ( event.key === 'Escape' && hasActiveBrowseFilters ) {
+						event.preventDefault();
+						handleClearAllFilters();
+					}
+				}
+
+				document.addEventListener( 'keydown', handleKeyDown );
+				return function () {
+					document.removeEventListener( 'keydown', handleKeyDown );
+				};
+			},
+			[ hasActiveBrowseFilters, sort, view ]
+		);
+
+		function rememberSavedRefineView( nextRole, nextSignals ) {
+			const normalizedSignals = getNormalizedWorkSignals( nextSignals );
+			if ( ! nextRole && normalizedSignals.length === 0 ) {
+				return;
+			}
+			const nextSavedView = { role: nextRole || null, signals: normalizedSignals };
+			if ( typeof window !== 'undefined' && window.localStorage ) {
+				try {
+					window.localStorage.setItem(
+						WORK_LAST_REFINE_VIEW_STORAGE_KEY,
+						JSON.stringify( nextSavedView )
+					);
+				} catch ( error ) {
+					/* localStorage may be disabled - ignore */
+				}
+			}
+			setSavedRefineView( nextSavedView );
+		}
+
+		function handleRoleChange( value ) {
+			const nextRole = value && ROLE_ORDER.indexOf( value ) !== -1 ? value : null;
+			if ( nextRole === activeRole ) {
+				return;
+			}
+			rememberSavedRefineView( nextRole, activeSignals );
+			setActiveRole( nextRole );
+			setPage( 1 );
+			setShowPendingRepos( false );
+		}
+
+		function handleSignalsChange( nextSignals ) {
+			const normalized = getNormalizedWorkSignals( nextSignals );
+			if ( getWorkSignalsKey( normalized ) === activeSignalsKey ) {
+				return;
+			}
+			rememberSavedRefineView( activeRole, normalized );
+			setActiveSignals( normalized );
+			setPage( 1 );
+			setShowPendingRepos( false );
+		}
+
+		function handleClearLanguage() {
+			setFilter( DEFAULT_FILTER );
+			setPage( 1 );
+			setShowPendingRepos( false );
+		}
+
+		function handleClearRole() {
+			rememberSavedRefineView( null, activeSignals );
+			setActiveRole( null );
+			setPage( 1 );
+			setShowPendingRepos( false );
+		}
+
+		function handleClearSignals() {
+			rememberSavedRefineView( activeRole, [] );
+			setActiveSignals( [] );
+			setPage( 1 );
+			setShowPendingRepos( false );
+		}
+
+		function handleClearAllFilters() {
+			if ( ! hasActiveBrowseFilters ) {
+				return;
+			}
+			setFilter( DEFAULT_FILTER );
+			setActiveRole( null );
+			setActiveSignals( [] );
+			setPage( 1 );
+			setShowPendingRepos( false );
+		}
+
+		function handleRestoreLastView() {
+			if ( ! savedRefineView ) {
+				return;
+			}
+			setActiveRole( savedRefineView.role );
+			setActiveSignals( getNormalizedWorkSignals( savedRefineView.signals ) );
+			setPage( 1 );
+			setIsRefineOpen( true );
+			setShowPendingRepos( false );
+		}
 
 		function handleFilterChange( value ) {
 			if (
@@ -3280,9 +3869,13 @@
 						'div',
 						{ className: 'hdc-work-page-hero__meta' },
 						h(
-							'p',
-							{ className: 'hdc-work-source-label', 'aria-live': 'polite' },
-							loading ? 'Syncing from GitHub…' : sourceLabel
+						'p',
+						{
+							className: 'hdc-work-source-label',
+							'aria-live': 'polite',
+							'data-contrast-probe': 'hero-meta-work',
+						},
+						loading ? 'Syncing from GitHub...' : sourceLabel
 						),
 						! loading && sourceWarning
 							? h( 'p', { className: 'hdc-work-source-warning' }, sourceWarning )
@@ -3300,12 +3893,27 @@
 						Fragment,
 						null,
 						h( FiltersBar, {
+							activeRole: activeRole,
+							activeSignals: activeSignals,
+							canRestoreLastView: canRestoreLastView,
+							isRefineOpen: isRefineOpen,
 							languages: languages,
+							matchingRepoCount: filtered.length,
+							onClearAllFilters: handleClearAllFilters,
+							onClearLanguage: handleClearLanguage,
+							onClearRole: handleClearRole,
+							onClearSignals: handleClearSignals,
 							onFilterChange: handleFilterChange,
+							onRefineOpenChange: setIsRefineOpen,
+							onRestoreLastView: handleRestoreLastView,
+							onRoleChange: handleRoleChange,
+							onSignalsChange: handleSignalsChange,
 							onSortChange: handleSortChange,
 							onViewChange: handleViewChange,
+							savedViewSummary: savedRefineViewSummary,
 							showDetailsUnavailableMessage: detailsUnavailable,
 							sort: sort,
+							totalRepoCount: repos.length,
 							value: activeFilter,
 							view: view,
 						} ),
@@ -3325,27 +3933,52 @@
 							languageSummarySource: languageSummarySource,
 							proofsByRepoName: repoProofsAllByRepo,
 							recentRepoPreview: recentRepoPreview,
-							recentlyUpdatedCount: recentlyUpdatedRepos.length,
+							recentlyUpdatedCount: recentlyUpdatedGitHubSignalRepos.length,
 							repoProofIsLoading: repoProofsAllSource === 'loading',
 							repoProofSource: repoProofsAllSource,
 							signalRepos: signalRepos,
 						} ),
 						filtered.length === 0
-							? h( EmptyState, {
-								title: 'No projects found',
-								description: 'No repositories matched that language filter.',
-								action: h(
-									'button',
-									{
-										type: 'button',
-										className: 'hdc-work-button is-link',
-										onClick: function () {
-											handleFilterChange( DEFAULT_FILTER );
-										},
-									},
-									'View all projects'
-								),
-							} )
+							? ( function () {
+								const emptyStateActions = [
+									hasActiveRoleFilter ? { label: 'Clear role', onClick: handleClearRole } : null,
+									hasActiveSignalFilters ? { label: 'Clear signals', onClick: handleClearSignals } : null,
+									hasActiveLanguageFilter ? { label: 'Clear language', onClick: handleClearLanguage } : null,
+								].filter( Boolean );
+								return h( EmptyState, {
+									title: 'No projects found',
+									description: hasActiveBrowseFilters
+										? 'No repositories matched the current filters.'
+										: 'No repositories are available right now.',
+									action:
+										emptyStateActions.length > 0
+											? h(
+												'div',
+												{ className: 'hdc-work-empty-actions' },
+												emptyStateActions.map( function ( action ) {
+													return h(
+														'button',
+														{
+															type: 'button',
+															key: 'empty-' + action.label,
+															className: 'hdc-work-button is-link',
+															onClick: action.onClick,
+														},
+														action.label
+													);
+												} )
+											)
+											: h(
+												'button',
+												{
+													type: 'button',
+													className: 'hdc-work-button is-link',
+													onClick: handleClearAllFilters,
+												},
+												'View all projects'
+											),
+								} );
+							} )()
 							: h(
 								Fragment,
 								null,
