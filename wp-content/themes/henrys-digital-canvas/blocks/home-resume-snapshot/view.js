@@ -23,7 +23,9 @@
 		let parsed = {};
 
 		try {
-			parsed = JSON.parse( section.getAttribute( 'data-config' ) || '{}' );
+			parsed = JSON.parse(
+				section.getAttribute( 'data-config' ) || '{}'
+			);
 		} catch ( error ) {
 			parsed = {};
 		}
@@ -32,22 +34,33 @@
 			title: ensureString( parsed.title, 'Resume Snapshot' ),
 			actionLabel: ensureString( parsed.actionLabel, '' ),
 			actionHref: ensureString( parsed.actionHref, '' ),
-			positioningEyebrow: ensureString( parsed.positioningEyebrow, 'Positioning' ),
+			positioningEyebrow: ensureString(
+				parsed.positioningEyebrow,
+				'Positioning'
+			),
 			label: ensureString( parsed.label, '' ),
 			items: ensureArray( parsed.items ),
 			bestFitEyebrow: ensureString( parsed.bestFitEyebrow, 'Best fit' ),
-			bestFitTitle: ensureString( parsed.bestFitTitle, 'Where I contribute fastest' ),
+			bestFitTitle: ensureString(
+				parsed.bestFitTitle,
+				'Where I contribute fastest'
+			),
 			focusAreas: ensureArray( parsed.focusAreas ),
 			actionLinks: ensureArray( parsed.actionLinks ),
-			resumeEndpoint: ensureString( parsed.resumeEndpoint, '/wp-json/henrys-digital-canvas/v1/resume' ),
+			resumeEndpoint: ensureString(
+				parsed.resumeEndpoint,
+				'/wp-json/henrys-digital-canvas/v1/resume'
+			),
 			initialResume: parsed.initialResume,
 		};
 	}
 
 	function renderActionArrow() {
-		const renderLucideIcon = utils.renderLucideIcon || function () {
-			return null;
-		};
+		const renderLucideIcon =
+			utils.renderLucideIcon ||
+			function () {
+				return null;
+			};
 		return h(
 			'span',
 			{ 'aria-hidden': 'true', className: 'hdc-home-page__action-icon' },
@@ -62,32 +75,61 @@
 		return h(
 			'div',
 			{ 'aria-hidden': 'true', className: 'hdc-home-page__resume-stack' },
-			h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--title hdc-home-page__skeleton--title-wide' } ),
-			h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--line' } ),
-			h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--line hdc-home-page__skeleton--line-short' } ),
+			h( 'span', {
+				className:
+					'hdc-home-page__skeleton hdc-home-page__skeleton--title hdc-home-page__skeleton--title-wide',
+			} ),
+			h( 'span', {
+				className:
+					'hdc-home-page__skeleton hdc-home-page__skeleton--line',
+			} ),
+			h( 'span', {
+				className:
+					'hdc-home-page__skeleton hdc-home-page__skeleton--line hdc-home-page__skeleton--line-short',
+			} ),
 			h(
 				'div',
 				{ className: 'hdc-home-page__resume-snapshot' },
-				h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--meta' } ),
-				h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--line hdc-home-page__skeleton--line-medium' } )
+				h( 'span', {
+					className:
+						'hdc-home-page__skeleton hdc-home-page__skeleton--meta',
+				} ),
+				h( 'span', {
+					className:
+						'hdc-home-page__skeleton hdc-home-page__skeleton--line hdc-home-page__skeleton--line-medium',
+				} )
 			),
 			h(
 				'div',
 				{ className: 'hdc-home-page__badges', 'data-loading': 'true' },
-				h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--badge' } ),
-				h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--badge' } ),
-				h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--badge' } )
+				h( 'span', {
+					className:
+						'hdc-home-page__skeleton hdc-home-page__skeleton--badge',
+				} ),
+				h( 'span', {
+					className:
+						'hdc-home-page__skeleton hdc-home-page__skeleton--badge',
+				} ),
+				h( 'span', {
+					className:
+						'hdc-home-page__skeleton hdc-home-page__skeleton--badge',
+				} )
 			)
 		);
 	}
 
 	async function fetchResume( config ) {
-		const response = await fetch( resolveRequestUrl( config.resumeEndpoint ), {
-			headers: { Accept: 'application/json' },
-		} );
+		const response = await fetch(
+			resolveRequestUrl( config.resumeEndpoint ),
+			{
+				headers: { Accept: 'application/json' },
+			}
+		);
 
 		if ( ! response.ok ) {
-			throw new Error( 'Resume request failed with status ' + response.status );
+			throw new Error(
+				'Resume request failed with status ' + response.status
+			);
 		}
 
 		return normalizeResumeData( await response.json() );
@@ -101,7 +143,13 @@
 		return h(
 			'div',
 			{ className: 'hdc-home-page__resume-snapshot' },
-			props.label ? h( 'p', { className: 'hdc-home-page__resume-snapshot-label' }, props.label ) : null,
+			props.label
+				? h(
+						'p',
+						{ className: 'hdc-home-page__resume-snapshot-label' },
+						props.label
+				  )
+				: null,
 			props.items.length
 				? h(
 						'p',
@@ -109,10 +157,25 @@
 						props.items.reduce( function ( acc, item, index ) {
 							if ( index > 0 ) {
 								acc.push(
-									h( 'span', { className: 'hdc-home-page__inline-dot', 'aria-hidden': 'true', key: 'dot-' + String( index ) }, '\u00B7' )
+									h(
+										'span',
+										{
+											className:
+												'hdc-home-page__inline-dot',
+											'aria-hidden': 'true',
+											key: 'dot-' + String( index ),
+										},
+										'\u00B7'
+									)
 								);
 							}
-							acc.push( h( 'span', { key: 'item-' + String( index ) }, item ) );
+							acc.push(
+								h(
+									'span',
+									{ key: 'item-' + String( index ) },
+									item
+								)
+							);
 							return acc;
 						}, [] )
 				  )
@@ -143,7 +206,10 @@
 							return;
 						}
 						setResumeState( {
-							data: resume && typeof resume === 'object' ? resume : initialResume,
+							data:
+								resume && typeof resume === 'object'
+									? resume
+									: initialResume,
 							loading: false,
 						} );
 					} )
@@ -184,17 +250,40 @@
 			primaryContent = h(
 				'div',
 				{ className: 'hdc-home-page__resume-stack' },
-				resume && resume.headline ? h( 'h3', { className: 'hdc-home-page__card-title' }, resume.headline ) : null,
-				resume && resume.subheadline
-					? h( 'p', { className: 'hdc-home-page__card-copy', 'data-contrast-probe': 'ember-body-home' }, resume.subheadline )
+				resume && resume.headline
+					? h(
+							'h3',
+							{ className: 'hdc-home-page__card-title' },
+							resume.headline
+					  )
 					: null,
-				h( SnapshotItems, { label: config.label, items: snapshotItems } ),
+				resume && resume.subheadline
+					? h(
+							'p',
+							{
+								className: 'hdc-home-page__card-copy',
+								'data-contrast-probe': 'ember-body-home',
+							},
+							resume.subheadline
+					  )
+					: null,
+				h( SnapshotItems, {
+					label: config.label,
+					items: snapshotItems,
+				} ),
 				targetRoles.length
 					? h(
 							'div',
 							{ className: 'hdc-home-page__badges' },
 							targetRoles.map( function ( role ) {
-								return h( 'span', { className: 'hdc-home-page__badge', key: role }, role );
+								return h(
+									'span',
+									{
+										className: 'hdc-home-page__badge',
+										key: role,
+									},
+									role
+								);
 							} )
 					  )
 					: null,
@@ -207,11 +296,23 @@
 								return h(
 									'a',
 									{
-										className: 'hdc-home-page__text-link focus-ring',
-										href: utils.normalizeAppPath( ensureString( normalizedLink.href, '/resume/' ) ),
-										key: ensureString( normalizedLink.href, 'resume-link-' + String( index ) ),
+										className:
+											'hdc-home-page__text-link focus-ring',
+										href: utils.normalizeAppPath(
+											ensureString(
+												normalizedLink.href,
+												'/resume/'
+											)
+										),
+										key: ensureString(
+											normalizedLink.href,
+											'resume-link-' + String( index )
+										),
 									},
-									ensureString( normalizedLink.label, 'Learn more' ),
+									ensureString(
+										normalizedLink.label,
+										'Learn more'
+									),
 									renderActionArrow()
 								);
 							} )
@@ -226,19 +327,41 @@
 			h(
 				'div',
 				{ className: 'hdc-home-page__resume-card ember-surface' },
-				h( 'p', { className: 'hdc-home-page__eyebrow', 'data-contrast-probe': 'ember-eyebrow-home' }, config.positioningEyebrow ),
+				h(
+					'p',
+					{
+						className: 'hdc-home-page__eyebrow',
+						'data-contrast-probe': 'ember-eyebrow-home',
+					},
+					config.positioningEyebrow
+				),
 				primaryContent
 			),
 			h(
 				'div',
-				{ className: 'hdc-home-page__resume-card hdc-home-page__resume-card--accent ember-surface ember-surface-strong' },
-				h( 'p', { className: 'hdc-home-page__eyebrow' }, config.bestFitEyebrow ),
-				h( 'h3', { className: 'hdc-home-page__card-title' }, config.bestFitTitle ),
+				{
+					className:
+						'hdc-home-page__resume-card hdc-home-page__resume-card--accent ember-surface ember-surface-strong',
+				},
+				h(
+					'p',
+					{ className: 'hdc-home-page__eyebrow' },
+					config.bestFitEyebrow
+				),
+				h(
+					'h3',
+					{ className: 'hdc-home-page__card-title' },
+					config.bestFitTitle
+				),
 				h(
 					'ul',
 					{ className: 'hdc-home-page__list list-accent-disc' },
 					focusAreas.map( function ( area, index ) {
-						return h( 'li', { key: 'focus-area-' + String( index ) }, ensureString( area, '' ) );
+						return h(
+							'li',
+							{ key: 'focus-area-' + String( index ) },
+							ensureString( area, '' )
+						);
 					} )
 				)
 			)
@@ -263,7 +386,9 @@
 	}
 
 	function init() {
-		document.querySelectorAll( '[data-hdc-home-resume-snapshot]' ).forEach( mount );
+		document
+			.querySelectorAll( '[data-hdc-home-resume-snapshot]' )
+			.forEach( mount );
 	}
 
 	if ( document.readyState === 'loading' ) {

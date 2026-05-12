@@ -20,9 +20,12 @@
 			const attrs = props.attributes;
 			const setAttributes = props.setAttributes;
 			const blockProps = useBlockProps( {
-				className: 'hdc-home-page__section hdc-home-page__section--work hdc-home-selected-work-editor',
+				className:
+					'hdc-home-page__section hdc-home-page__section--work hdc-home-selected-work-editor',
 			} );
-			const repoNames = Array.isArray( attrs.featuredRepoNames ) ? attrs.featuredRepoNames : [];
+			const repoNames = Array.isArray( attrs.featuredRepoNames )
+				? attrs.featuredRepoNames
+				: [];
 
 			function updateRepoName( index, next ) {
 				const cloned = repoNames.slice();
@@ -31,7 +34,9 @@
 			}
 
 			function addRepoName() {
-				setAttributes( { featuredRepoNames: repoNames.concat( [ '' ] ) } );
+				setAttributes( {
+					featuredRepoNames: repoNames.concat( [ '' ] ),
+				} );
 			}
 
 			function removeRepoName( index ) {
@@ -45,9 +50,9 @@
 			function textInput( label, key, isTextarea ) {
 				const Control = isTextarea ? TextareaControl : TextControl;
 				return el( Control, {
-					label: __( label, 'henrys-digital-canvas' ),
+					label,
 					value: attrs[ key ] || '',
-					onChange: function ( next ) {
+					onChange( next ) {
 						const update = {};
 						update[ key ] = next;
 						setAttributes( update );
@@ -63,31 +68,48 @@
 					{},
 					el(
 						PanelBody,
-						{ title: __( 'Heading', 'henrys-digital-canvas' ), initialOpen: true },
+						{
+							title: __( 'Heading', 'henrys-digital-canvas' ),
+							initialOpen: true,
+						},
 						textInput( 'Section title', 'title', false ),
 						textInput( 'Action label', 'actionLabel', false ),
 						textInput( 'Action href', 'actionHref', false )
 					),
 					el(
 						PanelBody,
-						{ title: __( 'Featured repositories', 'henrys-digital-canvas' ), initialOpen: false },
+						{
+							title: __(
+								'Featured repositories',
+								'henrys-digital-canvas'
+							),
+							initialOpen: false,
+						},
 						el( RangeControl, {
-							label: __( 'Repos to display', 'henrys-digital-canvas' ),
-							value: Number.isFinite( Number( attrs.repoCount ) ) ? Number( attrs.repoCount ) : 3,
+							label: __(
+								'Repos to display',
+								'henrys-digital-canvas'
+							),
+							value: Number.isFinite( Number( attrs.repoCount ) )
+								? Number( attrs.repoCount )
+								: 3,
 							min: 1,
 							max: 6,
-							onChange: function ( repoCount ) {
-								setAttributes( { repoCount: repoCount } );
+							onChange( repoCount ) {
+								setAttributes( { repoCount } );
 							},
 						} ),
 						repoNames.map( function ( name, index ) {
 							return el(
 								'div',
-								{ key: 'repo-' + index, style: { marginBottom: '8px' } },
+								{
+									key: 'repo-' + index,
+									style: { marginBottom: '8px' },
+								},
 								el( TextControl, {
-									label: __( 'Repo #' + ( index + 1 ), 'henrys-digital-canvas' ),
+									label: 'Repo #' + ( index + 1 ),
 									value: name || '',
-									onChange: function ( next ) {
+									onChange( next ) {
 										updateRepoName( index, next );
 									},
 								} ),
@@ -96,7 +118,7 @@
 									{
 										variant: 'tertiary',
 										isDestructive: true,
-										onClick: function () {
+										onClick() {
 											removeRepoName( index );
 										},
 									},
@@ -104,17 +126,43 @@
 								)
 							);
 						} ),
-						el( Button, { variant: 'secondary', onClick: addRepoName }, __( 'Add repo', 'henrys-digital-canvas' ) )
+						el(
+							Button,
+							{ variant: 'secondary', onClick: addRepoName },
+							__( 'Add repo', 'henrys-digital-canvas' )
+						)
 					),
 					el(
 						PanelBody,
-						{ title: __( 'Empty and status copy', 'henrys-digital-canvas' ), initialOpen: false },
+						{
+							title: __(
+								'Empty and status copy',
+								'henrys-digital-canvas'
+							),
+							initialOpen: false,
+						},
 						textInput( 'Loading label', 'loadingLabel', false ),
-						textInput( 'Source label (live)', 'sourceLiveLabel', true ),
-						textInput( 'Source label (fallback)', 'sourceFallbackLabel', true ),
+						textInput(
+							'Source label (live)',
+							'sourceLiveLabel',
+							true
+						),
+						textInput(
+							'Source label (fallback)',
+							'sourceFallbackLabel',
+							true
+						),
 						textInput( 'Empty title', 'emptyTitle', false ),
-						textInput( 'Empty description (live)', 'emptyDescriptionLive', true ),
-						textInput( 'Empty description (fallback)', 'emptyDescriptionFallback', true )
+						textInput(
+							'Empty description (live)',
+							'emptyDescriptionLive',
+							true
+						),
+						textInput(
+							'Empty description (fallback)',
+							'emptyDescriptionFallback',
+							true
+						)
 					)
 				),
 				el(
@@ -123,10 +171,23 @@
 					el(
 						Notice,
 						{ status: 'info', isDismissible: false },
-						__( 'Live: fetches selected repos from GitHub with fallback. Editor shows the configured selection.', 'henrys-digital-canvas' )
+						__(
+							'Live: fetches selected repos from GitHub with fallback. Editor shows the configured selection.',
+							'henrys-digital-canvas'
+						)
 					),
-					el( 'h2', { className: 'hdc-home-page__section-title' }, attrs.title || __( 'Selected Work', 'henrys-digital-canvas' ) ),
-					el( 'p', { className: 'hdc-home-page__editor-meta' }, __( 'Featured: ', 'henrys-digital-canvas' ) + repoNames.join( ', ' ) )
+					el(
+						'h2',
+						{ className: 'hdc-home-page__section-title' },
+						attrs.title ||
+							__( 'Selected Work', 'henrys-digital-canvas' )
+					),
+					el(
+						'p',
+						{ className: 'hdc-home-page__editor-meta' },
+						__( 'Featured:', 'henrys-digital-canvas' ) +
+							repoNames.join( ', ' )
+					)
 				)
 			);
 		},

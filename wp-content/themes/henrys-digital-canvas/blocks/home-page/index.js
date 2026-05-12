@@ -5,7 +5,9 @@
 
 	const el = element.createElement;
 	const useBlockProps = blockEditor.useBlockProps;
-	const useInnerBlocksProps = blockEditor.useInnerBlocksProps || blockEditor.__experimentalUseInnerBlocksProps;
+	const useInnerBlocksProps =
+		blockEditor.useInnerBlocksProps ||
+		blockEditor.__experimentalUseInnerBlocksProps;
 	const InnerBlocks = blockEditor.InnerBlocks;
 
 	const TEMPLATE = [

@@ -17,44 +17,66 @@
 		let parsed = {};
 
 		try {
-			parsed = JSON.parse( section.getAttribute( 'data-config' ) || '{}' );
+			parsed = JSON.parse(
+				section.getAttribute( 'data-config' ) || '{}'
+			);
 		} catch ( error ) {
 			parsed = {};
 		}
 
 		return {
 			title: utils.ensureString( parsed.title, 'Recent Writing' ),
-			emptyTitle: utils.ensureString( parsed.emptyTitle, 'Recent writing is updating' ),
+			emptyTitle: utils.ensureString(
+				parsed.emptyTitle,
+				'Recent writing is updating'
+			),
 			emptyDescription: utils.ensureString( parsed.emptyDescription, '' ),
-			blogCount: utils.clamp( Number.parseInt( parsed.blogCount, 10 ) || 3, 1, 6 ),
+			blogCount: utils.clamp(
+				Number.parseInt( parsed.blogCount, 10 ) || 3,
+				1,
+				6
+			),
 			blogEndpoint: utils.ensureString( parsed.blogEndpoint, '' ),
 			initialPosts: parsed.initialPosts || {},
 		};
 	}
 
 	function StateCard( props ) {
-		const renderLucideIcon = utils.renderLucideIcon || function () {
-			return null;
-		};
+		const renderLucideIcon =
+			utils.renderLucideIcon ||
+			function () {
+				return null;
+			};
 		return h(
 			'div',
 			{ className: 'hdc-home-page__empty-state ember-surface' },
 			h(
 				'span',
-				{ 'aria-hidden': 'true', className: 'hdc-home-page__empty-state-icon' },
+				{
+					'aria-hidden': 'true',
+					className: 'hdc-home-page__empty-state-icon',
+				},
 				renderLucideIcon( h, props.iconName, {
 					className: 'hdc-home-page__empty-state-icon-svg',
 					size: 20,
 				} )
 			),
 			h( 'h2', { className: 'hdc-home-page__empty-title' }, props.title ),
-			props.description ? h( 'p', { className: 'hdc-home-page__empty' }, props.description ) : null
+			props.description
+				? h(
+						'p',
+						{ className: 'hdc-home-page__empty' },
+						props.description
+				  )
+				: null
 		);
 	}
 
 	function PostCard( props ) {
 		const post = props.post;
-		const readingTimeNode = post.readingTime ? h( 'span', {}, post.readingTime ) : null;
+		const readingTimeNode = post.readingTime
+			? h( 'span', {}, post.readingTime )
+			: null;
 		let thumbnailNode = null;
 
 		if ( post.thumbnailUrl ) {
@@ -79,7 +101,8 @@
 		return h(
 			'a',
 			{
-				className: 'hdc-home-page__post-card focus-ring hdc-reveal hdc-reveal--slide-left',
+				className:
+					'hdc-home-page__post-card focus-ring hdc-reveal hdc-reveal--slide-left',
 				href: post.link,
 				style: { '--reveal-index': props.revealIndex },
 			},
@@ -87,8 +110,22 @@
 			h(
 				'div',
 				{ className: 'hdc-home-page__post-body' },
-				h( 'h3', { className: 'hdc-home-page__card-title hdc-home-page__card-title--row' }, post.title ),
-				h( 'p', { className: 'hdc-home-page__card-copy hdc-home-page__card-copy--clamp' }, post.excerpt ),
+				h(
+					'h3',
+					{
+						className:
+							'hdc-home-page__card-title hdc-home-page__card-title--row',
+					},
+					post.title
+				),
+				h(
+					'p',
+					{
+						className:
+							'hdc-home-page__card-copy hdc-home-page__card-copy--clamp',
+					},
+					post.excerpt
+				),
 				h(
 					'div',
 					{ className: 'hdc-home-page__post-meta' },
@@ -100,23 +137,34 @@
 	}
 
 	async function fetchPosts( config ) {
-		const endpoint = utils.normalizePostsEndpoint( config.blogEndpoint, config.blogCount );
+		const endpoint = utils.normalizePostsEndpoint(
+			config.blogEndpoint,
+			config.blogCount
+		);
 		const response = await fetch( endpoint, {
 			headers: { Accept: 'application/json' },
 		} );
 
 		if ( ! response.ok ) {
-			throw new Error( 'Post request failed with status ' + response.status );
+			throw new Error(
+				'Post request failed with status ' + response.status
+			);
 		}
 
-		return utils.normalizePostsPayload( await response.json(), config.blogCount );
+		return utils.normalizePostsPayload(
+			await response.json(),
+			config.blogCount
+		);
 	}
 
 	function RecentWritingApp( props ) {
 		const config = props.config;
 		const initialPosts = useMemo(
 			function () {
-				return utils.normalizePostsPayload( config.initialPosts, config.blogCount );
+				return utils.normalizePostsPayload(
+					config.initialPosts,
+					config.blogCount
+				);
 			},
 			[ config.initialPosts, config.blogCount ]
 		);
@@ -146,7 +194,10 @@
 							return;
 						}
 						setPostsState( {
-							error: error instanceof Error ? error.message : 'Recent writing is temporarily unavailable.',
+							error:
+								error instanceof Error
+									? error.message
+									: 'Recent writing is temporarily unavailable.',
 							items: initialPosts,
 							loading: false,
 						} );
@@ -170,7 +221,8 @@
 
 		if ( postsState.loading ) {
 			return h( StateCard, {
-				description: 'Please wait while the latest posts are prepared for the homepage.',
+				description:
+					'Please wait while the latest posts are prepared for the homepage.',
 				iconName: 'loader-2',
 				title: 'Loading recent writing',
 			} );
@@ -198,7 +250,9 @@
 	}
 
 	function mount( section ) {
-		const stack = section.querySelector( '[data-hdc-home-recent-writing-stack]' );
+		const stack = section.querySelector(
+			'[data-hdc-home-recent-writing-stack]'
+		);
 
 		if ( ! stack ) {
 			return;
@@ -215,7 +269,9 @@
 	}
 
 	function init() {
-		document.querySelectorAll( '[data-hdc-home-recent-writing]' ).forEach( mount );
+		document
+			.querySelectorAll( '[data-hdc-home-recent-writing]' )
+			.forEach( mount );
 	}
 
 	if ( document.readyState === 'loading' ) {

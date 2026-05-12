@@ -19,15 +19,16 @@
 			const attrs = props.attributes;
 			const setAttributes = props.setAttributes;
 			const blockProps = useBlockProps( {
-				className: 'hdc-home-page__section hdc-home-page__section--writing hdc-home-recent-writing-editor hdc-feed-section',
+				className:
+					'hdc-home-page__section hdc-home-page__section--writing hdc-home-recent-writing-editor hdc-feed-section',
 			} );
 
 			function input( label, key, isTextarea ) {
 				const Control = isTextarea ? TextareaControl : TextControl;
 				return el( Control, {
-					label: __( label, 'henrys-digital-canvas' ),
+					label,
 					value: attrs[ key ] || '',
-					onChange: function ( next ) {
+					onChange( next ) {
 						const update = {};
 						update[ key ] = next;
 						setAttributes( update );
@@ -43,31 +44,56 @@
 					{},
 					el(
 						PanelBody,
-						{ title: __( 'Heading', 'henrys-digital-canvas' ), initialOpen: true },
+						{
+							title: __( 'Heading', 'henrys-digital-canvas' ),
+							initialOpen: true,
+						},
 						input( 'Section title', 'title', false ),
 						input( 'Action label', 'actionLabel', false ),
 						input( 'Action href', 'actionHref', false )
 					),
 					el(
 						PanelBody,
-						{ title: __( 'Feed', 'henrys-digital-canvas' ), initialOpen: false },
+						{
+							title: __( 'Feed', 'henrys-digital-canvas' ),
+							initialOpen: false,
+						},
 						el( RangeControl, {
-							label: __( 'Posts to display', 'henrys-digital-canvas' ),
-							value: Number.isFinite( Number( attrs.blogCount ) ) ? Number( attrs.blogCount ) : 3,
+							label: __(
+								'Posts to display',
+								'henrys-digital-canvas'
+							),
+							value: Number.isFinite( Number( attrs.blogCount ) )
+								? Number( attrs.blogCount )
+								: 3,
 							min: 1,
 							max: 6,
-							onChange: function ( blogCount ) {
-								setAttributes( { blogCount: blogCount } );
+							onChange( blogCount ) {
+								setAttributes( { blogCount } );
 							},
 						} )
 					),
 					el(
 						PanelBody,
-						{ title: __( 'Empty state', 'henrys-digital-canvas' ), initialOpen: false },
+						{
+							title: __( 'Empty state', 'henrys-digital-canvas' ),
+							initialOpen: false,
+						},
 						input( 'Empty title', 'emptyTitle', false ),
 						input( 'Empty description', 'emptyDescription', true )
 					),
-					el( PanelBody, { title: __( 'Advanced', 'henrys-digital-canvas' ), initialOpen: false }, input( 'Blog endpoint (override)', 'blogEndpoint', false ) )
+					el(
+						PanelBody,
+						{
+							title: __( 'Advanced', 'henrys-digital-canvas' ),
+							initialOpen: false,
+						},
+						input(
+							'Blog endpoint (override)',
+							'blogEndpoint',
+							false
+						)
+					)
 				),
 				el(
 					'div',
@@ -75,15 +101,25 @@
 					el(
 						Notice,
 						{ status: 'info', isDismissible: false },
-						__( 'Live: fetches blog posts via REST. Editor shows a placeholder summary.', 'henrys-digital-canvas' )
+						__(
+							'Live: fetches blog posts via REST. Editor shows a placeholder summary.',
+							'henrys-digital-canvas'
+						)
 					),
-					el( 'h2', { className: 'hdc-home-page__section-title' }, attrs.title || __( 'Recent Writing', 'henrys-digital-canvas' ) ),
+					el(
+						'h2',
+						{ className: 'hdc-home-page__section-title' },
+						attrs.title ||
+							__( 'Recent Writing', 'henrys-digital-canvas' )
+					),
 					el(
 						'p',
 						{ className: 'hdc-home-page__editor-meta' },
-						__( 'Showing the ', 'henrys-digital-canvas' ) +
-							( Number.isFinite( Number( attrs.blogCount ) ) ? Number( attrs.blogCount ) : 3 ) +
-							__( ' most recent posts.', 'henrys-digital-canvas' )
+						__( 'Showing the', 'henrys-digital-canvas' ) +
+							( Number.isFinite( Number( attrs.blogCount ) )
+								? Number( attrs.blogCount )
+								: 3 ) +
+							__( 'most recent posts.', 'henrys-digital-canvas' )
 					)
 				)
 			);

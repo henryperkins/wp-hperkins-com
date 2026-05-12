@@ -14,7 +14,6 @@
 	const utils = window.hdcSharedUtils;
 	const ensureString = utils.ensureString;
 	const ensureArray = utils.ensureArray;
-	const ensureObject = utils.ensureObject;
 	const clamp = utils.clamp;
 	const normalizeRepoItem = utils.normalizeRepoItem;
 	const compareReposByUpdatedAtDesc = utils.compareReposByUpdatedAtDesc;
@@ -24,9 +23,11 @@
 	const isRateLimitError = utils.isRateLimitError;
 	const isOfflineError = utils.isOfflineError;
 	const resolveRequestUrl = utils.resolveRequestUrl;
-	const renderLucideIcon = utils.renderLucideIcon || function () {
-		return null;
-	};
+	const renderLucideIcon =
+		utils.renderLucideIcon ||
+		function () {
+			return null;
+		};
 
 	const REPO_PROXY_PAGE_SIZE = 100;
 	const REPO_PROXY_MAX_PAGES = 20;
@@ -35,7 +36,9 @@
 		let parsed = {};
 
 		try {
-			parsed = JSON.parse( section.getAttribute( 'data-config' ) || '{}' );
+			parsed = JSON.parse(
+				section.getAttribute( 'data-config' ) || '{}'
+			);
 		} catch ( error ) {
 			parsed = {};
 		}
@@ -45,30 +48,64 @@
 			actionLabel: ensureString( parsed.actionLabel, '' ),
 			actionHref: ensureString( parsed.actionHref, '' ),
 			featuredRepoNames: ensureArray( parsed.featuredRepoNames ),
-			loadingLabel: ensureString( parsed.loadingLabel, 'Syncing selected work...' ),
+			loadingLabel: ensureString(
+				parsed.loadingLabel,
+				'Syncing selected work...'
+			),
 			sourceLiveLabel: ensureString( parsed.sourceLiveLabel, '' ),
 			sourceFallbackLabel: ensureString( parsed.sourceFallbackLabel, '' ),
-			emptyTitle: ensureString( parsed.emptyTitle, 'Selected work is updating' ),
-			emptyDescriptionLive: ensureString( parsed.emptyDescriptionLive, '' ),
-			emptyDescriptionFallback: ensureString( parsed.emptyDescriptionFallback, '' ),
-			repoCount: clamp( Number.parseInt( parsed.repoCount, 10 ) || 3, 1, 6 ),
+			emptyTitle: ensureString(
+				parsed.emptyTitle,
+				'Selected work is updating'
+			),
+			emptyDescriptionLive: ensureString(
+				parsed.emptyDescriptionLive,
+				''
+			),
+			emptyDescriptionFallback: ensureString(
+				parsed.emptyDescriptionFallback,
+				''
+			),
+			repoCount: clamp(
+				Number.parseInt( parsed.repoCount, 10 ) || 3,
+				1,
+				6
+			),
 			initialRepos: ensureArray( parsed.initialRepos ),
-			githubUsername: ensureString( parsed.githubUsername, 'henryperkins' ),
-			githubProxyUrl: ensureString( parsed.githubProxyUrl, '/api/github/repos' ),
-			workEndpoint: ensureString( parsed.workEndpoint, '/wp-json/henrys-digital-canvas/v1/work' ),
+			githubUsername: ensureString(
+				parsed.githubUsername,
+				'henryperkins'
+			),
+			githubProxyUrl: ensureString(
+				parsed.githubProxyUrl,
+				'/api/github/repos'
+			),
+			workEndpoint: ensureString(
+				parsed.workEndpoint,
+				'/wp-json/henrys-digital-canvas/v1/work'
+			),
 		};
 	}
 
 	function getHomeRepoTitle( repo ) {
-		return ensureString( repo.displayName, '' ) || humanizeRepoName( repo.name );
+		return (
+			ensureString( repo.displayName, '' ) ||
+			humanizeRepoName( repo.name )
+		);
 	}
 
 	function getHomeRepoSummary( repo ) {
-		return ensureString( repo.whyItMatters, '' ) || ensureString( repo.description, 'Description coming soon.' );
+		return (
+			ensureString( repo.whyItMatters, '' ) ||
+			ensureString( repo.description, 'Description coming soon.' )
+		);
 	}
 
 	function isGitHubLinkedRepo( repo ) {
-		return repo.origin === 'github' || /github\.com\//i.test( ensureString( repo.externalUrl, '' ) );
+		return (
+			repo.origin === 'github' ||
+			/github\.com\//i.test( ensureString( repo.externalUrl, '' ) )
+		);
 	}
 
 	function getHomeRepoBadge( repo ) {
@@ -120,7 +157,9 @@
 
 	function selectFeaturedRepos( repos, featuredRepoNames, repoCount ) {
 		const items = ensureArray( repos );
-		const requestedNames = ensureArray( featuredRepoNames ).map( normalizeRepoKey ).filter( Boolean );
+		const requestedNames = ensureArray( featuredRepoNames )
+			.map( normalizeRepoKey )
+			.filter( Boolean );
 		const selected = [];
 		const selectedNames = new Set();
 		const byName = new Map();
@@ -143,7 +182,11 @@
 		if ( selected.length < repoCount ) {
 			items.forEach( function ( repo ) {
 				const key = normalizeRepoKey( repo && repo.name );
-				if ( selected.length >= repoCount || selectedNames.has( key ) || ! repo.featured ) {
+				if (
+					selected.length >= repoCount ||
+					selectedNames.has( key ) ||
+					! repo.featured
+				) {
 					return;
 				}
 				selected.push( repo );
@@ -160,7 +203,10 @@
 			{ className: 'hdc-home-page__empty-state ember-surface' },
 			h(
 				'span',
-				{ 'aria-hidden': 'true', className: 'hdc-home-page__empty-state-icon' },
+				{
+					'aria-hidden': 'true',
+					className: 'hdc-home-page__empty-state-icon',
+				},
 				renderLucideIcon( h, props.iconName, {
 					className: props.spinIcon
 						? 'hdc-home-page__empty-state-icon-svg hdc-home-page__empty-state-icon-svg--spin'
@@ -169,7 +215,13 @@
 				} )
 			),
 			h( 'h2', { className: 'hdc-home-page__empty-title' }, props.title ),
-			props.description ? h( 'p', { className: 'hdc-home-page__empty' }, props.description ) : null
+			props.description
+				? h(
+						'p',
+						{ className: 'hdc-home-page__empty' },
+						props.description
+				  )
+				: null
 		);
 	}
 
@@ -177,30 +229,54 @@
 		return h(
 			Fragment,
 			{},
-			Array.from( { length: props.count } ).map( function ( item, index ) {
-				return h(
-					'div',
-					{
-						className: 'hdc-home-page__work-card hdc-home-page__work-card--skeleton ember-surface',
-						key: 'work-skeleton-' + String( index ),
-					},
-					h(
+			Array.from( { length: props.count } ).map(
+				function ( item, index ) {
+					return h(
 						'div',
-						{ className: 'hdc-home-page__work-meta' },
-						h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--meta' } ),
-						h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--badge' } )
-					),
-					h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--title' } ),
-					h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--line' } ),
-					h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--line hdc-home-page__skeleton--line-short' } ),
-					h(
-						'div',
-						{ className: 'hdc-home-page__card-footer' },
-						h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--meta' } ),
-						h( 'span', { className: 'hdc-home-page__skeleton hdc-home-page__skeleton--meta' } )
-					)
-				);
-			} )
+						{
+							className:
+								'hdc-home-page__work-card hdc-home-page__work-card--skeleton ember-surface',
+							key: 'work-skeleton-' + String( index ),
+						},
+						h(
+							'div',
+							{ className: 'hdc-home-page__work-meta' },
+							h( 'span', {
+								className:
+									'hdc-home-page__skeleton hdc-home-page__skeleton--meta',
+							} ),
+							h( 'span', {
+								className:
+									'hdc-home-page__skeleton hdc-home-page__skeleton--badge',
+							} )
+						),
+						h( 'span', {
+							className:
+								'hdc-home-page__skeleton hdc-home-page__skeleton--title',
+						} ),
+						h( 'span', {
+							className:
+								'hdc-home-page__skeleton hdc-home-page__skeleton--line',
+						} ),
+						h( 'span', {
+							className:
+								'hdc-home-page__skeleton hdc-home-page__skeleton--line hdc-home-page__skeleton--line-short',
+						} ),
+						h(
+							'div',
+							{ className: 'hdc-home-page__card-footer' },
+							h( 'span', {
+								className:
+									'hdc-home-page__skeleton hdc-home-page__skeleton--meta',
+							} ),
+							h( 'span', {
+								className:
+									'hdc-home-page__skeleton hdc-home-page__skeleton--meta',
+							} )
+						)
+					);
+				}
+			)
 		);
 	}
 
@@ -211,7 +287,8 @@
 		return h(
 			'a',
 			{
-				className: 'hdc-home-page__work-card ember-surface focus-ring hdc-reveal',
+				className:
+					'hdc-home-page__work-card ember-surface focus-ring hdc-reveal',
 				href: repo.url,
 				style: { '--reveal-index': props.revealIndex },
 			},
@@ -223,19 +300,53 @@
 					{ className: 'hdc-home-page__work-origin' },
 					h(
 						'span',
-						{ 'aria-hidden': 'true', className: 'hdc-home-page__work-origin-icon' },
-						renderLucideIcon( h, repo.origin === 'github' ? 'github' : 'briefcase-business', {
-							className: 'hdc-home-page__work-origin-icon-svg',
-							size: 14,
-						} )
+						{
+							'aria-hidden': 'true',
+							className: 'hdc-home-page__work-origin-icon',
+						},
+						renderLucideIcon(
+							h,
+							repo.origin === 'github'
+								? 'github'
+								: 'briefcase-business',
+							{
+								className:
+									'hdc-home-page__work-origin-icon-svg',
+								size: 14,
+							}
+						)
 					),
 					h( 'span', {}, repo.language )
 				),
-				h( 'span', { className: 'hdc-home-page__badge' }, getHomeRepoBadge( repo ) ),
-				sourceBadge ? h( 'span', { className: 'hdc-home-page__badge hdc-home-page__badge--outline' }, sourceBadge ) : null
+				h(
+					'span',
+					{ className: 'hdc-home-page__badge' },
+					getHomeRepoBadge( repo )
+				),
+				sourceBadge
+					? h(
+							'span',
+							{
+								className:
+									'hdc-home-page__badge hdc-home-page__badge--outline',
+							},
+							sourceBadge
+					  )
+					: null
 			),
-			h( 'h3', { className: 'hdc-home-page__card-title' }, getHomeRepoTitle( repo ) ),
-			h( 'p', { className: 'hdc-home-page__card-copy hdc-home-page__card-copy--clamp' }, getHomeRepoSummary( repo ) ),
+			h(
+				'h3',
+				{ className: 'hdc-home-page__card-title' },
+				getHomeRepoTitle( repo )
+			),
+			h(
+				'p',
+				{
+					className:
+						'hdc-home-page__card-copy hdc-home-page__card-copy--clamp',
+				},
+				getHomeRepoSummary( repo )
+			),
 			h(
 				'div',
 				{ className: 'hdc-home-page__card-footer' },
@@ -244,27 +355,44 @@
 					{ className: 'hdc-home-page__card-date' },
 					h(
 						'span',
-						{ 'aria-hidden': 'true', className: 'hdc-home-page__card-date-icon' },
+						{
+							'aria-hidden': 'true',
+							className: 'hdc-home-page__card-date-icon',
+						},
 						renderLucideIcon( h, 'clock', {
 							className: 'hdc-home-page__card-date-icon-svg',
 							size: 12,
 						} )
 					),
-					h( 'span', { className: 'screen-reader-text' }, 'Updated:' ),
+					h(
+						'span',
+						{ className: 'screen-reader-text' },
+						'Updated:'
+					),
 					formatDate( repo.updatedAt )
 				),
-				h( 'span', { className: 'hdc-home-page__card-cta' }, getHomeRepoCtaLabel( repo ), renderActionArrow() )
+				h(
+					'span',
+					{ className: 'hdc-home-page__card-cta' },
+					getHomeRepoCtaLabel( repo ),
+					renderActionArrow()
+				)
 			)
 		);
 	}
 
 	async function fetchReposFromContract( config ) {
-		const response = await fetch( resolveRequestUrl( config.workEndpoint ), {
-			headers: { Accept: 'application/json' },
-		} );
+		const response = await fetch(
+			resolveRequestUrl( config.workEndpoint ),
+			{
+				headers: { Accept: 'application/json' },
+			}
+		);
 
 		if ( ! response.ok ) {
-			throw new Error( 'Work contract request failed with status ' + response.status );
+			throw new Error(
+				'Work contract request failed with status ' + response.status
+			);
 		}
 
 		const payload = await response.json();
@@ -288,7 +416,10 @@
 		for ( let page = 1; page <= REPO_PROXY_MAX_PAGES; page += 1 ) {
 			const requestUrl = new URL( requestBaseUrl );
 			requestUrl.searchParams.set( 'username', config.githubUsername );
-			requestUrl.searchParams.set( 'per_page', String( REPO_PROXY_PAGE_SIZE ) );
+			requestUrl.searchParams.set(
+				'per_page',
+				String( REPO_PROXY_PAGE_SIZE )
+			);
 			requestUrl.searchParams.set( 'page', String( page ) );
 
 			const response = await fetch( requestUrl.toString(), {
@@ -304,7 +435,9 @@
 
 			if ( ! response.ok ) {
 				const requestError = new Error(
-					( payload && payload.error ? String( payload.error ) : 'GitHub request failed' ) +
+					( payload && payload.error
+						? String( payload.error )
+						: 'GitHub request failed' ) +
 						' (status ' +
 						response.status +
 						')'
@@ -313,7 +446,10 @@
 				requestError.status = response.status;
 				requestError.rateLimited =
 					response.status === 429 ||
-					( response.status === 403 && response.headers.get( 'x-github-ratelimit-remaining' ) === '0' );
+					( response.status === 403 &&
+						response.headers.get(
+							'x-github-ratelimit-remaining'
+						) === '0' );
 				throw requestError;
 			}
 
@@ -376,9 +512,11 @@
 		const config = props.config;
 		const initialRepos = useMemo(
 			function () {
-				return ensureArray( config.initialRepos ).map( function ( repo ) {
-					return normalizeRepoItem( repo, repo );
-				} );
+				return ensureArray( config.initialRepos ).map(
+					function ( repo ) {
+						return normalizeRepoItem( repo, repo );
+					}
+				);
 			},
 			[ config.initialRepos ]
 		);
@@ -410,7 +548,10 @@
 							return;
 						}
 						setReposState( {
-							error: error instanceof Error ? error.message : 'Selected work is temporarily unavailable.',
+							error:
+								error instanceof Error
+									? error.message
+									: 'Selected work is temporarily unavailable.',
 							items: [],
 							loading: false,
 							source: 'fallback-error',
@@ -437,7 +578,11 @@
 			return h( WorkGridLoadingState, { count: config.repoCount } );
 		}
 
-		const featuredRepos = selectFeaturedRepos( reposState.items, config.featuredRepoNames, config.repoCount );
+		const featuredRepos = selectFeaturedRepos(
+			reposState.items,
+			config.featuredRepoNames,
+			config.repoCount
+		);
 
 		if ( featuredRepos.length ) {
 			return h(
@@ -455,14 +600,19 @@
 		}
 
 		return h( StateCard, {
-			description: reposState.source === 'live' ? config.emptyDescriptionLive : config.emptyDescriptionFallback,
+			description:
+				reposState.source === 'live'
+					? config.emptyDescriptionLive
+					: config.emptyDescriptionFallback,
 			iconName: reposState.error ? 'alert-circle' : 'inbox',
 			title: config.emptyTitle,
 		} );
 	}
 
 	function mountSelectedWork( section ) {
-		const grid = section.querySelector( '[data-hdc-home-selected-work-grid]' );
+		const grid = section.querySelector(
+			'[data-hdc-home-selected-work-grid]'
+		);
 
 		if ( ! grid ) {
 			return;
@@ -479,7 +629,9 @@
 	}
 
 	function init() {
-		document.querySelectorAll( '[data-hdc-home-selected-work]' ).forEach( mountSelectedWork );
+		document
+			.querySelectorAll( '[data-hdc-home-selected-work]' )
+			.forEach( mountSelectedWork );
 	}
 
 	if ( document.readyState === 'loading' ) {

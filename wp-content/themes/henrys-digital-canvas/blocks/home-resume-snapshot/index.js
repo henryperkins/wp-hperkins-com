@@ -22,7 +22,12 @@
 		return value && typeof value === 'object' ? value : {};
 	}
 
-	function renderStringRepeater( labelPrefix, attrKey, attrs, setAttributes ) {
+	function renderStringRepeater(
+		labelPrefix,
+		attrKey,
+		attrs,
+		setAttributes
+	) {
 		const list = asArray( attrs[ attrKey ] );
 		return el(
 			Fragment,
@@ -30,11 +35,14 @@
 			list.map( function ( item, index ) {
 				return el(
 					'div',
-					{ key: attrKey + '-' + index, style: { marginBottom: '8px' } },
+					{
+						key: attrKey + '-' + index,
+						style: { marginBottom: '8px' },
+					},
 					el( TextareaControl, {
-						label: __( labelPrefix + ' ' + ( index + 1 ), 'henrys-digital-canvas' ),
+						label: labelPrefix + ' ' + ( index + 1 ),
 						value: item,
-						onChange: function ( next ) {
+						onChange( next ) {
 							const cloned = list.slice();
 							const update = {};
 							cloned[ index ] = next;
@@ -47,11 +55,13 @@
 						{
 							variant: 'tertiary',
 							isDestructive: true,
-							onClick: function () {
+							onClick() {
 								const update = {};
-								update[ attrKey ] = list.filter( function ( _, i ) {
-									return i !== index;
-								} );
+								update[ attrKey ] = list.filter(
+									function ( _, i ) {
+										return i !== index;
+									}
+								);
 								setAttributes( update );
 							},
 						},
@@ -63,13 +73,13 @@
 				Button,
 				{
 					variant: 'secondary',
-					onClick: function () {
+					onClick() {
 						const update = {};
 						update[ attrKey ] = list.concat( [ '' ] );
 						setAttributes( update );
 					},
 				},
-				__( 'Add ' + labelPrefix.toLowerCase(), 'henrys-digital-canvas' )
+				'Add ' + labelPrefix.toLowerCase()
 			)
 		);
 	}
@@ -98,16 +108,16 @@
 					'div',
 					{ key: 'al-' + index, style: { marginBottom: '8px' } },
 					el( TextControl, {
-						label: __( 'Link ' + ( index + 1 ) + ' label', 'henrys-digital-canvas' ),
+						label: 'Link ' + ( index + 1 ) + ' label',
 						value: item.label || '',
-						onChange: function ( next ) {
+						onChange( next ) {
 							updateField( index, 'label', next );
 						},
 					} ),
 					el( TextControl, {
-						label: __( 'Link ' + ( index + 1 ) + ' href', 'henrys-digital-canvas' ),
+						label: 'Link ' + ( index + 1 ) + ' href',
 						value: item.href || '',
-						onChange: function ( next ) {
+						onChange( next ) {
 							updateField( index, 'href', next );
 						},
 					} ),
@@ -116,11 +126,13 @@
 						{
 							variant: 'tertiary',
 							isDestructive: true,
-							onClick: function () {
+							onClick() {
 								setAttributes( {
-									actionLinks: list.filter( function ( _, i ) {
-										return i !== index;
-									} ),
+									actionLinks: list.filter(
+										function ( _, i ) {
+											return i !== index;
+										}
+									),
 								} );
 							},
 						},
@@ -132,8 +144,12 @@
 				Button,
 				{
 					variant: 'secondary',
-					onClick: function () {
-						setAttributes( { actionLinks: list.concat( [ { label: '', href: '' } ] ) } );
+					onClick() {
+						setAttributes( {
+							actionLinks: list.concat( [
+								{ label: '', href: '' },
+							] ),
+						} );
 					},
 				},
 				__( 'Add link', 'henrys-digital-canvas' )
@@ -146,15 +162,16 @@
 			const attrs = props.attributes;
 			const setAttributes = props.setAttributes;
 			const blockProps = useBlockProps( {
-				className: 'hdc-home-page__section hdc-home-page__section--resume hdc-home-resume-snapshot-editor',
+				className:
+					'hdc-home-page__section hdc-home-page__section--resume hdc-home-resume-snapshot-editor',
 			} );
 
 			function input( label, key, isTextarea ) {
 				const Control = isTextarea ? TextareaControl : TextControl;
 				return el( Control, {
-					label: __( label, 'henrys-digital-canvas' ),
+					label,
 					value: attrs[ key ] || '',
-					onChange: function ( next ) {
+					onChange( next ) {
 						const update = {};
 						update[ key ] = next;
 						setAttributes( update );
@@ -170,27 +187,67 @@
 					{},
 					el(
 						PanelBody,
-						{ title: __( 'Heading', 'henrys-digital-canvas' ), initialOpen: true },
+						{
+							title: __( 'Heading', 'henrys-digital-canvas' ),
+							initialOpen: true,
+						},
 						input( 'Section title', 'title', false ),
 						input( 'Action label', 'actionLabel', false ),
 						input( 'Action href', 'actionHref', false )
 					),
 					el(
 						PanelBody,
-						{ title: __( 'Positioning', 'henrys-digital-canvas' ), initialOpen: false },
+						{
+							title: __( 'Positioning', 'henrys-digital-canvas' ),
+							initialOpen: false,
+						},
 						input( 'Eyebrow', 'positioningEyebrow', false ),
 						input( 'Label', 'label', false ),
-						renderStringRepeater( 'Item', 'items', attrs, setAttributes )
+						renderStringRepeater(
+							'Item',
+							'items',
+							attrs,
+							setAttributes
+						)
 					),
 					el(
 						PanelBody,
-						{ title: __( 'Best fit', 'henrys-digital-canvas' ), initialOpen: false },
+						{
+							title: __( 'Best fit', 'henrys-digital-canvas' ),
+							initialOpen: false,
+						},
 						input( 'Eyebrow', 'bestFitEyebrow', false ),
 						input( 'Title', 'bestFitTitle', false ),
-						renderStringRepeater( 'Focus area', 'focusAreas', attrs, setAttributes )
+						renderStringRepeater(
+							'Focus area',
+							'focusAreas',
+							attrs,
+							setAttributes
+						)
 					),
-					el( PanelBody, { title: __( 'Action links', 'henrys-digital-canvas' ), initialOpen: false }, renderActionLinksRepeater( attrs, setAttributes ) ),
-					el( PanelBody, { title: __( 'Advanced', 'henrys-digital-canvas' ), initialOpen: false }, input( 'Resume endpoint (override)', 'resumeEndpoint', false ) )
+					el(
+						PanelBody,
+						{
+							title: __(
+								'Action links',
+								'henrys-digital-canvas'
+							),
+							initialOpen: false,
+						},
+						renderActionLinksRepeater( attrs, setAttributes )
+					),
+					el(
+						PanelBody,
+						{
+							title: __( 'Advanced', 'henrys-digital-canvas' ),
+							initialOpen: false,
+						},
+						input(
+							'Resume endpoint (override)',
+							'resumeEndpoint',
+							false
+						)
+					)
 				),
 				el(
 					'div',
@@ -198,10 +255,23 @@
 					el(
 						Notice,
 						{ status: 'info', isDismissible: false },
-						__( 'Live: fetches resume snapshot via REST. Editor shows a placeholder summary.', 'henrys-digital-canvas' )
+						__(
+							'Live: fetches resume snapshot via REST. Editor shows a placeholder summary.',
+							'henrys-digital-canvas'
+						)
 					),
-					el( 'h2', { className: 'hdc-home-page__section-title' }, attrs.title || __( 'Resume Snapshot', 'henrys-digital-canvas' ) ),
-					el( 'p', { className: 'hdc-home-page__editor-meta' }, __( 'Items: ', 'henrys-digital-canvas' ) + asArray( attrs.items ).join( ', ' ) )
+					el(
+						'h2',
+						{ className: 'hdc-home-page__section-title' },
+						attrs.title ||
+							__( 'Resume Snapshot', 'henrys-digital-canvas' )
+					),
+					el(
+						'p',
+						{ className: 'hdc-home-page__editor-meta' },
+						__( 'Items:', 'henrys-digital-canvas' ) +
+							asArray( attrs.items ).join( ', ' )
+					)
 				)
 			);
 		},

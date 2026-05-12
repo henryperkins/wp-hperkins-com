@@ -23,9 +23,9 @@
 			function inputFor( label, key, isTextarea ) {
 				const Control = isTextarea ? TextareaControl : TextControl;
 				return el( Control, {
-					label: __( label, 'henrys-digital-canvas' ),
+					label,
 					value: attrs[ key ] || '',
-					onChange: function ( next ) {
+					onChange( next ) {
 						const update = {};
 						update[ key ] = next;
 						setAttributes( update );
@@ -41,35 +41,90 @@
 					{},
 					el(
 						PanelBody,
-						{ title: __( 'Hero copy', 'henrys-digital-canvas' ), initialOpen: true },
+						{
+							title: __( 'Hero copy', 'henrys-digital-canvas' ),
+							initialOpen: true,
+						},
 						inputFor( 'Eyebrow', 'eyebrow', false ),
 						inputFor( 'Title', 'title', true ),
 						inputFor( 'Description', 'description', true )
 					),
 					el(
 						PanelBody,
-						{ title: __( 'Primary CTA', 'henrys-digital-canvas' ), initialOpen: false },
-						inputFor( 'Primary CTA label', 'primaryCtaLabel', false ),
+						{
+							title: __( 'Primary CTA', 'henrys-digital-canvas' ),
+							initialOpen: false,
+						},
+						inputFor(
+							'Primary CTA label',
+							'primaryCtaLabel',
+							false
+						),
 						inputFor( 'Primary CTA href', 'primaryCtaHref', false )
 					),
 					el(
 						PanelBody,
-						{ title: __( 'Secondary CTA', 'henrys-digital-canvas' ), initialOpen: false },
-						inputFor( 'Secondary CTA label', 'secondaryCtaLabel', false ),
-						inputFor( 'Secondary CTA href', 'secondaryCtaHref', false )
+						{
+							title: __(
+								'Secondary CTA',
+								'henrys-digital-canvas'
+							),
+							initialOpen: false,
+						},
+						inputFor(
+							'Secondary CTA label',
+							'secondaryCtaLabel',
+							false
+						),
+						inputFor(
+							'Secondary CTA href',
+							'secondaryCtaHref',
+							false
+						)
 					)
 				),
 				el(
 					'div',
 					blockProps,
-					attrs.eyebrow ? el( 'p', { className: 'hdc-home-page__hero-eyebrow' }, attrs.eyebrow ) : null,
-					el( 'h1', { className: 'hdc-home-page__hero-title' }, attrs.title || __( 'Home hero', 'henrys-digital-canvas' ) ),
-					el( 'p', { className: 'hdc-home-page__hero-description' }, attrs.description || '' ),
+					attrs.eyebrow
+						? el(
+								'p',
+								{ className: 'hdc-home-page__hero-eyebrow' },
+								attrs.eyebrow
+						  )
+						: null,
+					el(
+						'h1',
+						{ className: 'hdc-home-page__hero-title' },
+						attrs.title ||
+							__( 'Home hero', 'henrys-digital-canvas' )
+					),
+					el(
+						'p',
+						{ className: 'hdc-home-page__hero-description' },
+						attrs.description || ''
+					),
 					el(
 						'div',
 						{ className: 'hdc-home-page__hero-actions' },
-						el( 'span', { className: 'hdc-home-page__button hdc-home-page__button--hero' }, attrs.primaryCtaLabel || __( 'Primary CTA', 'henrys-digital-canvas' ) ),
-						el( 'span', { className: 'hdc-home-page__button hdc-home-page__button--hero-secondary' }, attrs.secondaryCtaLabel || __( 'Secondary CTA', 'henrys-digital-canvas' ) )
+						el(
+							'span',
+							{
+								className:
+									'hdc-home-page__button hdc-home-page__button--hero',
+							},
+							attrs.primaryCtaLabel ||
+								__( 'Primary CTA', 'henrys-digital-canvas' )
+						),
+						el(
+							'span',
+							{
+								className:
+									'hdc-home-page__button hdc-home-page__button--hero-secondary',
+							},
+							attrs.secondaryCtaLabel ||
+								__( 'Secondary CTA', 'henrys-digital-canvas' )
+						)
 					)
 				)
 			);
