@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
-const SOURCE_BASE_URL = process.env.SOURCE_BASE_URL || 'https://hperkins.com';
 const TARGET_BASE_URL = process.env.TARGET_BASE_URL || process.env.BASE_URL || 'https://wp.hperkins.com';
+const SOURCE_BASE_URL = process.env.SOURCE_BASE_URL || TARGET_BASE_URL;
 
 // One BEM section root per child block. These class roots MUST be emitted
 // by the child render.php files for parity to hold.
@@ -85,7 +85,7 @@ async function describeSection(page, selector) {
 	}, COMPUTED_PROPS);
 }
 
-test.describe('home page parity vs hperkins.com', () => {
+test.describe('home page structural parity', () => {
 	test.beforeAll(async () => {
 		test.info().annotations.push({
 			type: 'source',

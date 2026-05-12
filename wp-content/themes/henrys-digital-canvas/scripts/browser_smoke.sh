@@ -34,7 +34,7 @@ unset NO_COLOR || true
 BASE_URL="${BASE_URL}" npx playwright test "${SPEC_PATH}" --config "${CONFIG_PATH}" --workers=1 --reporter=line "$@"
 
 if [[ "${RUN_HOME_PARITY:-0}" == "1" ]]; then
-	printf "\nHome parity check against %s vs %s\n" "${BASE_URL}" "${SOURCE_BASE_URL:-https://hperkins.com}"
+	printf "\nHome parity check against %s vs %s\n" "${BASE_URL}" "${SOURCE_BASE_URL:-${BASE_URL}}"
 	BASE_URL="${BASE_URL}" npx playwright test "${PARITY_SPEC_PATH}" --config "${CONFIG_PATH}" --workers=1 --reporter=line
 fi
 
