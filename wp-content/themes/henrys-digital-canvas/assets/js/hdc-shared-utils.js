@@ -441,6 +441,356 @@
 		return createElement( 'svg', svgProps, children );
 	}
 
+	let revealObserver = null;
+
+	function initRevealObserver() {
+		if ( typeof document === 'undefined' ) {
+			return;
+		}
+
+		if ( revealObserver ) {
+			revealObserver.disconnect();
+			revealObserver = null;
+		}
+
+		if ( typeof window.IntersectionObserver === 'undefined' ) {
+			document.querySelectorAll( '.hdc-reveal' ).forEach( function ( el ) {
+				el.classList.add( 'is-visible' );
+			} );
+			return;
+		}
+
+		revealObserver = new window.IntersectionObserver(
+			function ( entries ) {
+				entries.forEach( function ( entry ) {
+					if ( entry.isIntersecting ) {
+						entry.target.classList.add( 'is-visible' );
+						revealObserver.unobserve( entry.target );
+					}
+				} );
+			},
+			{ threshold: 0.1 }
+		);
+
+		document.querySelectorAll( '.hdc-reveal:not(.is-visible)' ).forEach( function ( el ) {
+			const rect = el.getBoundingClientRect();
+			const isAboveFold = rect.top < window.innerHeight && rect.bottom > 0;
+
+			if ( isAboveFold ) {
+				el.classList.add( 'is-visible' );
+			} else {
+				revealObserver.observe( el );
+			}
+		} );
+	}
+
+	function ensureString( value, fallback ) {
+		if ( typeof value !== 'string' ) {
+			return fallback;
+		}
+
+		const trimmed = value.trim();
+		return trimmed || fallback;
+	}
+
+	function ensureArray( value ) {
+		return Array.isArray( value ) ? value : [];
+	}
+
+	function normalizeTextList( value ) {
+		return ensureArray( value )
+			.map( function ( item ) {
+				return ensureString( item, '' );
+			} )
+			.filter( Boolean );
+	}
+
+	function ensureObject( value ) {
+		return value && typeof value === 'object' ? value : {};
+	}
+
+	function clamp( value, min, max ) {
+		return Math.max( min, Math.min( max, value ) );
+	}
+
+	function stripHtml( value ) {
+		if ( typeof value !== 'string' ) {
+			return '';
+		}
+
+		return value
+			.replace( /<[^>]+>/g, ' ' )
+			.replace( /\s+/g, ' ' )
+			.trim();
+	}
+
+	function withQuery( base, params ) {
+		const separator = base.indexOf( '?' ) === -1 ? '?' : '&';
+		return base + separator + params.toString();
+	}
+
+	function normalizeAppPath( value ) {
+		const normalized = ensureString( value, '' );
+
+		if ( ! normalized || '/' === normalized || '/' !== normalized.charAt( 0 ) ) {
+			return normalized;
+		}
+
+		if ( normalized.indexOf( '/wp-json/' ) === 0 || normalized.indexOf( '/api/' ) === 0 ) {
+			return normalized;
+		}
+
+		const suffixIndex = normalized.search( /[?#]/ );
+		const path = suffixIndex === -1 ? normalized : normalized.slice( 0, suffixIndex );
+		const suffix = suffixIndex === -1 ? '' : normalized.slice( suffixIndex );
+		const trimmedPath = path.replace( /\/+$/, '' ) || '/';
+
+		return trimmedPath + suffix;
+	}
+
+	function normalizePostsEndpoint( endpoint, count ) {
+		const perPage = clamp( Number.parseInt( count, 10 ) || 3, 1, 10 );
+
+		if ( ! endpoint ) {
+			return '/wp-json/henrys-digital-canvas/v1/blog?limit=' + String( perPage );
+		}
+
+		try {
+			const parsed = new URL( endpoint, window.location.origin );
+			parsed.searchParams.set( 'limit', String( perPage ) );
+			return parsed.toString();
+		} catch ( error ) {
+			return withQuery(
+				endpoint,
+				new URLSearchParams( {
+					limit: String( perPage ),
+				} )
+			);
+		}
+	}
+
+	function resolveRequestUrl( value ) {
+		const normalized = ensureString( value, '' );
+
+		if ( ! normalized ) {
+			return normalized;
+		}
+
+		if ( /^https?:\/\//i.test( normalized ) ) {
+			return normalized;
+		}
+
+		if ( normalized.charAt( 0 ) === '/' ) {
+			return new URL( normalized, window.location.origin ).toString();
+		}
+
+		return normalized;
+	}
+
+	function parseStableDate( rawDate ) {
+		const value = ensureString( rawDate, '' );
+
+		if ( ! value ) {
+			return null;
+		}
+
+		const normalized = /^\d{4}-\d{2}-\d{2}$/.test( value ) ? value + 'T12:00:00' : value;
+		const date = new Date( normalized );
+
+		return Number.isNaN( date.getTime() ) ? null : date;
+	}
+
+	function formatDate( rawDate ) {
+		const date = parseStableDate( rawDate );
+
+		if ( ! date ) {
+			return '';
+		}
+
+		return date.toLocaleDateString( undefined, {
+			year: 'numeric',
+			month: 'short',
+			day: 'numeric',
+		} );
+	}
+
+	function getUpdatedAtTimestamp( value ) {
+		const date = parseStableDate( value );
+		const timestamp = date ? date.getTime() : 0;
+
+		return Number.isFinite( timestamp ) ? timestamp : 0;
+	}
+
+	function humanizeRepoName( name ) {
+		return String( name || '' )
+			.split( /[-_]/ )
+			.filter( Boolean )
+			.map( function ( token ) {
+				if ( token.length <= 3 ) {
+					return token.toUpperCase();
+				}
+
+				return token.charAt( 0 ).toUpperCase() + token.slice( 1 );
+			} )
+			.join( ' ' );
+	}
+
+	function normalizeRepoItem( repo, fallbackRepo, options ) {
+		const sourceRepo = ensureObject( repo );
+		const localRepo = ensureObject( fallbackRepo );
+		const settings = ensureObject( options );
+		const preferLocalDisplayName = settings.preferLocalDisplayName !== false;
+		const name = ensureString( sourceRepo.name, ensureString( localRepo.name, 'unnamed-repository' ) );
+		const updatedAt = ensureString(
+			sourceRepo.updatedAt,
+			ensureString( sourceRepo.pushed_at, ensureString( localRepo.updatedAt, '' ) )
+		);
+
+		return {
+			id: sourceRepo.id || localRepo.id || name,
+			name,
+			displayName: preferLocalDisplayName
+				? ensureString( localRepo.displayName, ensureString( sourceRepo.displayName, '' ) )
+				: ensureString( sourceRepo.displayName, '' ),
+			description: ensureString( localRepo.description, '' ) || ensureString( sourceRepo.description, 'Description coming soon.' ),
+			externalUrl: ensureString( sourceRepo.html_url, ensureString( localRepo.url, ensureString( sourceRepo.url, '' ) ) ),
+			language: ensureString( sourceRepo.language, ensureString( localRepo.language, 'Unknown' ) ),
+			updatedAt,
+			featured: !! localRepo.featured || !! sourceRepo.featured,
+			access: ensureString(
+				localRepo.access,
+				sourceRepo.private ? 'private' : ensureString( sourceRepo.access, 'public' )
+			),
+			origin: ensureString(
+				sourceRepo.origin,
+				/github\.com/i.test( ensureString( sourceRepo.html_url, '' ) )
+					? 'github'
+					: ensureString( localRepo.origin, 'curated' )
+			),
+			whyItMatters: ensureString( localRepo.whyItMatters, ensureString( sourceRepo.whyItMatters, '' ) ),
+			url: normalizeAppPath( '/work/' + encodeURIComponent( name ) + '/' ),
+		};
+	}
+
+	function compareReposByUpdatedAtDesc( left, right ) {
+		const delta = getUpdatedAtTimestamp( right.updatedAt ) - getUpdatedAtTimestamp( left.updatedAt );
+
+		if ( delta !== 0 ) {
+			return delta;
+		}
+
+		return String( left.name ).localeCompare( String( right.name ) );
+	}
+
+	function mapGitHubRepos( apiRepos, fallbackRepos ) {
+		const fallbackByName = new Map();
+
+		( fallbackRepos || [] ).forEach( function ( repo ) {
+			fallbackByName.set( repo.name, repo );
+		} );
+
+		const merged = ensureArray( apiRepos )
+			.filter( function ( repo ) {
+				if ( repo && repo.fork ) {
+					return false;
+				}
+
+				if ( repo && repo.archived ) {
+					return false;
+				}
+
+				const fallbackRepo = fallbackByName.get( repo && repo.name ? repo.name : '' );
+
+				return Boolean( ensureString( repo && repo.language, '' ) || ( fallbackRepo && fallbackRepo.language ) );
+			} )
+			.map( function ( repo ) {
+				return normalizeRepoItem( repo, fallbackByName.get( repo && repo.name ? repo.name : '' ), {
+					preferLocalDisplayName: false,
+				} );
+			} );
+
+		const mergedNames = new Set(
+			merged.map( function ( repo ) {
+				return repo.name;
+			} )
+		);
+		const missingFallback = ensureArray( fallbackRepos ).filter( function ( repo ) {
+			return ! mergedNames.has( repo.name );
+		} );
+
+		return merged.concat( missingFallback );
+	}
+
+	function isRateLimitError( error ) {
+		if ( ! error || typeof error !== 'object' ) {
+			return false;
+		}
+
+		return Boolean(
+			error.rateLimited ||
+				error.status === 429 ||
+				( error.status === 403 && /rate limit/i.test( String( error.message || '' ) ) )
+		);
+	}
+
+	function isOfflineError( error ) {
+		if ( window.navigator && window.navigator.onLine === false ) {
+			return true;
+		}
+
+		if ( error instanceof TypeError && /failed to fetch|network|load failed/i.test( error.message ) ) {
+			return true;
+		}
+
+		if ( error instanceof Error && /offline|network|failed to fetch/i.test( error.message ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	function normalizePostItem( post ) {
+		const slug = ensureString( post && post.slug, '' );
+		const title =
+			stripHtml( post && ( post.title && post.title.rendered ? post.title.rendered : post.title ) ) || 'Untitled post';
+		const thumbnailUrl = ensureString( post && post.featuredImageUrl, '' );
+
+		return {
+			id: post && post.id ? post.id : slug || title,
+			link: slug ? normalizeAppPath( '/blog/' + encodeURIComponent( slug ) + '/' ) : normalizeAppPath( ensureString( post && post.url, '#' ) ),
+			title,
+			excerpt: stripHtml( post && post.excerpt ),
+			date: ensureString( post && post.date, '' ),
+			dateLabel: formatDate( post && post.date ),
+			readingTime: ensureString( post && post.readingTime, '' ),
+			thumbnailUrl,
+			thumbnailAlt: ensureString( post && post.featuredImageAlt, 'Featured image for ' + title ),
+			thumbnailSrcSet: ensureString( post && post.featuredImageSrcSet, '' ),
+		};
+	}
+
+	function normalizePostsPayload( payload, count ) {
+		let posts = [];
+
+		if ( payload && Array.isArray( payload.posts ) ) {
+			posts = payload.posts;
+		} else if ( Array.isArray( payload ) ) {
+			posts = payload;
+		}
+
+		return posts.slice( 0, count ).map( normalizePostItem );
+	}
+
+	function normalizeResumeData( payload ) {
+		const resume = payload && payload.data ? payload.data : payload;
+
+		if ( resume && typeof resume === 'object' && ! Array.isArray( resume ) ) {
+			return resume;
+		}
+
+		return null;
+	}
+
 	global.hdcSharedUtils = {
 		decodeHtml: decodeHtml,
 		normalizePathname: normalizePathname,
@@ -448,5 +798,36 @@
 		estimateReadingTimeLabel: estimateReadingTimeLabel,
 		getLucideIconNode: getLucideIconNode,
 		renderLucideIcon: renderLucideIcon,
+		ensureString: ensureString,
+		ensureArray: ensureArray,
+		normalizeTextList: normalizeTextList,
+		ensureObject: ensureObject,
+		clamp: clamp,
+		stripHtml: stripHtml,
+		withQuery: withQuery,
+		normalizeAppPath: normalizeAppPath,
+		normalizePostsEndpoint: normalizePostsEndpoint,
+		resolveRequestUrl: resolveRequestUrl,
+		parseStableDate: parseStableDate,
+		formatDate: formatDate,
+		getUpdatedAtTimestamp: getUpdatedAtTimestamp,
+		humanizeRepoName: humanizeRepoName,
+		isRateLimitError: isRateLimitError,
+		isOfflineError: isOfflineError,
+		normalizeRepoItem: normalizeRepoItem,
+		compareReposByUpdatedAtDesc: compareReposByUpdatedAtDesc,
+		mapGitHubRepos: mapGitHubRepos,
+		normalizePostItem: normalizePostItem,
+		normalizePostsPayload: normalizePostsPayload,
+		normalizeResumeData: normalizeResumeData,
+		initRevealObserver: initRevealObserver,
 	};
+
+	if ( typeof document !== 'undefined' ) {
+		if ( document.readyState === 'loading' ) {
+			document.addEventListener( 'DOMContentLoaded', initRevealObserver );
+		} else {
+			initRevealObserver();
+		}
+	}
 } )( window );
