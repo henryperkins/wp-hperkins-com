@@ -53,28 +53,26 @@
 			[ 'circle', { cx: '12', cy: '12', r: '10' } ],
 			[ 'path', { d: 'M12 6v6l4 2' } ],
 		],
-		check: [
-			[ 'path', { d: 'M20 6 9 17l-5-5' } ],
-		],
-		'chevron-down': [
-			[ 'path', { d: 'm6 9 6 6 6-6' } ],
-		],
-		'chevron-left': [
-			[ 'path', { d: 'm15 18-6-6 6-6' } ],
-		],
-		'chevron-right': [
-			[ 'path', { d: 'm9 18 6-6-6-6' } ],
-		],
-		'chevron-up': [
-			[ 'path', { d: 'm18 15-6-6-6 6' } ],
-		],
+		check: [ [ 'path', { d: 'M20 6 9 17l-5-5' } ] ],
+		'chevron-down': [ [ 'path', { d: 'm6 9 6 6 6-6' } ] ],
+		'chevron-left': [ [ 'path', { d: 'm15 18-6-6 6-6' } ] ],
+		'chevron-right': [ [ 'path', { d: 'm9 18 6-6-6-6' } ] ],
+		'chevron-up': [ [ 'path', { d: 'm18 15-6-6-6 6' } ] ],
 		'circle-dot': [
 			[ 'circle', { cx: '12', cy: '12', r: '10' } ],
 			[ 'circle', { cx: '12', cy: '12', r: '1' } ],
 		],
 		copy: [
-			[ 'rect', { width: '14', height: '14', x: '8', y: '8', rx: '2', ry: '2' } ],
-			[ 'path', { d: 'M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2' } ],
+			[
+				'rect',
+				{ width: '14', height: '14', x: '8', y: '8', rx: '2', ry: '2' },
+			],
+			[
+				'path',
+				{
+					d: 'M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2',
+				},
+			],
 		],
 		'message-square': [
 			[
@@ -85,36 +83,71 @@
 			],
 		],
 		'folder-open': [
-			[ 'path', { d: 'm6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2' } ],
+			[
+				'path',
+				{
+					d: 'm6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2',
+				},
+			],
 		],
 		sparkles: [
-			[ 'path', { d: 'M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z' } ],
+			[
+				'path',
+				{
+					d: 'M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z',
+				},
+			],
 			[ 'path', { d: 'M20 3v4' } ],
 			[ 'path', { d: 'M22 5h-4' } ],
 			[ 'path', { d: 'M4 17v2' } ],
 			[ 'path', { d: 'M5 18H3' } ],
 		],
 		wrench: [
-			[ 'path', { d: 'M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z' } ],
+			[
+				'path',
+				{
+					d: 'M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z',
+				},
+			],
 		],
 		award: [
-			[ 'path', { d: 'm15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526' } ],
+			[
+				'path',
+				{
+					d: 'm15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526',
+				},
+			],
 			[ 'circle', { cx: '12', cy: '8', r: '6' } ],
 		],
 		'external-link': [
 			[ 'path', { d: 'M15 3h6v6' } ],
 			[ 'path', { d: 'M10 14 21 3' } ],
-			[ 'path', { d: 'M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6' } ],
+			[
+				'path',
+				{
+					d: 'M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6',
+				},
+			],
 		],
 		'folder-git-2': [
-			[ 'path', { d: 'M9 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v5' } ],
+			[
+				'path',
+				{
+					d: 'M9 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v5',
+				},
+			],
 			[ 'circle', { cx: '13', cy: '12', r: '2' } ],
 			[ 'path', { d: 'M18 19c-2.8 0-5-2.2-5-5v8' } ],
 			[ 'circle', { cx: '20', cy: '19', r: '2' } ],
 			[ 'path', { d: 'M23 19v-1a2 2 0 0 0-2-2' } ],
 		],
 		'file-text': [
-			[ 'path', { d: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z' } ],
+			[
+				'path',
+				{
+					d: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z',
+				},
+			],
 			[ 'path', { d: 'M14 2v6h6' } ],
 			[ 'path', { d: 'M16 13H8' } ],
 			[ 'path', { d: 'M16 17H8' } ],
@@ -167,10 +200,20 @@
 		],
 		inbox: [
 			[ 'polyline', { points: '22 12 16 12 14 15 10 15 8 12 2 12' } ],
-			[ 'path', { d: 'M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z' } ],
+			[
+				'path',
+				{
+					d: 'M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z',
+				},
+			],
 		],
 		laptop: [
-			[ 'path', { d: 'M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16' } ],
+			[
+				'path',
+				{
+					d: 'M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16',
+				},
+			],
 		],
 		'layout-grid': [
 			[ 'rect', { width: '7', height: '7', x: '3', y: '3', rx: '1' } ],
@@ -219,24 +262,37 @@
 			],
 		],
 		linkedin: [
-			[ 'path', { d: 'M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z' } ],
+			[
+				'path',
+				{
+					d: 'M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z',
+				},
+			],
 			[ 'rect', { width: '4', height: '12', x: '2', y: '9' } ],
 			[ 'circle', { cx: '4', cy: '4', r: '2' } ],
 		],
-		'loader-2': [
-			[ 'path', { d: 'M21 12a9 9 0 1 1-6.219-8.56' } ],
-		],
+		'loader-2': [ [ 'path', { d: 'M21 12a9 9 0 1 1-6.219-8.56' } ] ],
 		mail: [
 			[ 'path', { d: 'm22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7' } ],
 			[ 'rect', { x: '2', y: '4', width: '20', height: '16', rx: '2' } ],
 		],
 		'notebook-pen': [
-			[ 'path', { d: 'M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4' } ],
+			[
+				'path',
+				{
+					d: 'M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4',
+				},
+			],
 			[ 'path', { d: 'M2 6h4' } ],
 			[ 'path', { d: 'M2 10h4' } ],
 			[ 'path', { d: 'M2 14h4' } ],
 			[ 'path', { d: 'M2 18h4' } ],
-			[ 'path', { d: 'M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z' } ],
+			[
+				'path',
+				{
+					d: 'M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z',
+				},
+			],
 		],
 		quote: [
 			[
@@ -254,25 +310,51 @@
 		],
 		printer: [
 			[ 'path', { d: 'M6 9V2h12v7' } ],
-			[ 'path', { d: 'M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2' } ],
+			[
+				'path',
+				{
+					d: 'M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2',
+				},
+			],
 			[ 'rect', { x: '6', y: '14', width: '12', height: '8' } ],
 			[ 'circle', { cx: '18', cy: '12', r: '1' } ],
 		],
 		rocket: [
 			[ 'path', { d: 'M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5' } ],
-			[ 'path', { d: 'M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09' } ],
-			[ 'path', { d: 'M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z' } ],
+			[
+				'path',
+				{
+					d: 'M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09',
+				},
+			],
+			[
+				'path',
+				{
+					d: 'M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z',
+				},
+			],
 			[ 'path', { d: 'M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05' } ],
 		],
 		scale: [
-			[ 'path', { d: 'm16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z' } ],
-			[ 'path', { d: 'm2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z' } ],
+			[
+				'path',
+				{ d: 'm16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z' },
+			],
+			[
+				'path',
+				{ d: 'm2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z' },
+			],
 			[ 'path', { d: 'M7 21h10' } ],
 			[ 'path', { d: 'M12 3v18' } ],
 			[ 'path', { d: 'M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2' } ],
 		],
 		send: [
-			[ 'path', { d: 'M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z' } ],
+			[
+				'path',
+				{
+					d: 'M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z',
+				},
+			],
 			[ 'path', { d: 'm21.854 2.147-10.94 10.939' } ],
 		],
 		search: [
@@ -363,7 +445,11 @@
 	}
 
 	function estimateReadingTimeLabel( htmlOrText, wordsPerMinute ) {
-		const wpm = Number.isFinite( Number( wordsPerMinute ) ) && Number( wordsPerMinute ) > 0 ? Number( wordsPerMinute ) : 220;
+		const wpm =
+			Number.isFinite( Number( wordsPerMinute ) ) &&
+			Number( wordsPerMinute ) > 0
+				? Number( wordsPerMinute )
+				: 220;
 		const text = decodeHtml( String( htmlOrText || '' ) );
 		const words = text.split( /\s+/ ).filter( Boolean ).length;
 		const minutes = Math.max( 1, Math.round( words / wpm ) );
@@ -394,10 +480,20 @@
 
 		const settings = options && typeof options === 'object' ? options : {};
 		const requestedSize = Number( settings.size );
-		const size = Number.isFinite( requestedSize ) && requestedSize > 0 ? requestedSize : 16;
-		const className = typeof settings.className === 'string' ? settings.className.trim() : '';
-		const title = typeof settings.title === 'string' ? settings.title.trim() : '';
-		const extraProps = settings.props && typeof settings.props === 'object' ? settings.props : {};
+		const size =
+			Number.isFinite( requestedSize ) && requestedSize > 0
+				? requestedSize
+				: 16;
+		const className =
+			typeof settings.className === 'string'
+				? settings.className.trim()
+				: '';
+		const title =
+			typeof settings.title === 'string' ? settings.title.trim() : '';
+		const extraProps =
+			settings.props && typeof settings.props === 'object'
+				? settings.props
+				: {};
 		const svgProps = Object.assign(
 			{
 				xmlns: 'http://www.w3.org/2000/svg',
@@ -421,7 +517,7 @@
 		if ( title ) {
 			svgProps.role = 'img';
 		} else {
-			svgProps['aria-hidden'] = 'true';
+			svgProps[ 'aria-hidden' ] = 'true';
 		}
 
 		const children = [];
@@ -434,19 +530,503 @@
 				return;
 			}
 			const tag = node[ 0 ];
-			const attrs = node[ 1 ] && typeof node[ 1 ] === 'object' ? node[ 1 ] : {};
-			children.push( createElement( tag, Object.assign( { key: getIconName( iconName ) + '-' + String( index ) }, attrs ) ) );
+			const attrs =
+				node[ 1 ] && typeof node[ 1 ] === 'object' ? node[ 1 ] : {};
+			children.push(
+				createElement(
+					tag,
+					Object.assign(
+						{
+							key:
+								getIconName( iconName ) + '-' + String( index ),
+						},
+						attrs
+					)
+				)
+			);
 		} );
 
 		return createElement( 'svg', svgProps, children );
 	}
 
+	let revealObserver = null;
+
+	function initRevealObserver() {
+		if ( typeof document === 'undefined' ) {
+			return;
+		}
+
+		if ( revealObserver ) {
+			revealObserver.disconnect();
+			revealObserver = null;
+		}
+
+		if ( typeof window.IntersectionObserver === 'undefined' ) {
+			document
+				.querySelectorAll( '.hdc-reveal' )
+				.forEach( function ( el ) {
+					el.classList.add( 'is-visible' );
+				} );
+			return;
+		}
+
+		revealObserver = new window.IntersectionObserver(
+			function ( entries ) {
+				entries.forEach( function ( entry ) {
+					if ( entry.isIntersecting ) {
+						entry.target.classList.add( 'is-visible' );
+						revealObserver.unobserve( entry.target );
+					}
+				} );
+			},
+			{ threshold: 0.1 }
+		);
+
+		document
+			.querySelectorAll( '.hdc-reveal:not(.is-visible)' )
+			.forEach( function ( el ) {
+				const rect = el.getBoundingClientRect();
+				const isAboveFold =
+					rect.top < window.innerHeight && rect.bottom > 0;
+
+				if ( isAboveFold ) {
+					el.classList.add( 'is-visible' );
+				} else {
+					revealObserver.observe( el );
+				}
+			} );
+	}
+
+	function ensureString( value, fallback ) {
+		if ( typeof value !== 'string' ) {
+			return fallback;
+		}
+
+		const trimmed = value.trim();
+		return trimmed || fallback;
+	}
+
+	function ensureArray( value ) {
+		return Array.isArray( value ) ? value : [];
+	}
+
+	function normalizeTextList( value ) {
+		return ensureArray( value )
+			.map( function ( item ) {
+				return ensureString( item, '' );
+			} )
+			.filter( Boolean );
+	}
+
+	function ensureObject( value ) {
+		return value && typeof value === 'object' ? value : {};
+	}
+
+	function clamp( value, min, max ) {
+		return Math.max( min, Math.min( max, value ) );
+	}
+
+	function stripHtml( value ) {
+		if ( typeof value !== 'string' ) {
+			return '';
+		}
+
+		return value
+			.replace( /<[^>]+>/g, ' ' )
+			.replace( /\s+/g, ' ' )
+			.trim();
+	}
+
+	function withQuery( base, params ) {
+		const separator = base.indexOf( '?' ) === -1 ? '?' : '&';
+		return base + separator + params.toString();
+	}
+
+	function normalizeAppPath( value ) {
+		const normalized = ensureString( value, '' );
+
+		if (
+			! normalized ||
+			'/' === normalized ||
+			'/' !== normalized.charAt( 0 )
+		) {
+			return normalized;
+		}
+
+		if (
+			normalized.indexOf( '/wp-json/' ) === 0 ||
+			normalized.indexOf( '/api/' ) === 0
+		) {
+			return normalized;
+		}
+
+		const suffixIndex = normalized.search( /[?#]/ );
+		const path =
+			suffixIndex === -1
+				? normalized
+				: normalized.slice( 0, suffixIndex );
+		const suffix =
+			suffixIndex === -1 ? '' : normalized.slice( suffixIndex );
+		const trimmedPath = path.replace( /\/+$/, '' ) || '/';
+
+		return trimmedPath + suffix;
+	}
+
+	function normalizePostsEndpoint( endpoint, count ) {
+		const perPage = clamp( Number.parseInt( count, 10 ) || 3, 1, 10 );
+
+		if ( ! endpoint ) {
+			return (
+				'/wp-json/henrys-digital-canvas/v1/blog?limit=' +
+				String( perPage )
+			);
+		}
+
+		try {
+			const parsed = new URL( endpoint, window.location.origin );
+			parsed.searchParams.set( 'limit', String( perPage ) );
+			return parsed.toString();
+		} catch ( error ) {
+			return withQuery(
+				endpoint,
+				new URLSearchParams( {
+					limit: String( perPage ),
+				} )
+			);
+		}
+	}
+
+	function resolveRequestUrl( value ) {
+		const normalized = ensureString( value, '' );
+
+		if ( ! normalized ) {
+			return normalized;
+		}
+
+		if ( /^https?:\/\//i.test( normalized ) ) {
+			return normalized;
+		}
+
+		if ( normalized.charAt( 0 ) === '/' ) {
+			return new URL( normalized, window.location.origin ).toString();
+		}
+
+		return normalized;
+	}
+
+	function parseStableDate( rawDate ) {
+		const value = ensureString( rawDate, '' );
+
+		if ( ! value ) {
+			return null;
+		}
+
+		const normalized = /^\d{4}-\d{2}-\d{2}$/.test( value )
+			? value + 'T12:00:00'
+			: value;
+		const date = new Date( normalized );
+
+		return Number.isNaN( date.getTime() ) ? null : date;
+	}
+
+	function formatDate( rawDate ) {
+		const date = parseStableDate( rawDate );
+
+		if ( ! date ) {
+			return '';
+		}
+
+		return date.toLocaleDateString( undefined, {
+			year: 'numeric',
+			month: 'short',
+			day: 'numeric',
+		} );
+	}
+
+	function getUpdatedAtTimestamp( value ) {
+		const date = parseStableDate( value );
+		const timestamp = date ? date.getTime() : 0;
+
+		return Number.isFinite( timestamp ) ? timestamp : 0;
+	}
+
+	function humanizeRepoName( name ) {
+		return String( name || '' )
+			.split( /[-_]/ )
+			.filter( Boolean )
+			.map( function ( token ) {
+				if ( token.length <= 3 ) {
+					return token.toUpperCase();
+				}
+
+				return token.charAt( 0 ).toUpperCase() + token.slice( 1 );
+			} )
+			.join( ' ' );
+	}
+
+	function normalizeRepoItem( repo, fallbackRepo, options ) {
+		const sourceRepo = ensureObject( repo );
+		const localRepo = ensureObject( fallbackRepo );
+		const settings = ensureObject( options );
+		const preferLocalDisplayName =
+			settings.preferLocalDisplayName !== false;
+		const name = ensureString(
+			sourceRepo.name,
+			ensureString( localRepo.name, 'unnamed-repository' )
+		);
+		const updatedAt = ensureString(
+			sourceRepo.updatedAt,
+			ensureString(
+				sourceRepo.pushed_at,
+				ensureString( localRepo.updatedAt, '' )
+			)
+		);
+
+		return {
+			id: sourceRepo.id || localRepo.id || name,
+			name,
+			displayName: preferLocalDisplayName
+				? ensureString(
+						localRepo.displayName,
+						ensureString( sourceRepo.displayName, '' )
+				  )
+				: ensureString( sourceRepo.displayName, '' ),
+			description:
+				ensureString( localRepo.description, '' ) ||
+				ensureString(
+					sourceRepo.description,
+					'Description coming soon.'
+				),
+			externalUrl: ensureString(
+				sourceRepo.html_url,
+				ensureString(
+					localRepo.url,
+					ensureString( sourceRepo.url, '' )
+				)
+			),
+			language: ensureString(
+				sourceRepo.language,
+				ensureString( localRepo.language, 'Unknown' )
+			),
+			updatedAt,
+			featured: !! localRepo.featured || !! sourceRepo.featured,
+			access: ensureString(
+				localRepo.access,
+				sourceRepo.private
+					? 'private'
+					: ensureString( sourceRepo.access, 'public' )
+			),
+			origin: ensureString(
+				sourceRepo.origin,
+				/github\.com/i.test( ensureString( sourceRepo.html_url, '' ) )
+					? 'github'
+					: ensureString( localRepo.origin, 'curated' )
+			),
+			whyItMatters: ensureString(
+				localRepo.whyItMatters,
+				ensureString( sourceRepo.whyItMatters, '' )
+			),
+			url: normalizeAppPath(
+				'/work/' + encodeURIComponent( name ) + '/'
+			),
+		};
+	}
+
+	function compareReposByUpdatedAtDesc( left, right ) {
+		const delta =
+			getUpdatedAtTimestamp( right.updatedAt ) -
+			getUpdatedAtTimestamp( left.updatedAt );
+
+		if ( delta !== 0 ) {
+			return delta;
+		}
+
+		return String( left.name ).localeCompare( String( right.name ) );
+	}
+
+	function mapGitHubRepos( apiRepos, fallbackRepos ) {
+		const fallbackByName = new Map();
+
+		( fallbackRepos || [] ).forEach( function ( repo ) {
+			fallbackByName.set( repo.name, repo );
+		} );
+
+		const merged = ensureArray( apiRepos )
+			.filter( function ( repo ) {
+				if ( repo && repo.fork ) {
+					return false;
+				}
+
+				if ( repo && repo.archived ) {
+					return false;
+				}
+
+				const fallbackRepo = fallbackByName.get(
+					repo && repo.name ? repo.name : ''
+				);
+
+				return Boolean(
+					ensureString( repo && repo.language, '' ) ||
+						( fallbackRepo && fallbackRepo.language )
+				);
+			} )
+			.map( function ( repo ) {
+				return normalizeRepoItem(
+					repo,
+					fallbackByName.get( repo && repo.name ? repo.name : '' ),
+					{
+						preferLocalDisplayName: false,
+					}
+				);
+			} );
+
+		const mergedNames = new Set(
+			merged.map( function ( repo ) {
+				return repo.name;
+			} )
+		);
+		const missingFallback = ensureArray( fallbackRepos ).filter(
+			function ( repo ) {
+				return ! mergedNames.has( repo.name );
+			}
+		);
+
+		return merged.concat( missingFallback );
+	}
+
+	function isRateLimitError( error ) {
+		if ( ! error || typeof error !== 'object' ) {
+			return false;
+		}
+
+		return Boolean(
+			error.rateLimited ||
+				error.status === 429 ||
+				( error.status === 403 &&
+					/rate limit/i.test( String( error.message || '' ) ) )
+		);
+	}
+
+	function isOfflineError( error ) {
+		if ( window.navigator && window.navigator.onLine === false ) {
+			return true;
+		}
+
+		if (
+			error instanceof TypeError &&
+			/failed to fetch|network|load failed/i.test( error.message )
+		) {
+			return true;
+		}
+
+		if (
+			error instanceof Error &&
+			/offline|network|failed to fetch/i.test( error.message )
+		) {
+			return true;
+		}
+
+		return false;
+	}
+
+	function normalizePostItem( post ) {
+		const slug = ensureString( post && post.slug, '' );
+		const title =
+			stripHtml(
+				post &&
+					( post.title && post.title.rendered
+						? post.title.rendered
+						: post.title )
+			) || 'Untitled post';
+		const thumbnailUrl = ensureString( post && post.featuredImageUrl, '' );
+
+		return {
+			id: post && post.id ? post.id : slug || title,
+			link: slug
+				? normalizeAppPath(
+						'/blog/' + encodeURIComponent( slug ) + '/'
+				  )
+				: normalizeAppPath( ensureString( post && post.url, '#' ) ),
+			title,
+			excerpt: stripHtml( post && post.excerpt ),
+			date: ensureString( post && post.date, '' ),
+			dateLabel: formatDate( post && post.date ),
+			readingTime: ensureString( post && post.readingTime, '' ),
+			thumbnailUrl,
+			thumbnailAlt: ensureString(
+				post && post.featuredImageAlt,
+				'Featured image for ' + title
+			),
+			thumbnailSrcSet: ensureString(
+				post && post.featuredImageSrcSet,
+				''
+			),
+		};
+	}
+
+	function normalizePostsPayload( payload, count ) {
+		let posts = [];
+
+		if ( payload && Array.isArray( payload.posts ) ) {
+			posts = payload.posts;
+		} else if ( Array.isArray( payload ) ) {
+			posts = payload;
+		}
+
+		return posts.slice( 0, count ).map( normalizePostItem );
+	}
+
+	function normalizeResumeData( payload ) {
+		const resume = payload && payload.data ? payload.data : payload;
+
+		if (
+			resume &&
+			typeof resume === 'object' &&
+			! Array.isArray( resume )
+		) {
+			return resume;
+		}
+
+		return null;
+	}
+
 	global.hdcSharedUtils = {
-		decodeHtml: decodeHtml,
-		normalizePathname: normalizePathname,
-		parseDate: parseDate,
-		estimateReadingTimeLabel: estimateReadingTimeLabel,
-		getLucideIconNode: getLucideIconNode,
-		renderLucideIcon: renderLucideIcon,
+		decodeHtml,
+		normalizePathname,
+		parseDate,
+		estimateReadingTimeLabel,
+		getLucideIconNode,
+		renderLucideIcon,
+		ensureString,
+		ensureArray,
+		normalizeTextList,
+		ensureObject,
+		clamp,
+		stripHtml,
+		withQuery,
+		normalizeAppPath,
+		normalizePostsEndpoint,
+		resolveRequestUrl,
+		parseStableDate,
+		formatDate,
+		getUpdatedAtTimestamp,
+		humanizeRepoName,
+		isRateLimitError,
+		isOfflineError,
+		normalizeRepoItem,
+		compareReposByUpdatedAtDesc,
+		mapGitHubRepos,
+		normalizePostItem,
+		normalizePostsPayload,
+		normalizeResumeData,
+		initRevealObserver,
 	};
+
+	if ( typeof document !== 'undefined' ) {
+		if ( document.readyState === 'loading' ) {
+			document.addEventListener( 'DOMContentLoaded', initRevealObserver );
+		} else {
+			initRevealObserver();
+		}
+	}
 } )( window );

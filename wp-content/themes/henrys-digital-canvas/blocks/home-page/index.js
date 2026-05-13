@@ -1,52 +1,53 @@
-( function ( blocks, blockEditor, components, element, i18n ) {
-	if ( ! blocks || ! blockEditor || ! components || ! element || ! i18n ) {
+( function ( blocks, blockEditor, element, i18n ) {
+	if ( ! blocks || ! blockEditor || ! element || ! i18n ) {
 		return;
 	}
 
 	const el = element.createElement;
-	const __ = i18n.__;
 	const useBlockProps = blockEditor.useBlockProps;
-	const Notice = components.Notice;
+	const useInnerBlocksProps =
+		blockEditor.useInnerBlocksProps ||
+		blockEditor.__experimentalUseInnerBlocksProps;
+	const InnerBlocks = blockEditor.InnerBlocks;
+
+	const TEMPLATE = [
+		[ 'henrys-digital-canvas/home-hero', {} ],
+		[ 'henrys-digital-canvas/home-selected-work', {} ],
+		[ 'henrys-digital-canvas/home-throughline', {} ],
+		[ 'henrys-digital-canvas/home-resume-snapshot', {} ],
+		[ 'henrys-digital-canvas/home-recent-writing', {} ],
+		[ 'henrys-digital-canvas/home-contact-cta', {} ],
+	];
+
+	const ALLOWED_BLOCKS = TEMPLATE.map( function ( pair ) {
+		return pair[ 0 ];
+	} );
 
 	blocks.registerBlockType( 'henrys-digital-canvas/home-page', {
 		edit: function Edit() {
 			const blockProps = useBlockProps( {
-				className: 'hdc-home-page-editor',
+				className: 'hdc-home-page',
 			} );
-
-			return el(
-				'div',
-				blockProps,
-				el(
-					Notice,
-					{
-						isDismissible: false,
-						status: 'info',
-					},
-					__(
-						'Frontend renders the OSOT homepage structure: hero, selected work, resume snapshot, recent writing, and contact CTA.',
-						'henrys-digital-canvas'
-					)
-				),
-				el( 'h3', { className: 'hdc-home-page-editor__title' }, __( 'Home Page', 'henrys-digital-canvas' ) ),
-				el(
-					'p',
-					{ className: 'hdc-home-page-editor__description' },
-					__(
-						'Use the frontend to review live GitHub source labeling, recent writing cards, and the resume snapshot contract.',
-						'henrys-digital-canvas'
-					)
-				)
+			const innerBlocksProps = useInnerBlocksProps(
+				{
+					className: 'hdc-home-page__shell',
+				},
+				{
+					template: TEMPLATE,
+					templateLock: 'all',
+					allowedBlocks: ALLOWED_BLOCKS,
+					renderAppender: false,
+				}
 			);
+			return el( 'section', blockProps, el( 'div', innerBlocksProps ) );
 		},
 		save: function Save() {
-			return null;
+			return el( InnerBlocks.Content, {} );
 		},
 	} );
 } )(
 	window.wp.blocks,
 	window.wp.blockEditor,
-	window.wp.components,
 	window.wp.element,
 	window.wp.i18n
 );

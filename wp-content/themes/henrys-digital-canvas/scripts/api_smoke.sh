@@ -129,6 +129,132 @@ else
   printf "PASS\t%-70s contract-skipped=status=%s\n" "/api/github/contributor-stats?username=${GITHUB_USERNAME}&repo=${GITHUB_SIGNAL_REPO}" "$contributor_stats_status"
 fi
 
+if [[ "${RUN_FRONT_PAGE_SHAPE_CHECK:-0}" == "1" ]]; then
+  printf "Front-page shape check: innerBlocks tree (DB read via WP-CLI)\n"
+  WP_ROOT="${WP_ROOT:-/home/dev/wp-hperkins-com}"
+  FRONT_PAGE_ID="$(wp --path="${WP_ROOT}" option get page_on_front 2>/dev/null || echo 0)"
+  if [[ "${FRONT_PAGE_ID}" -eq 0 ]]; then
+    printf "[FAIL] page_on_front is not set; cannot run innerBlocks shape check.\n" >&2
+    exit 1
+  fi
+
+  EXPECTED_BLOCKS=(
+    "henrys-digital-canvas/home-page"
+    "henrys-digital-canvas/home-hero"
+    "henrys-digital-canvas/home-selected-work"
+    "henrys-digital-canvas/home-throughline"
+    "henrys-digital-canvas/home-resume-snapshot"
+    "henrys-digital-canvas/home-recent-writing"
+    "henrys-digital-canvas/home-contact-cta"
+  )
+
+  declare -A REQUIRED_ATTRS=(
+    ["henrys-digital-canvas/home-page"]="align"
+    ["henrys-digital-canvas/home-hero"]="eyebrow title description primaryCtaLabel primaryCtaHref secondaryCtaLabel secondaryCtaHref"
+    ["henrys-digital-canvas/home-selected-work"]="title actionLabel actionHref featuredRepoNames loadingLabel sourceLiveLabel sourceFallbackLabel emptyTitle emptyDescriptionLive emptyDescriptionFallback repoCount"
+    ["henrys-digital-canvas/home-throughline"]="title paragraphs quote"
+    ["henrys-digital-canvas/home-resume-snapshot"]="title actionLabel actionHref positioningEyebrow label items bestFitEyebrow bestFitTitle focusAreas actionLinks"
+    ["henrys-digital-canvas/home-recent-writing"]="title actionLabel actionHref emptyTitle emptyDescription blogCount"
+    ["henrys-digital-canvas/home-contact-cta"]="eyebrow title description primaryCtaLabel primaryCtaHref secondaryCtaLabel secondaryCtaHref"
+  )
+
+  hdc_assert_home_shape_json() {
+    local shape_json="$1"
+    local label="$2"
+    local block
+    local attr
+
+    for block in "${EXPECTED_BLOCKS[@]}"; do
+      if ! jq -e --arg block "${block}" 'has($block)' >/dev/null <<<"${shape_json}"; then
+        printf "[FAIL] %s is missing block %s\n" "${label}" "${block}" >&2
+        exit 1
+      fi
+
+      for attr in ${REQUIRED_ATTRS[${block}]}; do
+        if ! jq -e --arg block "${block}" --arg attr "${attr}" '(.[$block] // []) | index($attr) != null' >/dev/null <<<"${shape_json}"; then
+          printf "[FAIL] %s block %s is missing attribute %s\n" "${label}" "${block}" "${attr}" >&2
+          exit 1
+        fi
+      done
+    done
+  }
+
+  DB_SHAPE_JSON="$(
+    wp --path="${WP_ROOT}" eval '
+      $front_page_id = (int) get_option( "page_on_front" );
+      $content       = (string) get_post_field( "post_content", $front_page_id );
+      $shape         = array();
+      $walk          = function ( $blocks ) use ( &$walk, &$shape ) {
+        foreach ( $blocks as $block ) {
+          if ( ! empty( $block["blockName"] ) ) {
+            $attrs = isset( $block["attrs"] ) && is_array( $block["attrs"] ) ? $block["attrs"] : array();
+            $shape[ $block["blockName"] ] = array_keys( $attrs );
+          }
+          if ( ! empty( $block["innerBlocks"] ) && is_array( $block["innerBlocks"] ) ) {
+            $walk( $block["innerBlocks"] );
+          }
+        }
+      };
+      $walk( parse_blocks( $content ) );
+      echo wp_json_encode( $shape );
+    '
+  )"
+
+  hdc_assert_home_shape_json "${DB_SHAPE_JSON}" "DB post_content"
+  printf "Front-page shape check (DB): all 7 home-page blocks and required attributes present in post_content.\n"
+
+  if [[ "${RUN_REST_SHAPE_CHECK_AUTHENTICATED:-0}" == "1" ]]; then
+    if [[ -z "${WP_REST_USER:-}" || -z "${WP_REST_APP_PASSWORD:-}" ]]; then
+      printf "[FAIL] RUN_REST_SHAPE_CHECK_AUTHENTICATED=1 but WP_REST_USER / WP_REST_APP_PASSWORD not set.\n" >&2
+      exit 1
+    fi
+
+    REST_BASE="${BASE_URL:-https://wp.hperkins.com}"
+    REST_URL="${REST_BASE}/wp-json/wp/v2/pages/${FRONT_PAGE_ID}?context=edit"
+
+    REST_BODY="$(
+      curl -sS --fail \
+        --user "${WP_REST_USER}:${WP_REST_APP_PASSWORD}" \
+        "${REST_URL}"
+    )" || {
+      printf "[FAIL] REST fetch failed: %s\n" "${REST_URL}" >&2
+      exit 1
+    }
+
+    REST_RAW="$(printf '%s' "${REST_BODY}" | jq -r '.content.raw // empty')"
+    if [[ -z "${REST_RAW}" ]]; then
+      printf "[FAIL] REST response has no content.raw (may be missing context=edit permission).\n" >&2
+      exit 1
+    fi
+
+    REST_RAW_B64="$(printf '%s' "${REST_RAW}" | base64 -w 0)"
+    REST_SHAPE_JSON="$(
+      REST_RAW_B64="${REST_RAW_B64}" wp --path="${WP_ROOT}" eval '
+        $content = (string) base64_decode( (string) getenv( "REST_RAW_B64" ) );
+        $shape   = array();
+        $walk    = function ( $blocks ) use ( &$walk, &$shape ) {
+          foreach ( $blocks as $block ) {
+            if ( ! empty( $block["blockName"] ) ) {
+              $attrs = isset( $block["attrs"] ) && is_array( $block["attrs"] ) ? $block["attrs"] : array();
+              $shape[ $block["blockName"] ] = array_keys( $attrs );
+            }
+            if ( ! empty( $block["innerBlocks"] ) && is_array( $block["innerBlocks"] ) ) {
+              $walk( $block["innerBlocks"] );
+            }
+          }
+        };
+        $walk( parse_blocks( $content ) );
+        echo wp_json_encode( $shape );
+      '
+    )"
+
+    hdc_assert_home_shape_json "${REST_SHAPE_JSON}" "REST content.raw"
+    printf "Front-page shape check (authenticated): all 7 home-page blocks and required attributes present in content.raw.\n"
+  fi
+else
+  printf "Front-page shape check skipped (RUN_FRONT_PAGE_SHAPE_CHECK=%s).\n" "${RUN_FRONT_PAGE_SHAPE_CHECK:-0}"
+fi
+
 if [[ $failures -gt 0 ]]; then
   printf "\nAPI smoke failed: %d issue(s).\n" "$failures"
   exit 1

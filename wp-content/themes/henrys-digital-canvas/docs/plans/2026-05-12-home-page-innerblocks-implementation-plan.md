@@ -4,16 +4,28 @@
 
 **Goal:** Restructure `henrys-digital-canvas/home-page` from a monolithic shell block into a parent block + 6 structured child section blocks, each exposing native Gutenberg attributes + Inspector panels + block `supports`, while preserving exact DOM/class/CSS parity with the current frontend.
 
-**Architecture:** The parent block becomes a thin wrapper that emits `<section class="hdc-home-page alignfull">` and echoes `$content` (rendered children). Six child blocks (`home-hero`, `home-selected-work`, `home-throughline`, `home-resume-snapshot`, `home-recent-writing`, `home-contact-cta`) own their section's content as attributes, render server-side with the same `hdc-home-page__*` class names the current monolith emits, and (for the three dynamic sections) carry their own scoped `view.js` slice. The migration script rewrites the front page's `post_content` to include the parent + 6 children inline with attribute defaults seeded from `data/home-content.json`. `templateLock: "all"` for v1.
+**Architecture:** The parent block becomes a thin wrapper that emits `<section class="hdc-home-page alignfull"><div class="hdc-home-page__shell">...</div></section>` and echoes `$content` (rendered children) inside the shell. Six child blocks (`home-hero`, `home-selected-work`, `home-throughline`, `home-resume-snapshot`, `home-recent-writing`, `home-contact-cta`) own their section's content as attributes, render server-side with the same `hdc-home-page__*` class names the current monolith emits, and (for the three dynamic sections) carry their own scoped `view.js` slice. The migration script rewrites the front page's `post_content` to include the parent + 6 children inline with explicit attribute payloads seeded from `data/home-content.json`. `templateLock: "all"` for v1.
 
 **Tech Stack:**
-- WordPress 6.9.4 / Gutenberg 23.x / PHP 8.5
+- WordPress 7.1-alpha-62344 / Gutenberg 23.1.1 / PHP 8.5
 - Block API v3, `register_block_type_from_metadata`, `InnerBlocks` (`window.wp.blockEditor`)
 - `wp.element.createElement` (no JSX, no build step — matches existing theme convention)
 - Playwright 1.58.x for parity tests
 - Bash + grep for the `!important` audit
 
 **Spec:** `wp-content/themes/henrys-digital-canvas/docs/plans/2026-05-03-home-page-ai-readable-innerblocks-design.md`
+
+---
+
+## Serialization Contract
+
+The AI-readable contract depends on `post_content` / `content.raw` retaining the child attribute keys after an editor save. Gutenberg omits comment attributes whose value equals the attribute's `block.json` `default`, so any attribute listed in the Task 15 `REQUIRED_ATTRS` map **must not declare a `default` in `block.json`**. The render callbacks still fall back to `data/home-content.json` for missing values, but the synced front page must carry explicit attributes in the block delimiters.
+
+Implementation rules:
+- Required content/config attributes in child `block.json` snippets below omit `default`.
+- Optional endpoint override attributes that are not part of the raw-shape contract may keep `default: ""`.
+- `scripts/sync_page_sources.php` must serialize explicit seeded attributes with WordPress's `serialize_block_attributes()` helper, not raw `wp_json_encode()`, so block-comment payloads safely escape `--`, `<`, `>`, `&`, and quoted strings the same way core does.
+- Editor code must tolerate `undefined` attributes by using local fallback values in controls/previews; the serialized front page is seeded by `sync_page_sources.php`.
 
 ---
 
@@ -40,8 +52,8 @@
 
 | Path | Change |
 |---|---|
-| `blocks/home-page/block.json` | Strip content, add `template` + `templateLock: "all"`, `supports.align: ["full"]` only |
-| `blocks/home-page/render.php` | Slim to opening `<section>`, `<?php echo $content; ?>`, closing tag |
+| `blocks/home-page/block.json` | Strip content, keep metadata + `supports.align: ["full"]` only; `template` / `templateLock` live in `index.js` |
+| `blocks/home-page/render.php` | Slim to opening `<section>`, preserved `.hdc-home-page__shell`, `<?php echo $content; ?>`, closing tags |
 | `blocks/home-page/index.js` | Replace edit/save with `InnerBlocks` + `InnerBlocks.Content` |
 | `blocks/home-page/view.js` | **Delete** — logic moves to per-child view scripts |
 | `blocks/home-page/view.asset.php` | **Delete** |
@@ -49,8 +61,8 @@
 | `blocks/home-page/index.asset.php` | Update version string |
 | `assets/js/hdc-shared-utils.js` | Add lifted utility functions (`ensureString`, `ensureArray`, `ensureObject`, `normalizeTextList`, `clamp`, `stripHtml`, `formatDate`, `parseStableDate`, `getUpdatedAtTimestamp`, `humanizeRepoName`, `withQuery`, `normalizeAppPath`, `normalizePostsEndpoint`, `resolveRequestUrl`, `isRateLimitError`, `isOfflineError`, `normalizeRepoItem`, `mapGitHubRepos`, `compareReposByUpdatedAtDesc`, `normalizePostItem`, `normalizePostsPayload`, `normalizeResumeData`, `initRevealObserver`) + auto-bootstrap on DOMContentLoaded |
 | `functions.php` | Add 6 child block directories to `hdc_register_theme_blocks` |
-| `scripts/sync_page_sources.php` | Emit parent + 6 children inline with attribute defaults |
-| `scripts/api_smoke.sh` | Add REST-shape check on front page `content.raw` (verify 6 child blocks + attribute keys present) |
+| `scripts/sync_page_sources.php` | Emit parent + 6 children inline with explicit attribute payloads |
+| `scripts/api_smoke.sh` | Add opt-in front-page block-shape check: parse DB `post_content`, optionally parse authenticated REST `content.raw`, and verify all 7 home-page blocks + required attribute keys |
 | `scripts/full_smoke.sh` | Invoke `no_important_audit.sh` |
 | `scripts/playwright/browser-smoke.spec.cjs` | Update home page selectors (additive — class names preserved) |
 
@@ -243,12 +255,13 @@ const TARGET_BASE_URL = process.env.TARGET_BASE_URL || process.env.BASE_URL || '
 // One BEM section root per child block. These class roots MUST be emitted
 // by the child render.php files for parity to hold.
 const SECTIONS = [
-	{ name: 'hero', selector: '.hdc-home-page__hero' },
-	{ name: 'selected-work', selector: '.hdc-home-page__section.hdc-home-page__section--work, .hdc-home-page__work-grid' },
-	{ name: 'throughline', selector: '.hdc-home-page__throughline-grid' },
-	{ name: 'resume-snapshot', selector: '.hdc-home-page__resume-stack' },
-	{ name: 'recent-writing', selector: '.hdc-home-page__post-stack' },
-	{ name: 'contact-cta', selector: '.hdc-home-page__cta-card' },
+	{ name: 'shell', sourceSelector: '.hdc-home-page__shell', targetSelector: '.hdc-home-page__shell' },
+	{ name: 'hero', sourceSelector: '.hdc-home-page__hero', targetSelector: '.hdc-home-page__hero' },
+	{ name: 'selected-work', sourceSelector: '#selected-work.hdc-home-page__section', targetSelector: '[data-hdc-home-selected-work].hdc-home-page__section' },
+	{ name: 'throughline', sourceSelector: '#throughline.hdc-home-page__section', targetSelector: '.hdc-home-page__section--throughline' },
+	{ name: 'resume-snapshot', sourceSelector: '#resume-snapshot.hdc-home-page__section', targetSelector: '[data-hdc-home-resume-snapshot].hdc-home-page__section' },
+	{ name: 'recent-writing', sourceSelector: '#recent-writing.hdc-home-page__section', targetSelector: '[data-hdc-home-recent-writing].hdc-home-page__section' },
+	{ name: 'contact-cta', sourceSelector: '.hdc-home-page__cta-card', targetSelector: '.hdc-home-page__cta-card' },
 ];
 
 const COMPUTED_PROPS = [
@@ -266,7 +279,23 @@ const COMPUTED_PROPS = [
 	'line-height',
 	'text-align',
 	'display',
+	'background-image',
+	'background-size',
+	'background-position',
+	'background-repeat',
+	'background-blend-mode',
 ];
+
+const WORDPRESS_WRAPPER_CLASS_PATTERN = /^wp-block-henrys-digital-canvas-home-/;
+const MIGRATION_MARKER_CLASS_PATTERN = /^hdc-home-page__section--/;
+
+function normalizeClassList(classList) {
+	return classList
+		.filter((className) => !WORDPRESS_WRAPPER_CLASS_PATTERN.test(className))
+		.filter((className) => !MIGRATION_MARKER_CLASS_PATTERN.test(className))
+		.filter((className) => className !== 'hdc-reveal' && className !== 'hdc-reveal--fade-in')
+		.sort();
+}
 
 async function describeSection(page, selector) {
 	return page.locator(selector).first().evaluate((node, props) => {
@@ -306,13 +335,13 @@ test.describe('home page parity vs hperkins.com', () => {
 			await sourcePage.goto(`${SOURCE_BASE_URL}/`, { waitUntil: 'networkidle' });
 			await targetPage.goto(`${TARGET_BASE_URL}/`, { waitUntil: 'networkidle' });
 
-			const sourceInfo = await describeSection(sourcePage, section.selector);
-			const targetInfo = await describeSection(targetPage, section.selector);
+			const sourceInfo = await describeSection(sourcePage, section.sourceSelector);
+			const targetInfo = await describeSection(targetPage, section.targetSelector);
 
-			expect(targetInfo.exists, `target ${section.selector} must exist`).toBe(true);
-			expect(sourceInfo.exists, `source ${section.selector} must exist`).toBe(true);
+			expect(targetInfo.exists, `target ${section.targetSelector} must exist`).toBe(true);
+			expect(sourceInfo.exists, `source ${section.sourceSelector} must exist`).toBe(true);
 			expect(targetInfo.tagName).toBe(sourceInfo.tagName);
-			expect(targetInfo.classList).toEqual(sourceInfo.classList);
+			expect(normalizeClassList(targetInfo.classList)).toEqual(normalizeClassList(sourceInfo.classList));
 
 			for (const prop of COMPUTED_PROPS) {
 				expect(
@@ -392,7 +421,7 @@ unset NO_COLOR || true
 
 BASE_URL="${BASE_URL}" npx playwright test "${SPEC_PATH}" --config "${CONFIG_PATH}" --workers=1 --reporter=line "$@"
 
-if [[ "${RUN_HOME_PARITY:-1}" == "1" ]]; then
+if [[ "${RUN_HOME_PARITY:-0}" == "1" ]]; then
 	printf "\nHome parity check against %s vs %s\n" "${BASE_URL}" "${SOURCE_BASE_URL:-https://hperkins.com}"
 	BASE_URL="${BASE_URL}" npx playwright test "${PARITY_SPEC_PATH}" --config "${CONFIG_PATH}" --workers=1 --reporter=line
 fi
@@ -407,7 +436,7 @@ cd /home/dev/wp-hperkins-com/wp-content/themes/henrys-digital-canvas
 BASE_URL=http://209.97.147.66 RUN_HOME_PARITY=0 npm run smoke:browser
 ```
 
-Expected: PASS (skipping parity spec by default while we iterate; flip `RUN_HOME_PARITY=1` once children land).
+Expected: PASS. Parity is opt-in while the child blocks are being created; flip `RUN_HOME_PARITY=1` only after Task 14 cutover has synced the front page to the parent + 6 children.
 
 - [ ] **Step 3: Commit**
 
@@ -424,7 +453,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 
 Why: each new child `view.js` will need `ensureString`, `clamp`, etc. — duplicating them in three places is waste. Lift them to the existing shared module before extraction so per-child view scripts are smaller and consistent.
 
-**Additionally critical:** `initRevealObserver` (currently in `home-page/view.js` lines 24–70) is invoked at `view.js:1177` after the React tree mounts and is the only code path that adds `.is-visible` to `.hdc-reveal` elements. Every child `render.php` emits `hdc-reveal hdc-reveal--*` classes on its section wrapper, so dropping `view.js` in Task 14 without lifting this observer would silently break the homepage scroll-reveal animation. Lift it here, auto-bootstrap from the IIFE so it fires on every page that ships `.hdc-reveal` elements, and re-run after each dynamic child hydrates its placeholder content (Tasks 10/11/12 view scripts call `utils.initRevealObserver()` after replacing children).
+**Additionally critical:** `initRevealObserver` (currently in `home-page/view.js` lines 24–70) is invoked at `view.js:1177` after the React tree mounts and is the only code path that adds `.is-visible` to `.hdc-reveal` elements. Preserve the monolith's reveal placement exactly: hero root, throughline's nested reveal wrappers, and dynamic work/post cards reveal; selected-work, resume, recent-writing, and contact section roots do **not** gain new reveal classes. Lift the observer here, auto-bootstrap from the IIFE so it fires on every page that ships `.hdc-reveal` elements, and re-run after each dynamic child hydrates its placeholder content (Tasks 10/11/12 view scripts call `utils.initRevealObserver()` after replacing children).
 
 **Files:**
 - Modify: `wp-content/themes/henrys-digital-canvas/assets/js/hdc-shared-utils.js`
@@ -465,10 +494,15 @@ Place them above the `global.hdcSharedUtils = { ... }` export block.
 
 - [ ] **Step 3: Expand the export block**
 
-Edit the export block to add each lifted function as a property:
+Edit the export block to add each lifted function as a property. Preserve the existing exports (`decodeHtml`, `normalizePathname`, `parseDate`, `estimateReadingTimeLabel`, `getLucideIconNode`, `renderLucideIcon`) because existing blocks consume them.
 
 ```javascript
 global.hdcSharedUtils = {
+	decodeHtml: decodeHtml,
+	normalizePathname: normalizePathname,
+	parseDate: parseDate,
+	estimateReadingTimeLabel: estimateReadingTimeLabel,
+	getLucideIconNode: getLucideIconNode,
 	renderLucideIcon: renderLucideIcon,
 	ensureString: ensureString,
 	ensureArray: ensureArray,
@@ -510,7 +544,7 @@ if ( typeof document !== 'undefined' ) {
 }
 ```
 
-Rationale: static children (hero, throughline, contact-cta) render their `.hdc-reveal` markup server-side, so it exists at `DOMContentLoaded`. Dynamic children (selected-work, resume-snapshot, recent-writing) replace their placeholder content after fetch resolves and must re-call `window.hdcSharedUtils.initRevealObserver()` to attach the observer to the freshly-mounted `.hdc-reveal` descendants. Tasks 10/11/12 view scripts do this (see Step 6 of each).
+Rationale: static server-rendered reveal markup (hero root and throughline nested wrappers) exists at `DOMContentLoaded`. Dynamic children can mount new `.hdc-reveal` descendants after fetch resolves (selected-work cards and recent-writing cards), so those view scripts must re-call `window.hdcSharedUtils.initRevealObserver()` after hydrating. Do not add root reveal classes to sections that the monolith does not reveal; parity depends on preserving the current computed styles before animation.
 
 - [ ] **Step 4: Update `blocks/home-page/view.js` to consume the shared exports (interim — file is deleted in Task 14)**
 
@@ -595,18 +629,17 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 		"dimensions": { "minHeight": true }
 	},
 	"attributes": {
-		"eyebrow":            { "type": "string", "default": "",                                                                       "role": "content" },
-		"title":              { "type": "string", "default": "Retail floors. WordPress themes. Cloud platforms. Agentic AI.",          "role": "content" },
-		"description":       { "type": "string", "default": "I've been learning to talk to machines since 2007 — now they're starting to talk back.", "role": "content" },
-		"primaryCtaLabel":   { "type": "string", "default": "Explore Prompt Forge",                                                    "role": "content" },
-		"primaryCtaHref":    { "type": "string", "default": "/work/ai-prompt-pro",                                                     "role": "content" },
-		"secondaryCtaLabel": { "type": "string", "default": "Work With Me",                                                            "role": "content" },
-		"secondaryCtaHref":  { "type": "string", "default": "/contact",                                                                "role": "content" }
+		"eyebrow":           { "type": "string", "role": "content" },
+		"title":             { "type": "string", "role": "content" },
+		"description":       { "type": "string", "role": "content" },
+		"primaryCtaLabel":   { "type": "string", "role": "content" },
+		"primaryCtaHref":    { "type": "string", "role": "content" },
+		"secondaryCtaLabel": { "type": "string", "role": "content" },
+		"secondaryCtaHref":  { "type": "string", "role": "content" }
 	},
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php",
-	"style": "file:./style.css",
-	"editorStyle": "file:./style.css"
+	"style": "file:./style.css"
 }
 ```
 
@@ -649,7 +682,7 @@ return array(
 				const Control = isTextarea ? TextareaControl : TextControl;
 				return el( Control, {
 					label: __( label, 'henrys-digital-canvas' ),
-					value: attrs[ key ],
+					value: attrs[ key ] || '',
 					onChange: function ( next ) {
 						const update = {};
 						update[ key ] = next;
@@ -688,13 +721,13 @@ return array(
 					'div',
 					blockProps,
 					attrs.eyebrow && el( 'p', { className: 'hdc-home-page__hero-eyebrow' }, attrs.eyebrow ),
-					el( 'h1', { className: 'hdc-home-page__hero-title' }, attrs.title ),
-					el( 'p', { className: 'hdc-home-page__hero-description' }, attrs.description ),
+					el( 'h1', { className: 'hdc-home-page__hero-title' }, attrs.title || __( 'Home hero', 'henrys-digital-canvas' ) ),
+					el( 'p', { className: 'hdc-home-page__hero-description' }, attrs.description || '' ),
 					el(
 						'div',
 						{ className: 'hdc-home-page__hero-actions' },
-						el( 'span', { className: 'hdc-home-page__button hdc-home-page__button--hero' }, attrs.primaryCtaLabel ),
-						el( 'span', { className: 'hdc-home-page__button hdc-home-page__button--hero-secondary' }, attrs.secondaryCtaLabel )
+						el( 'span', { className: 'hdc-home-page__button hdc-home-page__button--hero' }, attrs.primaryCtaLabel || __( 'Primary CTA', 'henrys-digital-canvas' ) ),
+						el( 'span', { className: 'hdc-home-page__button hdc-home-page__button--hero-secondary' }, attrs.secondaryCtaLabel || __( 'Secondary CTA', 'henrys-digital-canvas' ) )
 					)
 				)
 			);
@@ -767,13 +800,21 @@ $wrapper_attributes = get_block_wrapper_attributes(
 			<p class="hdc-home-page__hero-description"><?php echo esc_html( $description ); ?></p>
 			<div class="hdc-home-page__hero-actions">
 				<?php if ( '' !== $primary_cta_label ) : ?>
-					<a class="hdc-home-page__button hdc-home-page__button--hero focus-ring" href="<?php echo esc_url( $primary_cta_href ); ?>">
+					<a class="hdc-home-page__button hdc-home-page__button--hero focus-ring" data-contrast-probe="hero-action-primary-home" href="<?php echo esc_url( $primary_cta_href ); ?>">
 						<?php echo esc_html( $primary_cta_label ); ?>
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+							<path d="M5 12h14"></path>
+							<path d="m12 5 7 7-7 7"></path>
+						</svg>
 					</a>
 				<?php endif; ?>
 				<?php if ( '' !== $secondary_cta_lbl ) : ?>
-					<a class="hdc-home-page__button hdc-home-page__button--hero-secondary focus-ring" href="<?php echo esc_url( $secondary_cta_href ); ?>">
+					<a class="hdc-home-page__button hdc-home-page__button--secondary hdc-home-page__button--hero-secondary focus-ring" data-contrast-probe="hero-action-secondary-home" href="<?php echo esc_url( $secondary_cta_href ); ?>">
 						<?php echo esc_html( $secondary_cta_lbl ); ?>
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+							<path d="M5 12h14"></path>
+							<path d="m12 5 7 7-7 7"></path>
+						</svg>
 					</a>
 				<?php endif; ?>
 			</div>
@@ -798,7 +839,7 @@ Move selectors from `blocks/home-page/style.css` whose specificity is rooted in 
 - `.hdc-home-page__hero-actions { ... }`
 - `.hdc-home-page__button { ... }` and all `--hero`, `--hero-secondary` variants
 
-**Do not delete from `home-page/style.css` yet** — keep the originals there until Task 23, so the monolith keeps working during the migration.
+**Do not delete from `home-page/style.css` yet** — keep the originals there until Task 14, so the monolith keeps working during the migration.
 
 If any rule uses `!important` on a property in this set: `padding|margin|border*|background-color|color|font-size|line-height|font-family|font-weight|text-align|min-height|gap`, remove the `!important`. The audit will fail otherwise.
 
@@ -853,18 +894,17 @@ Same shape as Task 7 (static, no `view.js`). Reference markup: `blocks/home-page
 		"dimensions": { "minHeight": true }
 	},
 	"attributes": {
-		"eyebrow":            { "type": "string", "default": "Need a technical partner?",                                                                        "role": "content" },
-		"title":              { "type": "string", "default": "Bring me in where support, product, and implementation overlap.",                                  "role": "content" },
-		"description":       { "type": "string", "default": "I help teams turn customer issues into shipped fixes — integrations, documentation, and AI-assisted triage — so delivery stays calm and outcomes are measurable.", "role": "content" },
-		"primaryCtaLabel":   { "type": "string", "default": "Work with me",  "role": "content" },
-		"primaryCtaHref":    { "type": "string", "default": "/contact",      "role": "content" },
-		"secondaryCtaLabel": { "type": "string", "default": "View resume",   "role": "content" },
-		"secondaryCtaHref":  { "type": "string", "default": "/resume",       "role": "content" }
+		"eyebrow":           { "type": "string", "role": "content" },
+		"title":             { "type": "string", "role": "content" },
+		"description":       { "type": "string", "role": "content" },
+		"primaryCtaLabel":   { "type": "string", "role": "content" },
+		"primaryCtaHref":    { "type": "string", "role": "content" },
+		"secondaryCtaLabel": { "type": "string", "role": "content" },
+		"secondaryCtaHref":  { "type": "string", "role": "content" }
 	},
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php",
-	"style": "file:./style.css",
-	"editorStyle": "file:./style.css"
+	"style": "file:./style.css"
 }
 ```
 
@@ -907,7 +947,7 @@ return array(
 				const Control = isTextarea ? TextareaControl : TextControl;
 				return el( Control, {
 					label: __( label, 'henrys-digital-canvas' ),
-					value: attrs[ key ],
+					value: attrs[ key ] || '',
 					onChange: function ( next ) {
 						const update = {};
 						update[ key ] = next;
@@ -952,14 +992,14 @@ return array(
 							'div',
 							{ className: 'hdc-home-page__cta-body' },
 							attrs.eyebrow && el( 'p', { className: 'hdc-home-page__eyebrow' }, attrs.eyebrow ),
-							el( 'h2', { className: 'hdc-home-page__section-title' }, attrs.title ),
-							el( 'p', { className: 'hdc-home-page__copy' }, attrs.description )
+							el( 'h2', { className: 'hdc-home-page__section-title' }, attrs.title || __( 'Contact CTA', 'henrys-digital-canvas' ) ),
+							el( 'p', { className: 'hdc-home-page__copy' }, attrs.description || '' )
 						),
 						el(
 							'div',
 							{ className: 'hdc-home-page__cta-actions' },
-							el( 'span', { className: 'hdc-home-page__button' }, attrs.primaryCtaLabel ),
-							el( 'span', { className: 'hdc-home-page__button hdc-home-page__button--secondary' }, attrs.secondaryCtaLabel )
+							el( 'span', { className: 'hdc-home-page__button' }, attrs.primaryCtaLabel || __( 'Primary CTA', 'henrys-digital-canvas' ) ),
+							el( 'span', { className: 'hdc-home-page__button hdc-home-page__button--secondary' }, attrs.secondaryCtaLabel || __( 'Secondary CTA', 'henrys-digital-canvas' ) )
 						)
 					)
 				)
@@ -1013,30 +1053,33 @@ $shref   = $pick( 'secondaryCtaHref' );
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
-		'class' => 'hdc-home-page__cta-card surface-library-ember-veil hdc-reveal hdc-reveal--fade-in',
+		'class' => 'hdc-home-page__section',
+		'id'    => 'contact-cta',
 	)
 );
 ?>
 <section <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-	<div class="hdc-home-page__cta-layout">
-		<div class="hdc-home-page__cta-body">
-			<?php if ( '' !== $eyebrow ) : ?>
-				<p class="hdc-home-page__eyebrow"><?php echo esc_html( $eyebrow ); ?></p>
-			<?php endif; ?>
-			<h2 class="hdc-home-page__section-title"><?php echo esc_html( $title ); ?></h2>
-			<p class="hdc-home-page__copy"><?php echo esc_html( $desc ); ?></p>
-		</div>
-		<div class="hdc-home-page__cta-actions">
-			<?php if ( '' !== $plabel ) : ?>
-				<a class="hdc-home-page__button focus-ring" href="<?php echo esc_url( $phref ); ?>">
-					<?php echo esc_html( $plabel ); ?>
-				</a>
-			<?php endif; ?>
-			<?php if ( '' !== $slabel ) : ?>
-				<a class="hdc-home-page__button hdc-home-page__button--secondary focus-ring" href="<?php echo esc_url( $shref ); ?>">
-					<?php echo esc_html( $slabel ); ?>
-				</a>
-			<?php endif; ?>
+	<div class="hdc-home-page__cta-card surface-library-ember-veil">
+		<div class="hdc-home-page__cta-layout">
+			<div class="hdc-home-page__cta-body">
+				<?php if ( '' !== $eyebrow ) : ?>
+					<p class="hdc-home-page__eyebrow"><?php echo esc_html( $eyebrow ); ?></p>
+				<?php endif; ?>
+				<h2 class="hdc-home-page__section-title"><?php echo esc_html( $title ); ?></h2>
+				<p class="hdc-home-page__copy"><?php echo esc_html( $desc ); ?></p>
+			</div>
+			<div class="hdc-home-page__cta-actions">
+				<?php if ( '' !== $plabel ) : ?>
+					<a class="hdc-home-page__button focus-ring" href="<?php echo esc_url( $phref ); ?>">
+						<?php echo esc_html( $plabel ); ?>
+					</a>
+				<?php endif; ?>
+				<?php if ( '' !== $slabel ) : ?>
+					<a class="hdc-home-page__button hdc-home-page__button--secondary focus-ring" href="<?php echo esc_url( $shref ); ?>">
+						<?php echo esc_html( $slabel ); ?>
+					</a>
+				<?php endif; ?>
+			</div>
 		</div>
 	</div>
 </section>
@@ -1044,7 +1087,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 
 Confirm against `blocks/home-page/view.js` lines 1941–2014 — copy any additional DOM (icons, helper spans) that the live markup contains.
 
-- [ ] **Step 5: `blocks/home-contact-cta/style.css` — extract `.hdc-home-page__cta-*` selectors from `blocks/home-page/style.css`.** Same rule as Task 7: do not delete from the monolith until Task 23.
+- [ ] **Step 5: `blocks/home-contact-cta/style.css` — extract `.hdc-home-page__cta-*` selectors from `blocks/home-page/style.css`.** Same rule as Task 7: do not delete from the monolith until Task 14.
 
 - [ ] **Step 6: Commit**
 
@@ -1087,31 +1130,19 @@ Reference markup: `blocks/home-page/view.js` lines 1710–1808. Note the `paragr
 		"dimensions": { "minHeight": true }
 	},
 	"attributes": {
-		"title":      { "type": "string", "default": "From the floor to the frontier.", "role": "content" },
+		"title":      { "type": "string", "role": "content" },
 		"paragraphs": {
 			"type": "array",
-			"default": [
-				"In 2007, I was coaching high school students in Chicago on how to tell a story clearly. By 2009, I was troubleshooting hardware on a retail floor at Micro Center. By 2012, I was managing a developer community at PageLines and supporting WordPress.com users at Automattic — the company behind WordPress itself.",
-				"Then I ran coffee operations. Starbucks, Sodexo — high-volume, high-stakes, no-margin-for-error environments where the system either works at 6 AM or it doesn't. I learned more about process, escalation, and team coaching on those shifts than in any technical role I've ever held.",
-				"Now I build AI agents and intelligent workflows. I design prompt systems. I ship React apps on Cloudflare. And I consult for teams that need someone who can scope the project, write the code, document the process, and explain it to a stakeholder who doesn't care about the stack — they just need it to work.",
-				"The tools have changed five times over. The instinct hasn't."
-			],
 			"role": "content"
 		},
 		"quote": {
 			"type": "object",
-			"default": {
-				"text": "He's always there when his community needs him.",
-				"attribution": "PageLines recommendation",
-				"eyebrow": "A former colleague"
-			},
 			"role": "content"
 		}
 	},
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php",
-	"style": "file:./style.css",
-	"editorStyle": "file:./style.css"
+	"style": "file:./style.css"
 }
 ```
 
@@ -1177,7 +1208,7 @@ Reference markup: `blocks/home-page/view.js` lines 1710–1808. Note the `paragr
 						{ title: __( 'Throughline', 'henrys-digital-canvas' ), initialOpen: true },
 						el( TextControl, {
 							label: __( 'Title', 'henrys-digital-canvas' ),
-							value: attrs.title,
+							value: attrs.title || '',
 							onChange: function ( title ) { setAttributes( { title: title } ); },
 						} )
 					),
@@ -1190,7 +1221,7 @@ Reference markup: `blocks/home-page/view.js` lines 1710–1808. Note the `paragr
 								{ key: 'p-' + index, style: { marginBottom: '12px' } },
 								el( TextareaControl, {
 									label: __( 'Paragraph ' + ( index + 1 ), 'henrys-digital-canvas' ),
-									value: paragraph,
+								value: paragraph || '',
 									onChange: function ( next ) { updateParagraph( index, next ); },
 								} ),
 								el( Button, {
@@ -1210,17 +1241,17 @@ Reference markup: `blocks/home-page/view.js` lines 1710–1808. Note the `paragr
 						{ title: __( 'Quote', 'henrys-digital-canvas' ), initialOpen: false },
 						el( TextControl, {
 							label: __( 'Eyebrow', 'henrys-digital-canvas' ),
-							value: quote.eyebrow,
+							value: quote.eyebrow || '',
 							onChange: function ( next ) { updateQuote( 'eyebrow', next ); },
 						} ),
 						el( TextareaControl, {
 							label: __( 'Quote text', 'henrys-digital-canvas' ),
-							value: quote.text,
+							value: quote.text || '',
 							onChange: function ( next ) { updateQuote( 'text', next ); },
 						} ),
 						el( TextControl, {
 							label: __( 'Attribution', 'henrys-digital-canvas' ),
-							value: quote.attribution,
+							value: quote.attribution || '',
 							onChange: function ( next ) { updateQuote( 'attribution', next ); },
 						} )
 					)
@@ -1228,7 +1259,7 @@ Reference markup: `blocks/home-page/view.js` lines 1710–1808. Note the `paragr
 				el(
 					'div',
 					blockProps,
-					el( 'h2', { className: 'hdc-home-page__section-title hdc-home-page__section-title--intro' }, attrs.title ),
+					el( 'h2', { className: 'hdc-home-page__section-title hdc-home-page__section-title--intro' }, attrs.title || __( 'Throughline', 'henrys-digital-canvas' ) ),
 					el(
 						'div',
 						{ className: 'hdc-home-page__throughline-story' },
@@ -1321,14 +1352,17 @@ $quote_brow = $pick_quote( 'eyebrow' );
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
-		'class' => 'hdc-home-page__section hdc-home-page__section--throughline hdc-reveal hdc-reveal--fade-in',
+		'class' => 'hdc-home-page__section hdc-home-page__section--throughline',
+		'id'    => 'throughline',
 	)
 );
 ?>
 <section <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+	<div class="hdc-reveal hdc-reveal--fade-in" style="--reveal-index: 0;">
+		<h2 class="hdc-home-page__section-title hdc-home-page__section-title--intro"><?php echo esc_html( $title ); ?></h2>
+	</div>
 	<div class="hdc-home-page__throughline-grid">
-		<div class="hdc-home-page__throughline-story">
-			<h2 class="hdc-home-page__section-title hdc-home-page__section-title--intro"><?php echo esc_html( $title ); ?></h2>
+		<div class="hdc-home-page__throughline-story surface-library-learning-paper">
 			<div class="hdc-home-page__throughline-narrative">
 				<?php foreach ( $paragraphs as $paragraph ) : ?>
 					<p class="hdc-home-page__throughline-paragraph"><?php echo esc_html( $paragraph ); ?></p>
@@ -1336,15 +1370,23 @@ $wrapper_attributes = get_block_wrapper_attributes(
 			</div>
 		</div>
 		<?php if ( '' !== $quote_text ) : ?>
-			<aside class="hdc-home-page__throughline-quote-card">
-				<?php if ( '' !== $quote_brow ) : ?>
-					<p class="hdc-home-page__throughline-quote-header"><?php echo esc_html( $quote_brow ); ?></p>
-				<?php endif; ?>
-				<blockquote class="hdc-home-page__throughline-blockquote">
-					<p class="hdc-home-page__throughline-quote-text"><?php echo esc_html( $quote_text ); ?></p>
-					<footer class="hdc-home-page__throughline-quote-footer"><?php echo esc_html( $quote_attr ); ?></footer>
-				</blockquote>
-			</aside>
+			<div class="hdc-reveal" style="--reveal-index: 1;">
+				<div class="hdc-home-page__throughline-quote-card surface-library-ember-topography">
+					<div class="hdc-home-page__throughline-quote-header">
+						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+							<path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"></path>
+							<path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"></path>
+						</svg>
+						<?php if ( '' !== $quote_brow ) : ?>
+							<span class="hdc-home-page__eyebrow"><?php echo esc_html( $quote_brow ); ?></span>
+						<?php endif; ?>
+					</div>
+					<blockquote class="hdc-home-page__throughline-blockquote">
+						<p class="hdc-home-page__throughline-quote-text"><?php echo esc_html( '“' . $quote_text . '”' ); ?></p>
+						<footer class="hdc-home-page__throughline-quote-footer"><?php echo esc_html( $quote_attr ); ?></footer>
+					</blockquote>
+				</div>
+			</div>
 		<?php endif; ?>
 	</div>
 </section>
@@ -1393,23 +1435,22 @@ Reference: section header + grid in `blocks/home-page/view.js` lines 1658–1709
 		"dimensions": { "minHeight": true }
 	},
 	"attributes": {
-		"title":                    { "type": "string", "default": "Selected Work",                                                                            "role": "content" },
-		"actionLabel":             { "type": "string", "default": "View all work",                                                                            "role": "content" },
-		"actionHref":              { "type": "string", "default": "/work",                                                                                    "role": "content" },
-		"featuredRepoNames":       { "type": "array",  "default": [ "tarot", "ai-cli-web-funnel", "dj-judas" ],                                               "role": "content" },
-		"loadingLabel":            { "type": "string", "default": "Syncing selected work...",                                                                  "role": "content" },
-		"sourceLiveLabel":         { "type": "string", "default": "Selected work blends live GitHub builds with private client case studies.",                "role": "content" },
-		"sourceFallbackLabel":     { "type": "string", "default": "Selected work blends private client case studies with a cached GitHub snapshot.",          "role": "content" },
-		"emptyTitle":              { "type": "string", "default": "Selected work is updating",                                                                 "role": "content" },
-		"emptyDescriptionLive":     { "type": "string", "default": "Featured work is being refreshed for the homepage. Use View all work to browse the full project library.", "role": "content" },
-		"emptyDescriptionFallback": { "type": "string", "default": "Featured work is not available in this snapshot. Use View all work to browse the full project library.",   "role": "content" },
-		"repoCount":               { "type": "number", "default": 3 }
+		"title":                    { "type": "string", "role": "content" },
+		"actionLabel":             { "type": "string", "role": "content" },
+		"actionHref":              { "type": "string", "role": "content" },
+		"featuredRepoNames":       { "type": "array",  "role": "content" },
+		"loadingLabel":            { "type": "string", "role": "content" },
+		"sourceLiveLabel":         { "type": "string", "role": "content" },
+		"sourceFallbackLabel":     { "type": "string", "role": "content" },
+		"emptyTitle":              { "type": "string", "role": "content" },
+		"emptyDescriptionLive":     { "type": "string", "role": "content" },
+		"emptyDescriptionFallback": { "type": "string", "role": "content" },
+		"repoCount":               { "type": "number" }
 	},
 	"editorScript": "file:./index.js",
 	"viewScript": "file:./view.js",
 	"render": "file:./render.php",
-	"style": "file:./style.css",
-	"editorStyle": "file:./style.css"
+	"style": "file:./style.css"
 }
 ```
 
@@ -1421,7 +1462,7 @@ Reference: section header + grid in `blocks/home-page/view.js` lines 1658–1709
 <?php
 return array(
 	'dependencies' => array( 'wp-element', 'hdc-shared-utils' ),
-	'version'      => filemtime( __DIR__ . '/view.js' ),
+	'version'      => '20260512.1',
 );
 ```
 
@@ -1473,7 +1514,7 @@ return array(
 				const Control = isTextarea ? TextareaControl : TextControl;
 				return el( Control, {
 					label: __( label, 'henrys-digital-canvas' ),
-					value: attrs[ key ],
+					value: attrs[ key ] || '',
 					onChange: function ( next ) {
 						const update = {};
 						update[ key ] = next;
@@ -1500,7 +1541,7 @@ return array(
 						{ title: __( 'Featured repositories', 'henrys-digital-canvas' ), initialOpen: false },
 						el( RangeControl, {
 							label: __( 'Repos to display', 'henrys-digital-canvas' ),
-							value: attrs.repoCount,
+							value: Number.isFinite( Number( attrs.repoCount ) ) ? Number( attrs.repoCount ) : 3,
 							min: 1,
 							max: 6,
 							onChange: function ( repoCount ) { setAttributes( { repoCount: repoCount } ); },
@@ -1511,7 +1552,7 @@ return array(
 								{ key: 'repo-' + index, style: { marginBottom: '8px' } },
 								el( TextControl, {
 									label: __( 'Repo #' + ( index + 1 ), 'henrys-digital-canvas' ),
-									value: name,
+									value: name || '',
 									onChange: function ( next ) { updateRepoName( index, next ); },
 								} ),
 								el( Button, {
@@ -1540,7 +1581,7 @@ return array(
 					el( Notice, { status: 'info', isDismissible: false },
 						__( 'Live: fetches selected repos from GitHub (with fallback). Editor shows a placeholder list.', 'henrys-digital-canvas' )
 					),
-					el( 'h2', { className: 'hdc-home-page__section-title' }, attrs.title ),
+					el( 'h2', { className: 'hdc-home-page__section-title' }, attrs.title || __( 'Selected Work', 'henrys-digital-canvas' ) ),
 					el(
 						'p',
 						{ className: 'hdc-home-page__editor-meta' },
@@ -1646,11 +1687,12 @@ $config = array(
 	'workEndpoint'            => esc_url_raw( rest_url( 'henrys-digital-canvas/v1/work' ) ),
 );
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class' => 'hdc-home-page__section hdc-home-page__section--work hdc-reveal hdc-reveal--fade-in',
-	)
-);
+	$wrapper_attributes = get_block_wrapper_attributes(
+		array(
+			'class' => 'hdc-home-page__section hdc-home-page__section--work',
+			'id'    => 'selected-work',
+		)
+	);
 ?>
 <section <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> data-config="<?php echo esc_attr( wp_json_encode( $config ) ); ?>" data-hdc-home-selected-work>
 	<header class="hdc-home-page__section-header">
@@ -1669,12 +1711,13 @@ $wrapper_attributes = get_block_wrapper_attributes(
 
 - [ ] **Step 6: `view.js` — extracted from `blocks/home-page/view.js`**
 
-The current monolith renders the whole homepage as a single React tree. The extracted `view.js` should:
-1. Read `data-config` from `[data-hdc-home-selected-work]`.
-2. Use shared helpers from `window.hdcSharedUtils` (`ensureString`, `ensureArray`, `clamp`, `normalizeRepoItem`, `mapGitHubRepos`, `compareReposByUpdatedAtDesc`, `humanizeRepoName`, `formatDate`, `isRateLimitError`, `isOfflineError`).
-3. Re-use the existing `WorkCard` rendering logic (lines 965–1065) — copy into this file.
-4. Fetch from `config.githubProxyUrl` with pagination (REPO_PROXY_PAGE_SIZE/REPO_PROXY_MAX_PAGES); on failure, fall back to `config.initialRepos`.
-5. Replace the loading placeholder content of `[data-hdc-home-selected-work-grid]` with the rendered grid.
+	The current monolith renders the whole homepage as a single React tree. The extracted `view.js` should:
+	1. Read `data-config` from `[data-hdc-home-selected-work]`.
+	2. Use shared helpers from `window.hdcSharedUtils` (`ensureString`, `ensureArray`, `clamp`, `normalizeRepoItem`, `mapGitHubRepos`, `compareReposByUpdatedAtDesc`, `humanizeRepoName`, `formatDate`, `isRateLimitError`, `isOfflineError`).
+	3. Re-use the existing `WorkCard` rendering logic (lines 965–1065) and the small render helpers it depends on (lines 242–304) — copy into this file.
+	4. Fetch from `config.githubProxyUrl` with pagination (REPO_PROXY_PAGE_SIZE/REPO_PROXY_MAX_PAGES); on failure, fall back to `config.initialRepos`.
+	5. Select cards using `config.featuredRepoNames` in order, falling back to `repo.featured` only when named repos are missing or fewer than `repoCount`.
+	6. Replace the loading placeholder content of `[data-hdc-home-selected-work-grid]` with the rendered grid.
 
 ```javascript
 ( function ( wp ) {
@@ -1729,6 +1772,52 @@ The current monolith renders the whole homepage as a single React tree. The extr
 		};
 	}
 
+	function normalizeRepoKey( value ) {
+		return ensureString( value, '' ).toLowerCase();
+	}
+
+	function selectFeaturedRepos( repos, featuredRepoNames, repoCount ) {
+		const items = ensureArray( repos );
+		const requestedNames = ensureArray( featuredRepoNames )
+			.map( normalizeRepoKey )
+			.filter( Boolean );
+		const selected = [];
+		const selectedNames = new Set();
+		const byName = new Map();
+
+		items.forEach( function ( repo ) {
+			const key = normalizeRepoKey( repo && repo.name );
+			if ( key && ! byName.has( key ) ) {
+				byName.set( key, repo );
+			}
+		} );
+
+		requestedNames.forEach( function ( key ) {
+			const repo = byName.get( key );
+			if ( repo && ! selectedNames.has( key ) ) {
+				selected.push( repo );
+				selectedNames.add( key );
+			}
+		} );
+
+		if ( selected.length < repoCount ) {
+			items.forEach( function ( repo ) {
+				const key = normalizeRepoKey( repo && repo.name );
+				if ( selected.length >= repoCount || selectedNames.has( key ) || ! repo.featured ) {
+					return;
+				}
+				selected.push( repo );
+				selectedNames.add( key );
+			} );
+		}
+
+		return selected.slice( 0, repoCount );
+	}
+
+	// Copy getHomeRepoTitle/getHomeRepoSummary/isGitHubLinkedRepo/
+	// getHomeRepoBadge/getHomeRepoSourceBadge/getHomeRepoCtaLabel/
+	// renderActionArrow from blocks/home-page/view.js lines 242-304.
+	// Copy StateCard/EmptyStateCard and WorkGridLoadingState from lines 768-916.
 	// Copy WorkCard from blocks/home-page/view.js lines 965-1065 (verbatim).
 	// Copy fetchGithubRepos and helpers it depends on from blocks/home-page/view.js
 	//   approximate lines 580-760, scoped to only the selected-work code path.
@@ -1745,6 +1834,13 @@ The current monolith renders the whole homepage as a single React tree. The extr
 		// from view.js lines 1365-1387 (selectedWorkContent) and pair it
 		// with the fetch path from view.js lines 580-700. Use createRoot
 		// (with legacyRender fallback) on the grid element.
+		//
+		// Deliberate update from the monolith: replace the monolith's
+		// `reposState.items.filter( repo => repo.featured ).slice(...)`
+		// selection with:
+		//   selectFeaturedRepos( reposState.items, config.featuredRepoNames, config.repoCount )
+		// so the Inspector's Featured repositories repeater actually controls
+		// the frontend card order.
 		//
 		// After replacing grid children, call:
 		//   if ( typeof utils.initRevealObserver === 'function' ) { utils.initRevealObserver(); }
@@ -1767,6 +1863,8 @@ The current monolith renders the whole homepage as a single React tree. The extr
 
 ```bash
 SHA="$(cat /tmp/home-page-innerblocks-baseline-sha.txt)"
+git -C /home/dev/wp-hperkins-com show "${SHA}:wp-content/themes/henrys-digital-canvas/blocks/home-page/view.js" | sed -n '242,304p'    # WorkCard helper functions
+git -C /home/dev/wp-hperkins-com show "${SHA}:wp-content/themes/henrys-digital-canvas/blocks/home-page/view.js" | sed -n '768,916p'    # state/loading cards used by selected-work
 git -C /home/dev/wp-hperkins-com show "${SHA}:wp-content/themes/henrys-digital-canvas/blocks/home-page/view.js" | sed -n '965,1065p'   # WorkCard
 git -C /home/dev/wp-hperkins-com show "${SHA}:wp-content/themes/henrys-digital-canvas/blocks/home-page/view.js" | sed -n '580,760p'    # fetch loop
 git -C /home/dev/wp-hperkins-com show "${SHA}:wp-content/themes/henrys-digital-canvas/blocks/home-page/view.js" | sed -n '1365,1387p'  # selectedWorkContent
@@ -1815,29 +1913,20 @@ Reference: section header + body in `blocks/home-page/view.js` lines 1389–1517
 		"dimensions": { "minHeight": true }
 	},
 	"attributes": {
-		"title":              { "type": "string", "default": "Resume Snapshot",                                                                            "role": "content" },
-		"actionLabel":       { "type": "string", "default": "Interactive resume",                                                                          "role": "content" },
-		"actionHref":        { "type": "string", "default": "/resume",                                                                                     "role": "content" },
-		"positioningEyebrow": { "type": "string", "default": "Positioning",                                                                                "role": "content" },
-		"label":              { "type": "string", "default": "Public proof of work",                                                                       "role": "content" },
-		"items":              { "type": "array",  "default": [ "Prompt Forge", "HPerkins.com", "wp-hperkins-com" ],                                       "role": "content" },
-		"bestFitEyebrow":     { "type": "string", "default": "Best fit",                                                                                   "role": "content" },
-		"bestFitTitle":       { "type": "string", "default": "Where I contribute fastest",                                                                  "role": "content" },
+		"title":              { "type": "string", "role": "content" },
+		"actionLabel":        { "type": "string", "role": "content" },
+		"actionHref":         { "type": "string", "role": "content" },
+		"positioningEyebrow": { "type": "string", "role": "content" },
+		"label":              { "type": "string", "role": "content" },
+		"items":              { "type": "array",  "role": "content" },
+		"bestFitEyebrow":     { "type": "string", "role": "content" },
+		"bestFitTitle":       { "type": "string", "role": "content" },
 		"focusAreas":         {
 			"type": "array",
-			"default": [
-				"Customer-facing implementation, onboarding, and support workflows",
-				"API integrations, documentation, and escalation triage",
-				"AI-assisted workflow delivery grounded in WordPress and durable web systems"
-			],
 			"role": "content"
 		},
 		"actionLinks":        {
 			"type": "array",
-			"default": [
-				{ "label": "Interactive resume", "href": "/resume" },
-				{ "label": "ATS / recruiter view", "href": "/resume/ats" }
-			],
 			"role": "content"
 		},
 		"resumeEndpoint":     { "type": "string", "default": "" }
@@ -1845,8 +1934,7 @@ Reference: section header + body in `blocks/home-page/view.js` lines 1389–1517
 	"editorScript": "file:./index.js",
 	"viewScript": "file:./view.js",
 	"render": "file:./render.php",
-	"style": "file:./style.css",
-	"editorStyle": "file:./style.css"
+	"style": "file:./style.css"
 }
 ```
 
@@ -1866,7 +1954,7 @@ return array(
 <?php
 return array(
 	'dependencies' => array( 'wp-element', 'hdc-shared-utils' ),
-	'version'      => filemtime( __DIR__ . '/view.js' ),
+	'version'      => '20260512.1',
 );
 ```
 
@@ -2004,7 +2092,7 @@ return array(
 				const Control = isTextarea ? TextareaControl : TextControl;
 				return el( Control, {
 					label: __( label, 'henrys-digital-canvas' ),
-					value: attrs[ key ],
+					value: attrs[ key ] || '',
 					onChange: function ( next ) {
 						const update = {};
 						update[ key ] = next;
@@ -2047,7 +2135,7 @@ return array(
 					el( Notice, { status: 'info', isDismissible: false },
 						__( 'Live: fetches resume snapshot via REST. Editor shows a placeholder list.', 'henrys-digital-canvas' )
 					),
-					el( 'h2', { className: 'hdc-home-page__section-title' }, attrs.title ),
+					el( 'h2', { className: 'hdc-home-page__section-title' }, attrs.title || __( 'Resume Snapshot', 'henrys-digital-canvas' ) ),
 					el( 'p', { className: 'hdc-home-page__editor-meta' }, __( 'Items: ', 'henrys-digital-canvas' ) + asArray( attrs.items ).join( ', ' ) )
 				)
 			);
@@ -2154,11 +2242,12 @@ $config = array(
 	'initialResume'      => $initial_resume,
 );
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class' => 'hdc-home-page__section hdc-home-page__section--resume hdc-reveal hdc-reveal--fade-in',
-	)
-);
+	$wrapper_attributes = get_block_wrapper_attributes(
+		array(
+			'class' => 'hdc-home-page__section hdc-home-page__section--resume',
+			'id'    => 'resume-snapshot',
+		)
+	);
 ?>
 <section <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> data-config="<?php echo esc_attr( wp_json_encode( $config ) ); ?>" data-hdc-home-resume-snapshot>
 	<header class="hdc-home-page__section-header">
@@ -2231,19 +2320,18 @@ Reference: `PostCard` (lines 1066–1129), recent writing section (lines 1519–
 		"dimensions": { "minHeight": true }
 	},
 	"attributes": {
-		"title":           { "type": "string", "default": "Recent Writing",                                                                                              "role": "content" },
-		"actionLabel":    { "type": "string", "default": "All posts",                                                                                                   "role": "content" },
-		"actionHref":     { "type": "string", "default": "/blog",                                                                                                       "role": "content" },
-		"emptyTitle":     { "type": "string", "default": "Recent writing is updating",                                                                                  "role": "content" },
-		"emptyDescription": { "type": "string", "default": "Recent posts aren't available in the homepage feed. Visit All posts to browse the full index.",            "role": "content" },
-		"blogCount":      { "type": "number", "default": 3 },
-		"blogEndpoint":   { "type": "string", "default": "" }
+		"title":            { "type": "string", "role": "content" },
+		"actionLabel":      { "type": "string", "role": "content" },
+		"actionHref":       { "type": "string", "role": "content" },
+		"emptyTitle":       { "type": "string", "role": "content" },
+		"emptyDescription": { "type": "string", "role": "content" },
+		"blogCount":        { "type": "number" },
+		"blogEndpoint":     { "type": "string", "default": "" }
 	},
 	"editorScript": "file:./index.js",
 	"viewScript": "file:./view.js",
 	"render": "file:./render.php",
-	"style": "file:./style.css",
-	"editorStyle": "file:./style.css"
+	"style": "file:./style.css"
 }
 ```
 
@@ -2263,7 +2351,7 @@ return array(
 <?php
 return array(
 	'dependencies' => array( 'wp-element', 'hdc-shared-utils' ),
-	'version'      => filemtime( __DIR__ . '/view.js' ),
+	'version'      => '20260512.1',
 );
 ```
 
@@ -2298,7 +2386,7 @@ return array(
 				const Control = isTextarea ? TextareaControl : TextControl;
 				return el( Control, {
 					label: __( label, 'henrys-digital-canvas' ),
-					value: attrs[ key ],
+					value: attrs[ key ] || '',
 					onChange: function ( next ) {
 						const update = {};
 						update[ key ] = next;
@@ -2321,7 +2409,7 @@ return array(
 					el( PanelBody, { title: __( 'Feed', 'henrys-digital-canvas' ), initialOpen: false },
 						el( RangeControl, {
 							label: __( 'Posts to display', 'henrys-digital-canvas' ),
-							value: attrs.blogCount,
+							value: Number.isFinite( Number( attrs.blogCount ) ) ? Number( attrs.blogCount ) : 3,
 							min: 1,
 							max: 6,
 							onChange: function ( blogCount ) { setAttributes( { blogCount: blogCount } ); },
@@ -2341,8 +2429,8 @@ return array(
 					el( Notice, { status: 'info', isDismissible: false },
 						__( 'Live: fetches blog posts via REST. Editor shows a placeholder summary.', 'henrys-digital-canvas' )
 					),
-					el( 'h2', { className: 'hdc-home-page__section-title' }, attrs.title ),
-					el( 'p', { className: 'hdc-home-page__editor-meta' }, __( 'Showing the ', 'henrys-digital-canvas' ) + attrs.blogCount + __( ' most recent posts.', 'henrys-digital-canvas' ) )
+					el( 'h2', { className: 'hdc-home-page__section-title' }, attrs.title || __( 'Recent Writing', 'henrys-digital-canvas' ) ),
+					el( 'p', { className: 'hdc-home-page__editor-meta' }, __( 'Showing the ', 'henrys-digital-canvas' ) + ( Number.isFinite( Number( attrs.blogCount ) ) ? Number( attrs.blogCount ) : 3 ) + __( ' most recent posts.', 'henrys-digital-canvas' ) )
 				)
 			);
 		},
@@ -2392,6 +2480,9 @@ if ( '' === $blog_endpoint ) {
 	$blog_endpoint = esc_url_raw( add_query_arg( 'limit', $blog_count, rest_url( 'henrys-digital-canvas/v1/blog' ) ) );
 }
 
+// hdc_get_blog_posts_data_contract() returns array( 'source' => 'wordpress'|'local', 'posts' => [ ... ] )
+// — confirmed against inc/data-contracts.php:811. The normalization below walks $initial_posts['posts']
+// and leaves the 'source' key intact for downstream consumers.
 $initial_posts = function_exists( 'hdc_get_blog_posts_data_contract' ) ? hdc_get_blog_posts_data_contract( $blog_count ) : array();
 if ( isset( $initial_posts['posts'] ) && is_array( $initial_posts['posts'] ) ) {
 	$initial_posts['posts'] = array_values(
@@ -2429,11 +2520,12 @@ $config = array(
 	'initialPosts'   => is_array( $initial_posts ) ? $initial_posts : array(),
 );
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class' => 'hdc-home-page__section hdc-home-page__section--writing hdc-feed-section hdc-reveal hdc-reveal--fade-in',
-	)
-);
+	$wrapper_attributes = get_block_wrapper_attributes(
+		array(
+			'class' => 'hdc-home-page__section hdc-home-page__section--writing hdc-feed-section',
+			'id'    => 'recent-writing',
+		)
+	);
 ?>
 <section <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> data-config="<?php echo esc_attr( wp_json_encode( $config ) ); ?>" data-hdc-home-recent-writing>
 	<header class="hdc-home-page__section-header">
@@ -2561,7 +2653,8 @@ get_stylesheet_directory() . '/blocks/home-contact-cta',
 - [ ] **Step 2: Verify with WP-CLI that all 7 blocks are registered**
 
 ```bash
-wp --path=/home/ubuntu/wp-hperkins-com eval 'foreach ( array(
+WP_ROOT="${WP_ROOT:-/home/dev/wp-hperkins-com}"
+wp --path="${WP_ROOT}" eval 'foreach ( array(
     "henrys-digital-canvas/home-page",
     "henrys-digital-canvas/home-hero",
     "henrys-digital-canvas/home-selected-work",
@@ -2617,8 +2710,7 @@ Why one commit: between slimming the parent and running `sync:pages`, the front 
 	},
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php",
-	"style": "file:./style.css",
-	"editorStyle": "file:./style.css"
+	"style": "file:./style.css"
 }
 ```
 
@@ -2640,14 +2732,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
-		'class' => 'hdc-home-page alignfull',
+		'class' => 'hdc-home-page',
 	)
 );
 ?>
 <section <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-	<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+	<div class="hdc-home-page__shell">
+		<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+	</div>
 </section>
 ```
+
+**Note on `alignfull`:** The literal `alignfull` class is intentionally *not* hard-coded here. `supports.align: [ "full" ]` (declared in `block.json` above) lets `get_block_wrapper_attributes()` add `alignfull` automatically when the block's `align` attribute is set to `"full"`. The seed in Step 7 sets `{"align":"full"}` on the parent block, so the rendered output is still `class="wp-block-... hdc-home-page alignfull"` — matching the current monolith — but the alignment is now structurally visible to AI consumers reading `content.raw` instead of being a hard-coded literal.
+
+**Note on `.hdc-home-page__shell`:** This wrapper is deliberately preserved from the monolith. Its CSS owns the page-level background layers, bottom padding, isolation, and `::before` image treatment. Do not remove it unless those rules are migrated and covered by parity checks first.
 
 - [ ] **Step 3: Replace `blocks/home-page/index.js`**
 
@@ -2678,15 +2776,17 @@ The parent is a dynamic block. `render.php` emits the outer `<section>`, so `sav
 	blocks.registerBlockType( 'henrys-digital-canvas/home-page', {
 		edit: function Edit() {
 			const blockProps = useBlockProps( {
-				className: 'hdc-home-page alignfull',
+				className: 'hdc-home-page',
 			} );
-			const innerBlocksProps = useInnerBlocksProps( blockProps, {
+			const innerBlocksProps = useInnerBlocksProps( {
+				className: 'hdc-home-page__shell',
+			}, {
 				template: TEMPLATE,
 				templateLock: 'all',
 				allowedBlocks: ALLOWED_BLOCKS,
 				renderAppender: false,
 			} );
-			return el( 'section', innerBlocksProps );
+			return el( 'section', blockProps, el( 'div', innerBlocksProps ) );
 		},
 		save: function Save() {
 			return el( InnerBlocks.Content, {} );
@@ -2700,7 +2800,7 @@ The parent is a dynamic block. `render.php` emits the outer `<section>`, so `sav
 );
 ```
 
-**Why `useInnerBlocksProps` instead of `<InnerBlocks>` as a child:** the modern pattern merges wrapper attrs and inner-blocks integration onto the same DOM element. The older `el('section', blockProps, el(InnerBlocks, ...))` pattern emits the editor DOM as `<section class="hdc-home-page"><div class="block-editor-inner-blocks">…</div></section>` — an extra wrapper that doesn't exist on the frontend (`render.php` echoes `$content` directly between `<section>` and `</section>`). Using `useInnerBlocksProps( blockProps, ... )` collapses both onto the `<section>`, keeping the editor DOM closer to the frontend DOM so computed-style parity in `home-parity.spec.cjs` won't surprise you.
+**Why `useInnerBlocksProps` on the shell instead of `<InnerBlocks>` as a child:** the shell is block-owned DOM, not a Gutenberg implementation detail. Mounting inner blocks on `.hdc-home-page__shell` keeps the editor and frontend aligned around `<section class="hdc-home-page"><div class="hdc-home-page__shell">children</div></section>`, while still letting core manage the nested block list.
 
 - [ ] **Step 4: Update `blocks/home-page/index.asset.php` version string**
 
@@ -2721,7 +2821,7 @@ rm /home/dev/wp-hperkins-com/wp-content/themes/henrys-digital-canvas/blocks/home
 
 - [ ] **Step 6: Trim `blocks/home-page/style.css`**
 
-Keep only outer wrapper selectors and selectors that are genuinely shared across sections (e.g., `.hdc-home-page`, `.hdc-home-page__shell` if still used, `.hdc-home-page__status`, `.hdc-home-page__copy`, `.hdc-home-page__empty`). Move everything else into the appropriate child `style.css` (already done in Tasks 7–12; this step deletes the now-duplicate rules from the monolith).
+Keep only outer wrapper selectors and selectors that are genuinely shared across sections (e.g., `.hdc-home-page`, `.hdc-home-page__shell`, `.hdc-home-page__shell > *`, `.hdc-home-page__shell::before`, `[data-theme="dark"] .hdc-home-page__shell::before`, `.hdc-home-page__status`, `.hdc-home-page__copy`, `.hdc-home-page__empty`, the shared `hdc-reveal` keyframes/rules if more than one child uses them). Move everything else into the appropriate child `style.css` (already done in Tasks 7–12; this step deletes the now-duplicate rules from the monolith).
 
 Read `blocks/home-page/style.css` line-by-line; if a selector's specificity is rooted in any of `__hero|__section|__work|__resume|__post|__throughline|__cta|__button|__card|__badge|__skeleton|__inline|__action-icon|__section-header|__section-link`, it has been migrated and should be deleted from this file.
 
@@ -2740,7 +2840,7 @@ function hdc_build_home_page_block_markup() {
 	$contact   = isset( $contract['contactCta'] ) && is_array( $contract['contactCta'] ) ? $contract['contactCta'] : array();
 
 	$encode = static function ( $value ) {
-		return wp_json_encode( $value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+		return serialize_block_attributes( $value );
 	};
 
 	$hero_attrs = $encode( $hero );
@@ -2774,7 +2874,7 @@ function hdc_build_home_page_block_markup() {
 	$contact_attrs = $encode( $contact );
 
 	return sprintf(
-		"<!-- wp:henrys-digital-canvas/home-page -->\n<!-- wp:henrys-digital-canvas/home-hero %s /-->\n\n<!-- wp:henrys-digital-canvas/home-selected-work %s /-->\n\n<!-- wp:henrys-digital-canvas/home-throughline %s /-->\n\n<!-- wp:henrys-digital-canvas/home-resume-snapshot %s /-->\n\n<!-- wp:henrys-digital-canvas/home-recent-writing %s /-->\n\n<!-- wp:henrys-digital-canvas/home-contact-cta %s /-->\n<!-- /wp:henrys-digital-canvas/home-page -->",
+		"<!-- wp:henrys-digital-canvas/home-page {\"align\":\"full\"} -->\n<!-- wp:henrys-digital-canvas/home-hero %s /-->\n\n<!-- wp:henrys-digital-canvas/home-selected-work %s /-->\n\n<!-- wp:henrys-digital-canvas/home-throughline %s /-->\n\n<!-- wp:henrys-digital-canvas/home-resume-snapshot %s /-->\n\n<!-- wp:henrys-digital-canvas/home-recent-writing %s /-->\n\n<!-- wp:henrys-digital-canvas/home-contact-cta %s /-->\n<!-- /wp:henrys-digital-canvas/home-page -->",
 		$hero_attrs,
 		$work_attrs,
 		$through_attrs,
@@ -2796,20 +2896,28 @@ array(
 ),
 ```
 
-The parent block is dynamic — its post_content between the parent delimiters is just the children's serialized markers. The `<section>` wrapper is emitted at render time by `home-page/render.php`. Each child's `%s` slot gets the JSON-encoded attribute object (e.g., `{"eyebrow":"","title":"..."}`) which Gutenberg parses back into `$attributes` for that child's render.
+The parent block is dynamic — its post_content between the parent delimiters is just the children's serialized markers. The `<section>` wrapper is emitted at render time by `home-page/render.php`. Each child's `%s` slot gets the core-serialized attribute object (e.g., `{"eyebrow":"","title":"..."}` with WordPress block-comment escaping) which Gutenberg parses back into `$attributes` for that child's render. Do not replace `serialize_block_attributes()` with raw `wp_json_encode()` here; raw JSON can leave invalid block comments when content contains `--`, `<`, `>`, `&`, or escaped quotes.
 
 - [ ] **Step 8: Run sync + cache flush**
 
 ```bash
 cd /home/dev/wp-hperkins-com
-wp --path=/home/ubuntu/wp-hperkins-com eval-file wp-content/themes/henrys-digital-canvas/scripts/sync_page_sources.php
-wp --path=/home/ubuntu/wp-hperkins-com cache flush
-wp --path=/home/ubuntu/wp-hperkins-com rewrite flush
+WP_ROOT="${WP_ROOT:-/home/dev/wp-hperkins-com}"
+WP_ROOT="${WP_ROOT}" wp-content/themes/henrys-digital-canvas/scripts/sync_page_sources.sh
+wp --path="${WP_ROOT}" cache flush
+wp --path="${WP_ROOT}" rewrite flush
 ```
 
 Expected: prints "Synced page home -> ID N", then "Configured front page -> ID N", then "Flushed rewrite rules.", then "Static page source sync complete." No error output.
 
-If the project is on the `wp.hperkins.com` host, also purge cache-enabler from `wp-admin → Cache Enabler → Settings → Clear Cache Now`. If WP-CLI for cache-enabler is available: `wp --path=/home/ubuntu/wp-hperkins-com cache-enabler clear`.
+If the project is on the `wp.hperkins.com` host, also purge cache-enabler from `wp-admin → Cache Enabler → Settings → Clear Cache Now`. If WP-CLI for cache-enabler is available, use:
+
+```bash
+WP_ROOT="${WP_ROOT:-/home/dev/wp-hperkins-com}"
+wp --path="${WP_ROOT}" cache-enabler clear
+```
+
+Override `WP_ROOT` if the production checkout path differs.
 
 - [ ] **Step 9: Visually verify**
 
@@ -2885,7 +2993,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 
 ---
 
-## Task 15: Extend `api_smoke.sh` with REST shape check
+## Task 15: Extend `api_smoke.sh` with front-page block-shape checks
 
 **Files:**
 - Modify: `wp-content/themes/henrys-digital-canvas/scripts/api_smoke.sh`
@@ -2899,34 +3007,80 @@ grep -nE "rest_url|wp-json|content\.raw|jq" /home/dev/wp-hperkins-com/wp-content
 If the script uses `jq` and `curl` patterns, add this block at the end (before the final pass print):
 
 ```bash
-printf "REST shape check: front page innerBlocks tree (DB read via WP-CLI)\n"
-FRONT_PAGE_ID="$(wp --path=/home/ubuntu/wp-hperkins-com option get page_on_front 2>/dev/null || echo 0)"
+if [[ "${RUN_FRONT_PAGE_SHAPE_CHECK:-0}" == "1" ]]; then
+printf "Front-page shape check: innerBlocks tree (DB read via WP-CLI)\n"
+WP_ROOT="${WP_ROOT:-/home/dev/wp-hperkins-com}"
+FRONT_PAGE_ID="$(wp --path="${WP_ROOT}" option get page_on_front 2>/dev/null || echo 0)"
 if [[ "${FRONT_PAGE_ID}" -eq 0 ]]; then
 	printf "[FAIL] page_on_front is not set; cannot run innerBlocks shape check.\n" >&2
 	exit 1
 fi
 
-# context=edit requires authentication; default path uses WP-CLI to grab the raw content directly.
-CONTENT="$(wp --path=/home/ubuntu/wp-hperkins-com post get "${FRONT_PAGE_ID}" --field=post_content)"
-
 EXPECTED_BLOCKS=(
-	"wp:henrys-digital-canvas/home-page"
-	"wp:henrys-digital-canvas/home-hero"
-	"wp:henrys-digital-canvas/home-selected-work"
-	"wp:henrys-digital-canvas/home-throughline"
-	"wp:henrys-digital-canvas/home-resume-snapshot"
-	"wp:henrys-digital-canvas/home-recent-writing"
-	"wp:henrys-digital-canvas/home-contact-cta"
+	"henrys-digital-canvas/home-page"
+	"henrys-digital-canvas/home-hero"
+	"henrys-digital-canvas/home-selected-work"
+	"henrys-digital-canvas/home-throughline"
+	"henrys-digital-canvas/home-resume-snapshot"
+	"henrys-digital-canvas/home-recent-writing"
+	"henrys-digital-canvas/home-contact-cta"
 )
 
-for block in "${EXPECTED_BLOCKS[@]}"; do
-	if ! printf '%s' "${CONTENT}" | grep -q "${block}"; then
-		printf "[FAIL] front page post_content is missing block %s\n" "${block}" >&2
-		exit 1
-	fi
-done
+declare -A REQUIRED_ATTRS=(
+	["henrys-digital-canvas/home-page"]="align"
+	["henrys-digital-canvas/home-hero"]="eyebrow title description primaryCtaLabel primaryCtaHref secondaryCtaLabel secondaryCtaHref"
+	["henrys-digital-canvas/home-selected-work"]="title actionLabel actionHref featuredRepoNames loadingLabel sourceLiveLabel sourceFallbackLabel emptyTitle emptyDescriptionLive emptyDescriptionFallback repoCount"
+	["henrys-digital-canvas/home-throughline"]="title paragraphs quote"
+	["henrys-digital-canvas/home-resume-snapshot"]="title actionLabel actionHref positioningEyebrow label items bestFitEyebrow bestFitTitle focusAreas actionLinks"
+	["henrys-digital-canvas/home-recent-writing"]="title actionLabel actionHref emptyTitle emptyDescription blogCount"
+	["henrys-digital-canvas/home-contact-cta"]="eyebrow title description primaryCtaLabel primaryCtaHref secondaryCtaLabel secondaryCtaHref"
+)
 
-printf "REST shape check (DB): all 7 home-page blocks present in post_content.\n"
+hdc_assert_home_shape_json() {
+	local shape_json="$1"
+	local label="$2"
+	local block
+	local attr
+
+	for block in "${EXPECTED_BLOCKS[@]}"; do
+		if ! jq -e --arg block "${block}" 'has($block)' >/dev/null <<<"${shape_json}"; then
+			printf "[FAIL] %s is missing block %s\n" "${label}" "${block}" >&2
+			exit 1
+		fi
+
+		for attr in ${REQUIRED_ATTRS[${block}]}; do
+			if ! jq -e --arg block "${block}" --arg attr "${attr}" '(.[$block] // []) | index($attr) != null' >/dev/null <<<"${shape_json}"; then
+				printf "[FAIL] %s block %s is missing attribute %s\n" "${label}" "${block}" "${attr}" >&2
+				exit 1
+			fi
+		done
+	done
+}
+
+# context=edit requires authentication; this opt-in local path uses WP-CLI to parse the raw DB content directly.
+DB_SHAPE_JSON="$(
+	wp --path="${WP_ROOT}" eval '
+		$front_page_id = (int) get_option( "page_on_front" );
+		$content       = (string) get_post_field( "post_content", $front_page_id );
+		$shape         = array();
+		$walk          = function ( $blocks ) use ( &$walk, &$shape ) {
+			foreach ( $blocks as $block ) {
+				if ( ! empty( $block["blockName"] ) ) {
+					$attrs = isset( $block["attrs"] ) && is_array( $block["attrs"] ) ? $block["attrs"] : array();
+					$shape[ $block["blockName"] ] = array_keys( $attrs );
+				}
+				if ( ! empty( $block["innerBlocks"] ) && is_array( $block["innerBlocks"] ) ) {
+					$walk( $block["innerBlocks"] );
+				}
+			}
+		};
+		$walk( parse_blocks( $content ) );
+		echo wp_json_encode( $shape );
+	'
+)"
+
+hdc_assert_home_shape_json "${DB_SHAPE_JSON}" "DB post_content"
+printf "Front-page shape check (DB): all 7 home-page blocks and required attributes present in post_content.\n"
 
 # Optional authenticated REST assertion — verifies the *actual* AI read surface,
 # not just the database row. Gated by RUN_REST_SHAPE_CHECK_AUTHENTICATED so the
@@ -2959,33 +3113,51 @@ if [[ "${RUN_REST_SHAPE_CHECK_AUTHENTICATED:-0}" == "1" ]]; then
 		exit 1
 	fi
 
-	for block in "${EXPECTED_BLOCKS[@]}"; do
-		if ! printf '%s' "${REST_RAW}" | grep -q "${block}"; then
-			printf "[FAIL] REST content.raw is missing block %s\n" "${block}" >&2
-			exit 1
-		fi
-	done
+	REST_RAW_B64="$(printf '%s' "${REST_RAW}" | base64 -w 0)"
+	REST_SHAPE_JSON="$(
+		REST_RAW_B64="${REST_RAW_B64}" wp --path="${WP_ROOT}" eval '
+			$content = (string) base64_decode( (string) getenv( "REST_RAW_B64" ) );
+			$shape   = array();
+			$walk    = function ( $blocks ) use ( &$walk, &$shape ) {
+				foreach ( $blocks as $block ) {
+					if ( ! empty( $block["blockName"] ) ) {
+						$attrs = isset( $block["attrs"] ) && is_array( $block["attrs"] ) ? $block["attrs"] : array();
+						$shape[ $block["blockName"] ] = array_keys( $attrs );
+					}
+					if ( ! empty( $block["innerBlocks"] ) && is_array( $block["innerBlocks"] ) ) {
+						$walk( $block["innerBlocks"] );
+					}
+				}
+			};
+			$walk( parse_blocks( $content ) );
+			echo wp_json_encode( $shape );
+		'
+	)"
 
-	printf "REST shape check (authenticated): all 7 home-page blocks present in content.raw.\n"
+	hdc_assert_home_shape_json "${REST_SHAPE_JSON}" "REST content.raw"
+	printf "Front-page shape check (authenticated): all 7 home-page blocks and required attributes present in content.raw.\n"
+fi
+else
+	printf "Front-page shape check skipped (RUN_FRONT_PAGE_SHAPE_CHECK=%s).\n" "${RUN_FRONT_PAGE_SHAPE_CHECK:-0}"
 fi
 ```
 
-The default WP-CLI path validates "the DB row has the right blocks." The optional `RUN_REST_SHAPE_CHECK_AUTHENTICATED=1` path validates "an AI consumer calling the documented `GET /wp/v2/pages/{id}?context=edit` endpoint sees the same tree" — which is the contract the design spec actually promises. Add a section to the theme's README noting the env vars when production-ready.
+The default live-site smoke path skips the shape check so GitHub Actions and unauthenticated remote smoke runs do not require a local WordPress checkout or WP-CLI. `RUN_FRONT_PAGE_SHAPE_CHECK=1` validates "the DB row parses into the expected block tree with the required child attribute keys." The optional `RUN_REST_SHAPE_CHECK_AUTHENTICATED=1` path validates "an AI consumer calling the documented `GET /wp/v2/pages/{id}?context=edit` endpoint sees the same parseable tree and attribute keys" — which is the contract the design spec actually promises. Add a section to the theme's README noting the env vars when production-ready.
 
 - [ ] **Step 2: Run**
 
 ```bash
 cd /home/dev/wp-hperkins-com/wp-content/themes/henrys-digital-canvas
-BASE_URL=http://209.97.147.66 npm run smoke:api
+BASE_URL=http://209.97.147.66 RUN_FRONT_PAGE_SHAPE_CHECK=1 npm run smoke:api
 ```
 
-Expected: prints "REST shape check: all 7 home-page blocks present in post_content."
+Expected: prints "Front-page shape check (DB): all 7 home-page blocks and required attributes present in post_content."
 
 - [ ] **Step 3: Commit**
 
 ```bash
 git -C /home/dev/wp-hperkins-com add wp-content/themes/henrys-digital-canvas/scripts/api_smoke.sh
-git -C /home/dev/wp-hperkins-com commit -m "test(home-page): add REST shape check for innerBlocks tree
+git -C /home/dev/wp-hperkins-com commit -m "test(home-page): add front-page block shape check
 
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 ```
@@ -3052,7 +3224,8 @@ This task is human-mediated — the executor (or you, after subagent execution) 
 - [ ] **Step 3: Confirm via `wp post get`**
 
 ```bash
-wp --path=/home/ubuntu/wp-hperkins-com post get $(wp --path=/home/ubuntu/wp-hperkins-com option get page_on_front) --field=post_content | head -20
+WP_ROOT="${WP_ROOT:-/home/dev/wp-hperkins-com}"
+wp --path="${WP_ROOT}" post get "$(wp --path="${WP_ROOT}" option get page_on_front)" --field=post_content | head -20
 ```
 
 Expected: shows the 7 nested `<!-- wp:henrys-digital-canvas/* -->` markers with JSON attribute payloads on each child line.
@@ -3089,7 +3262,7 @@ Open DevTools console. The page should be free of JS errors.
 
 ```bash
 cd /home/dev/wp-hperkins-com/wp-content/themes/henrys-digital-canvas
-BASE_URL=http://209.97.147.66 RUN_HOME_PARITY=1 npm run smoke:full
+BASE_URL=http://209.97.147.66 RUN_HOME_PARITY=1 RUN_FRONT_PAGE_SHAPE_CHECK=1 npm run smoke:full
 ```
 
 Expected: PASS end-to-end. If anything fails, do not proceed.
@@ -3097,8 +3270,9 @@ Expected: PASS end-to-end. If anything fails, do not proceed.
 - [ ] **Step 2: Flush WP caches**
 
 ```bash
-wp --path=/home/ubuntu/wp-hperkins-com cache flush
-wp --path=/home/ubuntu/wp-hperkins-com rewrite flush
+WP_ROOT="${WP_ROOT:-/home/dev/wp-hperkins-com}"
+wp --path="${WP_ROOT}" cache flush
+wp --path="${WP_ROOT}" rewrite flush
 ```
 
 Then purge cache-enabler from admin (or via WP-CLI if available).
@@ -3120,14 +3294,14 @@ This appends a row to `ops/smoke-history.log`.
 
 A merge of this branch into `main` passes only when ALL are green:
 
-1. `npm run smoke:full` (route + api + browser + parity + no-important) passes with `RUN_HOME_PARITY=1`.
-2. WP-CLI confirms `page_on_front` is set and `post_content` contains all 7 home-page blocks.
+1. `npm run smoke:full` (route + api + browser + parity + no-important + local shape check) passes with `RUN_HOME_PARITY=1 RUN_FRONT_PAGE_SHAPE_CHECK=1`.
+2. WP-CLI confirms `page_on_front` is set and parsed `post_content` contains all 7 home-page blocks with the required attribute keys.
 3. `no_important_audit.sh` is clean.
 4. `scripts/stylebook_audit.sh` does not regress (no new parent-token leakage).
 5. Manual editor UI smoke passes (Task 17).
 6. Manual frontend visual smoke passes at 1280/768/375px (Task 18).
 7. Browser console is clean on `/`.
-8. Scroll-reveal animations fire on `/`: after scrolling past each section, the section's root `.hdc-reveal` element has gained the `.is-visible` class. Spot-check via DevTools (`document.querySelectorAll('.hdc-reveal.is-visible').length`) or extend `home-parity.spec.cjs` with an `await page.evaluate('window.scrollTo(0, document.body.scrollHeight)')` step followed by a wait for `.is-visible` to be present on each section root.
+8. Scroll-reveal animations fire on `/` for the elements the monolith already reveals: `.hdc-home-page__hero`, `#throughline .hdc-reveal`, `.hdc-home-page__work-card`, and `.hdc-home-page__post-card`. Spot-check via DevTools (`document.querySelectorAll('.hdc-reveal.is-visible').length`) or extend `home-parity.spec.cjs` with an `await page.evaluate('window.scrollTo(0, document.body.scrollHeight)')` step followed by waits for the intended reveal selectors to gain `.is-visible`.
 
 ## Out of Scope
 
@@ -3138,5 +3312,5 @@ Listed for the executor so they don't expand scope:
 - Reordering or removing sections (`templateLock: 'all'`).
 - Schema deprecations (no old shape to support).
 - JSX conversion of child blocks (stays on `wp.element.createElement`).
-- Auto-sync of `block.json` defaults from `data/home-content.json`.
+- Auto-sync of child attribute schemas from `data/home-content.json`.
 - Extending this pattern to `about-timeline`, `contact-form`, etc. — separate plans.
