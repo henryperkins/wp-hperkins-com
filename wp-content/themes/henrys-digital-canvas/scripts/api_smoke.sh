@@ -203,6 +203,27 @@ if [[ "${RUN_FRONT_PAGE_SHAPE_CHECK:-0}" == "1" ]]; then
   hdc_assert_home_shape_json "${DB_SHAPE_JSON}" "DB post_content"
   printf "Front-page shape check (DB): all 7 home-page blocks and required attributes present in post_content.\n"
 
+  wp --path="${WP_ROOT}" eval '
+    $html = do_blocks( "<!-- wp:henrys-digital-canvas/home-page /-->" );
+    foreach (
+      array(
+        "alignfull",
+        "hdc-home-page__hero",
+        "data-hdc-home-selected-work",
+        "hdc-home-page__section--throughline",
+        "data-hdc-home-resume-snapshot",
+        "data-hdc-home-recent-writing",
+        "hdc-home-page__cta-card",
+      ) as $marker
+    ) {
+      if ( false === strpos( $html, $marker ) ) {
+        fwrite( STDERR, "[FAIL] Legacy home-page fallback is missing marker " . $marker . PHP_EOL );
+        exit( 1 );
+      }
+    }
+  '
+  printf "Front-page legacy fallback check: self-closing home-page renders full-bleed home sections.\n"
+
   if [[ "${RUN_REST_SHAPE_CHECK_AUTHENTICATED:-0}" == "1" ]]; then
     if [[ -z "${WP_REST_USER:-}" || -z "${WP_REST_APP_PASSWORD:-}" ]]; then
       printf "[FAIL] RUN_REST_SHAPE_CHECK_AUTHENTICATED=1 but WP_REST_USER / WP_REST_APP_PASSWORD not set.\n" >&2

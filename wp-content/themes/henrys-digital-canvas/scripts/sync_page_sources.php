@@ -12,6 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once dirname( __DIR__ ) . '/inc/data-contracts.php';
+require_once dirname( __DIR__ ) . '/inc/home-page-blocks.php';
+
 /**
  * Write a sync log line.
  *
@@ -121,65 +124,6 @@ function hdc_delete_template_overrides( array $template_slugs ) {
 			hdc_sync_log( sprintf( 'Deleted wp_template override %-12s (ID %d)', $template_slug, $template_post->ID ) );
 		}
 	}
-}
-
-/**
- * Build the home page parent + child block tree with explicit child attrs.
- *
- * @return string Serialized block markup.
- */
-function hdc_build_home_page_block_markup() {
-	$contract = function_exists( 'hdc_get_home_content_data_contract' ) ? hdc_get_home_content_data_contract() : array();
-	$hero     = isset( $contract['hero'] ) && is_array( $contract['hero'] ) ? $contract['hero'] : array();
-	$work     = isset( $contract['selectedWork'] ) && is_array( $contract['selectedWork'] ) ? $contract['selectedWork'] : array();
-	$through  = isset( $contract['throughline'] ) && is_array( $contract['throughline'] ) ? $contract['throughline'] : array();
-	$resume   = isset( $contract['resumeSnapshot'] ) && is_array( $contract['resumeSnapshot'] ) ? $contract['resumeSnapshot'] : array();
-	$writing  = isset( $contract['recentWriting'] ) && is_array( $contract['recentWriting'] ) ? $contract['recentWriting'] : array();
-	$contact  = isset( $contract['contactCta'] ) && is_array( $contract['contactCta'] ) ? $contract['contactCta'] : array();
-
-	$encode = static function ( $value ) {
-		return serialize_block_attributes( $value );
-	};
-
-	$hero_attrs = $encode( $hero );
-	$work_attrs = $encode(
-		array(
-			'title'                    => $work['title'] ?? '',
-			'actionLabel'              => $work['actionLabel'] ?? '',
-			'actionHref'               => $work['actionHref'] ?? '',
-			'featuredRepoNames'        => $work['featuredRepoNames'] ?? array(),
-			'loadingLabel'             => $work['loadingLabel'] ?? '',
-			'sourceLiveLabel'          => $work['sourceLiveLabel'] ?? '',
-			'sourceFallbackLabel'      => $work['sourceFallbackLabel'] ?? '',
-			'emptyTitle'               => $work['emptyTitle'] ?? '',
-			'emptyDescriptionLive'     => $work['emptyDescriptionLive'] ?? '',
-			'emptyDescriptionFallback' => $work['emptyDescriptionFallback'] ?? '',
-			'repoCount'                => 3,
-		)
-	);
-	$through_attrs = $encode( $through );
-	$resume_attrs  = $encode( $resume );
-	$writing_attrs = $encode(
-		array(
-			'title'            => $writing['title'] ?? '',
-			'actionLabel'      => $writing['actionLabel'] ?? '',
-			'actionHref'       => $writing['actionHref'] ?? '',
-			'emptyTitle'       => $writing['emptyTitle'] ?? '',
-			'emptyDescription' => $writing['emptyDescription'] ?? '',
-			'blogCount'        => 3,
-		)
-	);
-	$contact_attrs = $encode( $contact );
-
-	return sprintf(
-		"<!-- wp:henrys-digital-canvas/home-page {\"align\":\"full\"} -->\n<!-- wp:henrys-digital-canvas/home-hero %s /-->\n\n<!-- wp:henrys-digital-canvas/home-selected-work %s /-->\n\n<!-- wp:henrys-digital-canvas/home-throughline %s /-->\n\n<!-- wp:henrys-digital-canvas/home-resume-snapshot %s /-->\n\n<!-- wp:henrys-digital-canvas/home-recent-writing %s /-->\n\n<!-- wp:henrys-digital-canvas/home-contact-cta %s /-->\n<!-- /wp:henrys-digital-canvas/home-page -->",
-		$hero_attrs,
-		$work_attrs,
-		$through_attrs,
-		$resume_attrs,
-		$writing_attrs,
-		$contact_attrs
-	);
 }
 
 $page_configs = array(

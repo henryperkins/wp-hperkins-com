@@ -10,3 +10,4 @@
 2026-05-02T20:42:48Z	manual	status=1	log=smoke-2026-05-02T20:42:48Z.log
 2026-05-02T21:05:35Z	manual	status=0	log=smoke-2026-05-02T21:05:35Z.log
 2026-05-12T23:30:39Z	manual	status=0	log=smoke-2026-05-12T23:30:39Z.log
+2026-05-19T09:17:47Z RUN_FRONT_PAGE_SHAPE_CHECK=1 RUN_HOME_PARITY=0 npm run smoke:full

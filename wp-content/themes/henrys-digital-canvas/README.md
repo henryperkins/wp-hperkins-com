@@ -210,6 +210,20 @@ The block is dynamic (`render.php`) and mounts a React frontend view (`view.js`)
 - First-time setup for browser smoke:
   - `npm install`
 
+### Home parity
+
+Home parity is intentionally opt-in because it requires a real pre-innerBlocks source that exposes the expected home-page DOM. The source must not be the target and must not be `https://hperkins.com` unless that host is serving the expected `.hdc-home-page__*` section markup.
+
+```bash
+VALID_HOME_PARITY_SOURCE_URL="${VALID_HOME_PARITY_SOURCE_URL:?Set this to a pre-innerBlocks origin that renders .hdc-home-page__shell}"
+RUN_HOME_PARITY=1 \
+SOURCE_BASE_URL="${VALID_HOME_PARITY_SOURCE_URL}" \
+TARGET_BASE_URL=https://wp.hperkins.com \
+./scripts/browser_smoke.sh
+```
+
+`TARGET_BASE_URL` defaults to `BASE_URL`. `SOURCE_BASE_URL` is required when `RUN_HOME_PARITY=1`; the smoke wrapper rejects missing, identical, or invalid sources.
+
 ### CI/CD integration (GitHub Actions)
 
 A workflow is available at `.github/workflows/smoke-check.yml`:

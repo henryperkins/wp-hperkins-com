@@ -25,6 +25,17 @@ $default_repos = isset( $defaults['featuredRepoNames'] ) && is_array( $defaults[
 $repos        = ! empty( $attr_repos ) ? $attr_repos : $default_repos;
 $repos        = array_values( array_filter( array_map( 'sanitize_text_field', $repos ) ) );
 
+$requested_repo_names = array_values(
+	array_filter(
+		array_map(
+			static function ( $repo_name ) {
+				return strtolower( sanitize_text_field( (string) $repo_name ) );
+			},
+			$repos
+		)
+	)
+);
+
 $repo_count = isset( $attributes['repoCount'] ) ? (int) $attributes['repoCount'] : 3;
 $repo_count = max( 1, min( 6, $repo_count ) );
 
@@ -37,12 +48,21 @@ if ( ! is_array( $initial_repos ) ) {
 $initial_repos = array_values(
 	array_filter(
 		array_map(
-			static function ( $repo ) {
+			static function ( $repo ) use ( $requested_repo_names ) {
 				if ( ! is_array( $repo ) || empty( $repo['name'] ) ) {
 					return null;
 				}
+
+				$repo_name    = sanitize_text_field( (string) $repo['name'] );
+				$is_requested = in_array( strtolower( $repo_name ), $requested_repo_names, true );
+				$is_featured  = ! empty( $repo['featured'] );
+
+				if ( ! $is_requested && ! $is_featured ) {
+					return null;
+				}
+
 				return array(
-					'name'        => sanitize_text_field( (string) $repo['name'] ),
+					'name'        => $repo_name,
 					'displayName' => sanitize_text_field( (string) ( $repo['displayName'] ?? '' ) ),
 					'description' => sanitize_text_field( (string) ( $repo['description'] ?? '' ) ),
 					'language'    => sanitize_text_field( (string) ( $repo['language'] ?? '' ) ),

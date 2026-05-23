@@ -4,7 +4,11 @@ const TARGET_BASE_URL =
 	process.env.TARGET_BASE_URL ||
 	process.env.BASE_URL ||
 	'https://wp.hperkins.com';
-const SOURCE_BASE_URL = process.env.SOURCE_BASE_URL || TARGET_BASE_URL;
+const SOURCE_BASE_URL = process.env.SOURCE_BASE_URL || '';
+
+function normalizeBaseUrl( value ) {
+	return String( value || '' ).replace( /\/+$/, '' );
+}
 
 // One BEM section root per child block. These class roots MUST be emitted
 // by the child render.php files for parity to hold.
@@ -111,10 +115,41 @@ async function describeSection( page, selector ) {
 
 test.describe( 'home page structural parity', () => {
 	test.beforeAll( async () => {
+		const normalizedSource = normalizeBaseUrl( SOURCE_BASE_URL );
+		const normalizedTarget = normalizeBaseUrl( TARGET_BASE_URL );
+
+		if ( ! normalizedSource ) {
+			throw new Error(
+				'SOURCE_BASE_URL is required for home parity checks.'
+			);
+		}
+
+		if ( normalizedSource === normalizedTarget ) {
+			throw new Error(
+				`SOURCE_BASE_URL must differ from TARGET_BASE_URL (${ TARGET_BASE_URL }).`
+			);
+		}
+
 		test.info().annotations.push( {
 			type: 'source',
 			description: `source=${ SOURCE_BASE_URL } target=${ TARGET_BASE_URL }`,
 		} );
+	} );
+
+	test( 'source URL exposes the expected home parity DOM', async ( {
+		page,
+	} ) => {
+		await page.goto( `${ SOURCE_BASE_URL }/`, {
+			waitUntil: 'networkidle',
+		} );
+
+		for ( const section of SECTIONS ) {
+			const count = await page.locator( section.sourceSelector ).count();
+			expect(
+				count,
+				`SOURCE_BASE_URL is not a valid home parity source: missing ${ section.sourceSelector } for ${ section.name }`
+			).toBeGreaterThan( 0 );
+		}
 	} );
 
 	for ( const section of SECTIONS ) {

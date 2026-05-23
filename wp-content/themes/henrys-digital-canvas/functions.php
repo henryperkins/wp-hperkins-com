@@ -121,6 +121,7 @@ function hdc_enqueue_editor_styles() {
 add_action( 'enqueue_block_assets', 'hdc_enqueue_editor_styles' );
 
 require_once get_stylesheet_directory() . '/inc/data-contracts.php';
+require_once get_stylesheet_directory() . '/inc/home-page-blocks.php';
 require_once get_stylesheet_directory() . '/inc/rest-api.php';
 
 /**

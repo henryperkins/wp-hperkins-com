@@ -45,7 +45,7 @@ Implementation rules:
 | `blocks/home-resume-snapshot/{block.json,index.js,render.php,style.css,view.js,index.asset.php,view.asset.php}` | Dynamic Resume Snapshot section |
 | `blocks/home-recent-writing/{block.json,index.js,render.php,style.css,view.js,index.asset.php,view.asset.php}` | Dynamic Recent Writing section |
 | `blocks/home-contact-cta/{block.json,index.js,render.php,style.css,index.asset.php}` | Static Contact CTA section |
-| `scripts/playwright/home-parity.spec.cjs` | DOM/computed-style parity test vs `https://hperkins.com/` |
+| `scripts/playwright/home-parity.spec.cjs` | DOM/computed-style parity test between explicit distinct `SOURCE_BASE_URL` and `TARGET_BASE_URL` origins |
 | `scripts/no_important_audit.sh` | Greps new child `style.css` files for `!important` on supports-covered properties |
 
 ### Modified files
@@ -249,8 +249,12 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 // scripts/playwright/home-parity.spec.cjs
 const { test, expect } = require('@playwright/test');
 
-const SOURCE_BASE_URL = process.env.SOURCE_BASE_URL || 'https://hperkins.com';
 const TARGET_BASE_URL = process.env.TARGET_BASE_URL || process.env.BASE_URL || 'https://wp.hperkins.com';
+const SOURCE_BASE_URL = process.env.SOURCE_BASE_URL || '';
+
+function normalizeBaseUrl(value) {
+	return String(value || '').replace(/\/+$/, '');
+}
 
 // One BEM section root per child block. These class roots MUST be emitted
 // by the child render.php files for parity to hold.
@@ -317,12 +321,35 @@ async function describeSection(page, selector) {
 	}, COMPUTED_PROPS);
 }
 
-test.describe('home page parity vs hperkins.com', () => {
+test.describe('home page structural parity', () => {
 	test.beforeAll(async () => {
+		const normalizedSource = normalizeBaseUrl(SOURCE_BASE_URL);
+		const normalizedTarget = normalizeBaseUrl(TARGET_BASE_URL);
+
+		if (!normalizedSource) {
+			throw new Error('SOURCE_BASE_URL is required for home parity checks.');
+		}
+
+		if (normalizedSource === normalizedTarget) {
+			throw new Error(`SOURCE_BASE_URL must differ from TARGET_BASE_URL (${TARGET_BASE_URL}).`);
+		}
+
 		test.info().annotations.push({
 			type: 'source',
 			description: `source=${SOURCE_BASE_URL} target=${TARGET_BASE_URL}`,
 		});
+	});
+
+	test('source URL exposes the expected home parity DOM', async ({ page }) => {
+		await page.goto(`${SOURCE_BASE_URL}/`, { waitUntil: 'networkidle' });
+
+		for (const section of SECTIONS) {
+			const count = await page.locator(section.sourceSelector).count();
+			expect(
+				count,
+				`SOURCE_BASE_URL is not a valid home parity source: missing ${section.sourceSelector} for ${section.name}`
+			).toBeGreaterThan(0);
+		}
 	});
 
 	for (const section of SECTIONS) {
@@ -361,10 +388,11 @@ test.describe('home page parity vs hperkins.com', () => {
 
 ```bash
 cd /home/dev/wp-hperkins-com/wp-content/themes/henrys-digital-canvas
-BASE_URL=http://209.97.147.66 npx playwright test scripts/playwright/home-parity.spec.cjs --config scripts/playwright/playwright.config.cjs --reporter=line
+VALID_HOME_PARITY_SOURCE_URL="${VALID_HOME_PARITY_SOURCE_URL:?Set this to a pre-innerBlocks origin that renders .hdc-home-page__shell}"
+SOURCE_BASE_URL="${VALID_HOME_PARITY_SOURCE_URL}" TARGET_BASE_URL=http://209.97.147.66 npx playwright test scripts/playwright/home-parity.spec.cjs --config scripts/playwright/playwright.config.cjs --reporter=line
 ```
 
-Expected: most tests fail because the current monolith emits identical class names today — so the parity test against `hperkins.com` may actually PASS for several sections. Either outcome is acceptable at this stage; the test exists to gate the migration. Document the baseline assertion counts in the commit message.
+Expected: most tests fail because the current monolith emits identical class names today — so the parity test against the explicit source may actually PASS for several sections. Either outcome is acceptable at this stage; the test exists to gate the migration. Document the baseline assertion counts in the commit message.
 
 - [ ] **Step 3: Commit**
 
@@ -396,6 +424,15 @@ BASE_URL="${BASE_URL:-https://wp.hperkins.com}"
 SPEC_PATH="${BROWSER_SMOKE_SPEC:-${THEME_DIR}/scripts/playwright/browser-smoke.spec.cjs}"
 PARITY_SPEC_PATH="${HOME_PARITY_SPEC:-${THEME_DIR}/scripts/playwright/home-parity.spec.cjs}"
 CONFIG_PATH="${BROWSER_SMOKE_CONFIG:-${THEME_DIR}/scripts/playwright/playwright.config.cjs}"
+TARGET_BASE_URL="${TARGET_BASE_URL:-${BASE_URL}}"
+
+normalize_base_url() {
+	local value="${1:-}"
+	while [[ "${value}" == */ ]]; do
+		value="${value%/}"
+	done
+	printf "%s" "${value}"
+}
 
 if ! command -v npx >/dev/null 2>&1; then
 	printf "npx is required for browser smoke checks.\n" >&2
@@ -416,14 +453,26 @@ fi
 
 printf "Browser smoke against %s\n" "${BASE_URL}"
 
+if [[ "${RUN_HOME_PARITY:-0}" == "1" ]]; then
+	if [[ -z "${SOURCE_BASE_URL:-}" ]]; then
+		printf "RUN_HOME_PARITY=1 requires SOURCE_BASE_URL so the parity gate cannot self-compare.\n" >&2
+		exit 1
+	fi
+
+	if [[ "$(normalize_base_url "${SOURCE_BASE_URL}")" == "$(normalize_base_url "${TARGET_BASE_URL}")" ]]; then
+		printf "RUN_HOME_PARITY=1 requires SOURCE_BASE_URL to differ from TARGET_BASE_URL (%s).\n" "${TARGET_BASE_URL}" >&2
+		exit 1
+	fi
+fi
+
 cd "${THEME_DIR}"
 unset NO_COLOR || true
 
 BASE_URL="${BASE_URL}" npx playwright test "${SPEC_PATH}" --config "${CONFIG_PATH}" --workers=1 --reporter=line "$@"
 
 if [[ "${RUN_HOME_PARITY:-0}" == "1" ]]; then
-	printf "\nHome parity check against %s vs %s\n" "${BASE_URL}" "${SOURCE_BASE_URL:-https://hperkins.com}"
-	BASE_URL="${BASE_URL}" npx playwright test "${PARITY_SPEC_PATH}" --config "${CONFIG_PATH}" --workers=1 --reporter=line
+	printf "\nHome parity check against %s vs %s\n" "${TARGET_BASE_URL}" "${SOURCE_BASE_URL}"
+	BASE_URL="${BASE_URL}" SOURCE_BASE_URL="${SOURCE_BASE_URL}" TARGET_BASE_URL="${TARGET_BASE_URL}" npx playwright test "${PARITY_SPEC_PATH}" --config "${CONFIG_PATH}" --workers=1 --reporter=line
 fi
 
 printf "\nBrowser smoke passed.\n"
@@ -437,6 +486,7 @@ BASE_URL=http://209.97.147.66 RUN_HOME_PARITY=0 npm run smoke:browser
 ```
 
 Expected: PASS. Parity is opt-in while the child blocks are being created; flip `RUN_HOME_PARITY=1` only after Task 14 cutover has synced the front page to the parent + 6 children.
+When flipping it on, also pass an explicit `SOURCE_BASE_URL` for the known-good source origin; the gate fails fast if that value is omitted or equal to `TARGET_BASE_URL`.
 
 - [ ] **Step 3: Commit**
 
@@ -2961,7 +3011,11 @@ Add the raw and gzipped before/after numbers to the cutover commit message (Step
 
 ```bash
 cd /home/dev/wp-hperkins-com/wp-content/themes/henrys-digital-canvas
-BASE_URL=http://209.97.147.66 RUN_HOME_PARITY=1 npm run smoke:full
+VALID_HOME_PARITY_SOURCE_URL="${VALID_HOME_PARITY_SOURCE_URL:?Set this to a pre-innerBlocks origin that renders .hdc-home-page__shell}"
+RUN_HOME_PARITY=1 \
+SOURCE_BASE_URL="${VALID_HOME_PARITY_SOURCE_URL}" \
+TARGET_BASE_URL=https://wp.hperkins.com \
+npm run smoke:browser
 ```
 
 Expected: PASS. If `home-parity.spec.cjs` flags a property mismatch, iterate on the offending child's `render.php`/`style.css`.
@@ -3236,7 +3290,9 @@ Expected: shows the 7 nested `<!-- wp:henrys-digital-canvas/* -->` markers with 
 
 **Files:** none.
 
-- [ ] **Step 1: Open `http://209.97.147.66/` and `https://hperkins.com/` side-by-side**
+- [ ] **Step 1: Open the target and a valid explicit home parity source side-by-side**
+
+Home parity requires an explicit, distinct source URL. The source must expose the expected `.hdc-home-page__*` section DOM; `https://hperkins.com` is not a valid source while it only serves the client root.
 
 - [ ] **Step 2: Compare at 1280px, 768px, 375px viewports**
 
@@ -3262,7 +3318,11 @@ Open DevTools console. The page should be free of JS errors.
 
 ```bash
 cd /home/dev/wp-hperkins-com/wp-content/themes/henrys-digital-canvas
-BASE_URL=http://209.97.147.66 RUN_HOME_PARITY=1 RUN_FRONT_PAGE_SHAPE_CHECK=1 npm run smoke:full
+VALID_HOME_PARITY_SOURCE_URL="${VALID_HOME_PARITY_SOURCE_URL:?Set this to a pre-innerBlocks origin that renders .hdc-home-page__shell}"
+RUN_HOME_PARITY=1 \
+SOURCE_BASE_URL="${VALID_HOME_PARITY_SOURCE_URL}" \
+TARGET_BASE_URL=https://wp.hperkins.com \
+npm run smoke:browser
 ```
 
 Expected: PASS end-to-end. If anything fails, do not proceed.
@@ -3294,7 +3354,7 @@ This appends a row to `ops/smoke-history.log`.
 
 A merge of this branch into `main` passes only when ALL are green:
 
-1. `npm run smoke:full` (route + api + browser + parity + no-important + local shape check) passes with `RUN_HOME_PARITY=1 RUN_FRONT_PAGE_SHAPE_CHECK=1`.
+1. `npm run smoke:full` (route + api + browser + parity + no-important + local shape check) passes with `RUN_HOME_PARITY=1 SOURCE_BASE_URL=<source-origin> TARGET_BASE_URL=<target-origin> RUN_FRONT_PAGE_SHAPE_CHECK=1`.
 2. WP-CLI confirms `page_on_front` is set and parsed `post_content` contains all 7 home-page blocks with the required attribute keys.
 3. `no_important_audit.sh` is clean.
 4. `scripts/stylebook_audit.sh` does not regress (no new parent-token leakage).
