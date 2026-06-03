@@ -36,7 +36,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 );
 ?>
 <section <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-	<div class="hero-backdrop-editorial-amber" aria-hidden="true">
+	<div class="hero-backdrop hero-backdrop-editorial-amber" aria-hidden="true">
 		<div class="hero-backdrop-overlay"></div>
 	</div>
 	<div class="hdc-home-page__hero-gradient hero-gradient-layer" aria-hidden="true"></div>
@@ -45,7 +45,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 			<?php if ( '' !== $eyebrow ) : ?>
 				<p class="hdc-home-page__hero-eyebrow"><?php echo esc_html( $eyebrow ); ?></p>
 			<?php endif; ?>
-			<h1 class="hdc-home-page__hero-title"><?php echo esc_html( $title ); ?></h1>
+			<h1 class="hdc-home-page__hero-title text-page-title-inverse"><?php echo esc_html( $title ); ?></h1>
 			<p class="hdc-home-page__hero-description"><?php echo esc_html( $description ); ?></p>
 			<div class="hdc-home-page__hero-actions">
 				<?php if ( '' !== $primary_cta_label ) : ?>
@@ -58,7 +58,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 					</a>
 				<?php endif; ?>
 				<?php if ( '' !== $secondary_cta_lbl ) : ?>
-					<a class="hdc-home-page__button hdc-home-page__button--secondary hdc-home-page__button--hero-secondary focus-ring" data-contrast-probe="hero-action-secondary-home" href="<?php echo esc_url( $secondary_cta_href ); ?>">
+					<a class="hdc-home-page__button hdc-home-page__button--secondary hdc-home-page__button--hero-secondary backdrop-overlay-soft focus-ring-inverse" data-contrast-probe="hero-action-secondary-home" href="<?php echo esc_url( $secondary_cta_href ); ?>">
 						<?php echo esc_html( $secondary_cta_lbl ); ?>
 						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
 							<path d="M5 12h14"></path>

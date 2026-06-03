@@ -47,6 +47,8 @@ if ( isset( $initial_posts['posts'] ) && is_array( $initial_posts['posts'] ) ) {
 					'featuredImageUrl'    => esc_url_raw( (string) ( $post['featuredImageUrl'] ?? '' ) ),
 					'featuredImageAlt'    => sanitize_text_field( (string) ( $post['featuredImageAlt'] ?? '' ) ),
 					'featuredImageSrcSet' => trim( wp_strip_all_tags( (string) ( $post['featuredImageSrcSet'] ?? '' ) ) ),
+					'featuredImageWidth'  => isset( $post['featuredImageWidth'] ) ? (int) $post['featuredImageWidth'] : 0,
+					'featuredImageHeight' => isset( $post['featuredImageHeight'] ) ? (int) $post['featuredImageHeight'] : 0,
 				);
 			},
 			$initial_posts['posts']
@@ -60,6 +62,8 @@ $config = array(
 	'actionHref'       => esc_url_raw( $pick( 'actionHref' ) ),
 	'emptyTitle'       => $pick( 'emptyTitle' ),
 	'emptyDescription' => $pick( 'emptyDescription' ),
+	'errorTitle'       => $pick( 'errorTitle' ),
+	'errorDescription' => $pick( 'errorDescription' ),
 	'blogCount'        => $blog_count,
 	'blogEndpoint'     => $blog_endpoint,
 	'initialPosts'     => is_array( $initial_posts ) ? $initial_posts : array(),

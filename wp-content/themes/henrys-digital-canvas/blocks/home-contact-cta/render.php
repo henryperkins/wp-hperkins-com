@@ -40,7 +40,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 		<div class="hdc-home-page__cta-layout">
 			<div class="hdc-home-page__cta-body">
 				<?php if ( '' !== $eyebrow ) : ?>
-					<p class="hdc-home-page__eyebrow"><?php echo esc_html( $eyebrow ); ?></p>
+					<p class="hdc-home-page__eyebrow hdc-home-page__eyebrow--body"><?php echo esc_html( $eyebrow ); ?></p>
 				<?php endif; ?>
 				<h2 class="hdc-home-page__section-title"><?php echo esc_html( $title ); ?></h2>
 				<p class="hdc-home-page__copy"><?php echo esc_html( $desc ); ?></p>
