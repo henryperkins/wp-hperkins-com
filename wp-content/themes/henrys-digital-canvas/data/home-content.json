@@ -32,14 +32,7 @@
     "title": "Selected Work",
     "actionLabel": "View all work",
     "actionHref": "/work",
-    "featuredRepoNames": [
-      "tarot",
-      "ai-cli-web-funnel",
-      "dj-judas"
-    ],
     "loadingLabel": "Syncing selected work...",
-    "sourceLiveLabel": "Selected work blends live GitHub builds with private client case studies.",
-    "sourceFallbackLabel": "Selected work blends private client case studies with a cached GitHub snapshot.",
     "emptyTitle": "Selected work is updating",
     "emptyDescriptionLive": "Featured work is being refreshed for the homepage. Use View all work to browse the full project library.",
     "emptyDescriptionFallback": "Featured work is not available in this snapshot. Use View all work to browse the full project library."
