@@ -47,13 +47,10 @@
 			title: ensureString( parsed.title, 'Selected Work' ),
 			actionLabel: ensureString( parsed.actionLabel, '' ),
 			actionHref: ensureString( parsed.actionHref, '' ),
-			featuredRepoNames: ensureArray( parsed.featuredRepoNames ),
 			loadingLabel: ensureString(
 				parsed.loadingLabel,
 				'Syncing selected work...'
 			),
-			sourceLiveLabel: ensureString( parsed.sourceLiveLabel, '' ),
-			sourceFallbackLabel: ensureString( parsed.sourceFallbackLabel, '' ),
 			emptyTitle: ensureString(
 				parsed.emptyTitle,
 				'Selected work is updating'
@@ -151,50 +148,27 @@
 		);
 	}
 
-	function normalizeRepoKey( value ) {
-		return ensureString( value, '' ).toLowerCase();
-	}
-
-	function selectFeaturedRepos( repos, featuredRepoNames, repoCount ) {
-		const items = ensureArray( repos );
-		const requestedNames = ensureArray( featuredRepoNames )
-			.map( normalizeRepoKey )
-			.filter( Boolean );
-		const selected = [];
-		const selectedNames = new Set();
-		const byName = new Map();
-
-		items.forEach( function ( repo ) {
-			const key = normalizeRepoKey( repo && repo.name );
-			if ( key && ! byName.has( key ) ) {
-				byName.set( key, repo );
-			}
+	function selectFeaturedRepos( repos, repoCount ) {
+		const featured = ensureArray( repos ).filter( function ( repo ) {
+			return repo && repo.featured;
 		} );
 
-		requestedNames.forEach( function ( key ) {
-			const repo = byName.get( key );
-			if ( repo && ! selectedNames.has( key ) ) {
-				selected.push( repo );
-				selectedNames.add( key );
+		const sorted = featured.slice().sort( function ( a, b ) {
+			const pa =
+				typeof a.featuredPriority === 'number'
+					? a.featuredPriority
+					: Number.MAX_SAFE_INTEGER;
+			const pb =
+				typeof b.featuredPriority === 'number'
+					? b.featuredPriority
+					: Number.MAX_SAFE_INTEGER;
+			if ( pa !== pb ) {
+				return pa - pb;
 			}
+			return compareReposByUpdatedAtDesc( a, b );
 		} );
 
-		if ( selected.length < repoCount ) {
-			items.forEach( function ( repo ) {
-				const key = normalizeRepoKey( repo && repo.name );
-				if (
-					selected.length >= repoCount ||
-					selectedNames.has( key ) ||
-					! repo.featured
-				) {
-					return;
-				}
-				selected.push( repo );
-				selectedNames.add( key );
-			} );
-		}
-
-		return selected.slice( 0, repoCount );
+		return sorted.slice( 0, repoCount );
 	}
 
 	function StateCard( props ) {
@@ -580,7 +554,6 @@
 
 		const featuredRepos = selectFeaturedRepos(
 			reposState.items,
-			config.featuredRepoNames,
 			config.repoCount
 		);
 
