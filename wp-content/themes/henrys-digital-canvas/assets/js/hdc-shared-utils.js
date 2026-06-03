@@ -810,6 +810,12 @@
 			),
 			updatedAt,
 			featured: !! localRepo.featured || !! sourceRepo.featured,
+			featuredPriority:
+				typeof localRepo.featuredPriority === 'number'
+					? localRepo.featuredPriority
+					: typeof sourceRepo.featuredPriority === 'number'
+					? sourceRepo.featuredPriority
+					: undefined,
 			access: ensureString(
 				localRepo.access,
 				sourceRepo.private
