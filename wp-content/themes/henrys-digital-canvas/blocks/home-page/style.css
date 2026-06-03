@@ -84,6 +84,12 @@
   text-transform: uppercase;
 }
 
+/* Source renders the resume + contact-cta eyebrows in the higher-contrast
+   body tone (text-text-body) rather than the default meta tone. */
+.hdc-home-page__eyebrow--body {
+  color: hsl(var(--text-body));
+}
+
 .hdc-home-page__section-title {
   color: hsl(var(--foreground));
   font-family: "Playfair Display", Georgia, serif;

@@ -1,7 +1,9 @@
+/* Border color + shadow come from the `surface-library-ember-veil` surface
+   (border-emphasis + --shadow-surface-strong). Keep width/style + radius here
+   and let the surface own the emphasis tone instead of fighting it. */
 .hdc-home-page__cta-card {
-  border: 1px solid hsl(var(--border));
+  border: 1px solid hsl(var(--border-emphasis));
   border-radius: var(--radius-surface);
-  box-shadow: var(--shadow-surface-1);
   overflow: hidden;
   padding: clamp(1.5rem, 4vw, 2rem);
 }

@@ -961,6 +961,14 @@
 				post && post.featuredImageSrcSet,
 				''
 			),
+			thumbnailWidth:
+				post && Number.parseInt( post.featuredImageWidth, 10 ) > 0
+					? Number.parseInt( post.featuredImageWidth, 10 )
+					: 0,
+			thumbnailHeight:
+				post && Number.parseInt( post.featuredImageHeight, 10 ) > 0
+					? Number.parseInt( post.featuredImageHeight, 10 )
+					: 0,
 		};
 	}
 

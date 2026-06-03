@@ -23,6 +23,8 @@
 		"actionHref": { "type": "string", "role": "content" },
 		"emptyTitle": { "type": "string", "role": "content" },
 		"emptyDescription": { "type": "string", "role": "content" },
+		"errorTitle": { "type": "string", "role": "content" },
+		"errorDescription": { "type": "string", "role": "content" },
 		"blogCount": { "type": "number" },
 		"blogEndpoint": { "type": "string", "default": "" }
 	},

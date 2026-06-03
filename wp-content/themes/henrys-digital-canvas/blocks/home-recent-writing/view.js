@@ -31,6 +31,14 @@
 				'Recent writing is updating'
 			),
 			emptyDescription: utils.ensureString( parsed.emptyDescription, '' ),
+			errorTitle: utils.ensureString(
+				parsed.errorTitle,
+				'Could not load recent writing'
+			),
+			errorDescription: utils.ensureString(
+				parsed.errorDescription,
+				'The homepage writing feed is temporarily unavailable. Try again or visit the full blog index.'
+			),
 			blogCount: utils.clamp(
 				Number.parseInt( parsed.blogCount, 10 ) || 3,
 				1,
@@ -68,7 +76,8 @@
 						{ className: 'hdc-home-page__empty' },
 						props.description
 				  )
-				: null
+				: null,
+			props.action ? props.action : null
 		);
 	}
 
@@ -87,6 +96,7 @@
 					alt: post.thumbnailAlt,
 					className: 'hdc-feed-card-thumb',
 					decoding: 'async',
+					height: post.thumbnailHeight || undefined,
 					loading: 'lazy',
 					onError( event ) {
 						event.target.style.display = 'none';
@@ -94,6 +104,7 @@
 					sizes: '(min-width: 640px) 112px, 96px',
 					src: post.thumbnailUrl,
 					srcSet: post.thumbnailSrcSet || undefined,
+					width: post.thumbnailWidth || undefined,
 				} )
 			);
 		}
@@ -173,6 +184,7 @@
 			items: initialPosts,
 			loading: initialPosts.length === 0,
 		} );
+		const [ reloadToken, setReloadToken ] = useState( 0 );
 
 		useEffect(
 			function () {
@@ -207,7 +219,7 @@
 					cancelled = true;
 				};
 			},
-			[ config, initialPosts ]
+			[ config, initialPosts, reloadToken ]
 		);
 
 		useEffect(
@@ -218,6 +230,15 @@
 			},
 			[ postsState.loading, postsState.items ]
 		);
+
+		function handleRetry() {
+			setPostsState( function ( previous ) {
+				return { error: '', items: previous.items, loading: true };
+			} );
+			setReloadToken( function ( token ) {
+				return token + 1;
+			} );
+		}
 
 		if ( postsState.loading ) {
 			return h( StateCard, {
@@ -242,9 +263,27 @@
 			);
 		}
 
+		if ( postsState.error ) {
+			return h( StateCard, {
+				action: h(
+					'button',
+					{
+						className:
+							'hdc-home-page__button hdc-home-page__button--secondary hdc-home-page__retry focus-ring',
+						onClick: handleRetry,
+						type: 'button',
+					},
+					'Try again'
+				),
+				description: config.errorDescription,
+				iconName: 'alert-circle',
+				title: config.errorTitle,
+			} );
+		}
+
 		return h( StateCard, {
 			description: config.emptyDescription,
-			iconName: postsState.error ? 'alert-circle' : 'inbox',
+			iconName: 'inbox',
 			title: config.emptyTitle,
 		} );
 	}

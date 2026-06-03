@@ -382,10 +382,15 @@ function hdc_get_post_featured_media_fields( $post_id ) {
 			'featuredImageUrl'    => '',
 			'featuredImageAlt'    => '',
 			'featuredImageSrcSet' => '',
+			'featuredImageWidth'  => 0,
+			'featuredImageHeight' => 0,
 		);
 	}
 
-	$featured_image_url    = wp_get_attachment_image_url( $attachment_id, 'large' );
+	$featured_image_src    = wp_get_attachment_image_src( $attachment_id, 'large' );
+	$featured_image_url    = is_array( $featured_image_src ) && isset( $featured_image_src[0] ) ? $featured_image_src[0] : wp_get_attachment_image_url( $attachment_id, 'large' );
+	$featured_image_width  = is_array( $featured_image_src ) && isset( $featured_image_src[1] ) ? (int) $featured_image_src[1] : 0;
+	$featured_image_height = is_array( $featured_image_src ) && isset( $featured_image_src[2] ) ? (int) $featured_image_src[2] : 0;
 	$featured_image_alt    = get_post_meta( $attachment_id, '_wp_attachment_image_alt', true );
 	$featured_image_srcset = wp_get_attachment_image_srcset( $attachment_id, 'large' );
 
@@ -393,6 +398,8 @@ function hdc_get_post_featured_media_fields( $post_id ) {
 		'featuredImageUrl'    => esc_url_raw( (string) $featured_image_url ),
 		'featuredImageAlt'    => sanitize_text_field( (string) $featured_image_alt ),
 		'featuredImageSrcSet' => trim( wp_strip_all_tags( (string) $featured_image_srcset ) ),
+		'featuredImageWidth'  => $featured_image_width,
+		'featuredImageHeight' => $featured_image_height,
 	);
 }
 
@@ -629,6 +636,8 @@ function hdc_normalize_fallback_blog_post_contract( $post, $index = 0 ) {
 		'featuredImageUrl'    => hdc_resolve_fallback_media_url( (string) ( $post['featuredImageUrl'] ?? '' ) ),
 		'featuredImageAlt'    => sanitize_text_field( (string) ( $post['featuredImageAlt'] ?? '' ) ),
 		'featuredImageSrcSet' => trim( wp_strip_all_tags( (string) ( $post['featuredImageSrcSet'] ?? '' ) ) ),
+		'featuredImageWidth'  => isset( $post['featuredImageWidth'] ) ? (int) $post['featuredImageWidth'] : 0,
+		'featuredImageHeight' => isset( $post['featuredImageHeight'] ) ? (int) $post['featuredImageHeight'] : 0,
 		'relatedPosts'        => $related_posts,
 	);
 }
@@ -796,6 +805,8 @@ function hdc_map_wp_post_to_blog_contract( $post, $is_featured = false ) {
 		'featuredImageUrl'    => $media_fields['featuredImageUrl'],
 		'featuredImageAlt'    => $media_fields['featuredImageAlt'],
 		'featuredImageSrcSet' => $media_fields['featuredImageSrcSet'],
+		'featuredImageWidth'  => $media_fields['featuredImageWidth'] ?? 0,
+		'featuredImageHeight' => $media_fields['featuredImageHeight'] ?? 0,
 	);
 }
 

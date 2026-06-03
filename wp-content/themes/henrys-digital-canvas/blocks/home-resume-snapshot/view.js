@@ -330,7 +330,7 @@
 				h(
 					'p',
 					{
-						className: 'hdc-home-page__eyebrow',
+						className: 'hdc-home-page__eyebrow hdc-home-page__eyebrow--body',
 						'data-contrast-probe': 'ember-eyebrow-home',
 					},
 					config.positioningEyebrow
@@ -345,7 +345,7 @@
 				},
 				h(
 					'p',
-					{ className: 'hdc-home-page__eyebrow' },
+					{ className: 'hdc-home-page__eyebrow hdc-home-page__eyebrow--body' },
 					config.bestFitEyebrow
 				),
 				h(
