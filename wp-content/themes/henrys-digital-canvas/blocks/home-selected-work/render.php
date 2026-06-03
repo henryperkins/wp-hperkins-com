@@ -20,22 +20,6 @@ $pick = static function ( $key ) use ( $attributes, $defaults ) {
 	return isset( $defaults[ $key ] ) ? (string) $defaults[ $key ] : '';
 };
 
-$attr_repos   = isset( $attributes['featuredRepoNames'] ) && is_array( $attributes['featuredRepoNames'] ) ? $attributes['featuredRepoNames'] : array();
-$default_repos = isset( $defaults['featuredRepoNames'] ) && is_array( $defaults['featuredRepoNames'] ) ? $defaults['featuredRepoNames'] : array();
-$repos        = ! empty( $attr_repos ) ? $attr_repos : $default_repos;
-$repos        = array_values( array_filter( array_map( 'sanitize_text_field', $repos ) ) );
-
-$requested_repo_names = array_values(
-	array_filter(
-		array_map(
-			static function ( $repo_name ) {
-				return strtolower( sanitize_text_field( (string) $repo_name ) );
-			},
-			$repos
-		)
-	)
-);
-
 $repo_count = isset( $attributes['repoCount'] ) ? (int) $attributes['repoCount'] : 3;
 $repo_count = max( 1, min( 6, $repo_count ) );
 
@@ -45,35 +29,32 @@ $initial_repos = function_exists( 'hdc_read_theme_json_file' )
 if ( ! is_array( $initial_repos ) ) {
 	$initial_repos = array();
 }
+
+// Serialize all featured repos as the candidate pool; the client sorts by
+// featuredPriority (asc) then updatedAt (desc) and slices to repoCount.
 $initial_repos = array_values(
 	array_filter(
 		array_map(
-			static function ( $repo ) use ( $requested_repo_names ) {
-				if ( ! is_array( $repo ) || empty( $repo['name'] ) ) {
-					return null;
-				}
-
-				$repo_name    = sanitize_text_field( (string) $repo['name'] );
-				$is_requested = in_array( strtolower( $repo_name ), $requested_repo_names, true );
-				$is_featured  = ! empty( $repo['featured'] );
-
-				if ( ! $is_requested && ! $is_featured ) {
+			static function ( $repo ) {
+				if ( ! is_array( $repo ) || empty( $repo['name'] ) || empty( $repo['featured'] ) ) {
 					return null;
 				}
 
 				return array(
-					'name'        => $repo_name,
-					'displayName' => sanitize_text_field( (string) ( $repo['displayName'] ?? '' ) ),
-					'description' => sanitize_text_field( (string) ( $repo['description'] ?? '' ) ),
-					'language'    => sanitize_text_field( (string) ( $repo['language'] ?? '' ) ),
-					'updatedAt'   => sanitize_text_field( (string) ( $repo['updatedAt'] ?? '' ) ),
-					'url'         => esc_url_raw( (string) ( $repo['url'] ?? '' ) ),
-					'topics'      => isset( $repo['topics'] ) && is_array( $repo['topics'] )
+					'name'             => sanitize_text_field( (string) $repo['name'] ),
+					'displayName'      => sanitize_text_field( (string) ( $repo['displayName'] ?? '' ) ),
+					'description'      => sanitize_text_field( (string) ( $repo['description'] ?? '' ) ),
+					'whyItMatters'     => sanitize_text_field( (string) ( $repo['whyItMatters'] ?? '' ) ),
+					'language'         => sanitize_text_field( (string) ( $repo['language'] ?? '' ) ),
+					'updatedAt'        => sanitize_text_field( (string) ( $repo['updatedAt'] ?? '' ) ),
+					'url'              => esc_url_raw( (string) ( $repo['url'] ?? '' ) ),
+					'topics'           => isset( $repo['topics'] ) && is_array( $repo['topics'] )
 						? array_values( array_map( 'sanitize_text_field', $repo['topics'] ) )
 						: array(),
-					'featured'    => ! empty( $repo['featured'] ),
-					'origin'      => sanitize_text_field( (string) ( $repo['origin'] ?? 'curated' ) ),
-					'access'      => sanitize_text_field( (string) ( $repo['access'] ?? 'public' ) ),
+					'featured'         => true,
+					'featuredPriority' => isset( $repo['featuredPriority'] ) && is_numeric( $repo['featuredPriority'] ) ? (int) $repo['featuredPriority'] : null,
+					'origin'           => sanitize_text_field( (string) ( $repo['origin'] ?? 'curated' ) ),
+					'access'           => sanitize_text_field( (string) ( $repo['access'] ?? 'public' ) ),
 				);
 			},
 			$initial_repos
@@ -83,20 +64,17 @@ $initial_repos = array_values(
 
 $config = array(
 	'title'                    => $pick( 'title' ),
-	'actionLabel'             => $pick( 'actionLabel' ),
-	'actionHref'              => esc_url_raw( $pick( 'actionHref' ) ),
-	'featuredRepoNames'       => $repos,
-	'loadingLabel'            => $pick( 'loadingLabel' ),
-	'sourceLiveLabel'         => $pick( 'sourceLiveLabel' ),
-	'sourceFallbackLabel'     => $pick( 'sourceFallbackLabel' ),
-	'emptyTitle'              => $pick( 'emptyTitle' ),
-	'emptyDescriptionLive'    => $pick( 'emptyDescriptionLive' ),
+	'actionLabel'              => $pick( 'actionLabel' ),
+	'actionHref'               => esc_url_raw( $pick( 'actionHref' ) ),
+	'loadingLabel'             => $pick( 'loadingLabel' ),
+	'emptyTitle'               => $pick( 'emptyTitle' ),
+	'emptyDescriptionLive'     => $pick( 'emptyDescriptionLive' ),
 	'emptyDescriptionFallback' => $pick( 'emptyDescriptionFallback' ),
-	'repoCount'               => $repo_count,
-	'initialRepos'            => $initial_repos,
-	'githubUsername'          => function_exists( 'hdc_get_configured_github_owner' ) ? hdc_get_configured_github_owner() : 'henryperkins',
-	'githubProxyUrl'          => '/api/github/repos',
-	'workEndpoint'            => esc_url_raw( rest_url( 'henrys-digital-canvas/v1/work' ) ),
+	'repoCount'                => $repo_count,
+	'initialRepos'             => $initial_repos,
+	'githubUsername'           => function_exists( 'hdc_get_configured_github_owner' ) ? hdc_get_configured_github_owner() : 'henryperkins',
+	'githubProxyUrl'           => '/api/github/repos',
+	'workEndpoint'             => esc_url_raw( rest_url( 'henrys-digital-canvas/v1/work' ) ),
 );
 
 $wrapper_attributes = get_block_wrapper_attributes(
