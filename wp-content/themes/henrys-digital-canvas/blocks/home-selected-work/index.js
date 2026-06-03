@@ -12,7 +12,6 @@
 	const TextControl = components.TextControl;
 	const TextareaControl = components.TextareaControl;
 	const RangeControl = components.RangeControl;
-	const Button = components.Button;
 	const Notice = components.Notice;
 
 	blocks.registerBlockType( 'henrys-digital-canvas/home-selected-work', {
@@ -23,29 +22,6 @@
 				className:
 					'hdc-home-page__section hdc-home-page__section--work hdc-home-selected-work-editor',
 			} );
-			const repoNames = Array.isArray( attrs.featuredRepoNames )
-				? attrs.featuredRepoNames
-				: [];
-
-			function updateRepoName( index, next ) {
-				const cloned = repoNames.slice();
-				cloned[ index ] = next.trim();
-				setAttributes( { featuredRepoNames: cloned } );
-			}
-
-			function addRepoName() {
-				setAttributes( {
-					featuredRepoNames: repoNames.concat( [ '' ] ),
-				} );
-			}
-
-			function removeRepoName( index ) {
-				setAttributes( {
-					featuredRepoNames: repoNames.filter( function ( _, i ) {
-						return i !== index;
-					} ),
-				} );
-			}
 
 			function textInput( label, key, isTextarea ) {
 				const Control = isTextarea ? TextareaControl : TextControl;
@@ -98,39 +74,7 @@
 							onChange( repoCount ) {
 								setAttributes( { repoCount } );
 							},
-						} ),
-						repoNames.map( function ( name, index ) {
-							return el(
-								'div',
-								{
-									key: 'repo-' + index,
-									style: { marginBottom: '8px' },
-								},
-								el( TextControl, {
-									label: 'Repo #' + ( index + 1 ),
-									value: name || '',
-									onChange( next ) {
-										updateRepoName( index, next );
-									},
-								} ),
-								el(
-									Button,
-									{
-										variant: 'tertiary',
-										isDestructive: true,
-										onClick() {
-											removeRepoName( index );
-										},
-									},
-									__( 'Remove', 'henrys-digital-canvas' )
-								)
-							);
-						} ),
-						el(
-							Button,
-							{ variant: 'secondary', onClick: addRepoName },
-							__( 'Add repo', 'henrys-digital-canvas' )
-						)
+						} )
 					),
 					el(
 						PanelBody,
@@ -142,16 +86,6 @@
 							initialOpen: false,
 						},
 						textInput( 'Loading label', 'loadingLabel', false ),
-						textInput(
-							'Source label (live)',
-							'sourceLiveLabel',
-							true
-						),
-						textInput(
-							'Source label (fallback)',
-							'sourceFallbackLabel',
-							true
-						),
 						textInput( 'Empty title', 'emptyTitle', false ),
 						textInput(
 							'Empty description (live)',
@@ -172,7 +106,7 @@
 						Notice,
 						{ status: 'info', isDismissible: false },
 						__(
-							'Live: fetches selected repos from GitHub with fallback. Editor shows the configured selection.',
+							'Live: fetches featured repos from GitHub with fallback, sorted by priority then recency. Editor shows the configured copy.',
 							'henrys-digital-canvas'
 						)
 					),
@@ -181,12 +115,6 @@
 						{ className: 'hdc-home-page__section-title' },
 						attrs.title ||
 							__( 'Selected Work', 'henrys-digital-canvas' )
-					),
-					el(
-						'p',
-						{ className: 'hdc-home-page__editor-meta' },
-						__( 'Featured:', 'henrys-digital-canvas' ) +
-							repoNames.join( ', ' )
 					)
 				)
 			);
