@@ -151,7 +151,7 @@ if [[ "${RUN_FRONT_PAGE_SHAPE_CHECK:-0}" == "1" ]]; then
   declare -A REQUIRED_ATTRS=(
     ["henrys-digital-canvas/home-page"]="align"
     ["henrys-digital-canvas/home-hero"]="eyebrow title description primaryCtaLabel primaryCtaHref secondaryCtaLabel secondaryCtaHref"
-    ["henrys-digital-canvas/home-selected-work"]="title actionLabel actionHref featuredRepoNames loadingLabel sourceLiveLabel sourceFallbackLabel emptyTitle emptyDescriptionLive emptyDescriptionFallback repoCount"
+    ["henrys-digital-canvas/home-selected-work"]="title actionLabel actionHref loadingLabel emptyTitle emptyDescriptionLive emptyDescriptionFallback repoCount"
     ["henrys-digital-canvas/home-throughline"]="title paragraphs quote"
     ["henrys-digital-canvas/home-resume-snapshot"]="title actionLabel actionHref positioningEyebrow label items bestFitEyebrow bestFitTitle focusAreas actionLinks"
     ["henrys-digital-canvas/home-recent-writing"]="title actionLabel actionHref emptyTitle emptyDescription blogCount"
