@@ -188,7 +188,8 @@
 			"qdrant",
 			"cloudflare"
 		],
-		"featured": false,
+		"featured": true,
+		"featuredPriority": -1,
 		"origin": "curated",
 		"access": "public"
 	},
