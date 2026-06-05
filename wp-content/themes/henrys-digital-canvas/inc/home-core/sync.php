@@ -34,7 +34,7 @@ add_action( 'switch_theme', 'hdc_repo_clear_sync' );
 /**
  * Pull live repos from the worker and reconcile the CPT.
  *
- * @return array{source:string,count:int}
+ * @return array{source:string,count:int,fetched?:int,attempted?:int,applied?:int,skipped?:int}
  */
 function hdc_github_sync(): array {
 	$owner    = hdc_get_configured_github_owner();
@@ -61,12 +61,15 @@ function hdc_github_sync(): array {
 		return hdc_repo_record_fallback( null === $live ? 'fallback' : 'fallback-empty' );
 	}
 
+	$fetched = count( $live );
 	$kept  = array_values( array_filter( $live, 'hdc_repo_should_keep_live' ) );
 	if ( array() === $kept ) {
 		return hdc_repo_record_fallback( 'fallback-empty' );
 	}
 
 	hdc_repo_suppress_begin(); // bulk writes below must not fire save_post per repo.
+	$attempted = count( $kept );
+	$applied   = 0;
 	foreach ( $kept as $api_repo ) {
 		if ( ! is_array( $api_repo ) ) {
 			continue;
@@ -129,21 +132,31 @@ function hdc_github_sync(): array {
 		update_post_meta( $post_id, 'last_sync_source', 'live' );
 
 		hdc_repo_write_derived( $post_id, $merged, true );
+		$applied++;
 	}
 
 	hdc_repo_reconcile();
+	$skipped = max( 0, $attempted - $applied );
 	hdc_repo_suppress_end();
 
 	$status = array(
-		'time'   => time(),
-		'source' => 'live',
-		'count'  => count( $kept ),
+		'time'      => time(),
+		'source'    => 'live',
+		'count'     => $attempted,
+		'fetched'   => $fetched,
+		'attempted' => $attempted,
+		'applied'   => $applied,
+		'skipped'   => $skipped,
 	);
 	update_option( 'hdc_repo_sync_status', $status, false );
 
 	return array(
-		'source' => 'live',
-		'count'  => count( $kept ),
+		'source'    => 'live',
+		'count'     => $attempted,
+		'fetched'   => $fetched,
+		'attempted' => $attempted,
+		'applied'   => $applied,
+		'skipped'   => $skipped,
 	);
 }
 
@@ -243,7 +256,16 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 		'hdc sync-repos',
 		function () {
 			$result = hdc_github_sync();
-			WP_CLI::success( sprintf( 'Sync complete: source=%s, count=%d.', $result['source'], $result['count'] ) );
+			WP_CLI::success(
+				sprintf(
+					'Sync complete: source=%s, fetched=%d, attempted=%d, applied=%d, skipped=%d.',
+					$result['source'],
+					(int) ( $result['fetched'] ?? $result['count'] ?? 0 ),
+					(int) ( $result['attempted'] ?? $result['count'] ?? 0 ),
+					(int) ( $result['applied'] ?? 0 ),
+					(int) ( $result['skipped'] ?? 0 )
+				)
+			);
 		}
 	);
 }
