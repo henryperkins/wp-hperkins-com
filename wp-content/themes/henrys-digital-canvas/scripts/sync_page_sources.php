@@ -13,7 +13,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once dirname( __DIR__ ) . '/inc/data-contracts.php';
-require_once dirname( __DIR__ ) . '/inc/home-page-blocks.php';
 
 /**
  * Write a sync log line.
@@ -130,7 +129,7 @@ $page_configs = array(
 	array(
 		'path'          => 'home',
 		'title'         => 'Home',
-		'content'       => function_exists( 'hdc_home_pattern_markup' ) ? hdc_home_pattern_markup() : hdc_build_home_page_block_markup(),
+		'content'       => hdc_home_pattern_markup(),
 		'page_template' => 'page-no-title',
 	),
 	array(
