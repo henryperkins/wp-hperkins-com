@@ -109,5 +109,21 @@ hdc_check( 'merge: topics replaced by non-empty live', $merged['topics'], array(
 hdc_check( 'merge: curated featured/access untouched', array( $merged['featured'], $merged['access'], $merged['why_it_matters'] ), array( true, 'public', 'Reading UX.' ) );
 hdc_check( 'merge: empty curated description falls back to live', hdc_repo_merge_live_onto_curated( array( 'description' => '' ) + $curated, $mapped )['description'], 'live desc' );
 
+// --- ranking: priority asc (missing -> last), then updated_at desc, then name asc ---
+$repos = array(
+	array( 'name' => 'zeta',  'featured' => true,  'featured_priority' => null, 'updated_at' => '2026-01-01' ),
+	array( 'name' => 'alpha', 'featured' => true,  'featured_priority' => null, 'updated_at' => '2026-01-01' ), // tie w/ zeta -> alpha first
+	array( 'name' => 'top',   'featured' => true,  'featured_priority' => 0,    'updated_at' => '2020-01-01' ), // explicit priority wins
+	array( 'name' => 'newer', 'featured' => true,  'featured_priority' => null, 'updated_at' => '2026-09-09' ), // newest among no-priority
+	array( 'name' => 'skip',  'featured' => false, 'featured_priority' => 1,    'updated_at' => '2099-01-01' ), // not featured
+);
+$ranked = array_map( static function ( $r ) { return $r['name']; }, hdc_repo_rank_featured( $repos ) );
+hdc_check( 'rank: order', $ranked, array( 'top', 'newer', 'alpha', 'zeta' ) );
+hdc_check( 'rank: drops non-featured', in_array( 'skip', $ranked, true ), false );
+
+// --- updated timestamp helper ---
+hdc_check( 'ts: valid date', hdc_repo_updated_timestamp( array( 'updated_at' => '2026-01-01' ) ) > 0, true );
+hdc_check( 'ts: empty -> 0', hdc_repo_updated_timestamp( array( 'updated_at' => '' ) ), 0 );
+
 echo "\n{$tests_run} checks, {$tests_failed} failures\n";
 exit( $tests_failed > 0 ? 1 : 0 );
