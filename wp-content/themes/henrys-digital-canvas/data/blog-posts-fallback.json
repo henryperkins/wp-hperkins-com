@@ -17,7 +17,7 @@
     "featured": true,
     "readingTime": "8 min read",
     "content": "The system has three stages: ingestion, processing, and routing.",
-    "contentHtml": "<h2>The Problem</h2><p>Every content team hits manual tagging bottlenecks at scale.</p><h2>Architecture Overview</h2><p>The pipeline automates summarization, tagging, and routing with human review for low-confidence cases.</p>",
+    "contentHtml": "<h2>The Problem</h2><p>Every content team hits manual tagging bottlenecks at scale.</p><h2>Architecture Overview</h2><p>The pipeline automates summarization, tagging, and routing with human review for low-confidence cases.</p><h2>Routing Example</h2><p>The routing layer stays intentionally small so confidence thresholds are visible during review.</p><pre><code class=\"language-python\">def route_item(item):\n    if item[\"confidence\"] < 0.82:\n        return \"human_review\"\n    return item[\"channel\"]</code></pre>",
     "url": "/blog/building-ai-powered-content-pipeline/",
     "authorName": "Henry Perkins",
     "authorUrl": "https://wp.hperkins.com/author/henry/",

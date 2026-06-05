@@ -1,0 +1,241 @@
+
+> henrys-digital-canvas-theme@0.1.0 smoke:full
+> ./scripts/full_smoke.sh
+
+Route smoke against https://wp.hperkins.com
+PASS	/                                             status=200 marker=hdc-home-page
+PASS	/work/                                        status=200 marker=hdc-work-showcase
+PASS	/work/henry-s-digital-canvas/                 status=200 marker=hdc-work-detail
+PASS	/resume/                                      status=200 marker=hdc-resume-overview
+PASS	/resume/ats/                                  status=200 marker=hdc-resume-ats
+PASS	/hobbies/                                     status=200 marker=hdc-hobbies-moments
+PASS	/blog/                                        status=200 marker=hdc-blog-index
+PASS	/blog/getting-started-with-github-copilot-cli/ status=200 marker=hdc-blog-post
+PASS	/about/                                       status=200 marker=hdc-about-timeline
+PASS	/contact/                                     status=200 marker=hdc-contact-form
+PASS	/route-should-not-exist/                      status=404 marker=hdc-not-found
+
+Route smoke passed.
+API smoke against https://wp.hperkins.com
+PASS	/wp-json/henrys-digital-canvas/v1/resume                               status=200
+PASS	/wp-json/henrys-digital-canvas/v1/resume-ats                           status=200
+PASS	/wp-json/henrys-digital-canvas/v1/moments                              status=200
+PASS	/wp-json/henrys-digital-canvas/v1/blog?limit=3                         status=200
+PASS	/wp-json/henrys-digital-canvas/v1/blog/getting-started-with-github-copilot-cli status=200
+PASS	/wp-json/henrys-digital-canvas/v1/work?limit=3                         status=200
+PASS	/wp-json/henrys-digital-canvas/v1/work/henry-s-digital-canvas          status=200
+PASS	/api/github/repo-proofs?username=henryperkins&repo=wp-hperkins-com     status=200 accepted=200,403,503
+PASS	/api/github/ci-status?username=henryperkins&repo=wp-hperkins-com       status=200 accepted=200,403,503
+PASS	/api/github/language-summary?username=henryperkins&repo=wp-hperkins-com status=503 accepted=200,403,503
+PASS	/api/github/contributor-stats?username=henryperkins&repo=wp-hperkins-com status=200 accepted=200,403,503
+PASS	/wp-json/henrys-digital-canvas/v1/blog?limit=3                         fields=featuredImageUrl,featuredImageAlt,featuredImageSrcSet
+PASS	/wp-json/henrys-digital-canvas/v1/blog/getting-started-with-github-copilot-cli fields=featuredImageUrl,featuredImageAlt,featuredImageSrcSet,relatedPosts
+PASS	/api/github/language-summary?username=henryperkins&repo=wp-hperkins-com contract-skipped=status=503
+PASS	/api/github/contributor-stats?username=henryperkins&repo=wp-hperkins-com fields=stats[].repo,stats[].status
+
+API smoke passed.
+Browser smoke against https://wp.hperkins.com
+
+Running 10 tests using 1 worker
+
+[1A[2K[1/10] scripts/playwright/browser-smoke.spec.cjs:94:2 › Henrys Digital Canvas browser smoke › route matrix renders expected blocks
+[1A[2K[2/10] scripts/playwright/browser-smoke.spec.cjs:116:2 › Henrys Digital Canvas browser smoke › work signals panel renders stat cards and loads contributor metrics route
+[1A[2K  1) scripts/playwright/browser-smoke.spec.cjs:116:2 › Henrys Digital Canvas browser smoke › work signals panel renders stat cards and loads contributor metrics route 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoHaveCount[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator:  locator('.hdc-work-signals')
+    Expected: [32m1[39m
+    Received: [31m0[39m
+    Timeout:  30000ms
+
+    Call log:
+    [2m  - Expect "toHaveCount" with timeout 30000ms[22m
+    [2m  - waiting for locator('.hdc-work-signals')[22m
+    [2m    33 × locator resolved to 0 elements[22m
+    [2m       - unexpected value "0"[22m
+
+
+      129 |
+      130 | 		const signalsSection = page.locator('.hdc-work-signals');
+    > 131 | 		await expect(signalsSection).toHaveCount(1, { timeout: 30000 });
+          | 		                             ^
+      132 |
+      133 | 		const statCards = signalsSection.locator('.hdc-work-stat-card');
+      134 | 		await expect
+        at /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/themes/henrys-digital-canvas/scripts/playwright/browser-smoke.spec.cjs:131:32
+
+    Error Context: test-results/browser-smoke-Henrys-Digit-39eee-s-contributor-metrics-route/error-context.md
+
+
+[1A[2K[3/10] scripts/playwright/browser-smoke.spec.cjs:146:2 › Henrys Digital Canvas browser smoke › hobbies filters update querystring
+[1A[2K  2) scripts/playwright/browser-smoke.spec.cjs:146:2 › Henrys Digital Canvas browser smoke › hobbies filters update querystring 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeGreaterThan[2m([22m[32mexpected[39m[2m)[22m
+
+    Expected: > [32m1[39m
+    Received:   [31m0[39m
+
+    Call Log:
+    - Timeout 20000ms exceeded while waiting on the predicate
+
+      151 | 			.first()
+      152 | 			.locator('button.hdc-hobbies-moments__chip');
+    > 153 | 		await expect
+          | 		^
+      154 | 			.poll(async () => categoryButtons.count(), { timeout: 20000 })
+      155 | 			.toBeGreaterThan(1);
+      156 |
+        at /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/themes/henrys-digital-canvas/scripts/playwright/browser-smoke.spec.cjs:153:3
+
+    Error Context: test-results/browser-smoke-Henrys-Digit-16483--filters-update-querystring/error-context.md
+
+
+[1A[2K[4/10] scripts/playwright/browser-smoke.spec.cjs:163:2 › Henrys Digital Canvas browser smoke › contact validation and success states
+[1A[2K  3) scripts/playwright/browser-smoke.spec.cjs:163:2 › Henrys Digital Canvas browser smoke › contact validation and success states 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoHaveCount[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator:  locator('.hdc-contact-form__verification-shell')
+    Expected: [32m1[39m
+    Received: [31m0[39m
+    Timeout:  10000ms
+
+    Call log:
+    [2m  - Expect "toHaveCount" with timeout 10000ms[22m
+    [2m  - waiting for locator('.hdc-contact-form__verification-shell')[22m
+    [2m    14 × locator resolved to 0 elements[22m
+    [2m       - unexpected value "0"[22m
+
+
+      166 | 		const submitButton = page.locator('.hdc-contact-form__submit');
+      167 | 		const verificationShell = page.locator('.hdc-contact-form__verification-shell');
+    > 168 | 		await expect(verificationShell).toHaveCount(1, { timeout: 10000 });
+          | 		                                ^
+      169 | 		if (await submitButton.isDisabled()) {
+      170 | 			await expect(page.locator('#contact-verification-error')).toContainText(/verification/i);
+      171 | 			await expect(submitButton).toBeDisabled();
+        at /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/themes/henrys-digital-canvas/scripts/playwright/browser-smoke.spec.cjs:168:35
+
+    Error Context: test-results/browser-smoke-Henrys-Digit-1ebac-lidation-and-success-states/error-context.md
+
+
+[1A[2K[5/10] scripts/playwright/browser-smoke.spec.cjs:186:2 › Henrys Digital Canvas browser smoke › blog progress and scroll-to-top behavior
+[1A[2K  4) scripts/playwright/browser-smoke.spec.cjs:186:2 › Henrys Digital Canvas browser smoke › blog progress and scroll-to-top behavior 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoHaveCount[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator:  locator('.hdc-blog-post__progress-fill').first()
+    Expected: [32m1[39m
+    Received: [31m0[39m
+    Timeout:  10000ms
+
+    Call log:
+    [2m  - Expect "toHaveCount" with timeout 10000ms[22m
+    [2m  - waiting for locator('.hdc-blog-post__progress-fill').first()[22m
+    [2m    14 × locator resolved to 0 elements[22m
+    [2m       - unexpected value "0"[22m
+
+
+      188 |
+      189 | 		const progressFill = page.locator('.hdc-blog-post__progress-fill').first();
+    > 190 | 		await expect(progressFill).toHaveCount(1, { timeout: 10000 });
+          | 		                           ^
+      191 | 		const before = await progressFill.getAttribute('style');
+      192 |
+      193 | 		await page.evaluate(() => window.scrollTo(0, 6000));
+        at /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/themes/henrys-digital-canvas/scripts/playwright/browser-smoke.spec.cjs:190:30
+
+    Error Context: test-results/browser-smoke-Henrys-Digit-d392c--and-scroll-to-top-behavior/error-context.md
+
+
+[1A[2K[6/10] scripts/playwright/browser-smoke.spec.cjs:207:2 › Henrys Digital Canvas browser smoke › blog detail missing-post route renders the enhanced state card
+[1A[2K[7/10] scripts/playwright/browser-smoke.spec.cjs:215:2 › Henrys Digital Canvas browser smoke › blog detail enhances HTML code blocks with a toolbar and copy affordance
+[1A[2K  5) scripts/playwright/browser-smoke.spec.cjs:215:2 › Henrys Digital Canvas browser smoke › blog detail enhances HTML code blocks with a toolbar and copy affordance 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeGreaterThan[2m([22m[32mexpected[39m[2m)[22m
+
+    Expected: > [32m0[39m
+    Received:   [31m0[39m
+
+    Call Log:
+    - Timeout 10000ms exceeded while waiting on the predicate
+
+      216 | 		await page.goto(`/blog/${ blogFixtures.codeSlug }/`, { waitUntil: 'networkidle' });
+      217 |
+    > 218 | 		await expect
+          | 		^
+      219 | 			.poll(async () => page.locator('.hdc-blog-post__code-toolbar').count(), { timeout: 10000 })
+      220 | 			.toBeGreaterThan(0);
+      221 | 		await expect(page.locator('.hdc-blog-post__code-copy').first()).toHaveCount(1);
+        at /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/themes/henrys-digital-canvas/scripts/playwright/browser-smoke.spec.cjs:218:3
+
+    Error Context: test-results/browser-smoke-Henrys-Digit-d868f-toolbar-and-copy-affordance/error-context.md
+
+
+[1A[2K[8/10] scripts/playwright/browser-smoke.spec.cjs:225:2 › Henrys Digital Canvas browser smoke › blog detail renders comments, share, related posts, and canonical route metadata
+[1A[2K  6) scripts/playwright/browser-smoke.spec.cjs:225:2 › Henrys Digital Canvas browser smoke › blog detail renders comments, share, related posts, and canonical route metadata 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: 'Comments', level: 2 })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByRole('heading', { name: 'Comments', level: 2 })[22m
+
+
+      230 | 		await page.goto(`/blog/${ blogFixtures.blogSlug }/`, { waitUntil: 'networkidle' });
+      231 |
+    > 232 | 		await expect(page.getByRole('heading', { level: 2, name: 'Comments' })).toBeVisible();
+          | 		                                                                        ^
+      233 | 		await expect(page.locator('.hdc-blog-post__comments-card')).toHaveCount(1);
+      234 | 		await expect(page.getByRole('button', { name: 'Copy article link' })).toBeVisible();
+      235 | 		await expect(page.getByRole('link', { name: 'Share on LinkedIn' })).toBeVisible();
+        at /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/themes/henrys-digital-canvas/scripts/playwright/browser-smoke.spec.cjs:232:75
+
+    Error Context: test-results/browser-smoke-Henrys-Digit-99957-nd-canonical-route-metadata/error-context.md
+
+
+[1A[2K[9/10] scripts/playwright/browser-smoke.spec.cjs:245:2 › Henrys Digital Canvas browser smoke › blog and home media surfaces follow blog media contract
+[1A[2K  7) scripts/playwright/browser-smoke.spec.cjs:245:2 › Henrys Digital Canvas browser smoke › blog and home media surfaces follow blog media contract 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoHaveCount[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator:  locator('.hdc-blog-index__featured-image')
+    Expected: [32m1[39m
+    Received: [31m0[39m
+    Timeout:  10000ms
+
+    Call log:
+    [2m  - Expect "toHaveCount" with timeout 10000ms[22m
+    [2m  - waiting for locator('.hdc-blog-index__featured-image')[22m
+    [2m    14 × locator resolved to 0 elements[22m
+    [2m       - unexpected value "0"[22m
+
+
+      265 |
+      266 | 		if (featuredPostHasImage) {
+    > 267 | 			await expect(blogFeaturedImage).toHaveCount(1, { timeout: 10000 });
+          | 			                                ^
+      268 | 		} else {
+      269 | 			await expect(blogFeaturedImage).toHaveCount(0);
+      270 | 		}
+        at /home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/themes/henrys-digital-canvas/scripts/playwright/browser-smoke.spec.cjs:267:36
+
+    Error Context: test-results/browser-smoke-Henrys-Digit-c3b95--follow-blog-media-contract/error-context.md
+
+
+[1A[2K[10/10] scripts/playwright/browser-smoke.spec.cjs:305:2 › Henrys Digital Canvas browser smoke › not-found recovery, command palette, and mobile menu
+[1A[2K  7 failed
+    scripts/playwright/browser-smoke.spec.cjs:116:2 › Henrys Digital Canvas browser smoke › work signals panel renders stat cards and loads contributor metrics route 
+    scripts/playwright/browser-smoke.spec.cjs:146:2 › Henrys Digital Canvas browser smoke › hobbies filters update querystring 
+    scripts/playwright/browser-smoke.spec.cjs:163:2 › Henrys Digital Canvas browser smoke › contact validation and success states 
+    scripts/playwright/browser-smoke.spec.cjs:186:2 › Henrys Digital Canvas browser smoke › blog progress and scroll-to-top behavior 
+    scripts/playwright/browser-smoke.spec.cjs:215:2 › Henrys Digital Canvas browser smoke › blog detail enhances HTML code blocks with a toolbar and copy affordance 
+    scripts/playwright/browser-smoke.spec.cjs:225:2 › Henrys Digital Canvas browser smoke › blog detail renders comments, share, related posts, and canonical route metadata 
+    scripts/playwright/browser-smoke.spec.cjs:245:2 › Henrys Digital Canvas browser smoke › blog and home media surfaces follow blog media contract 
+  3 passed (2.0m)

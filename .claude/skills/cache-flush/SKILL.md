@@ -12,12 +12,12 @@ Clears all WordPress cache layers in the correct order.
 
 1. **Flush object cache**
    ```bash
-   wp --path=/home/hperkins-wp/htdocs/wp.hperkins.com cache flush
+   wp --path=/home/ubuntu/wp-hperkins-com cache flush
    ```
 
 2. **Flush rewrite rules**
    ```bash
-   wp --path=/home/hperkins-wp/htdocs/wp.hperkins.com rewrite flush
+   wp --path=/home/ubuntu/wp-hperkins-com rewrite flush
    ```
 
 3. **Purge page cache**
@@ -29,9 +29,9 @@ Clears all WordPress cache layers in the correct order.
 
 4. **Confirm**
    ```bash
-   wp --path=/home/hperkins-wp/htdocs/wp.hperkins.com cache type
+   wp --path=/home/ubuntu/wp-hperkins-com cache type
    ```
-   Report which object cache backend is active (should be Redis).
+   Report which object cache backend is active.
 
 ### When to use
 

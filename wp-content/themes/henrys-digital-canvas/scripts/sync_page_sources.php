@@ -12,6 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once dirname( __DIR__ ) . '/inc/data-contracts.php';
+
 /**
  * Write a sync log line.
  *
@@ -127,7 +129,7 @@ $page_configs = array(
 	array(
 		'path'          => 'home',
 		'title'         => 'Home',
-		'content'       => '<!-- wp:henrys-digital-canvas/home-page /-->',
+		'content'       => hdc_home_pattern_markup(),
 		'page_template' => 'page-no-title',
 	),
 	array(

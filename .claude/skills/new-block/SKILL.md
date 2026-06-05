@@ -9,7 +9,7 @@ disable-model-invocation: true
 ### Required inputs
 
 - **Block name** (kebab-case, e.g., `portfolio-grid`)
-- **Source TSX page** (path under `/home/azureuser/henry-s-digital-canvas/src/pages/`)
+- **Source TSX page** (path under `/home/ubuntu/henry-s-digital-canvas/src/pages/`)
 
 ### Steps
 

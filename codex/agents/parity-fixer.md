@@ -6,8 +6,8 @@ Run the full parity remediation workflow for a single block: check, triage, fix,
 
 This is a WordPress block theme (`henrys-digital-canvas`) migrated from a React SPA. Every block must match its source TSX page in structure, style, behavior, and content.
 
-- **Theme dir**: `/home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/themes/henrys-digital-canvas/`
-- **React source root**: `/home/azureuser/henry-s-digital-canvas/src/`
+- **Theme dir**: `/home/ubuntu/wp-hperkins-com/wp-content/themes/henrys-digital-canvas/`
+- **React source root**: `/home/ubuntu/henry-s-digital-canvas/src/`
 - **Block dir pattern**: `<theme>/blocks/<block-name>/`
 - **Source TSX pattern**: `<react-root>/pages/<PageName>.tsx`
 
@@ -109,8 +109,8 @@ node -e "JSON.parse(require('fs').readFileSync('<file>','utf8'))"
 cd <theme> && npm run smoke:route && npm run smoke:api
 
 # Flush caches
-wp --path=/home/hperkins-wp/htdocs/wp.hperkins.com cache flush
-wp --path=/home/hperkins-wp/htdocs/wp.hperkins.com cache-enabler clear
+wp --path=/home/ubuntu/wp-hperkins-com cache flush
+wp --path=/home/ubuntu/wp-hperkins-com cache-enabler clear
 ```
 
 ### Step 6: Verify

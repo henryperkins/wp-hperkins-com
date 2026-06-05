@@ -66,6 +66,20 @@ function hdc_enqueue_frontend_styles() {
 		hdc_asset_version( '/assets/css/background-library.css' )
 	);
 
+	wp_enqueue_style(
+		'hdc-home-sections',
+		get_stylesheet_directory_uri() . '/assets/css/home-sections.css',
+		array( 'hdc-background-library' ),
+		hdc_asset_version( '/assets/css/home-sections.css' )
+	);
+
+	wp_enqueue_style(
+		'hdc-home-patterns',
+		get_stylesheet_directory_uri() . '/assets/css/home-patterns.css',
+		array( 'hdc-home-sections' ),
+		hdc_asset_version( '/assets/css/home-patterns.css' )
+	);
+
 	// Load single post styles on single posts
 	if ( is_single() ) {
 		wp_enqueue_style(
@@ -122,6 +136,7 @@ add_action( 'enqueue_block_assets', 'hdc_enqueue_editor_styles' );
 
 require_once get_stylesheet_directory() . '/inc/data-contracts.php';
 require_once get_stylesheet_directory() . '/inc/rest-api.php';
+require_once get_stylesheet_directory() . '/inc/home-core/bootstrap.php';
 
 /**
  * Register custom Gutenberg blocks shipped by the child theme.
@@ -130,7 +145,6 @@ require_once get_stylesheet_directory() . '/inc/rest-api.php';
  */
 function hdc_register_theme_blocks() {
 	$block_directories = array(
-		get_stylesheet_directory() . '/blocks/home-page',
 		get_stylesheet_directory() . '/blocks/digital-canvas-feed',
 		get_stylesheet_directory() . '/blocks/work-showcase',
 		get_stylesheet_directory() . '/blocks/site-shell',

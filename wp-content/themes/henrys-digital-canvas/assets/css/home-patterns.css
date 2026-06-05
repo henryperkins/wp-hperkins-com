@@ -1,0 +1,214 @@
+/* Homepage core-block pattern styles. */
+
+.is-style-learning-paper,
+.is-style-ember-topography,
+.is-style-ember-veil,
+.is-style-home-hero {
+  isolation: isolate;
+  overflow: hidden;
+  position: relative;
+}
+
+.is-style-learning-paper > *,
+.is-style-ember-topography > *,
+.is-style-ember-veil > *,
+.is-style-home-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.is-style-learning-paper::before,
+.is-style-ember-topography::before,
+.is-style-ember-veil::before,
+.is-style-home-hero::before,
+.is-style-home-hero::after {
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+.is-style-learning-paper {
+  background-color: hsl(var(--surface-1));
+  border: 1px solid hsl(var(--border-emphasis));
+  border-radius: var(--radius-surface);
+  padding: clamp(1.5rem, 3vw, 2rem);
+}
+
+.is-style-learning-paper::before {
+  background:
+    linear-gradient(180deg, hsl(var(--surface-1) / 0.94) 0%, hsl(var(--surface-2) / 0.9) 100%),
+    radial-gradient(72% 56% at 84% 20%, hsl(var(--warning) / 0.12), transparent 60%),
+    url("../images/backgrounds/theme-surface-learning-paper.webp");
+  background-blend-mode: normal, multiply, normal;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.is-style-ember-topography {
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-surface);
+  padding: 2rem;
+}
+
+.is-style-ember-topography::before {
+  background:
+    linear-gradient(154deg, hsl(var(--overlay-ember-surface-start)) 0%, hsl(var(--overlay-ember-surface-end)) 100%),
+    url("../images/backgrounds/theme-surface-ember-topography.webp");
+  background-position: center center, 28% center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.is-style-ember-veil {
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border-emphasis));
+  border-radius: var(--radius-surface);
+  box-shadow: var(--shadow-surface-strong);
+  padding: clamp(1.5rem, 4vw, 2rem);
+}
+
+.is-style-ember-veil::before {
+  background:
+    linear-gradient(154deg, hsl(var(--overlay-ember-surface-start)) 0%, hsl(var(--overlay-ember-surface-end)) 100%),
+    url("../images/backgrounds/theme-surface-ember-veil.webp");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.is-style-ember-strong {
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border-emphasis));
+  border-radius: var(--radius-surface);
+  padding: clamp(1.5rem, 3vw, 2rem);
+}
+
+.is-style-hdc-quote-card {
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-surface);
+  display: grid;
+  gap: 1rem;
+  padding: 2rem;
+}
+
+.is-style-home-hero {
+  align-items: center;
+  background: hsl(var(--inverse-background));
+  border-bottom: 1px solid hsl(var(--inverse-border));
+  box-sizing: border-box;
+  color: hsl(var(--inverse-foreground));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-inline: calc(50% - 50vw);
+  max-width: none;
+  min-height: max(30rem, calc(82svh - var(--layout-header-height)));
+  padding: 4rem clamp(1.25rem, 3vw, 2rem);
+  --hdc-home-hero-content-gutter: max(0px, calc(50% - 32rem));
+  width: 100vw;
+}
+
+.wp-block-post-content.has-global-padding > .wp-block-group.alignfull.is-style-home-hero {
+  margin-left: calc(50% - 50vw) !important;
+  margin-right: calc(50% - 50vw) !important;
+}
+
+.is-style-home-hero::before {
+  background:
+    linear-gradient(112deg, hsl(var(--overlay-scrim-medium)) 0%, hsl(var(--overlay-scrim-strong)) 100%),
+    url("../images/backgrounds/theme-hero-editorial-amber.webp");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.is-style-home-hero::after {
+  background: var(--gradient-hero);
+  opacity: 0.82;
+}
+
+.is-style-home-hero > * {
+  margin-inline: auto;
+  max-width: 64rem;
+  width: 100%;
+}
+
+.is-style-home-hero .hdc-home-page__hero-title {
+  margin: 0;
+}
+
+.is-style-home-hero .hdc-home-page__hero-description {
+  color: hsl(var(--inverse-muted-foreground));
+  font-size: 1rem;
+  line-height: 1.625;
+  margin-bottom: 0;
+  margin-left: var(--hdc-home-hero-content-gutter) !important;
+  margin-right: auto !important;
+  margin-top: 1.25rem;
+  max-width: 36rem;
+  text-shadow: var(--text-shadow-hero-body);
+}
+
+.is-style-home-hero .hdc-home-page__hero-actions {
+  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-left: var(--hdc-home-hero-content-gutter) !important;
+  margin-right: auto !important;
+  margin-top: 1.5rem;
+  max-width: calc(100vw - (2 * var(--hdc-home-hero-content-gutter)));
+  width: 100%;
+}
+
+.wp-block-button.is-style-inverse-glass .wp-block-button__link {
+  background: hsl(var(--inverse-foreground) / 0.08);
+  border: 1px solid hsl(var(--inverse-foreground) / 0.28);
+  color: hsl(var(--inverse-foreground));
+  backdrop-filter: blur(6px);
+}
+
+.wp-block-button.is-style-inverse-glass .wp-block-button__link:hover {
+  background: hsl(var(--inverse-surface-hover));
+  border-color: hsl(var(--inverse-border));
+  color: hsl(var(--inverse-foreground));
+}
+
+body.dark .is-style-learning-paper::before,
+body.is-dark-theme .is-style-learning-paper::before,
+:root[data-theme="dark"] .is-style-learning-paper::before {
+  background:
+    linear-gradient(180deg, hsl(var(--background) / 0.94) 0%, hsl(var(--surface-2) / 0.9) 100%),
+    radial-gradient(72% 56% at 84% 20%, hsl(var(--warning) / 0.08), transparent 60%),
+    url("../images/backgrounds/theme-surface-learning-paper.webp");
+  background-blend-mode: normal, screen, normal;
+  filter: saturate(0.82) brightness(0.5);
+}
+
+@media (min-width: 640px) {
+  .is-style-home-hero .hdc-home-page__hero-actions {
+    align-items: center;
+    flex-direction: row;
+    width: auto;
+  }
+}
+
+@media (min-width: 960px) {
+  .is-style-home-hero {
+    min-height: min(88svh, 52rem);
+  }
+
+  .is-style-home-hero .hdc-home-page__hero-title {
+    margin-bottom: 1.5rem;
+  }
+
+  .is-style-home-hero .hdc-home-page__hero-description {
+    font-size: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+}

@@ -3,12 +3,15 @@
     "wordpress": {
       "command": "wp",
       "args": [
-        "--path=/home/hperkins-wp/htdocs/wp.hperkins.com",
+        "--path=/home/ubuntu/wp-hperkins-com",
         "mcp-adapter",
         "serve",
         "--server=mcp-adapter-default-server",
-        "--user=hperkins"
+        "--user=hperkins_admin"
       ]
+    },
+    "cloudflare-api": {
+      "url": "https://mcp.cloudflare.com/mcp"
     }
   }
 }

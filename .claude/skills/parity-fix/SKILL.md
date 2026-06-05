@@ -20,9 +20,9 @@ Launch the `parity-checker` agent for the given block:
 Agent(subagent_type: "parity-checker", prompt: "Compare the WordPress block <name> against its source React TSX...")
 ```
 
-- Block files: `/home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/themes/henrys-digital-canvas/blocks/<name>/`
+- Block files: `/home/ubuntu/wp-hperkins-com/wp-content/themes/henrys-digital-canvas/blocks/<name>/`
 - Source TSX: look up the mapping in CLAUDE.md's "Custom Blocks" table
-- React source root: `/home/azureuser/henry-s-digital-canvas/src/`
+- React source root: `/home/ubuntu/henry-s-digital-canvas/src/`
 
 ### Step 2: Evaluate verdict
 
@@ -87,7 +87,7 @@ Follow the generated implementation plan, running smoke tests after each phase.
 ### Step 6: Verify
 
 - Run `npm run smoke:route` and `npm run smoke:api` from the theme dir
-- Flush caches: `wp --path=/home/hperkins-wp/htdocs/wp.hperkins.com cache flush`
+- Flush caches: `wp --path=/home/ubuntu/wp-hperkins-com cache flush`
 - Browser-check the live page (Playwright snapshot) to confirm visible changes
 
 ### Reference

@@ -17,10 +17,11 @@
 		typeof utils.renderLucideIcon === 'function'
 			? utils.renderLucideIcon
 			: function () {
-				return null;
-			};
+					return null;
+			  };
 	const TURNSTILE_SCRIPT_ID = 'cloudflare-turnstile-script';
-	const TURNSTILE_SCRIPT_SRC = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+	const TURNSTILE_SCRIPT_SRC =
+		'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 	const COMMENT_FETCH_PAGE_SIZE = 100;
 	const COMMENT_FETCH_MAX_PAGES = 5;
 	const COPY_FEEDBACK_DURATION_MS = 1800;
@@ -63,7 +64,10 @@
 			endpointBase: ensureString( parsed.endpointBase, '' ),
 			postsEndpoint: ensureString( parsed.postsEndpoint, '' ),
 			commentsEndpoint: ensureString( parsed.commentsEndpoint, '' ),
-			commentSubmitEndpoint: ensureString( parsed.commentSubmitEndpoint, '' ),
+			commentSubmitEndpoint: ensureString(
+				parsed.commentSubmitEndpoint,
+				''
+			),
 			commentSubmitEnabled: !! parsed.commentSubmitEnabled,
 			fallbackUrl: ensureString( parsed.fallbackUrl, '' ),
 			blogIndexUrl: ensureString( parsed.blogIndexUrl, '/blog/' ),
@@ -71,13 +75,31 @@
 				action: ensureString( turnstile.action, 'comment' ),
 				siteKey: ensureString( turnstile.siteKey, '' ),
 				label: ensureString( turnstile.label, 'Verification' ),
-				hint: ensureString( turnstile.hint, 'Verification helps protect the thread from spam.' ),
-				requiredError: ensureString( turnstile.requiredError, 'Please complete the verification check and try again.' ),
-				unavailableError: ensureString( turnstile.unavailableError, 'Verification is unavailable right now. Please use the original WordPress post for now.' ),
-				expiredError: ensureString( turnstile.expiredError, 'Verification expired before your comment could be posted. Please try again.' ),
-				pendingError: ensureString( turnstile.pendingError, 'Verification is still loading. Please wait a moment and try again.' ),
+				hint: ensureString(
+					turnstile.hint,
+					'Verification helps protect the thread from spam.'
+				),
+				requiredError: ensureString(
+					turnstile.requiredError,
+					'Please complete the verification check and try again.'
+				),
+				unavailableError: ensureString(
+					turnstile.unavailableError,
+					'Verification is unavailable right now. Please use the original WordPress post for now.'
+				),
+				expiredError: ensureString(
+					turnstile.expiredError,
+					'Verification expired before your comment could be posted. Please try again.'
+				),
+				pendingError: ensureString(
+					turnstile.pendingError,
+					'Verification is still loading. Please wait a moment and try again.'
+				),
 			},
-			inlineFallback: parseJsonAttribute( section, 'data-fallback-payload' ),
+			inlineFallback: parseJsonAttribute(
+				section,
+				'data-fallback-payload'
+			),
 		};
 	}
 
@@ -115,17 +137,22 @@
 			return slugFromQuery;
 		}
 
-		const bodyClassMatch = document.body.className.match( /\bpost-name-([a-z0-9-]+)\b/i );
-		if ( bodyClassMatch && bodyClassMatch[1] ) {
-			return sanitizeSlug( bodyClassMatch[1] );
+		const bodyClassMatch = document.body.className.match(
+			/\bpost-name-([a-z0-9-]+)\b/i
+		);
+		if ( bodyClassMatch && bodyClassMatch[ 1 ] ) {
+			return sanitizeSlug( bodyClassMatch[ 1 ] );
 		}
 
 		const normalizePathname = utils.normalizePathname
 			? utils.normalizePathname
 			: function ( value ) {
-				const normalized = ensureString( value, '/' ).replace( /\/+$/, '' );
-				return normalized || '/';
-			};
+					const normalized = ensureString( value, '/' ).replace(
+						/\/+$/,
+						''
+					);
+					return normalized || '/';
+			  };
 
 		const pathname = normalizePathname( window.location.pathname || '/' );
 		const segments = pathname.split( '/' ).filter( Boolean );
@@ -135,8 +162,8 @@
 			return sanitizeSlug( segments[ blogIndex + 1 ] );
 		}
 
-		if ( segments.length === 1 && segments[0] !== 'blog' ) {
-			return sanitizeSlug( segments[0] );
+		if ( segments.length === 1 && segments[ 0 ] !== 'blog' ) {
+			return sanitizeSlug( segments[ 0 ] );
 		}
 
 		return '';
@@ -187,12 +214,22 @@
 	}
 
 	function buildEmailShareUrl( args ) {
-		const lines = [ args.description, args.url ].filter( Boolean ).join( '\n\n' );
-		return 'mailto:?subject=' + encodeURIComponent( args.title ) + '&body=' + encodeURIComponent( lines );
+		const lines = [ args.description, args.url ]
+			.filter( Boolean )
+			.join( '\n\n' );
+		return (
+			'mailto:?subject=' +
+			encodeURIComponent( args.title ) +
+			'&body=' +
+			encodeURIComponent( lines )
+		);
 	}
 
 	function buildLinkedInShareUrl( url ) {
-		return 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent( url );
+		return (
+			'https://www.linkedin.com/sharing/share-offsite/?url=' +
+			encodeURIComponent( url )
+		);
 	}
 
 	function hasUpdatedDate( post ) {
@@ -203,25 +240,34 @@
 		const publishedDate = parseDateValue( post.date );
 		const modifiedDate = parseDateValue( post.modifiedDate );
 
-		if ( Number.isNaN( publishedDate.getTime() ) || Number.isNaN( modifiedDate.getTime() ) ) {
+		if (
+			Number.isNaN( publishedDate.getTime() ) ||
+			Number.isNaN( modifiedDate.getTime() )
+		) {
 			return false;
 		}
 
 		return modifiedDate.getTime() > publishedDate.getTime();
 	}
 
-	function fetchJson( url ) {
+	function fetchJson( url, options ) {
 		if ( ! url ) {
 			throw new Error( 'Missing URL' );
 		}
+
+		const requestOptions =
+			options && typeof options === 'object' ? options : {};
 
 		return fetch( url, {
 			headers: {
 				Accept: 'application/json',
 			},
+			signal: requestOptions.signal,
 		} ).then( function ( response ) {
 			if ( ! response.ok ) {
-				const error = new Error( 'Request failed with status ' + response.status );
+				const error = new Error(
+					'Request failed with status ' + response.status
+				);
 				error.status = response.status;
 				throw error;
 			}
@@ -234,8 +280,16 @@
 		return !! error && error.status === 404;
 	}
 
+	function isAbortError( error ) {
+		return !! error && ( error.name === 'AbortError' || error.code === 20 );
+	}
+
 	function resolveBlogPayload( payload ) {
-		if ( payload && typeof payload === 'object' && Array.isArray( payload.posts ) ) {
+		if (
+			payload &&
+			typeof payload === 'object' &&
+			Array.isArray( payload.posts )
+		) {
 			return payload.posts;
 		}
 
@@ -259,8 +313,8 @@
 
 		return {
 			id: post.id ? post.id : null,
-			slug: slug,
-			title: title,
+			slug,
+			title,
 			excerpt: ensureString( post.excerpt, '' ),
 			wordpressPermalink: ensureString( post.wordpressPermalink, '' ),
 			featuredImageAlt: ensureString( post.featuredImageAlt, '' ),
@@ -280,7 +334,11 @@
 		const excerpt = ensureString( post && post.excerpt, '' );
 		const readingTime = ensureString(
 			post && post.readingTime,
-			utils.estimateReadingTimeLabel ? utils.estimateReadingTimeLabel( contentHtml || content || excerpt ) : '1 min read'
+			utils.estimateReadingTimeLabel
+				? utils.estimateReadingTimeLabel(
+						contentHtml || content || excerpt
+				  )
+				: '1 min read'
 		);
 		const categories = ensureArray( post && post.categories )
 			.map( function ( category ) {
@@ -293,20 +351,26 @@
 
 		return {
 			id: post && post.id ? post.id : 0,
-			slug: ensureString( post && post.slug, 'post-' + String( index + 1 ) ),
+			slug: ensureString(
+				post && post.slug,
+				'post-' + String( index + 1 )
+			),
 			title: ensureString( post && post.title, 'Untitled Post' ),
-			excerpt: excerpt,
+			excerpt,
 			date: ensureString( post && post.date, '' ),
 			modifiedDate: ensureString( post && post.modifiedDate, '' ),
 			tags: tags.length ? tags : [ 'General' ],
-			categories: categories,
-			readingTime: readingTime,
-			content: content,
-			contentHtml: contentHtml,
+			categories,
+			readingTime,
+			content,
+			contentHtml,
 			url: ensureString( post && post.url, '' ),
 			authorName: ensureString( post && post.authorName, '' ),
 			authorUrl: ensureString( post && post.authorUrl, '' ),
-			wordpressPermalink: ensureString( post && post.wordpressPermalink, '' ),
+			wordpressPermalink: ensureString(
+				post && post.wordpressPermalink,
+				''
+			),
 			commentsOpen: !! ( post && post.commentsOpen ),
 			discussionUrl: ensureString( post && post.discussionUrl, '' ),
 			seoTitle: ensureString( post && post.seoTitle, '' ),
@@ -314,8 +378,11 @@
 			shareMessage: ensureString( post && post.shareMessage, '' ),
 			featuredImageUrl: ensureString( post && post.featuredImageUrl, '' ),
 			featuredImageAlt: ensureString( post && post.featuredImageAlt, '' ),
-			featuredImageSrcSet: ensureString( post && post.featuredImageSrcSet, '' ),
-			relatedPosts: relatedPosts,
+			featuredImageSrcSet: ensureString(
+				post && post.featuredImageSrcSet,
+				''
+			),
+			relatedPosts,
 		};
 	}
 
@@ -323,7 +390,10 @@
 		return ensureArray( posts )
 			.map( normalizePost )
 			.sort( function ( left, right ) {
-				return parseDateValue( right.date ).getTime() - parseDateValue( left.date ).getTime();
+				return (
+					parseDateValue( right.date ).getTime() -
+					parseDateValue( left.date ).getTime()
+				);
 			} );
 	}
 
@@ -349,7 +419,9 @@
 		const base = slugifyHeading( label ) || 'section';
 		const count = seen.get( base ) || 0;
 		seen.set( base, count + 1 );
-		return count === 0 ? 'blog-' + base : 'blog-' + base + '-' + String( count + 1 );
+		return count === 0
+			? 'blog-' + base
+			: 'blog-' + base + '-' + String( count + 1 );
 	}
 
 	const codeLanguageAliases = {
@@ -445,27 +517,31 @@
 			codeBuffer.length = 0;
 		}
 
-		String( content || '' ).split( '\n' ).forEach( function ( line ) {
-			if ( line.startsWith( '```' ) ) {
-				if ( inCodeBlock ) {
-					flushCodeBuffer();
-					inCodeBlock = false;
-					currentLanguage = null;
-				} else {
-					flushTextBuffer();
-					inCodeBlock = true;
-					currentLanguage = normalizeCodeLanguage( line.slice( 3 ) );
+		String( content || '' )
+			.split( '\n' )
+			.forEach( function ( line ) {
+				if ( line.startsWith( '```' ) ) {
+					if ( inCodeBlock ) {
+						flushCodeBuffer();
+						inCodeBlock = false;
+						currentLanguage = null;
+					} else {
+						flushTextBuffer();
+						inCodeBlock = true;
+						currentLanguage = normalizeCodeLanguage(
+							line.slice( 3 )
+						);
+					}
+					return;
 				}
-				return;
-			}
 
-			if ( inCodeBlock ) {
-				codeBuffer.push( line );
-				return;
-			}
+				if ( inCodeBlock ) {
+					codeBuffer.push( line );
+					return;
+				}
 
-			textBuffer.push( line );
-		} );
+				textBuffer.push( line );
+			} );
 
 		if ( inCodeBlock ) {
 			flushCodeBuffer();
@@ -490,7 +566,7 @@
 					const label = line.replace( '## ', '' ).trim();
 					headings.push( {
 						id: buildHeadingId( label, seen ),
-						label: label,
+						label,
 						level: 2,
 					} );
 					return;
@@ -500,7 +576,7 @@
 					const label = line.replace( '### ', '' ).trim();
 					headings.push( {
 						id: buildHeadingId( label, seen ),
-						label: label,
+						label,
 						level: 3,
 					} );
 				}
@@ -519,9 +595,11 @@
 	}
 
 	function getInitialPostFromPosts( posts, slug ) {
-		return ensureArray( posts ).find( function ( item ) {
-			return item.slug === slug;
-		} ) || null;
+		return (
+			ensureArray( posts ).find( function ( item ) {
+				return item.slug === slug;
+			} ) || null
+		);
 	}
 
 	function enhanceHtmlContent( contentHtml ) {
@@ -534,36 +612,49 @@
 		}
 
 		const seen = new Map();
-		const parsedDocument = new DOMParser().parseFromString( html, 'text/html' );
+		const usedIds = new Set();
+		const parsedDocument = new DOMParser().parseFromString(
+			html,
+			'text/html'
+		);
 		const sectionItems = [];
 
-		parsedDocument.querySelectorAll( 'h2, h3' ).forEach( function ( heading ) {
-			const label = ensureString( heading.textContent, '' );
-			if ( ! label ) {
-				return;
-			}
+		parsedDocument
+			.querySelectorAll( 'h2, h3' )
+			.forEach( function ( heading ) {
+				const label = ensureString( heading.textContent, '' );
+				if ( ! label ) {
+					return;
+				}
 
-			const existingId = ensureString( heading.getAttribute( 'id' ), '' );
-			const id = existingId || buildHeadingId( label, seen );
-			if ( ! existingId ) {
-				heading.setAttribute( 'id', id );
-			}
+				const existingId = ensureString(
+					heading.getAttribute( 'id' ),
+					''
+				);
+				let id = existingId;
+				if ( ! id || usedIds.has( id ) ) {
+					do {
+						id = buildHeadingId( label, seen );
+					} while ( usedIds.has( id ) );
+					heading.setAttribute( 'id', id );
+				}
+				usedIds.add( id );
 
-			heading.classList.add( 'hdc-blog-post__heading-anchor' );
-			if ( heading.tagName === 'H3' ) {
-				heading.classList.add( 'hdc-blog-post__subheading' );
-				return;
-			}
+				heading.classList.add( 'hdc-blog-post__heading-anchor' );
+				if ( heading.tagName === 'H3' ) {
+					heading.classList.add( 'hdc-blog-post__subheading' );
+					return;
+				}
 
-			sectionItems.push( {
-				href: '#' + id,
-				label: label,
+				sectionItems.push( {
+					href: '#' + id,
+					label,
+				} );
 			} );
-		} );
 
 		return {
 			contentHtml: parsedDocument.body.innerHTML,
-			sectionItems: sectionItems,
+			sectionItems,
 		};
 	}
 
@@ -571,11 +662,19 @@
 		const parts = String( text || '' ).split( /(\*\*[^*]+\*\*|`[^`]+`)/g );
 		return parts.filter( Boolean ).map( function ( part, index ) {
 			if ( part.startsWith( '**' ) && part.endsWith( '**' ) ) {
-				return h( 'strong', { key: keyPrefix + '-strong-' + String( index ) }, part.slice( 2, -2 ) );
+				return h(
+					'strong',
+					{ key: keyPrefix + '-strong-' + String( index ) },
+					part.slice( 2, -2 )
+				);
 			}
 
 			if ( part.startsWith( '`' ) && part.endsWith( '`' ) ) {
-				return h( 'code', { key: keyPrefix + '-code-' + String( index ) }, part.slice( 1, -1 ) );
+				return h(
+					'code',
+					{ key: keyPrefix + '-code-' + String( index ) },
+					part.slice( 1, -1 )
+				);
 			}
 
 			return part;
@@ -588,7 +687,7 @@
 		let i = 0;
 
 		while ( i < lines.length ) {
-			const line = lines[i];
+			const line = lines[ i ];
 
 			if ( line.startsWith( '## ' ) ) {
 				const label = line.replace( '## ', '' ).trim();
@@ -617,7 +716,8 @@
 						{
 							key: keyPrefix + '-h3-' + String( i ),
 							id: heading ? heading.id : undefined,
-							className: 'hdc-blog-post__heading-anchor hdc-blog-post__subheading',
+							className:
+								'hdc-blog-post__heading-anchor hdc-blog-post__subheading',
 						},
 						label
 					)
@@ -627,7 +727,16 @@
 			}
 
 			if ( line.startsWith( '> ' ) ) {
-				elements.push( h( 'blockquote', { key: keyPrefix + '-quote-' + String( i ) }, renderInline( line.replace( '> ', '' ), keyPrefix + '-quote-inline-' + String( i ) ) ) );
+				elements.push(
+					h(
+						'blockquote',
+						{ key: keyPrefix + '-quote-' + String( i ) },
+						renderInline(
+							line.replace( '> ', '' ),
+							keyPrefix + '-quote-inline-' + String( i )
+						)
+					)
+				);
 				i++;
 				continue;
 			}
@@ -636,16 +745,36 @@
 				const ordered = /^\d+\.\s/.test( line );
 				const items = [];
 				let j = i;
-				while ( j < lines.length && ( lines[j].startsWith( '- ' ) || /^\d+\.\s/.test( lines[j] ) ) ) {
-					const text = lines[j].replace( /^[-]\s/, '' ).replace( /^\d+\.\s*/, '' );
-					items.push( h( 'li', { key: keyPrefix + '-li-' + String( j ) }, renderInline( text, keyPrefix + '-li-inline-' + String( j ) ) ) );
+				while (
+					j < lines.length &&
+					( lines[ j ].startsWith( '- ' ) ||
+						/^\d+\.\s/.test( lines[ j ] ) )
+				) {
+					const text = lines[ j ]
+						.replace( /^[-]\s/, '' )
+						.replace( /^\d+\.\s*/, '' );
+					items.push(
+						h(
+							'li',
+							{ key: keyPrefix + '-li-' + String( j ) },
+							renderInline(
+								text,
+								keyPrefix + '-li-inline-' + String( j )
+							)
+						)
+					);
 					j++;
 				}
 
 				elements.push(
 					h(
 						ordered ? 'ol' : 'ul',
-						{ key: keyPrefix + ( ordered ? '-ol-' : '-ul-' ) + String( i ) },
+						{
+							key:
+								keyPrefix +
+								( ordered ? '-ol-' : '-ul-' ) +
+								String( i ),
+						},
 						items
 					)
 				);
@@ -654,12 +783,23 @@
 			}
 
 			if ( line.trim() === '' ) {
-				elements.push( h( 'br', { key: keyPrefix + '-br-' + String( i ), 'aria-hidden': 'true' } ) );
+				elements.push(
+					h( 'br', {
+						key: keyPrefix + '-br-' + String( i ),
+						'aria-hidden': 'true',
+					} )
+				);
 				i++;
 				continue;
 			}
 
-			elements.push( h( 'p', { key: keyPrefix + '-p-' + String( i ) }, renderInline( line, keyPrefix + '-p-inline-' + String( i ) ) ) );
+			elements.push(
+				h(
+					'p',
+					{ key: keyPrefix + '-p-' + String( i ) },
+					renderInline( line, keyPrefix + '-p-inline-' + String( i ) )
+				)
+			);
 			i++;
 		}
 
@@ -671,13 +811,21 @@
 		const headingQueue = ensureArray( headings ).slice();
 		return blocks.filter( Boolean ).map( function ( block, index ) {
 			if ( block.type === 'code' ) {
-				return renderCodeBlock( block.code, block.language, 'code-' + String( index ) );
+				return renderCodeBlock(
+					block.code,
+					block.language,
+					'code-' + String( index )
+				);
 			}
 
 			return h(
 				'div',
 				{ key: 'text-' + String( index ) },
-				renderMarkdownBlock( block.content, 'block-' + String( index ), headingQueue )
+				renderMarkdownBlock(
+					block.content,
+					'block-' + String( index ),
+					headingQueue
+				)
 			);
 		} );
 	}
@@ -695,39 +843,54 @@
 	}
 
 	function normalizeLang( lang ) {
-		var key = normalizeCodeLanguage( lang );
-		var aliases = {
+		const key = normalizeCodeLanguage( lang );
+		const aliases = {
 			jsx: 'javascript',
 			typescript: 'javascript',
 			tsx: 'javascript',
-			markup: 'javascript',
-			yaml: 'bash',
-			diff: 'bash',
-			markdown: 'bash',
 		};
+
+		if ( key === 'diff' || key === 'markdown' ) {
+			return null;
+		}
+
 		return aliases[ key ] || key;
 	}
 
 	function buildHighlightRules( lang ) {
-		var jsKeywords = 'async|await|break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|from|function|if|import|in|instanceof|let|new|null|of|return|static|super|switch|this|throw|try|typeof|undefined|var|void|while|with|yield|true|false';
-		var pyKeywords = 'and|as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|True|False|None|self|print';
-		var bashKeywords = 'if|then|else|elif|fi|for|while|do|done|case|esac|function|return|exit|echo|export|source|alias|local|readonly|declare|set|unset|shift|trap|eval|exec|test';
-		var cssAtRules = '@media|@keyframes|@import|@font-face|@supports|@layer|@container|@property';
+		const jsKeywords =
+			'async|await|break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|from|function|if|import|in|instanceof|let|new|null|of|return|static|super|switch|this|throw|try|typeof|undefined|var|void|while|with|yield|true|false';
+		const pyKeywords =
+			'and|as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|True|False|None|self|print';
+		const bashKeywords =
+			'if|then|else|elif|fi|for|while|do|done|case|esac|function|return|exit|echo|export|source|alias|local|readonly|declare|set|unset|shift|trap|eval|exec|test';
+		const cssAtRules =
+			'@media|@keyframes|@import|@font-face|@supports|@layer|@container|@property';
 
-		var commonRules = [
+		const commonRules = [
 			{ type: 'comment', pattern: /\/\/[^\n]*/y },
 			{ type: 'comment', pattern: /\/\*[\s\S]*?\*\//y },
 			{ type: 'string', pattern: /"(?:[^"\\]|\\.)*"/y },
 			{ type: 'string', pattern: /'(?:[^'\\]|\\.)*'/y },
 			{ type: 'string', pattern: /`(?:[^`\\]|\\.)*`/y },
-			{ type: 'number', pattern: /\b(?:0[xXoObB][\da-fA-F_]+|\d+\.?\d*(?:[eE][+-]?\d+)?)\b/y },
+			{
+				type: 'number',
+				pattern:
+					/\b(?:0[xXoObB][\da-fA-F_]+|\d+\.?\d*(?:[eE][+-]?\d+)?)\b/y,
+			},
 		];
 
 		if ( lang === 'javascript' ) {
 			return commonRules.concat( [
-				{ type: 'keyword', pattern: new RegExp( '\\b(?:' + jsKeywords + ')\\b', 'y' ) },
+				{
+					type: 'keyword',
+					pattern: new RegExp( '\\b(?:' + jsKeywords + ')\\b', 'y' ),
+				},
 				{ type: 'function', pattern: /\b[a-zA-Z_$]\w*(?=\s*\()/y },
-				{ type: 'operator', pattern: /=>|\.{3}|[!=<>]=?=?|[+\-*/%&|^~!?:]+/y },
+				{
+					type: 'operator',
+					pattern: /=>|\.{3}|[!=<>]=?=?|[+\-*/%&|^~!?:]+/y,
+				},
 				{ type: 'punctuation', pattern: /[{}[\]();,.]/y },
 			] );
 		}
@@ -739,8 +902,15 @@
 				{ type: 'string', pattern: /'''[\s\S]*?'''/y },
 				{ type: 'string', pattern: /f?"(?:[^"\\]|\\.)*"/y },
 				{ type: 'string', pattern: /f?'(?:[^'\\]|\\.)*'/y },
-				{ type: 'number', pattern: /\b(?:0[xXoObB][\da-fA-F_]+|\d+\.?\d*(?:[eE][+-]?\d+)?)\b/y },
-				{ type: 'keyword', pattern: new RegExp( '\\b(?:' + pyKeywords + ')\\b', 'y' ) },
+				{
+					type: 'number',
+					pattern:
+						/\b(?:0[xXoObB][\da-fA-F_]+|\d+\.?\d*(?:[eE][+-]?\d+)?)\b/y,
+				},
+				{
+					type: 'keyword',
+					pattern: new RegExp( '\\b(?:' + pyKeywords + ')\\b', 'y' ),
+				},
 				{ type: 'decorator', pattern: /@\w+/y },
 				{ type: 'function', pattern: /\b[a-zA-Z_]\w*(?=\s*\()/y },
 				{ type: 'operator', pattern: /[!=<>]=?|[+\-*/%&|^~:]+|\*\*/y },
@@ -751,10 +921,17 @@
 		if ( lang === 'css' ) {
 			return [
 				{ type: 'comment', pattern: /\/\*[\s\S]*?\*\//y },
-				{ type: 'keyword', pattern: new RegExp( '(?:' + cssAtRules + ')\\b', 'y' ) },
+				{
+					type: 'keyword',
+					pattern: new RegExp( '(?:' + cssAtRules + ')\\b', 'y' ),
+				},
 				{ type: 'string', pattern: /"(?:[^"\\]|\\.)*"/y },
 				{ type: 'string', pattern: /'(?:[^'\\]|\\.)*'/y },
-				{ type: 'number', pattern: /\b\d+\.?\d*(?:%|px|em|rem|vh|vw|fr|s|ms|deg|ch|ex)?\b/y },
+				{
+					type: 'number',
+					pattern:
+						/\b\d+\.?\d*(?:%|px|em|rem|vh|vw|fr|s|ms|deg|ch|ex)?\b/y,
+				},
 				{ type: 'function', pattern: /\b[a-zA-Z-]+(?=\()/y },
 				{ type: 'property', pattern: /[a-zA-Z-]+(?=\s*:)/y },
 				{ type: 'punctuation', pattern: /[{}();:,]/y },
@@ -771,13 +948,51 @@
 			];
 		}
 
+		if ( lang === 'markup' ) {
+			return [
+				{ type: 'comment', pattern: /<!--[\s\S]*?-->/y },
+				{ type: 'keyword', pattern: /<!DOCTYPE[^>]*>/iy },
+				{ type: 'keyword', pattern: /<\/?[a-zA-Z][\w:-]*/y },
+				{ type: 'property', pattern: /[a-zA-Z_:][\w:.-]*(?=\s*=)/y },
+				{ type: 'string', pattern: /"(?:[^"\\]|\\.)*"/y },
+				{ type: 'string', pattern: /'(?:[^'\\]|\\.)*'/y },
+				{ type: 'punctuation', pattern: /\/>|<|>/y },
+			];
+		}
+
+		if ( lang === 'yaml' ) {
+			return [
+				{ type: 'comment', pattern: /#[^\n]*/y },
+				{ type: 'string', pattern: /"(?:[^"\\]|\\.)*"/y },
+				{ type: 'string', pattern: /'(?:[^'\\]|\\.)*'/y },
+				{ type: 'variable', pattern: /[&*][a-zA-Z0-9_.-]+/y },
+				{
+					type: 'keyword',
+					pattern: /\b(?:true|false|null|yes|no|on|off)\b/y,
+				},
+				{
+					type: 'number',
+					pattern:
+						/\b(?:0[xX][\da-fA-F_]+|\d+\.?\d*(?:[eE][+-]?\d+)?)\b/y,
+				},
+				{ type: 'property', pattern: /[a-zA-Z0-9_.-]+(?=\s*:)/y },
+				{ type: 'punctuation', pattern: /[:[\]{}|>-]/y },
+			];
+		}
+
 		if ( lang === 'bash' ) {
 			return [
 				{ type: 'comment', pattern: /#[^\n]*/y },
 				{ type: 'string', pattern: /"(?:[^"\\]|\\.)*"/y },
 				{ type: 'string', pattern: /'[^']*'/y },
 				{ type: 'variable', pattern: /\$\{?[a-zA-Z_]\w*\}?/y },
-				{ type: 'keyword', pattern: new RegExp( '\\b(?:' + bashKeywords + ')\\b', 'y' ) },
+				{
+					type: 'keyword',
+					pattern: new RegExp(
+						'\\b(?:' + bashKeywords + ')\\b',
+						'y'
+					),
+				},
 				{ type: 'number', pattern: /\b\d+\b/y },
 				{ type: 'operator', pattern: /[|&;><]+|&&|\|\|/y },
 				{ type: 'punctuation', pattern: /[{}[\]()]/y },
@@ -786,7 +1001,10 @@
 
 		// Generic fallback
 		return commonRules.concat( [
-			{ type: 'keyword', pattern: new RegExp( '\\b(?:' + jsKeywords + ')\\b', 'y' ) },
+			{
+				type: 'keyword',
+				pattern: new RegExp( '\\b(?:' + jsKeywords + ')\\b', 'y' ),
+			},
 			{ type: 'function', pattern: /\b[a-zA-Z_$]\w*(?=\s*\()/y },
 			{ type: 'operator', pattern: /[!=<>]=?=?|[+\-*/%&|^~!?:]+|=>/y },
 			{ type: 'punctuation', pattern: /[{}[\]();,.]/y },
@@ -794,19 +1012,22 @@
 	}
 
 	function tokenize( code, rules ) {
-		var tokens = [];
-		var pos = 0;
-		var len = code.length;
+		const tokens = [];
+		let pos = 0;
+		const len = code.length;
 
 		while ( pos < len ) {
-			var bestMatch = null;
-			var bestType = '';
+			let bestMatch = null;
+			let bestType = '';
 
-			for ( var r = 0; r < rules.length; r++ ) {
+			for ( let r = 0; r < rules.length; r++ ) {
 				rules[ r ].pattern.lastIndex = pos;
-				var m = rules[ r ].pattern.exec( code );
-				if ( m && m.index === pos && m[0].length > 0 ) {
-					if ( ! bestMatch || m[0].length > bestMatch[0].length ) {
+				const m = rules[ r ].pattern.exec( code );
+				if ( m && m.index === pos && m[ 0 ].length > 0 ) {
+					if (
+						! bestMatch ||
+						m[ 0 ].length > bestMatch[ 0 ].length
+					) {
 						bestMatch = m;
 						bestType = rules[ r ].type;
 					}
@@ -814,16 +1035,16 @@
 			}
 
 			if ( bestMatch ) {
-				tokens.push( { type: bestType, text: bestMatch[0] } );
-				pos += bestMatch[0].length;
+				tokens.push( { type: bestType, text: bestMatch[ 0 ] } );
+				pos += bestMatch[ 0 ].length;
 			} else {
-				var end = pos + 1;
+				let end = pos + 1;
 				while ( end < len ) {
-					var found = false;
-					for ( var r2 = 0; r2 < rules.length; r2++ ) {
+					let found = false;
+					for ( let r2 = 0; r2 < rules.length; r2++ ) {
 						rules[ r2 ].pattern.lastIndex = end;
-						var m2 = rules[ r2 ].pattern.exec( code );
-						if ( m2 && m2.index === end && m2[0].length > 0 ) {
+						const m2 = rules[ r2 ].pattern.exec( code );
+						if ( m2 && m2.index === end && m2[ 0 ].length > 0 ) {
 							found = true;
 							break;
 						}
@@ -842,25 +1063,33 @@
 	}
 
 	function highlightCodeElement( codeEl, lang ) {
-		var text = codeEl.textContent || '';
+		const text = codeEl.textContent || '';
 		if ( ! text.trim() ) {
 			return;
 		}
 
-		var langKey = normalizeLang( lang );
+		const langKey = normalizeLang( lang );
 		if ( ! langKey ) {
 			return;
 		}
 
-		var rules = buildHighlightRules( langKey );
-		var tokens = tokenize( text, rules );
-		var html = tokens.map( function ( t ) {
-			var escaped = escapeHtml( t.text );
-			if ( t.type === 'plain' ) {
-				return escaped;
-			}
-			return '<span class="hdc-token-' + t.type + '">' + escaped + '</span>';
-		} ).join( '' );
+		const rules = buildHighlightRules( langKey );
+		const tokens = tokenize( text, rules );
+		const html = tokens
+			.map( function ( t ) {
+				const escaped = escapeHtml( t.text );
+				if ( t.type === 'plain' ) {
+					return escaped;
+				}
+				return (
+					'<span class="hdc-token-' +
+					t.type +
+					'">' +
+					escaped +
+					'</span>'
+				);
+			} )
+			.join( '' );
 
 		codeEl.innerHTML = html;
 	}
@@ -869,17 +1098,9 @@
 	/*  Code block shell + copy enhancement                                */
 	/* ------------------------------------------------------------------ */
 
-	function copyCodeWithFallback( value ) {
-		if ( typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText ) {
-			return navigator.clipboard.writeText( value ).then( function () {
-				return true;
-			} ).catch( function () {
-				return false;
-			} );
-		}
-
+	function execCommandCopy( value ) {
 		if ( typeof document === 'undefined' ) {
-			return Promise.resolve( false );
+			return false;
 		}
 
 		const textarea = document.createElement( 'textarea' );
@@ -894,10 +1115,31 @@
 		textarea.setSelectionRange( 0, value.length );
 
 		try {
-			return Promise.resolve( document.execCommand( 'copy' ) );
+			return document.execCommand( 'copy' );
+		} catch ( error ) {
+			return false;
 		} finally {
 			textarea.remove();
 		}
+	}
+
+	function copyCodeWithFallback( value ) {
+		if (
+			typeof navigator !== 'undefined' &&
+			navigator.clipboard &&
+			navigator.clipboard.writeText
+		) {
+			return navigator.clipboard
+				.writeText( value )
+				.then( function () {
+					return true;
+				} )
+				.catch( function () {
+					return execCommandCopy( value );
+				} );
+		}
+
+		return Promise.resolve( execCommandCopy( value ) );
 	}
 
 	function renderCodeBlock( code, language, key ) {
@@ -906,11 +1148,19 @@
 
 		return h(
 			'div',
-			{ key: key, className: 'hdc-blog-post__code-block', 'data-language': normalizedLanguage || '' },
+			{
+				key,
+				className: 'hdc-blog-post__code-block',
+				'data-language': normalizedLanguage || '',
+			},
 			h(
 				'div',
 				{ className: 'hdc-blog-post__code-toolbar' },
-				h( 'span', { className: 'hdc-blog-post__code-language' }, languageLabel ),
+				h(
+					'span',
+					{ className: 'hdc-blog-post__code-language' },
+					languageLabel
+				),
 				h(
 					'button',
 					{
@@ -919,8 +1169,19 @@
 						'aria-label': 'Copy code block',
 						'data-copy-state': 'idle',
 					},
-					h( 'span', { className: 'hdc-blog-post__code-copy-icon', 'aria-hidden': 'true' }, renderLucideIcon( h, 'copy', { size: 14 } ) ),
-					h( 'span', { className: 'hdc-blog-post__code-copy-text' }, 'Copy' )
+					h(
+						'span',
+						{
+							className: 'hdc-blog-post__code-copy-icon',
+							'aria-hidden': 'true',
+						},
+						renderLucideIcon( h, 'copy', { size: 14 } )
+					),
+					h(
+						'span',
+						{ className: 'hdc-blog-post__code-copy-text' },
+						'Copy'
+					)
 				)
 			),
 			h(
@@ -929,7 +1190,15 @@
 				h(
 					'pre',
 					{ className: 'hdc-blog-post__code' },
-					h( 'code', { className: normalizedLanguage ? 'language-' + normalizedLanguage : undefined }, code )
+					h(
+						'code',
+						{
+							className: normalizedLanguage
+								? 'language-' + normalizedLanguage
+								: undefined,
+						},
+						code
+					)
 				)
 			)
 		);
@@ -945,7 +1214,10 @@
 				return found;
 			}
 
-			if ( className.indexOf( 'language-' ) === 0 || className.indexOf( 'lang-' ) === 0 ) {
+			if (
+				className.indexOf( 'language-' ) === 0 ||
+				className.indexOf( 'lang-' ) === 0
+			) {
 				return normalizeCodeLanguage( className );
 			}
 
@@ -975,7 +1247,8 @@
 		const buttonIcon = doc.createElement( 'span' );
 		buttonIcon.className = 'hdc-blog-post__code-copy-icon';
 		buttonIcon.setAttribute( 'aria-hidden', 'true' );
-		buttonIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>';
+		buttonIcon.innerHTML =
+			'<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>';
 
 		const buttonText = doc.createElement( 'span' );
 		buttonText.className = 'hdc-blog-post__code-copy-text';
@@ -1007,20 +1280,30 @@
 	}
 
 	function upgradeHtmlArticleCodeBlocks( container ) {
-		container.querySelectorAll( '.hdc-blog-post__content pre' ).forEach( function ( preEl ) {
-			if ( preEl.closest( '.hdc-blog-post__code-block' ) ) {
-				return;
-			}
+		container
+			.querySelectorAll( '.hdc-blog-post__content pre' )
+			.forEach( function ( preEl ) {
+				if ( preEl.closest( '.hdc-blog-post__code-block' ) ) {
+					return;
+				}
 
-			const codeEl = preEl.querySelector( 'code' );
-			if ( ! codeEl ) {
-				return;
-			}
+				const codeEl = preEl.querySelector( 'code' );
+				if ( ! codeEl ) {
+					return;
+				}
 
-			const language = getLanguageFromClassNames( codeEl.getAttribute( 'class' ) || preEl.getAttribute( 'class' ) || '' );
-			const shell = renderCodeBlockDom( document, codeEl.textContent || '', language );
-			preEl.replaceWith( shell );
-		} );
+				const language = getLanguageFromClassNames(
+					codeEl.getAttribute( 'class' ) ||
+						preEl.getAttribute( 'class' ) ||
+						''
+				);
+				const shell = renderCodeBlockDom(
+					document,
+					codeEl.textContent || '',
+					language
+				);
+				preEl.replaceWith( shell );
+			} );
 	}
 
 	function sanitizeCommentHtml( value ) {
@@ -1033,22 +1316,36 @@
 			return html
 				.replace( /<script[\s\S]*?>[\s\S]*?<\/script>/gi, '' )
 				.replace( /<style[\s\S]*?>[\s\S]*?<\/style>/gi, '' )
-				.replace( /<(iframe|object|embed|link|meta|base|form|input|button|textarea|select|option)[^>]*\/?>/gi, '' );
+				.replace(
+					/<(iframe|object|embed|link|meta|base|form|input|button|textarea|select|option)[^>]*\/?>/gi,
+					''
+				);
 		}
 
 		const parsed = new DOMParser().parseFromString( html, 'text/html' );
-		parsed.querySelectorAll( 'script, style, iframe, object, embed, link, meta, base, form, input, button, textarea, select, option' ).forEach( function ( node ) {
-			node.remove();
-		} );
+		parsed
+			.querySelectorAll(
+				'script, style, iframe, object, embed, link, meta, base, form, input, button, textarea, select, option'
+			)
+			.forEach( function ( node ) {
+				node.remove();
+			} );
 
 		parsed.querySelectorAll( '*' ).forEach( function ( node ) {
 			Array.from( node.attributes ).forEach( function ( attribute ) {
-				if ( /^on/i.test( attribute.name ) || 'style' === attribute.name || 'srcdoc' === attribute.name ) {
+				if (
+					/^on/i.test( attribute.name ) ||
+					'style' === attribute.name ||
+					'srcdoc' === attribute.name
+				) {
 					node.removeAttribute( attribute.name );
 					return;
 				}
 
-				if ( ( 'href' === attribute.name || 'src' === attribute.name ) && /^\s*javascript:/i.test( attribute.value ) ) {
+				if (
+					( 'href' === attribute.name || 'src' === attribute.name ) &&
+					/^\s*javascript:/i.test( attribute.value )
+				) {
 					node.setAttribute( attribute.name, '#' );
 				}
 			} );
@@ -1064,7 +1361,10 @@
 		}
 
 		if ( typeof document === 'undefined' ) {
-			return html.replace( /<[^>]*>/g, ' ' ).replace( /\s+/g, ' ' ).trim();
+			return html
+				.replace( /<[^>]*>/g, ' ' )
+				.replace( /\s+/g, ' ' )
+				.trim();
 		}
 
 		const container = document.createElement( 'div' );
@@ -1087,7 +1387,10 @@
 			return null;
 		}
 
-		const id = typeof comment.id === 'number' && Number.isFinite( comment.id ) ? comment.id : 0;
+		const id =
+			typeof comment.id === 'number' && Number.isFinite( comment.id )
+				? comment.id
+				: 0;
 		const date = ensureString( comment.date, '' );
 		if ( id <= 0 || ! date ) {
 			return null;
@@ -1096,29 +1399,42 @@
 		const avatarUrls = ensureObject( comment.author_avatar_urls );
 
 		return {
-			id: id,
-			date: date,
-			parentId: typeof comment.parent === 'number' && Number.isFinite( comment.parent ) ? comment.parent : 0,
+			id,
+			date,
+			parentId:
+				typeof comment.parent === 'number' &&
+				Number.isFinite( comment.parent )
+					? comment.parent
+					: 0,
 			link: toOptionalUrl( comment.link ),
-			authorName: toOptionalText( comment.author_name ) || 'WordPress reader',
+			authorName:
+				toOptionalText( comment.author_name ) || 'WordPress reader',
 			authorUrl: toOptionalUrl( comment.author_url ),
-			authorAvatarUrl: toOptionalUrl( avatarUrls['48'] || avatarUrls['96'] || avatarUrls['24'] ),
-			contentHtml: sanitizeCommentHtml( comment.content && comment.content.rendered ? comment.content.rendered : '' ),
+			authorAvatarUrl: toOptionalUrl(
+				avatarUrls[ '48' ] || avatarUrls[ '96' ] || avatarUrls[ '24' ]
+			),
+			contentHtml: sanitizeCommentHtml(
+				comment.content && comment.content.rendered
+					? comment.content.rendered
+					: ''
+			),
 			_key: 'comment-' + String( id ) + '-' + String( index ),
 		};
 	}
 
 	function sortCommentsByThreadPosition( comments ) {
-		return ensureArray( comments ).slice().sort( function ( left, right ) {
-			const leftDate = parseDateValue( left.date ).getTime();
-			const rightDate = parseDateValue( right.date ).getTime();
+		return ensureArray( comments )
+			.slice()
+			.sort( function ( left, right ) {
+				const leftDate = parseDateValue( left.date ).getTime();
+				const rightDate = parseDateValue( right.date ).getTime();
 
-			if ( leftDate !== rightDate ) {
-				return leftDate - rightDate;
-			}
+				if ( leftDate !== rightDate ) {
+					return leftDate - rightDate;
+				}
 
-			return left.id - right.id;
-		} );
+				return left.id - right.id;
+			} );
 	}
 
 	function dedupeComments( comments ) {
@@ -1133,11 +1449,13 @@
 	}
 
 	function buildCommentTree( comments ) {
-		const nodes = sortCommentsByThreadPosition( comments ).map( function ( comment ) {
-			return Object.assign( {}, comment, {
-				children: [],
-			} );
-		} );
+		const nodes = sortCommentsByThreadPosition( comments ).map(
+			function ( comment ) {
+				return Object.assign( {}, comment, {
+					children: [],
+				} );
+			}
+		);
 		const byId = new Map();
 		nodes.forEach( function ( node ) {
 			byId.set( node.id, node );
@@ -1168,9 +1486,12 @@
 			return 'WP';
 		}
 
-		return words.slice( 0, 2 ).map( function ( word ) {
-			return word.charAt( 0 ).toUpperCase();
-		} ).join( '' );
+		return words
+			.slice( 0, 2 )
+			.map( function ( word ) {
+				return word.charAt( 0 ).toUpperCase();
+			} )
+			.join( '' );
 	}
 
 	function loadTurnstileScript() {
@@ -1186,24 +1507,69 @@
 			return window.__hdcTurnstileScriptPromise;
 		}
 
-		window.__hdcTurnstileScriptPromise = new Promise( function ( resolve, reject ) {
-			const existingScript = document.getElementById( TURNSTILE_SCRIPT_ID );
-			if ( existingScript ) {
-				existingScript.addEventListener( 'load', resolve, { once: true } );
-				existingScript.addEventListener( 'error', function () {
-					reject( new Error( 'Failed to load Turnstile.' ) );
-				}, { once: true } );
+		window.__hdcTurnstileScriptPromise = new Promise( function (
+			resolve,
+			reject
+		) {
+			function handleResolve( script ) {
+				if ( script ) {
+					script.setAttribute( 'data-hdc-turnstile-state', 'ready' );
+				}
+				resolve();
+			}
+
+			function handleReject( script ) {
+				if ( script ) {
+					script.setAttribute( 'data-hdc-turnstile-state', 'error' );
+					script.remove();
+				}
+				window.__hdcTurnstileScriptPromise = null;
+				reject( new Error( 'Failed to load Turnstile.' ) );
+			}
+
+			let script = document.getElementById( TURNSTILE_SCRIPT_ID );
+			if (
+				script &&
+				script.getAttribute( 'data-hdc-turnstile-state' ) === 'error'
+			) {
+				script.remove();
+				script = null;
+			}
+
+			if ( script ) {
+				if ( window.turnstile ) {
+					handleResolve( script );
+					return;
+				}
+
+				script.addEventListener(
+					'load',
+					function () {
+						handleResolve( script );
+					},
+					{ once: true }
+				);
+				script.addEventListener(
+					'error',
+					function () {
+						handleReject( script );
+					},
+					{ once: true }
+				);
 				return;
 			}
 
-			const script = document.createElement( 'script' );
+			script = document.createElement( 'script' );
 			script.id = TURNSTILE_SCRIPT_ID;
 			script.src = TURNSTILE_SCRIPT_SRC;
 			script.async = true;
 			script.defer = true;
-			script.onload = resolve;
+			script.setAttribute( 'data-hdc-turnstile-state', 'loading' );
+			script.onload = function () {
+				handleResolve( script );
+			};
 			script.onerror = function () {
-				reject( new Error( 'Failed to load Turnstile.' ) );
+				handleReject( script );
 			};
 			document.head.appendChild( script );
 		} );
@@ -1215,22 +1581,38 @@
 		const groupRef = useRef( null );
 		const containerRef = useRef( null );
 		const widgetIdRef = useRef( null );
+		const handlersRef = useRef( {
+			onError: props.onError,
+			onExpired: props.onExpired,
+			onTokenChange: props.onTokenChange,
+		} );
+
+		useEffect(
+			function () {
+				handlersRef.current = {
+					onError: props.onError,
+					onExpired: props.onExpired,
+					onTokenChange: props.onTokenChange,
+				};
+			},
+			[ props.onError, props.onExpired, props.onTokenChange ]
+		);
 
 		useEffect(
 			function () {
 				props.controlRef.current = {
-					focus: function () {
+					focus() {
 						if ( groupRef.current ) {
 							groupRef.current.focus();
 						}
 					},
-					reset: function () {
+					reset() {
 						if ( widgetIdRef.current && window.turnstile ) {
 							window.turnstile.reset( widgetIdRef.current );
 						}
-						props.onTokenChange( '' );
+						handlersRef.current.onTokenChange( '' );
 					},
-					execute: function () {
+					execute() {
 						if ( ! widgetIdRef.current || ! window.turnstile ) {
 							return false;
 						}
@@ -1241,15 +1623,15 @@
 
 				return function () {
 					props.controlRef.current = {
-						focus: function () {},
-						reset: function () {},
-						execute: function () {
+						focus() {},
+						reset() {},
+						execute() {
 							return false;
 						},
 					};
 				};
 			},
-			[ props.controlRef, props.onTokenChange ]
+			[ props.controlRef ]
 		);
 
 		useEffect(
@@ -1259,30 +1641,41 @@
 				async function renderWidget() {
 					try {
 						await loadTurnstileScript();
-						if ( isCancelled || ! containerRef.current || ! window.turnstile ) {
+						if (
+							isCancelled ||
+							! containerRef.current ||
+							! window.turnstile
+						) {
 							return;
 						}
 
-						widgetIdRef.current = window.turnstile.render( containerRef.current, {
-							sitekey: props.siteKey,
-							theme: 'auto',
-							size: 'invisible',
-							action: props.action,
-							callback: function ( token ) {
-								props.onTokenChange( token );
-							},
-							'expired-callback': function () {
-								props.onExpired();
-								props.onTokenChange( '' );
-							},
-							'error-callback': function () {
-								props.onTokenChange( '' );
-								props.onError();
-							},
-						} );
+						if ( widgetIdRef.current ) {
+							return;
+						}
+
+						widgetIdRef.current = window.turnstile.render(
+							containerRef.current,
+							{
+								sitekey: props.siteKey,
+								theme: 'auto',
+								size: 'invisible',
+								action: props.action,
+								callback( token ) {
+									handlersRef.current.onTokenChange( token );
+								},
+								'expired-callback'() {
+									handlersRef.current.onExpired();
+									handlersRef.current.onTokenChange( '' );
+								},
+								'error-callback'() {
+									handlersRef.current.onTokenChange( '' );
+									handlersRef.current.onError();
+								},
+							}
+						);
 					} catch ( error ) {
-						props.onTokenChange( '' );
-						props.onError();
+						handlersRef.current.onTokenChange( '' );
+						handlersRef.current.onError();
 					}
 				}
 
@@ -1296,7 +1689,7 @@
 					widgetIdRef.current = null;
 				};
 			},
-			[ props.action, props.onError, props.onExpired, props.onTokenChange, props.siteKey ]
+			[ props.action, props.siteKey ]
 		);
 
 		return h(
@@ -1318,11 +1711,15 @@
 		);
 	}
 
-	function fetchCommentsPage( url ) {
+	function fetchCommentsPage( url, options ) {
+		const requestOptions =
+			options && typeof options === 'object' ? options : {};
+
 		return fetch( url, {
 			headers: {
 				Accept: 'application/json',
 			},
+			signal: requestOptions.signal,
 		} ).then( async function ( response ) {
 			let payload = null;
 			try {
@@ -1332,29 +1729,47 @@
 			}
 
 			if ( ! response.ok ) {
-				const error = new Error( 'WordPress comments request failed with status ' + response.status );
+				const error = new Error(
+					'WordPress comments request failed with status ' +
+						response.status
+				);
 				error.status = response.status;
 				throw error;
 			}
 
 			if ( ! Array.isArray( payload ) ) {
-				throw new Error( 'WordPress comments response was not an array' );
+				throw new Error(
+					'WordPress comments response was not an array'
+				);
 			}
 
-			const total = parseInt( response.headers.get( 'x-wp-total' ) || String( payload.length ), 10 );
-			const totalPages = parseInt( response.headers.get( 'x-wp-totalpages' ) || '1', 10 );
+			const total = parseInt(
+				response.headers.get( 'x-wp-total' ) ||
+					String( payload.length ),
+				10
+			);
+			const totalPages = parseInt(
+				response.headers.get( 'x-wp-totalpages' ) || '1',
+				10
+			);
 			const submitEnabled = true;
 
 			return {
 				comments: payload,
-				submitEnabled: submitEnabled,
-				total: Number.isFinite( total ) && total >= 0 ? total : payload.length,
-				totalPages: Number.isFinite( totalPages ) && totalPages > 0 ? totalPages : 1,
+				submitEnabled,
+				total:
+					Number.isFinite( total ) && total >= 0
+						? total
+						: payload.length,
+				totalPages:
+					Number.isFinite( totalPages ) && totalPages > 0
+						? totalPages
+						: 1,
 			};
 		} );
 	}
 
-	function fetchBlogComments( config, postId ) {
+	function fetchBlogComments( config, postId, options ) {
 		if ( ! config.commentsEndpoint || ! postId || postId <= 0 ) {
 			return Promise.resolve( {
 				comments: [],
@@ -1365,57 +1780,88 @@
 			} );
 		}
 
-		const firstPageUrl = new URL( config.commentsEndpoint, window.location.origin );
+		const firstPageUrl = new URL(
+			config.commentsEndpoint,
+			window.location.origin
+		);
 		firstPageUrl.searchParams.set( 'order', 'asc' );
 		firstPageUrl.searchParams.set( 'orderby', 'date_gmt' );
 		firstPageUrl.searchParams.set( 'page', '1' );
-		firstPageUrl.searchParams.set( 'per_page', String( COMMENT_FETCH_PAGE_SIZE ) );
+		firstPageUrl.searchParams.set(
+			'per_page',
+			String( COMMENT_FETCH_PAGE_SIZE )
+		);
 		firstPageUrl.searchParams.set( 'post', String( postId ) );
 
-		return fetchCommentsPage( firstPageUrl.toString() ).then( function ( firstPage ) {
-			const reportedTotalPages = firstPage.totalPages;
-			const cappedTotalPages = Math.min( reportedTotalPages, COMMENT_FETCH_MAX_PAGES );
-			const isPartial = reportedTotalPages > cappedTotalPages;
-			let allComments = ensureArray( firstPage.comments ).map( normalizeComment ).filter( Boolean );
+		return fetchCommentsPage( firstPageUrl.toString(), options ).then(
+			function ( firstPage ) {
+				const reportedTotalPages = firstPage.totalPages;
+				const cappedTotalPages = Math.min(
+					reportedTotalPages,
+					COMMENT_FETCH_MAX_PAGES
+				);
+				const isPartial = reportedTotalPages > cappedTotalPages;
+				let allComments = ensureArray( firstPage.comments )
+					.map( normalizeComment )
+					.filter( Boolean );
 
-			if ( cappedTotalPages <= 1 ) {
-				const dedupedComments = dedupeComments( allComments );
-				return {
-					comments: dedupedComments,
-					isPartial: isPartial,
-					submitEnabled: firstPage.submitEnabled,
-					total: Math.max( firstPage.total, dedupedComments.length ),
-					totalPages: reportedTotalPages,
-				};
+				if ( cappedTotalPages <= 1 ) {
+					const dedupedComments = dedupeComments( allComments );
+					return {
+						comments: dedupedComments,
+						isPartial,
+						submitEnabled: firstPage.submitEnabled,
+						total: Math.max(
+							firstPage.total,
+							dedupedComments.length
+						),
+						totalPages: reportedTotalPages,
+					};
+				}
+
+				const pagePromises = [];
+				for ( let page = 2; page <= cappedTotalPages; page++ ) {
+					const pageUrl = new URL( firstPageUrl.toString() );
+					pageUrl.searchParams.set( 'page', String( page ) );
+					pagePromises.push(
+						fetchCommentsPage( pageUrl.toString(), options )
+					);
+				}
+
+				return Promise.all( pagePromises ).then(
+					function ( remainingPages ) {
+						remainingPages.forEach( function ( pageResult ) {
+							allComments = allComments.concat(
+								ensureArray( pageResult.comments )
+									.map( normalizeComment )
+									.filter( Boolean )
+							);
+						} );
+
+						const dedupedComments = dedupeComments( allComments );
+						return {
+							comments: dedupedComments,
+							isPartial,
+							submitEnabled: firstPage.submitEnabled,
+							total: Math.max(
+								firstPage.total,
+								dedupedComments.length
+							),
+							totalPages: reportedTotalPages,
+						};
+					}
+				);
 			}
-
-			const pagePromises = [];
-			for ( let page = 2; page <= cappedTotalPages; page++ ) {
-				const pageUrl = new URL( firstPageUrl.toString() );
-				pageUrl.searchParams.set( 'page', String( page ) );
-				pagePromises.push( fetchCommentsPage( pageUrl.toString() ) );
-			}
-
-			return Promise.all( pagePromises ).then( function ( remainingPages ) {
-				remainingPages.forEach( function ( pageResult ) {
-					allComments = allComments.concat( ensureArray( pageResult.comments ).map( normalizeComment ).filter( Boolean ) );
-				} );
-
-				const dedupedComments = dedupeComments( allComments );
-				return {
-					comments: dedupedComments,
-					isPartial: isPartial,
-					submitEnabled: firstPage.submitEnabled,
-					total: Math.max( firstPage.total, dedupedComments.length ),
-					totalPages: reportedTotalPages,
-				};
-			} );
-		} );
+		);
 	}
 
 	function submitComment( config, payload ) {
 		if ( ! config.commentSubmitEndpoint ) {
-			return Promise.reject( new Error( 'Comment submission is temporarily unavailable. Please use the original WordPress post for now.' ) );
+			return Promise.reject(
+				new Error(
+					'Comment submission is temporarily unavailable. Please use the original WordPress post for now.'
+				)
+			);
 		}
 
 		return fetch( config.commentSubmitEndpoint, {
@@ -1434,12 +1880,22 @@
 			}
 
 			if ( ! response.ok ) {
-				throw new Error( body && body.error ? body.error : 'Comment submission failed' );
+				throw new Error(
+					body && body.error
+						? body.error
+						: 'Comment submission failed'
+				);
 			}
 
 			return {
-				comment: body && body.comment ? normalizeComment( body.comment, 0 ) : null,
-				moderationStatus: body && body.moderationStatus === 'approved' ? 'approved' : 'pending',
+				comment:
+					body && body.comment
+						? normalizeComment( body.comment, 0 )
+						: null,
+				moderationStatus:
+					body && body.moderationStatus === 'approved'
+						? 'approved'
+						: 'pending',
 			};
 		} );
 	}
@@ -1455,7 +1911,7 @@
 			}
 
 			if ( window.location.hash ) {
-				var matchedItem = props.items.find( function ( item ) {
+				const matchedItem = props.items.find( function ( item ) {
 					return item.href === window.location.hash;
 				} );
 				if ( matchedItem ) {
@@ -1463,7 +1919,7 @@
 				}
 			}
 
-			return props.items[0].href;
+			return props.items[ 0 ].href;
 		}
 
 		const [ activeHref, setActiveHref ] = useState( getInitialActiveHref );
@@ -1481,10 +1937,10 @@
 					return undefined;
 				}
 
-				var headingEls = [];
+				const headingEls = [];
 				props.items.forEach( function ( item ) {
-					var id = item.href.replace( /^#/, '' );
-					var el = document.getElementById( id );
+					const id = item.href.replace( /^#/, '' );
+					const el = document.getElementById( id );
 					if ( el ) {
 						headingEls.push( el );
 					}
@@ -1496,7 +1952,7 @@
 
 				// Use a rootMargin that accounts for the sticky header and activates in
 				// the top third of the viewport.
-				var observer = new IntersectionObserver(
+				const observer = new IntersectionObserver(
 					function ( entries ) {
 						entries.forEach( function ( entry ) {
 							if ( entry.isIntersecting ) {
@@ -1520,7 +1976,9 @@
 						return;
 					}
 
-					setActiveHref( props.items[0] ? props.items[0].href : '' );
+					setActiveHref(
+						props.items[ 0 ] ? props.items[ 0 ].href : ''
+					);
 				}
 
 				window.addEventListener( 'hashchange', onHashChange );
@@ -1543,25 +2001,50 @@
 			h(
 				'div',
 				{ className: 'hdc-blog-post__jump-nav-panel' },
-				h( 'p', { className: 'hdc-blog-post__jump-nav-label' }, 'Jump to article sections' ),
-				props.description ? h( 'p', { className: 'hdc-blog-post__jump-nav-description' }, props.description ) : null,
+				h(
+					'p',
+					{ className: 'hdc-blog-post__jump-nav-label' },
+					'Jump to article sections'
+				),
+				props.description
+					? h(
+							'p',
+							{
+								className:
+									'hdc-blog-post__jump-nav-description',
+							},
+							props.description
+					  )
+					: null,
 				h(
 					'nav',
-					{ className: 'hdc-blog-post__jump-nav-nav', 'aria-label': 'Jump to article sections' },
+					{
+						className: 'hdc-blog-post__jump-nav-nav',
+						'aria-label': 'Jump to article sections',
+					},
 					h(
 						'ul',
 						{ className: 'hdc-blog-post__jump-nav-list' },
 						props.items.map( function ( item ) {
-							var isActive = activeHref === item.href;
+							const isActive = activeHref === item.href;
 							return h(
 								'li',
-								{ className: 'hdc-blog-post__jump-nav-item', key: item.href },
+								{
+									className: 'hdc-blog-post__jump-nav-item',
+									key: item.href,
+								},
 								h(
 									'a',
 									{
-										className: 'hdc-blog-post__jump-nav-link' + ( isActive ? ' hdc-blog-post__jump-nav-link--active' : '' ),
+										className:
+											'hdc-blog-post__jump-nav-link' +
+											( isActive
+												? ' hdc-blog-post__jump-nav-link--active'
+												: '' ),
 										href: item.href,
-										'aria-current': isActive ? 'true' : undefined,
+										'aria-current': isActive
+											? 'true'
+											: undefined,
 									},
 									item.label
 								)
@@ -1576,10 +2059,27 @@
 	function BlogPostStateCard( props ) {
 		return h(
 			'div',
-			{ className: 'hdc-blog-post__state-card' + ( props.className ? ' ' + props.className : '' ) },
-			h( 'span', { className: 'hdc-blog-post__state-icon ' + props.iconClass, 'aria-hidden': 'true' }, props.iconText || '' ),
+			{
+				className:
+					'hdc-blog-post__state-card' +
+					( props.className ? ' ' + props.className : '' ),
+			},
+			h(
+				'span',
+				{
+					className: 'hdc-blog-post__state-icon ' + props.iconClass,
+					'aria-hidden': 'true',
+				},
+				props.iconText || ''
+			),
 			h( 'h2', { className: 'hdc-blog-post__state-title' }, props.title ),
-			props.description ? h( 'p', { className: 'hdc-blog-post__state-description' }, props.description ) : null,
+			props.description
+				? h(
+						'p',
+						{ className: 'hdc-blog-post__state-description' },
+						props.description
+				  )
+				: null,
 			props.action || null
 		);
 	}
@@ -1599,10 +2099,14 @@
 			iconClass: 'is-error',
 			iconText: '!',
 			title: 'Post not found',
-			description: 'This article may have been removed or the URL is incorrect.',
+			description:
+				'This article may have been removed or the URL is incorrect.',
 			action: h(
 				'a',
-				{ className: 'hdc-blog-post__state-action', href: props.blogIndexUrl },
+				{
+					className: 'hdc-blog-post__state-action',
+					href: props.blogIndexUrl,
+				},
 				'Back to Blog'
 			),
 		} );
@@ -1614,7 +2118,8 @@
 			iconClass: 'is-error',
 			iconText: '!',
 			title: 'Could not load blog post',
-			description: 'The article could not be loaded right now. Try again in a moment.',
+			description:
+				'The article could not be loaded right now. Try again in a moment.',
 			action: h(
 				'button',
 				{
@@ -1639,9 +2144,27 @@
 			filteredItems.map( function ( item, index ) {
 				return h(
 					element.Fragment,
-					{ key: String( index ) + '-' + String( typeof item === 'string' ? item : 'node' ) },
-					index > 0 ? h( 'span', { className: 'hdc-blog-post__inline-dot', 'aria-hidden': 'true' }, '•' ) : null,
-					h( 'span', { className: 'hdc-blog-post__inline-separated-item' }, item )
+					{
+						key:
+							String( index ) +
+							'-' +
+							String( typeof item === 'string' ? item : 'node' ),
+					},
+					index > 0
+						? h(
+								'span',
+								{
+									className: 'hdc-blog-post__inline-dot',
+									'aria-hidden': 'true',
+								},
+								'•'
+						  )
+						: null,
+					h(
+						'span',
+						{ className: 'hdc-blog-post__inline-separated-item' },
+						item
+					)
 				);
 			} )
 		);
@@ -1650,31 +2173,39 @@
 	function renderCommentMeta( comment ) {
 		const authorNode = comment.authorUrl
 			? h(
-				'a',
-				{
-					className: 'hdc-blog-post__comment-author-link',
-					href: comment.authorUrl,
-					rel: 'noopener noreferrer',
-					target: '_blank',
-				},
-				comment.authorName
-			)
+					'a',
+					{
+						className: 'hdc-blog-post__comment-author-link',
+						href: comment.authorUrl,
+						rel: 'noopener noreferrer',
+						target: '_blank',
+					},
+					comment.authorName
+			  )
 			: comment.authorName;
 
 		return h(
 			'span',
 			{ className: 'hdc-blog-post__comment-meta' },
-			renderInlineSeparated( [
-				authorNode,
-				h(
-					'time',
-					{ dateTime: comment.date },
-					formatLongDateLabel( comment.date ) + ' at ' + parseDateValue( comment.date ).toLocaleTimeString( [], {
-						hour: 'numeric',
-						minute: '2-digit',
-					} )
-				),
-			], 'hdc-blog-post__comment-meta-inline' )
+			renderInlineSeparated(
+				[
+					authorNode,
+					h(
+						'time',
+						{ dateTime: comment.date },
+						formatLongDateLabel( comment.date ) +
+							' at ' +
+							parseDateValue( comment.date ).toLocaleTimeString(
+								[],
+								{
+									hour: 'numeric',
+									minute: '2-digit',
+								}
+							)
+					),
+				],
+				'hdc-blog-post__comment-meta-inline'
+			)
 		);
 	}
 
@@ -1921,6 +2452,12 @@
 				}
 
 				let cancelled = false;
+				const abortController = typeof AbortController === 'function' ? new AbortController() : null;
+				const requestOptions = abortController ? { signal: abortController.signal } : {};
+
+				function shouldAbort( error ) {
+					return cancelled || ( abortController && abortController.signal.aborted ) || isAbortError( error );
+				}
 
 				async function load() {
 					const inlinePosts = getInlineFallbackPosts( config );
@@ -1939,17 +2476,29 @@
 					let fallbackPosts = inlinePosts;
 					let listFetchFailed = false;
 					try {
-						const postsPayload = await fetchJson( config.postsEndpoint );
+						const postsPayload = await fetchJson( config.postsEndpoint, requestOptions );
 						fallbackPosts = normalizePosts( resolveBlogPayload( postsPayload ) );
 					} catch ( endpointError ) {
+						if ( shouldAbort( endpointError ) ) {
+							return;
+						}
+
 						listFetchFailed = true;
 						try {
-							const fallbackPayload = await fetchJson( config.fallbackUrl );
+							const fallbackPayload = await fetchJson( config.fallbackUrl, requestOptions );
 							fallbackPosts = normalizePosts( resolveBlogPayload( fallbackPayload ) );
 							listFetchFailed = false;
 						} catch ( fallbackError ) {
+							if ( shouldAbort( fallbackError ) ) {
+								return;
+							}
+
 							fallbackPosts = [];
 						}
+					}
+
+					if ( shouldAbort() ) {
+						return;
 					}
 
 					let currentPost = fallbackPosts.find( function ( item ) {
@@ -1959,20 +2508,32 @@
 
 					if ( currentPost ) {
 						try {
-							const postPayload = await fetchJson( config.endpointBase + encodeURIComponent( resolvedSlug ) );
+							const postPayload = await fetchJson( config.endpointBase + encodeURIComponent( resolvedSlug ), requestOptions );
 							currentPost = normalizePost( postPayload, 0 );
 						} catch ( postError ) {
+							if ( shouldAbort( postError ) ) {
+								return;
+							}
+
 							detailFetchError = postError;
 							// Keep the list payload result to avoid hard-failing on detail fetches.
 						}
 					} else {
 						try {
-							const postPayload = await fetchJson( config.endpointBase + encodeURIComponent( resolvedSlug ) );
+							const postPayload = await fetchJson( config.endpointBase + encodeURIComponent( resolvedSlug ), requestOptions );
 							currentPost = normalizePost( postPayload, 0 );
 						} catch ( postError ) {
+							if ( shouldAbort( postError ) ) {
+								return;
+							}
+
 							detailFetchError = postError;
 							currentPost = null;
 						}
+					}
+
+					if ( shouldAbort() ) {
+						return;
 					}
 
 					const hasFetchError = ( listFetchFailed && ! fallbackPosts.length ) || ( detailFetchError && ! isNotFoundError( detailFetchError ) && ! currentPost );
@@ -2013,6 +2574,9 @@
 
 				return function () {
 					cancelled = true;
+					if ( abortController ) {
+						abortController.abort();
+					}
 				};
 			},
 			[ resolvedSlug, retryCount, signature ]
@@ -2025,6 +2589,8 @@
 				}
 
 				let cancelled = false;
+				const abortController = typeof AbortController === 'function' ? new AbortController() : null;
+				const requestOptions = abortController ? { signal: abortController.signal } : {};
 				setCommentsState( function ( currentState ) {
 					return Object.assign( {}, currentState, {
 						isLoading: true,
@@ -2033,7 +2599,7 @@
 					} );
 				} );
 
-				fetchBlogComments( config, state.post.id ).then( function ( result ) {
+				fetchBlogComments( config, state.post.id, requestOptions ).then( function ( result ) {
 					if ( cancelled ) {
 						return;
 					}
@@ -2047,8 +2613,8 @@
 						total: result.total,
 						totalPages: result.totalPages,
 					} );
-				} ).catch( function () {
-					if ( cancelled ) {
+				} ).catch( function ( error ) {
+					if ( cancelled || ( abortController && abortController.signal.aborted ) || isAbortError( error ) ) {
 						return;
 					}
 
@@ -2065,9 +2631,12 @@
 
 				return function () {
 					cancelled = true;
+					if ( abortController ) {
+						abortController.abort();
+					}
 				};
 			},
-			[ config, state.post ]
+			[ config.commentSubmitEnabled, config.commentsEndpoint, state.post ? state.post.id : 0 ]
 		);
 
 		useEffect(

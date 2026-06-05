@@ -15,7 +15,7 @@ if [[ -z "$BLOG_DETAIL_SLUG" ]]; then
 fi
 
 routes=(
-  "/|200|hdc-home-page"
+  "/|200|is-style-home-hero"
   "/work/|200|hdc-work-showcase"
   "/work/${WORK_DETAIL_REPO}/|200|hdc-work-detail"
   "/resume/|200|hdc-resume-overview|Loading resume"

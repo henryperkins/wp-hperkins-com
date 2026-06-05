@@ -6,8 +6,8 @@ Compare a WordPress block's implementation against its source React TSX componen
 
 This is a WordPress block theme (`henrys-digital-canvas`) migrated from a React SPA. Every block must match its source TSX page in structure, style, behavior, and content.
 
-- **Theme dir**: `/home/hperkins-wp/htdocs/wp.hperkins.com/wp-content/themes/henrys-digital-canvas/`
-- **React source root**: `/home/azureuser/henry-s-digital-canvas/src/`
+- **Theme dir**: `/home/ubuntu/wp-hperkins-com/wp-content/themes/henrys-digital-canvas/`
+- **React source root**: `/home/ubuntu/henry-s-digital-canvas/src/`
 - **Block dir pattern**: `<theme>/blocks/<block-name>/` (contains `block.json`, `render.php`, `view.js`, `style.css`)
 - **Source TSX pattern**: `<react-root>/pages/<PageName>.tsx`
 

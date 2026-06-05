@@ -61,6 +61,10 @@ $command_pages = array(
 	$nav_items[4],
 	$nav_items[5],
 	$nav_items[6],
+	array(
+		'label' => __( 'Privacy', 'henrys-digital-canvas' ),
+		'url'   => home_url( '/privacy/' ),
+	),
 );
 
 $allowed_themes = array( 'light', 'dark', 'system' );

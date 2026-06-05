@@ -11,11 +11,12 @@
 	const createRoot = element.createRoot;
 	const legacyRender = element.render;
 	const renderLucideIcon =
-		window.hdcSharedUtils && typeof window.hdcSharedUtils.renderLucideIcon === 'function'
+		window.hdcSharedUtils &&
+		typeof window.hdcSharedUtils.renderLucideIcon === 'function'
 			? window.hdcSharedUtils.renderLucideIcon
 			: function () {
-				return null;
-			};
+					return null;
+			  };
 
 	let aboutRevealObserver = null;
 
@@ -48,7 +49,9 @@
 		let parsed = {};
 
 		try {
-			parsed = JSON.parse( section.getAttribute( 'data-config' ) || '{}' );
+			parsed = JSON.parse(
+				section.getAttribute( 'data-config' ) || '{}'
+			);
 		} catch ( error ) {
 			parsed = {};
 		}
@@ -78,7 +81,10 @@
 					profile.cardSubtitle,
 					'Where tech meets tenacity \u2014 and Java isn\u2019t just coffee'
 				),
-				linkedinUrl: ensureString( profile.linkedinUrl, 'https://linkedin.com/in/henryperkins' ),
+				linkedinUrl: ensureString(
+					profile.linkedinUrl,
+					'https://linkedin.com/in/henryperkins'
+				),
 			},
 			sectionLabels: {
 				capabilities: ensureString(
@@ -94,7 +100,10 @@
 				} )
 				.map( function ( capability ) {
 					return {
-						title: ensureString( capability.title, 'Untitled capability' ),
+						title: ensureString(
+							capability.title,
+							'Untitled capability'
+						),
 						icon: ensureString( capability.icon, 'wrench' ),
 						description: ensureTextArray( capability.description ),
 					};
@@ -142,19 +151,21 @@
 			return;
 		}
 
-		const elements = rootNode.querySelectorAll( '.hdc-about-timeline__reveal:not(.is-visible)' );
+		const elements = rootNode.querySelectorAll(
+			'.hdc-about-timeline__reveal:not(.is-visible)'
+		);
 		if ( ! elements.length ) {
 			return;
 		}
 
-		if ( typeof IntersectionObserver === 'undefined' ) {
+		if ( typeof window.IntersectionObserver === 'undefined' ) {
 			elements.forEach( function ( entry ) {
 				entry.classList.add( 'is-visible' );
 			} );
 			return;
 		}
 
-		aboutRevealObserver = new IntersectionObserver(
+		aboutRevealObserver = new window.IntersectionObserver(
 			function ( entries ) {
 				entries.forEach( function ( entry ) {
 					if ( entry.isIntersecting ) {
@@ -168,7 +179,8 @@
 
 		elements.forEach( function ( entry ) {
 			const rect = entry.getBoundingClientRect();
-			const isAboveFold = rect.top < window.innerHeight && rect.bottom > 0;
+			const isAboveFold =
+				rect.top < window.innerHeight && rect.bottom > 0;
 
 			if ( isAboveFold ) {
 				entry.classList.add( 'is-visible' );
@@ -193,26 +205,36 @@
 
 		return h(
 			'div',
-			{ className: 'hdc-about-timeline__avatar-frame ember-surface' },
+			{
+				className: 'hdc-about-timeline__avatar-frame ember-surface',
+			},
 			showImage
 				? h( 'img', {
-					className: 'hdc-about-timeline__portrait',
-					src: props.imageUrl,
-					alt: props.imageAlt,
-					decoding: 'async',
-					loading: 'eager',
-					onError: function () {
-						setImgFailed( true );
-					},
-				} )
+						className: 'hdc-about-timeline__portrait',
+						src: props.imageUrl,
+						alt: props.imageAlt,
+						decoding: 'async',
+						loading: 'eager',
+						onError() {
+							setImgFailed( true );
+						},
+				  } )
 				: h(
-					'div',
-					{
-						className: 'hdc-about-timeline__avatar-fallback avatar-monogram-surface',
-						'aria-hidden': 'true',
-					},
-					h( 'span', { className: 'hdc-about-timeline__avatar-initials' }, props.initials || 'HP' )
-				)
+						'div',
+						{
+							className:
+								'hdc-about-timeline__avatar-fallback avatar-monogram-surface',
+							'aria-hidden': 'true',
+						},
+						h(
+							'span',
+							{
+								className:
+									'hdc-about-timeline__avatar-initials',
+							},
+							props.initials || 'HP'
+						)
+				  )
 		);
 	}
 
@@ -229,28 +251,45 @@
 				href: profile.linkedinUrl,
 				target: '_blank',
 				rel: 'noopener noreferrer',
-				'aria-label': [ profile.cardName, profile.cardSubtitle, 'Open LinkedIn profile' ]
+				'aria-label': [
+					profile.cardName,
+					profile.cardSubtitle,
+					'Open LinkedIn profile',
+				]
 					.filter( Boolean )
 					.join( '. ' ),
 			},
 			profile.cardAvatarUrl
 				? h( 'img', {
-					className: 'hdc-about-timeline__profile-avatar',
-					src: profile.cardAvatarUrl,
-					alt: '',
-					decoding: 'async',
-					loading: 'lazy',
-				} )
+						className: 'hdc-about-timeline__profile-avatar',
+						src: profile.cardAvatarUrl,
+						alt: '',
+						decoding: 'async',
+						loading: 'lazy',
+				  } )
 				: null,
 			h(
 				'span',
-				{ className: 'hdc-about-timeline__profile-copy' },
-				h( 'span', { className: 'hdc-about-timeline__profile-name' }, profile.cardName ),
-				h( 'span', { className: 'hdc-about-timeline__profile-subtitle' }, profile.cardSubtitle )
+				{
+					className: 'hdc-about-timeline__profile-copy',
+				},
+				h(
+					'span',
+					{ className: 'hdc-about-timeline__profile-name' },
+					profile.cardName
+				),
+				h(
+					'span',
+					{ className: 'hdc-about-timeline__profile-subtitle' },
+					profile.cardSubtitle
+				)
 			),
 			h(
 				'span',
-				{ className: 'hdc-about-timeline__profile-icon', 'aria-hidden': 'true' },
+				{
+					className: 'hdc-about-timeline__profile-icon',
+					'aria-hidden': 'true',
+				},
 				renderLucideIcon( h, 'linkedin', {
 					className: 'hdc-about-timeline__profile-icon-svg',
 					size: 20,
@@ -262,38 +301,56 @@
 	function CapabilityCard( props ) {
 		return h(
 			'article',
-			{ className: 'hdc-about-timeline__capability-card ember-surface' },
+			{
+				className: 'hdc-about-timeline__capability-card ember-surface',
+			},
 			h(
 				'div',
 				{ className: 'hdc-about-timeline__capability-label' },
 				h(
 					'span',
-					{ className: 'hdc-about-timeline__capability-icon', 'aria-hidden': 'true' },
+					{
+						className: 'hdc-about-timeline__capability-icon',
+						'aria-hidden': 'true',
+					},
 					renderLucideIcon( h, props.capability.icon, {
 						className: 'hdc-about-timeline__capability-icon-svg',
 						size: 18,
 					} )
 				),
-				h( 'span', { className: 'text-eyebrow hdc-about-timeline__kicker' }, 'What I do' )
+				h(
+					'span',
+					{ className: 'text-eyebrow hdc-about-timeline__kicker' },
+					'What I do'
+				)
 			),
 			h(
 				'div',
 				{ className: 'hdc-about-timeline__capability-copy' },
 				h(
 					'h3',
-					{ className: 'text-card-title hdc-about-timeline__capability-title' },
+					{
+						className:
+							'text-card-title hdc-about-timeline__capability-title',
+					},
 					props.capability.title
 				),
-				props.capability.description.map( function ( paragraph, index ) {
-					return h(
-						'p',
-						{
-							className: 'hdc-about-timeline__capability-text',
-							key: props.capability.title + '-paragraph-' + String( index ),
-						},
-						paragraph
-					);
-				} )
+				props.capability.description.map(
+					function ( paragraph, index ) {
+						return h(
+							'p',
+							{
+								className:
+									'hdc-about-timeline__capability-text',
+								key:
+									props.capability.title +
+									'-paragraph-' +
+									String( index ),
+							},
+							paragraph
+						);
+					}
+				)
 			)
 		);
 	}
@@ -302,8 +359,16 @@
 		return h(
 			'article',
 			{ className: 'hdc-about-timeline__value-card' },
-			h( 'h3', { className: 'hdc-about-timeline__value-title' }, props.valueCard.title ),
-			h( 'p', { className: 'hdc-about-timeline__value-text text-body-sm' }, props.valueCard.description )
+			h(
+				'h3',
+				{ className: 'hdc-about-timeline__value-title' },
+				props.valueCard.title
+			),
+			h(
+				'p',
+				{ className: 'hdc-about-timeline__value-text text-body-sm' },
+				props.valueCard.description
+			)
 		);
 	}
 
@@ -313,16 +378,20 @@
 		return h(
 			'li',
 			{
-				className: 'hdc-about-timeline__timeline-item hdc-about-timeline__reveal hdc-about-timeline__reveal--slide-inline',
+				className:
+					'hdc-about-timeline__timeline-item hdc-about-timeline__reveal hdc-about-timeline__reveal--slide-inline',
 				style: { '--reveal-index': String( props.index ) },
 			},
 			h(
 				'span',
-				{ className: 'hdc-about-timeline__icon-badge', 'aria-hidden': 'true' },
+				{
+					className: 'hdc-about-timeline__icon-badge',
+					'aria-hidden': 'true',
+				},
 				renderLucideIcon( h, item.icon, {
 					className: 'hdc-about-timeline__icon-svg',
 					size: 16,
-				} ) || '•'
+				} ) || '\u2022'
 			),
 			h(
 				'div',
@@ -330,16 +399,37 @@
 				h(
 					'div',
 					{ className: 'hdc-about-timeline__timeline-header' },
-					h( 'h3', { className: 'hdc-about-timeline__row-title text-heading-base' }, item.title ),
+					h(
+						'h3',
+						{
+							className:
+								'hdc-about-timeline__row-title text-heading-base',
+						},
+						item.title
+					),
 					h(
 						'p',
-						{ className: 'hdc-about-timeline__year text-year-label' },
+						{
+							className:
+								'hdc-about-timeline__year text-year-label',
+						},
 						item.periodDateTime
-							? h( 'time', { dateTime: item.periodDateTime }, item.periodLabel )
+							? h(
+									'time',
+									{ dateTime: item.periodDateTime },
+									item.periodLabel
+							  )
 							: item.periodLabel
 					)
 				),
-				h( 'p', { className: 'hdc-about-timeline__timeline-text text-body-sm' }, item.detail )
+				h(
+					'p',
+					{
+						className:
+							'hdc-about-timeline__timeline-text text-body-sm',
+					},
+					item.detail
+				)
 			)
 		);
 	}
@@ -376,17 +466,34 @@
 			h(
 				'section',
 				{
-					className: 'hdc-about-timeline__hero ember-surface hdc-about-timeline__reveal',
+					className:
+						'hdc-about-timeline__hero ember-surface hdc-about-timeline__reveal',
 					style: { '--reveal-index': '0' },
 				},
 				h(
 					'div',
 					{ className: 'hdc-about-timeline__hero-shell' },
-					h( 'p', { className: 'hdc-about-timeline__eyebrow text-eyebrow' }, 'About' ),
-					h( 'h1', { className: 'hdc-about-timeline__hero-title text-page-title' }, config.heading ),
 					h(
 						'p',
-						{ className: 'hdc-about-timeline__hero-description' },
+						{
+							className:
+								'hdc-about-timeline__eyebrow text-eyebrow',
+						},
+						'About'
+					),
+					h(
+						'h1',
+						{
+							className:
+								'hdc-about-timeline__hero-title text-page-title',
+						},
+						config.heading
+					),
+					h(
+						'p',
+						{
+							className: 'hdc-about-timeline__hero-description',
+						},
 						config.heroDescription
 					)
 				)
@@ -394,7 +501,8 @@
 			h(
 				'div',
 				{
-					className: 'hdc-about-timeline__content-shell hdc-about-timeline__reveal hdc-about-timeline__reveal--fade-up-soft',
+					className:
+						'hdc-about-timeline__content-shell hdc-about-timeline__reveal hdc-about-timeline__reveal--fade-up-soft',
 					style: { '--reveal-index': '1' },
 				},
 				h(
@@ -402,7 +510,9 @@
 					{ className: 'hdc-about-timeline__content-flow' },
 					h(
 						'section',
-						{ className: 'hdc-about-timeline__intro-layout' },
+						{
+							className: 'hdc-about-timeline__intro-layout',
+						},
 						h( ProfileAvatar, {
 							imageUrl: config.profile.imageUrl,
 							imageAlt: config.profile.imageAlt,
@@ -410,83 +520,148 @@
 						} ),
 						h(
 							'div',
-							{ className: 'hdc-about-timeline__intro-copy' },
+							{
+								className: 'hdc-about-timeline__intro-copy',
+							},
 							config.intro.map( function ( paragraph, index ) {
 								return h(
 									'p',
 									{
-										className: 'hdc-about-timeline__text hdc-about-timeline__intro-text text-body-copy',
+										className:
+											'hdc-about-timeline__text hdc-about-timeline__intro-text text-body-copy',
 										key: 'intro-' + String( index ),
 									},
 									paragraph
 								);
 							} ),
-							h( LinkedInBadge, { profile: config.profile } )
+							h( LinkedInBadge, {
+								profile: config.profile,
+							} )
 						)
 					),
 					config.capabilities.length
 						? h(
-							'section',
-							{ className: 'hdc-about-timeline__section hdc-about-timeline__section--capabilities' },
-							h(
-								'div',
-								{ className: 'hdc-about-timeline__section-header' },
-								h( 'h2', { className: 'hdc-about-timeline__section-title' }, config.sectionLabels.capabilities )
-							),
-							h(
-								'div',
-								{ className: 'hdc-about-timeline__capabilities-grid' },
-								config.capabilities.map( function ( capability, index ) {
-									return h( CapabilityCard, {
-										capability: capability,
-										key: capability.title || 'capability-' + String( index ),
-									} );
-								} )
-							)
-						)
+								'section',
+								{
+									className:
+										'hdc-about-timeline__section hdc-about-timeline__section--capabilities',
+								},
+								h(
+									'div',
+									{
+										className:
+											'hdc-about-timeline__section-header',
+									},
+									h(
+										'h2',
+										{
+											className:
+												'hdc-about-timeline__section-title',
+										},
+										config.sectionLabels.capabilities
+									)
+								),
+								h(
+									'div',
+									{
+										className:
+											'hdc-about-timeline__capabilities-grid',
+									},
+									config.capabilities.map(
+										function ( capability, index ) {
+											return h( CapabilityCard, {
+												capability,
+												key:
+													capability.title ||
+													'capability-' +
+														String( index ),
+											} );
+										}
+									)
+								)
+						  )
 						: null,
 					config.showValues && config.valueCards.length
 						? h(
-							'section',
-							{ className: 'hdc-about-timeline__section' },
-							h(
-								'div',
-								{ className: 'hdc-about-timeline__section-header' },
-								h( 'h2', { className: 'hdc-about-timeline__section-title' }, config.sectionLabels.values )
-							),
-							h(
-								'div',
-								{ className: 'hdc-about-timeline__values-grid' },
-								config.valueCards.map( function ( valueCard, index ) {
-									return h( ValueCard, {
-										valueCard: valueCard,
-										key: valueCard.title || 'value-' + String( index ),
-									} );
-								} )
-							)
-						)
+								'section',
+								{
+									className: 'hdc-about-timeline__section',
+								},
+								h(
+									'div',
+									{
+										className:
+											'hdc-about-timeline__section-header',
+									},
+									h(
+										'h2',
+										{
+											className:
+												'hdc-about-timeline__section-title',
+										},
+										config.sectionLabels.values
+									)
+								),
+								h(
+									'div',
+									{
+										className:
+											'hdc-about-timeline__values-grid',
+									},
+									config.valueCards.map(
+										function ( valueCard, index ) {
+											return h( ValueCard, {
+												valueCard,
+												key:
+													valueCard.title ||
+													'value-' + String( index ),
+											} );
+										}
+									)
+								)
+						  )
 						: null,
 					config.showTimeline && config.timeline.length
 						? h(
-							'section',
-							{ className: 'hdc-about-timeline__section' },
-							h(
-								'div',
-								{ className: 'hdc-about-timeline__section-header hdc-about-timeline__section-header--timeline' },
-								h( 'h2', { className: 'hdc-about-timeline__section-title' }, config.sectionLabels.timeline )
-							),
-							h(
-								'ol',
-								{ className: 'hdc-about-timeline__timeline' },
-								config.timeline.map( function ( item, index ) {
-									return h( TimelineItem, {
-										item: item,
-										index: index,
-										key: item.id || 'timeline-' + String( index ),
-									} );
-								} )
-							)
-						)
+								'section',
+								{
+									className: 'hdc-about-timeline__section',
+								},
+								h(
+									'div',
+									{
+										className:
+											'hdc-about-timeline__section-header hdc-about-timeline__section-header--timeline',
+									},
+									h(
+										'h2',
+										{
+											className:
+												'hdc-about-timeline__section-title',
+										},
+										config.sectionLabels.timeline
+									)
+								),
+								h(
+									'ol',
+									{
+										className:
+											'hdc-about-timeline__timeline',
+									},
+									config.timeline.map(
+										function ( item, index ) {
+											return h( TimelineItem, {
+												item,
+												index,
+												key:
+													item.id ||
+													'timeline-' +
+														String( index ),
+											} );
+										}
+									)
+								)
+						  )
 						: null
 				)
 			)
@@ -494,7 +669,9 @@
 	}
 
 	function mountAboutTimeline( section ) {
-		const rootNode = section.querySelector( '[data-hdc-about-timeline-root]' );
+		const rootNode = section.querySelector(
+			'[data-hdc-about-timeline-root]'
+		);
 		if ( ! rootNode ) {
 			return;
 		}
@@ -512,5 +689,7 @@
 		legacyRender( app, rootNode );
 	}
 
-	document.querySelectorAll( '.hdc-about-timeline' ).forEach( mountAboutTimeline );
+	document
+		.querySelectorAll( '.hdc-about-timeline' )
+		.forEach( mountAboutTimeline );
 } )( window.wp );

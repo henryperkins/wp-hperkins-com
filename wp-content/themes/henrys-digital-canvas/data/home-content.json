@@ -33,8 +33,6 @@
     "actionLabel": "View all work",
     "actionHref": "/work",
     "loadingLabel": "Syncing selected work...",
-    "sourceLiveLabel": "Selected work blends live GitHub builds with private client case studies.",
-    "sourceFallbackLabel": "Selected work blends private client case studies with a cached GitHub snapshot.",
     "emptyTitle": "Selected work is updating",
     "emptyDescriptionLive": "Featured work is being refreshed for the homepage. Use View all work to browse the full project library.",
     "emptyDescriptionFallback": "Featured work is not available in this snapshot. Use View all work to browse the full project library."
@@ -87,12 +85,14 @@
     "actionLabel": "All posts",
     "actionHref": "/blog",
     "emptyTitle": "Recent writing is updating",
-    "emptyDescription": "Recent posts aren\u2019t available in the homepage feed. Visit All posts to browse the full index."
+    "emptyDescription": "Recent posts aren\u2019t available in the homepage feed. Visit All posts to browse the full index.",
+    "errorTitle": "Could not load recent writing",
+    "errorDescription": "The homepage writing feed is temporarily unavailable. Try again or visit the full blog index."
   },
   "contactCta": {
     "eyebrow": "Need a technical partner?",
     "title": "Bring me in where support, product, and implementation overlap.",
-    "description": "I help teams turn customer issues into shipped fixes \u2014 integrations, documentation, and AI-assisted triage \u2014 so delivery stays calm and outcomes are measurable.",
+    "description": "I help teams turn support tickets into shipped fixes \u2014 API integrations, documentation, AI-assisted triage \u2014 so the thing that was breaking at 6 AM isn\u2019t breaking at 6 AM tomorrow.",
     "primaryCtaLabel": "Work with me",
     "primaryCtaHref": "/contact",
     "secondaryCtaLabel": "View resume",
