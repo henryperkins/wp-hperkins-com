@@ -174,3 +174,50 @@ function hdc_repo_merge_live_onto_curated( array $curated, array $live ): array 
 
 	return $merged;
 }
+
+/**
+ * Parse updated_at to a sortable Unix timestamp (0 when empty/invalid),
+ * mirroring getRepoUpdatedTimestamp's NaN -> 0 behavior.
+ */
+function hdc_repo_updated_timestamp( array $repo ): int {
+	$updated = isset( $repo['updated_at'] ) ? (string) $repo['updated_at'] : '';
+	if ( '' === $updated ) {
+		return 0;
+	}
+	$ts = strtotime( $updated );
+	return false === $ts ? 0 : (int) $ts;
+}
+
+/**
+ * usort comparator mirroring Home.tsx featured sort + compareReposByUpdatedAtDesc:
+ * featuredPriority ascending (missing -> PHP_INT_MAX), then updated_at descending,
+ * then name ascending.
+ */
+function hdc_repo_compare_for_rank( array $a, array $b ): int {
+	$pa = ( isset( $a['featured_priority'] ) && '' !== $a['featured_priority'] && is_numeric( $a['featured_priority'] ) )
+		? (int) $a['featured_priority'] : PHP_INT_MAX;
+	$pb = ( isset( $b['featured_priority'] ) && '' !== $b['featured_priority'] && is_numeric( $b['featured_priority'] ) )
+		? (int) $b['featured_priority'] : PHP_INT_MAX;
+	if ( $pa !== $pb ) {
+		return $pa <=> $pb;
+	}
+
+	$ta = hdc_repo_updated_timestamp( $a );
+	$tb = hdc_repo_updated_timestamp( $b );
+	if ( $ta !== $tb ) {
+		return $tb <=> $ta; // descending
+	}
+
+	return strcmp( (string) ( $a['name'] ?? '' ), (string) ( $b['name'] ?? '' ) );
+}
+
+/**
+ * Mirror of Home.tsx: filter featured, sort by the comparator. (Caller slices to 3.)
+ */
+function hdc_repo_rank_featured( array $repos ): array {
+	$featured = array_values( array_filter( $repos, static function ( $r ) {
+		return is_array( $r ) && ! empty( $r['featured'] );
+	} ) );
+	usort( $featured, 'hdc_repo_compare_for_rank' );
+	return $featured;
+}
