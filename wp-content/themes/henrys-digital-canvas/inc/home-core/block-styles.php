@@ -17,6 +17,7 @@ function hdc_home_register_pattern_block_styles(): void {
 		'ember-veil'       => __( 'Ember Veil', 'henrys-digital-canvas' ),
 		'ember-topography' => __( 'Ember Topography', 'henrys-digital-canvas' ),
 		'hdc-quote-card'   => __( 'HDC Quote Card', 'henrys-digital-canvas' ),
+		'hdc-article-row'  => __( 'HDC Article Row', 'henrys-digital-canvas' ),
 		'ember-strong'     => __( 'Ember Strong', 'henrys-digital-canvas' ),
 	);
 

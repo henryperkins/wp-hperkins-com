@@ -205,6 +205,65 @@ HTML;
 }
 
 /**
+ * Recent Writing section — native posts Query Loop + reading_time binding.
+ */
+function hdc_home_recent_writing_pattern_markup(): string {
+	return <<<'HTML'
+<!-- wp:group {"className":"hdc-home-page__section hdc-home-page__section--writing","layout":{"type":"constrained"}} -->
+<div class="wp-block-group hdc-home-page__section hdc-home-page__section--writing" id="recent-writing">
+<!-- wp:group {"className":"hdc-home-page__section-header","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->
+<div class="wp-block-group hdc-home-page__section-header">
+<!-- wp:heading {"className":"hdc-home-page__section-title"} -->
+<h2 class="wp-block-heading hdc-home-page__section-title">Recent Writing</h2>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"hdc-home-page__section-link"} -->
+<p class="hdc-home-page__section-link"><a href="/blog">All posts</a></p>
+<!-- /wp:paragraph -->
+</div>
+<!-- /wp:group -->
+<!-- wp:query {"queryId":2,"query":{"perPage":3,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","inherit":false},"align":"wide","className":"hdc-home-page__recent-writing-query"} -->
+<div class="wp-block-query alignwide hdc-home-page__recent-writing-query">
+<!-- wp:post-template {"className":"hdc-home-page__post-stack"} -->
+<!-- wp:group {"className":"is-style-hdc-article-row","layout":{"type":"default"}} -->
+<div class="wp-block-group is-style-hdc-article-row">
+<!-- wp:post-featured-image {"isLink":true,"width":"112px","height":"112px","className":"hdc-home-page__post-thumb"} /-->
+<!-- wp:group {"className":"hdc-home-page__post-body","layout":{"type":"constrained"}} -->
+<div class="wp-block-group hdc-home-page__post-body">
+<!-- wp:post-title {"level":3,"isLink":true,"className":"hdc-home-page__card-title hdc-home-page__card-title--row"} /-->
+<!-- wp:post-excerpt {"moreText":"","showMoreOnNewLine":false,"excerptLength":24,"className":"hdc-home-page__card-copy hdc-home-page__card-copy--clamp"} /-->
+<!-- wp:group {"className":"hdc-home-page__post-meta","layout":{"type":"flex","flexWrap":"wrap"}} -->
+<div class="wp-block-group hdc-home-page__post-meta">
+<!-- wp:post-date {"format":"M j, Y"} /-->
+<!-- wp:paragraph {"className":"hdc-home-page__reading-time","metadata":{"bindings":{"content":{"source":"core/post-meta","args":{"key":"reading_time"}}}}} -->
+<p class="hdc-home-page__reading-time"></p>
+<!-- /wp:paragraph -->
+</div>
+<!-- /wp:group -->
+</div>
+<!-- /wp:group -->
+</div>
+<!-- /wp:group -->
+<!-- /wp:post-template -->
+<!-- wp:query-no-results -->
+<!-- wp:group {"className":"hdc-home-page__empty-state is-style-ember-strong","layout":{"type":"constrained"}} -->
+<div class="wp-block-group hdc-home-page__empty-state is-style-ember-strong">
+<!-- wp:heading {"level":3,"className":"hdc-home-page__empty-title"} -->
+<h3 class="wp-block-heading hdc-home-page__empty-title">Recent writing is updating</h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"hdc-home-page__empty"} -->
+<p class="hdc-home-page__empty">Recent posts aren&#8217;t available in the homepage feed. Visit All posts to browse the full index.</p>
+<!-- /wp:paragraph -->
+</div>
+<!-- /wp:group -->
+<!-- /wp:query-no-results -->
+</div>
+<!-- /wp:query -->
+</div>
+<!-- /wp:group -->
+HTML;
+}
+
+/**
  * Full homepage markup in canonical order.
  */
 function hdc_home_pattern_markup(): string {
@@ -228,7 +287,7 @@ function hdc_home_pattern_markup(): string {
 <!-- /wp:group -->
 HTML;
 
-	$recent_writing = '<!-- wp:henrys-digital-canvas/home-recent-writing {"blogCount":3} /-->';
+	$recent_writing = hdc_home_recent_writing_pattern_markup();
 
 	return implode(
 		"\n\n",
@@ -284,6 +343,15 @@ function hdc_home_register_patterns(): void {
 			'title'      => __( 'Home Contact CTA', 'henrys-digital-canvas' ),
 			'categories' => array( 'featured' ),
 			'content'    => hdc_home_contact_pattern_markup(),
+		)
+	);
+
+	register_block_pattern(
+		'henrys-digital-canvas/home-recent-writing',
+		array(
+			'title'      => __( 'Home Recent Writing', 'henrys-digital-canvas' ),
+			'categories' => array( 'featured' ),
+			'content'    => hdc_home_recent_writing_pattern_markup(),
 		)
 	);
 
