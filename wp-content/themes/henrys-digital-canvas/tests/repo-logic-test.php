@@ -58,5 +58,56 @@ hdc_check( 'display: derive title-case', hdc_repo_display_name( array( 'name' =>
 hdc_check( 'display: short tokens uppercased', hdc_repo_display_name( array( 'name' => 'ai-cli-web-funnel' ) ), 'AI CLI WEB Funnel' );
 hdc_check( 'display: underscores split too', hdc_repo_display_name( array( 'name' => 'data_sync' ) ), 'Data Sync' );
 
+// --- hdc_repo_should_keep_live (drop forks/archived) ---
+hdc_check( 'keep: normal repo', hdc_repo_should_keep_live( array( 'fork' => false, 'archived' => false ) ), true );
+hdc_check( 'keep: fork dropped', hdc_repo_should_keep_live( array( 'fork' => true, 'archived' => false ) ), false );
+hdc_check( 'keep: archived dropped', hdc_repo_should_keep_live( array( 'fork' => false, 'archived' => true ) ), false );
+
+// --- hdc_repo_map_api (worker shape -> normalized live fields; pushed_at -> updated_at date) ---
+$api = array(
+	'id'               => 42,
+	'name'             => 'tarot',
+	'description'      => 'live desc',
+	'language'         => 'JavaScript',
+	'stargazers_count' => 5,
+	'forks_count'      => 2,
+	'pushed_at'        => '2026-05-01T12:34:56Z',
+	'html_url'         => 'https://github.com/henryperkins/tarot',
+	'topics'           => array( 'ai', 'tarot', 7 ),
+);
+$mapped = hdc_repo_map_api( $api );
+hdc_check( 'map: github_id', $mapped['github_id'], 42 );
+hdc_check( 'map: stars from stargazers_count', $mapped['stars'], 5 );
+hdc_check( 'map: forks from forks_count', $mapped['forks'], 2 );
+hdc_check( 'map: updated_at = pushed_at date', $mapped['updated_at'], '2026-05-01' );
+hdc_check( 'map: url from html_url', $mapped['url'], 'https://github.com/henryperkins/tarot' );
+hdc_check( 'map: topics strings only', $mapped['topics'], array( 'ai', 'tarot' ) );
+hdc_check( 'map: missing pushed_at -> epoch date', hdc_repo_map_api( array( 'name' => 'x' ) )['updated_at'], '1970-01-01' );
+
+// --- hdc_repo_merge_live_onto_curated ---
+$curated = array(
+	'name'              => 'tarot',
+	'origin'            => 'curated',          // seeded value
+	'access'            => 'public',
+	'featured'          => true,
+	'featured_priority' => 0,
+	'why_it_matters'    => 'Reading UX.',
+	'display_name'      => 'Tarot',
+	'description'       => 'curated desc',     // curated wins over live
+	'language'          => 'JavaScript',
+	'stars'             => 0,
+	'forks'             => 0,
+	'updated_at'        => '2026-04-04',
+	'url'               => 'https://github.com/henryperkins/tarot',
+	'topics'            => array( 'old' ),
+);
+$merged = hdc_repo_merge_live_onto_curated( $curated, $mapped );
+hdc_check( 'merge: origin forced github when live-present', $merged['origin'], 'github' );
+hdc_check( 'merge: description stays curated', $merged['description'], 'curated desc' );
+hdc_check( 'merge: stars/forks/url/updated from live', array( $merged['stars'], $merged['forks'], $merged['updated_at'] ), array( 5, 2, '2026-05-01' ) );
+hdc_check( 'merge: topics replaced by non-empty live', $merged['topics'], array( 'ai', 'tarot' ) );
+hdc_check( 'merge: curated featured/access untouched', array( $merged['featured'], $merged['access'], $merged['why_it_matters'] ), array( true, 'public', 'Reading UX.' ) );
+hdc_check( 'merge: empty curated description falls back to live', hdc_repo_merge_live_onto_curated( array( 'description' => '' ) + $curated, $mapped )['description'], 'live desc' );
+
 echo "\n{$tests_run} checks, {$tests_failed} failures\n";
 exit( $tests_failed > 0 ? 1 : 0 );
