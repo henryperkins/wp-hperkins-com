@@ -466,15 +466,17 @@ test.describe( 'Henrys Digital Canvas browser smoke', () => {
 		}
 
 		await page.goto( '/', { waitUntil: 'networkidle' } );
-		const recentWritingSection = page
-			.locator( '.hdc-feed-section' )
-			.filter( { hasText: 'Recent Writing' } )
-			.first();
+		const recentWritingSection = page.locator(
+			'#recent-writing.hdc-home-page__section--writing'
+		);
 		await expect( recentWritingSection ).toHaveCount( 1, {
 			timeout: 10000,
 		} );
+		await expect( recentWritingSection ).not.toContainText(
+			/Loading recent writing/i
+		);
 		const homePostThumbs = recentWritingSection.locator(
-			'.hdc-feed-card-thumb'
+			'.wp-block-post-featured-image img'
 		);
 		if ( hasAnyListThumbnail ) {
 			await expect
