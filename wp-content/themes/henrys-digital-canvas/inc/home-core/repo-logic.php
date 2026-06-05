@@ -22,3 +22,15 @@ function hdc_repo_is_github_linked( array $repo ): bool {
 	$url = isset( $repo['url'] ) ? (string) $repo['url'] : '';
 	return false !== strpos( $url, 'github.com/' );
 }
+
+/**
+ * Mirror of getHomeRepoSummary: whyItMatters ?? description.
+ * WP post meta is '' when unset, so an empty why_it_matters falls back to description.
+ */
+function hdc_repo_summary( array $repo ): string {
+	$why = isset( $repo['why_it_matters'] ) ? trim( (string) $repo['why_it_matters'] ) : '';
+	if ( '' !== $why ) {
+		return $why;
+	}
+	return isset( $repo['description'] ) ? (string) $repo['description'] : '';
+}
