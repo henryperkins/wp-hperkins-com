@@ -205,6 +205,45 @@ HTML;
 }
 
 /**
+ * Full homepage markup in canonical order.
+ */
+function hdc_home_pattern_markup(): string {
+	$selected_work = function_exists( 'hdc_selected_work_block_markup' ) ? hdc_selected_work_block_markup() : '';
+
+	$selected_work_section = <<<HTML
+<!-- wp:group {"className":"hdc-home-page__section hdc-home-page__section--work","layout":{"type":"constrained"}} -->
+<div class="wp-block-group hdc-home-page__section hdc-home-page__section--work" id="selected-work">
+<!-- wp:group {"className":"hdc-home-page__section-header","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->
+<div class="wp-block-group hdc-home-page__section-header">
+<!-- wp:heading {"className":"hdc-home-page__section-title"} -->
+<h2 class="wp-block-heading hdc-home-page__section-title">Selected Work</h2>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"hdc-home-page__section-link"} -->
+<p class="hdc-home-page__section-link"><a href="/work">View all work</a></p>
+<!-- /wp:paragraph -->
+</div>
+<!-- /wp:group -->
+{$selected_work}
+</div>
+<!-- /wp:group -->
+HTML;
+
+	$recent_writing = '<!-- wp:henrys-digital-canvas/home-recent-writing {"blogCount":3} /-->';
+
+	return implode(
+		"\n\n",
+		array(
+			hdc_home_hero_pattern_markup(),
+			$selected_work_section,
+			hdc_home_throughline_pattern_markup(),
+			hdc_home_resume_pattern_markup(),
+			$recent_writing,
+			hdc_home_contact_pattern_markup(),
+		)
+	);
+}
+
+/**
  * Register each section pattern + the assembled Home pattern.
  */
 function hdc_home_register_patterns(): void {
@@ -245,6 +284,16 @@ function hdc_home_register_patterns(): void {
 			'title'      => __( 'Home Contact CTA', 'henrys-digital-canvas' ),
 			'categories' => array( 'featured' ),
 			'content'    => hdc_home_contact_pattern_markup(),
+		)
+	);
+
+	register_block_pattern(
+		'henrys-digital-canvas/home',
+		array(
+			'title'      => __( 'Home (full page)', 'henrys-digital-canvas' ),
+			'categories' => array( 'featured' ),
+			'blockTypes' => array( 'core/post-content' ),
+			'content'    => hdc_home_pattern_markup(),
 		)
 	);
 }
