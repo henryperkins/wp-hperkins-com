@@ -56,6 +56,8 @@ Phase 1 must be merged (it is on `main`): the `hdc_repo` CPT, `hdc_selected_work
 | `theme.json` | Section-divider on `core/separator`; confirm section rhythm presets | 3 |
 | `scripts/sync_page_sources.php` | Front-page `content` → `hdc_home_pattern_markup()` | 9 |
 | `inc/home-page-blocks.php` | **Deleted** (fallback retired) | 10 |
+| `scripts/route_smoke.sh` | Home marker updated away from the retired `home-page` parent class | 11 |
+| `scripts/api_smoke.sh` | Optional front-page shape branch updated away from the old 7-block innerBlocks tree and legacy fallback | 11 |
 | `scripts/playwright/home-parity.spec.cjs` / `browser-smoke.spec.cjs` | Updated assertions for the new markup | 11 |
 
 ---
@@ -875,6 +877,8 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ## Task 11: Parity + smoke verification
 
 **Files:**
+- Modify: `scripts/route_smoke.sh` (home marker)
+- Modify: `scripts/api_smoke.sh` (`RUN_FRONT_PAGE_SHAPE_CHECK=1` branch)
 - Modify: `scripts/playwright/home-parity.spec.cjs`, `scripts/playwright/browser-smoke.spec.cjs` (update selectors/markers for the new markup)
 
 - [ ] **Step 1: Route smoke (homepage still 200 + has content markers)**
@@ -885,7 +889,26 @@ BASE_URL=https://wp.hperkins.com npm run smoke:route
 ```
 Expected: all routes PASS. **Note:** the home route's marker in `scripts/route_smoke.sh` is currently `hdc-home-page` (the old parent class). Update that marker to one the new pattern emits — e.g. `is-style-home-hero` or `hdc-home-page__hero` (still present on the new hero group) — and re-run. (Edit `scripts/route_smoke.sh` if the home marker no longer matches.)
 
-- [ ] **Step 2: Update + run the Playwright parity/browser specs**
+- [ ] **Step 2: Update + run the API smoke front-page shape branch**
+
+`scripts/api_smoke.sh` has an optional `RUN_FRONT_PAGE_SHAPE_CHECK=1` branch that currently asserts the old 7-block home innerBlocks tree and renders the removed legacy self-closing `home-page` fallback. Update that branch for the Phase-2 home pattern before running it:
+
+- Replace the old expected-block list (`henrys-digital-canvas/home-page`, `home-hero`, `home-selected-work`, `home-throughline`, `home-resume-snapshot`, `home-contact-cta`) with checks for the new front-page `post_content` shape:
+  - required serialized markers: `is-style-home-hero`, `namespace":"hdc/selected-work"` (or equivalent `hdc/selected-work` Query Loop marker), `wp:henrys-digital-canvas/home-recent-writing`, and `is-style-ember-veil`;
+  - forbidden serialized markers: `wp:henrys-digital-canvas/home-page`, `wp:henrys-digital-canvas/home-hero`, `wp:henrys-digital-canvas/home-selected-work`, `wp:henrys-digital-canvas/home-throughline`, `wp:henrys-digital-canvas/home-resume-snapshot`, and `wp:henrys-digital-canvas/home-contact-cta`.
+- Replace the legacy fallback render check (`do_blocks( "<!-- wp:henrys-digital-canvas/home-page /-->" )`) with a render check against the actual front-page content. Required rendered markers: `is-style-home-hero`, `is-style-hdc-repo-card`, `hdc-home-page__section--throughline`, `data-hdc-home-recent-writing`, and `hdc-home-page__cta-card`.
+- Keep `home-recent-writing` allowed in Phase 2 because it is the documented interim block. It is removed in Phase 3.
+
+Then run:
+
+```bash
+cd /home/dev/wp-hperkins-com/wp-content/themes/henrys-digital-canvas
+RUN_FRONT_PAGE_SHAPE_CHECK=1 BASE_URL=https://wp.hperkins.com npm run smoke:api
+```
+
+Expected: API smoke passes, including the optional front-page branch, and it no longer calls or asserts the removed `home-page` fallback.
+
+- [ ] **Step 3: Update + run the Playwright parity/browser specs**
 
 Update `scripts/playwright/home-parity.spec.cjs` and `scripts/playwright/browser-smoke.spec.cjs` to assert the new homepage structure: a full-bleed hero with the H1 copy, 3 Selected Work cards (`.is-style-hdc-repo-card`), the throughline/resume/contact sections, and **no `Loading…`/`Syncing selected work` text in the initial HTML for Selected Work** (it's server-rendered now). Then:
 
@@ -894,7 +917,7 @@ BASE_URL=https://wp.hperkins.com npm run smoke:browser
 ```
 Expected: specs pass against the new markup.
 
-- [ ] **Step 3: Token/utility drift audits**
+- [ ] **Step 4: Token/utility drift audits**
 
 ```bash
 cd /home/dev/wp-hperkins-com/wp-content/themes/henrys-digital-canvas
@@ -903,11 +926,11 @@ cd /home/dev/wp-hperkins-com/wp-content/themes/henrys-digital-canvas
 ```
 Expected: no new drift introduced by the relocated/new CSS (the new `is-style-*` rules reuse existing tokens). Address any flagged drift.
 
-- [ ] **Step 4: Visual parity pass against the React source**
+- [ ] **Step 5: Visual parity pass against the React source**
 
 Open the live homepage and compare against `Home.tsx`'s rendered sections (hero copy/inverse backdrop, throughline two-column + quote card, resume two cards, contact ember-veil card, Selected Work 3 cards). Fix any spacing/surface regressions in `home-sections.css`/`home-patterns.css`. This is the acceptance gate for "visually near-identical."
 
-- [ ] **Step 5: Commit any spec/marker/CSS fixes**
+- [ ] **Step 6: Commit any spec/marker/CSS fixes**
 
 ```bash
 git add -A wp-content/themes/henrys-digital-canvas
@@ -927,6 +950,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 - Assemble the "Home" pattern → Task 8. ✓
 - Update `sync_page_sources.php` to own the homepage `post_content` → Task 9. ✓
 - Retire the parent wrapper + fallback → Task 10. ✓
+- Update every Phase-2 verification referrer that still expects the old parent/fallback (`route_smoke`, optional `api_smoke` front-page branch, Playwright home/browser specs) → Task 11. ✓
 - Selected Work reuses the Phase-1 core/query fragment → Task 8. ✓
 - Follow-up #18 partial (Phase-2 card parity): the Selected Work card's CTA destination, date formatting, and icons are still Phase-3/polish items — **flagged in Task 11 Step 4** as parity-pass fixes, not silently dropped. ✓
 - **Out of Phase-2 scope (Phase 3):** Recent Writing → core/query + `reading_time`; deleting the six child blocks + referrer audit. Recent Writing is embedded as the interim block here. ✓
