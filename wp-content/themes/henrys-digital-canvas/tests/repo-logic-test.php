@@ -34,5 +34,23 @@ hdc_check( 'summary: empty why falls back to description', hdc_repo_summary( arr
 hdc_check( 'summary: missing why falls back to description', hdc_repo_summary( array( 'description' => 'Desc.' ) ), 'Desc.' );
 hdc_check( 'summary: both empty -> empty', hdc_repo_summary( array() ), '' );
 
+// --- hdc_repo_badge_label ---
+hdc_check( 'badge: private', hdc_repo_badge_label( array( 'access' => 'private' ) ), 'Private case study' );
+hdc_check( 'badge: github-linked -> open source', hdc_repo_badge_label( array( 'access' => 'public', 'origin' => 'github' ) ), 'Open source' );
+hdc_check( 'badge: curated url github -> open source', hdc_repo_badge_label( array( 'access' => 'public', 'origin' => 'curated', 'url' => 'https://github.com/x/y' ) ), 'Open source' );
+hdc_check( 'badge: curated -> curated project', hdc_repo_badge_label( array( 'access' => 'public', 'origin' => 'curated', 'url' => '' ) ), 'Curated project' );
+
+// --- hdc_repo_source_badge (is_live flag mirrors Home.tsx source === 'live') ---
+hdc_check( 'source: private -> none', hdc_repo_source_badge( array( 'access' => 'private', 'origin' => 'github' ), true ), '' );
+hdc_check( 'source: live + github -> Live GitHub', hdc_repo_source_badge( array( 'access' => 'public', 'origin' => 'github' ), true ), 'Live GitHub' );
+hdc_check( 'source: live + non-github origin -> none', hdc_repo_source_badge( array( 'access' => 'public', 'origin' => 'curated', 'url' => 'https://github.com/x/y' ), true ), '' );
+hdc_check( 'source: snapshot + github-linked -> GitHub snapshot', hdc_repo_source_badge( array( 'access' => 'public', 'origin' => 'curated', 'url' => 'https://github.com/x/y' ), false ), 'GitHub snapshot' );
+hdc_check( 'source: snapshot + not linked -> none', hdc_repo_source_badge( array( 'access' => 'public', 'origin' => 'curated', 'url' => '' ), false ), '' );
+
+// --- hdc_repo_cta_label ---
+hdc_check( 'cta: github public -> View project', hdc_repo_cta_label( array( 'origin' => 'github', 'access' => 'public' ) ), 'View project' );
+hdc_check( 'cta: github private -> View case study', hdc_repo_cta_label( array( 'origin' => 'github', 'access' => 'private' ) ), 'View case study' );
+hdc_check( 'cta: curated -> View case study', hdc_repo_cta_label( array( 'origin' => 'curated', 'access' => 'public' ) ), 'View case study' );
+
 echo "\n{$tests_run} checks, {$tests_failed} failures\n";
 exit( $tests_failed > 0 ? 1 : 0 );
