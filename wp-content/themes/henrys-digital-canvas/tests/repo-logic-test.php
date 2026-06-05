@@ -125,5 +125,28 @@ hdc_check( 'rank: drops non-featured', in_array( 'skip', $ranked, true ), false 
 hdc_check( 'ts: valid date', hdc_repo_updated_timestamp( array( 'updated_at' => '2026-01-01' ) ) > 0, true );
 hdc_check( 'ts: empty -> 0', hdc_repo_updated_timestamp( array( 'updated_at' => '' ) ), 0 );
 
+// --- seed merge: repos.json supplies curated+snapshot; case-study map supplies why_it_matters + (winning) displayName ---
+$repos_json = array(
+	array(
+		'name' => 'henry-s-digital-canvas', 'description' => 'Portfolio.', 'language' => 'TypeScript',
+		'stars' => 1, 'forks' => 0, 'updatedAt' => '2026-04-04', 'url' => 'https://github.com/henryperkins/henry-s-digital-canvas',
+		'topics' => array( 'portfolio' ), 'featured' => true, 'featuredPriority' => 0, 'origin' => 'curated', 'access' => 'public',
+		// note: NO whyItMatters and NO displayName in repos.json
+	),
+	array( 'name' => 'bare', 'origin' => 'github', 'access' => 'public' ), // minimal entry
+);
+$case_study_map = array(
+	'henry-s-digital-canvas' => array( 'displayName' => 'HPerkins.com', 'whyItMatters' => 'Proof surface.' ),
+);
+$seed = hdc_repo_build_seed( $repos_json, $case_study_map );
+hdc_check( 'seed: count', count( $seed ), 2 );
+hdc_check( 'seed: why_it_matters from case-study map', $seed[0]['why_it_matters'], 'Proof surface.' );
+hdc_check( 'seed: display_name from case-study map (wins)', $seed[0]['display_name'], 'HPerkins.com' );
+hdc_check( 'seed: snapshot stars/updated from repos.json', array( $seed[0]['stars'], $seed[0]['updated_at'] ), array( 1, '2026-04-04' ) );
+hdc_check( 'seed: featured + priority', array( $seed[0]['featured'], $seed[0]['featured_priority'] ), array( true, 0 ) );
+hdc_check( 'seed: minimal entry has empty why', $seed[1]['why_it_matters'], '' );
+hdc_check( 'seed: minimal entry priority null', $seed[1]['featured_priority'], null );
+hdc_check( 'seed: minimal entry origin preserved', $seed[1]['origin'], 'github' );
+
 echo "\n{$tests_run} checks, {$tests_failed} failures\n";
 exit( $tests_failed > 0 ? 1 : 0 );
