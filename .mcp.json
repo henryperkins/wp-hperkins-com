@@ -9,6 +9,9 @@
         "--server=mcp-adapter-default-server",
         "--user=hperkins_admin"
       ]
+    },
+    "cloudflare-api": {
+      "url": "https://mcp.cloudflare.com/mcp"
     }
   }
 }

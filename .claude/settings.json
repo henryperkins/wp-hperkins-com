@@ -16,6 +16,9 @@
         "-y",
         "@upwindai/context7-mcp@latest"
       ]
+    },
+    "cloudflare-api": {
+      "url": "https://mcp.cloudflare.com/mcp"
     }
   },
   "hooks": {
