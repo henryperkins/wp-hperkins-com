@@ -45,7 +45,7 @@ function hdc_selected_work_block_markup(): string {
 <!-- wp:buttons -->
 <div class="wp-block-buttons">
 <!-- wp:button {"metadata":{"bindings":{"text":{"source":"core/post-meta","args":{"key":"cta_label"}},"url":{"source":"core/post-meta","args":{"key":"url"}}}}} -->
-<div class="wp-block-button"><a class="wp-block-button__link wp-element-button"></a></div>
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="#">View</a></div>
 <!-- /wp:button -->
 </div>
 <!-- /wp:buttons -->
