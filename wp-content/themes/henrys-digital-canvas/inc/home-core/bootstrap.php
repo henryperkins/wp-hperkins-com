@@ -11,3 +11,4 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/repo-logic.php';
+require_once __DIR__ . '/repo-cpt.php';
