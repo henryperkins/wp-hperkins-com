@@ -92,6 +92,76 @@ HTML;
 }
 
 /**
+ * Resume Snapshot section — static positioning and best-fit cards.
+ */
+function hdc_home_resume_pattern_markup(): string {
+	return <<<'HTML'
+<!-- wp:group {"className":"hdc-home-page__section hdc-home-page__section--resume","layout":{"type":"constrained"}} -->
+<div class="wp-block-group hdc-home-page__section hdc-home-page__section--resume" id="resume-snapshot">
+<!-- wp:group {"className":"hdc-home-page__section-header","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->
+<div class="wp-block-group hdc-home-page__section-header">
+<!-- wp:heading {"className":"hdc-home-page__section-title"} -->
+<h2 class="wp-block-heading hdc-home-page__section-title">Resume Snapshot</h2>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"hdc-home-page__section-link"} -->
+<p class="hdc-home-page__section-link"><a href="/resume">Interactive resume</a></p>
+<!-- /wp:paragraph -->
+</div>
+<!-- /wp:group -->
+<!-- wp:columns {"className":"hdc-home-page__resume-grid"} -->
+<div class="wp-block-columns hdc-home-page__resume-grid">
+<!-- wp:column {"width":"60%"} -->
+<div class="wp-block-column" style="flex-basis:60%">
+<!-- wp:group {"className":"hdc-home-page__resume-card is-style-ember-topography","layout":{"type":"constrained"}} -->
+<div class="wp-block-group hdc-home-page__resume-card is-style-ember-topography">
+<!-- wp:paragraph {"className":"hdc-home-page__eyebrow"} -->
+<p class="hdc-home-page__eyebrow">Positioning</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":3,"className":"hdc-home-page__card-title"} -->
+<h3 class="wp-block-heading hdc-home-page__card-title">Public proof of work</h3>
+<!-- /wp:heading -->
+<!-- wp:list {"className":"hdc-home-page__list"} -->
+<ul class="wp-block-list hdc-home-page__list"><!-- wp:list-item --><li>Prompt Forge</li><!-- /wp:list-item --><!-- wp:list-item --><li>HPerkins.com</li><!-- /wp:list-item --><!-- wp:list-item --><li>wp-hperkins-com</li><!-- /wp:list-item --></ul>
+<!-- /wp:list -->
+</div>
+<!-- /wp:group -->
+</div>
+<!-- /wp:column -->
+<!-- wp:column {"width":"40%"} -->
+<div class="wp-block-column" style="flex-basis:40%">
+<!-- wp:group {"className":"hdc-home-page__resume-card is-style-ember-strong","layout":{"type":"constrained"}} -->
+<div class="wp-block-group hdc-home-page__resume-card is-style-ember-strong">
+<!-- wp:paragraph {"className":"hdc-home-page__eyebrow"} -->
+<p class="hdc-home-page__eyebrow">Best fit</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":3,"className":"hdc-home-page__card-title"} -->
+<h3 class="wp-block-heading hdc-home-page__card-title">Where I contribute fastest</h3>
+<!-- /wp:heading -->
+<!-- wp:list {"className":"hdc-home-page__list"} -->
+<ul class="wp-block-list hdc-home-page__list"><!-- wp:list-item --><li>Customer-facing implementation, onboarding, and support workflows</li><!-- /wp:list-item --><!-- wp:list-item --><li>API integrations, documentation, and escalation triage</li><!-- /wp:list-item --><!-- wp:list-item --><li>AI-assisted workflow delivery grounded in WordPress and durable web systems</li><!-- /wp:list-item --></ul>
+<!-- /wp:list -->
+<!-- wp:buttons {"className":"hdc-home-page__inline-links"} -->
+<div class="wp-block-buttons hdc-home-page__inline-links">
+<!-- wp:button -->
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/resume">Interactive resume</a></div>
+<!-- /wp:button -->
+<!-- wp:button {"className":"is-style-outline"} -->
+<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/resume/ats">ATS / recruiter view</a></div>
+<!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+</div>
+<!-- /wp:column -->
+</div>
+<!-- /wp:columns -->
+</div>
+<!-- /wp:group -->
+HTML;
+}
+
+/**
  * Register each section pattern + the assembled Home pattern.
  */
 function hdc_home_register_patterns(): void {
@@ -114,6 +184,15 @@ function hdc_home_register_patterns(): void {
 			'title'      => __( 'Home Throughline', 'henrys-digital-canvas' ),
 			'categories' => array( 'featured' ),
 			'content'    => hdc_home_throughline_pattern_markup(),
+		)
+	);
+
+	register_block_pattern(
+		'henrys-digital-canvas/home-resume',
+		array(
+			'title'      => __( 'Home Resume Snapshot', 'henrys-digital-canvas' ),
+			'categories' => array( 'featured' ),
+			'content'    => hdc_home_resume_pattern_markup(),
 		)
 	);
 }
