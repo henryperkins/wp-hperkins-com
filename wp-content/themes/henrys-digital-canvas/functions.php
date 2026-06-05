@@ -145,12 +145,6 @@ require_once get_stylesheet_directory() . '/inc/home-core/bootstrap.php';
  */
 function hdc_register_theme_blocks() {
 	$block_directories = array(
-		get_stylesheet_directory() . '/blocks/home-hero',
-		get_stylesheet_directory() . '/blocks/home-selected-work',
-		get_stylesheet_directory() . '/blocks/home-throughline',
-		get_stylesheet_directory() . '/blocks/home-resume-snapshot',
-		get_stylesheet_directory() . '/blocks/home-recent-writing',
-		get_stylesheet_directory() . '/blocks/home-contact-cta',
 		get_stylesheet_directory() . '/blocks/digital-canvas-feed',
 		get_stylesheet_directory() . '/blocks/work-showcase',
 		get_stylesheet_directory() . '/blocks/site-shell',
