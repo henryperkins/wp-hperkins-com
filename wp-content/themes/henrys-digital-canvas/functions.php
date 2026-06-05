@@ -135,7 +135,6 @@ function hdc_enqueue_editor_styles() {
 add_action( 'enqueue_block_assets', 'hdc_enqueue_editor_styles' );
 
 require_once get_stylesheet_directory() . '/inc/data-contracts.php';
-require_once get_stylesheet_directory() . '/inc/home-page-blocks.php';
 require_once get_stylesheet_directory() . '/inc/rest-api.php';
 require_once get_stylesheet_directory() . '/inc/home-core/bootstrap.php';
 
@@ -146,7 +145,6 @@ require_once get_stylesheet_directory() . '/inc/home-core/bootstrap.php';
  */
 function hdc_register_theme_blocks() {
 	$block_directories = array(
-		get_stylesheet_directory() . '/blocks/home-page',
 		get_stylesheet_directory() . '/blocks/home-hero',
 		get_stylesheet_directory() . '/blocks/home-selected-work',
 		get_stylesheet_directory() . '/blocks/home-throughline',
