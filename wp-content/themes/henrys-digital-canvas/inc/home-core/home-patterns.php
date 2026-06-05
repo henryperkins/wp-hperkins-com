@@ -162,6 +162,49 @@ HTML;
 }
 
 /**
+ * Contact CTA section — ember-veil card with copy and action buttons.
+ */
+function hdc_home_contact_pattern_markup(): string {
+	return <<<'HTML'
+<!-- wp:group {"className":"hdc-home-page__section","layout":{"type":"constrained"}} -->
+<div class="wp-block-group hdc-home-page__section" id="contact-cta">
+<!-- wp:group {"className":"hdc-home-page__cta-card is-style-ember-veil","layout":{"type":"constrained"}} -->
+<div class="wp-block-group hdc-home-page__cta-card is-style-ember-veil">
+<!-- wp:group {"className":"hdc-home-page__cta-layout","layout":{"type":"default"}} -->
+<div class="wp-block-group hdc-home-page__cta-layout">
+<!-- wp:group {"className":"hdc-home-page__cta-body","layout":{"type":"constrained"}} -->
+<div class="wp-block-group hdc-home-page__cta-body">
+<!-- wp:paragraph {"className":"hdc-home-page__eyebrow hdc-home-page__eyebrow--body"} -->
+<p class="hdc-home-page__eyebrow hdc-home-page__eyebrow--body">Need a technical partner?</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"className":"hdc-home-page__section-title"} -->
+<h2 class="wp-block-heading hdc-home-page__section-title">Bring me in where support, product, and implementation overlap.</h2>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"hdc-home-page__copy"} -->
+<p class="hdc-home-page__copy">I help teams turn support tickets into shipped fixes &#8212; API integrations, documentation, AI-assisted triage &#8212; so the thing that was breaking at 6 AM isn&#8217;t breaking at 6 AM tomorrow.</p>
+<!-- /wp:paragraph -->
+</div>
+<!-- /wp:group -->
+<!-- wp:buttons {"className":"hdc-home-page__cta-actions"} -->
+<div class="wp-block-buttons hdc-home-page__cta-actions">
+<!-- wp:button -->
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/contact">Work with me</a></div>
+<!-- /wp:button -->
+<!-- wp:button {"className":"is-style-outline"} -->
+<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/resume">View resume</a></div>
+<!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+</div>
+<!-- /wp:group -->
+</div>
+<!-- /wp:group -->
+HTML;
+}
+
+/**
  * Register each section pattern + the assembled Home pattern.
  */
 function hdc_home_register_patterns(): void {
@@ -193,6 +236,15 @@ function hdc_home_register_patterns(): void {
 			'title'      => __( 'Home Resume Snapshot', 'henrys-digital-canvas' ),
 			'categories' => array( 'featured' ),
 			'content'    => hdc_home_resume_pattern_markup(),
+		)
+	);
+
+	register_block_pattern(
+		'henrys-digital-canvas/home-contact',
+		array(
+			'title'      => __( 'Home Contact CTA', 'henrys-digital-canvas' ),
+			'categories' => array( 'featured' ),
+			'content'    => hdc_home_contact_pattern_markup(),
 		)
 	);
 }
