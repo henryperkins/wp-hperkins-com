@@ -164,6 +164,7 @@ function hdc_repo_read_curated( int $post_id ): array {
 		'language'          => (string) get_post_meta( $post_id, 'language', true ),
 		'url'               => (string) get_post_meta( $post_id, 'url', true ),
 		'updated_at'        => (string) get_post_meta( $post_id, 'updated_at', true ),
+		'topics'            => get_post_meta( $post_id, 'topics', true ),
 	);
 }
 

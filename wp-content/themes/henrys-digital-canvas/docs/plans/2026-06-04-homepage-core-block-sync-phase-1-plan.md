@@ -1953,7 +1953,7 @@ function hdc_github_sync(): array {
 		update_post_meta( $post_id, 'url', esc_url_raw( (string) $merged['url'] ) );
 		update_post_meta( $post_id, 'updated_at', (string) $merged['updated_at'] );
 		update_post_meta( $post_id, 'language', (string) $merged['language'] );
-		update_post_meta( $post_id, 'topics', hdc_repo_sanitize_topics( $merged['topics'] ) );
+		update_post_meta( $post_id, 'topics', hdc_repo_sanitize_topics( $merged['topics'] ?? array() ) );
 		// description only on create (curated wins thereafter).
 		if ( $is_create ) {
 			update_post_meta( $post_id, 'description', (string) $merged['description'] );
@@ -1996,6 +1996,7 @@ function hdc_repo_read_curated( int $post_id ): array {
 		'language'          => (string) get_post_meta( $post_id, 'language', true ),
 		'url'               => (string) get_post_meta( $post_id, 'url', true ),
 		'updated_at'        => (string) get_post_meta( $post_id, 'updated_at', true ),
+		'topics'            => get_post_meta( $post_id, 'topics', true ),
 	);
 }
 
