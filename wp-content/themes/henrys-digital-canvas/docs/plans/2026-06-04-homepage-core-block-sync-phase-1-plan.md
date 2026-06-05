@@ -876,6 +876,12 @@ function hdc_repo_register_post_type(): void {
 				'singular_name' => __( 'Repo', 'henrys-digital-canvas' ),
 			),
 			'public'       => false,
+			// core/query gates postType on is_post_type_viewable(): a non-builtin type
+			// must be publicly_queryable for the Query Loop to query it. rewrite +
+			// has_archive stay off, so no public URLs/archive are created (and
+			// exclude_from_search stays true via public:false) — this only lets the
+			// Selected Work Query Loop use the CPT.
+			'publicly_queryable' => true,
 			'show_ui'      => true,
 			'show_in_menu' => true,
 			'show_in_rest' => true,
@@ -1245,7 +1251,7 @@ function hdc_selected_work_block_markup(): string {
 <!-- wp:buttons -->
 <div class="wp-block-buttons">
 <!-- wp:button {"metadata":{"bindings":{"text":{"source":"core/post-meta","args":{"key":"cta_label"}},"url":{"source":"core/post-meta","args":{"key":"url"}}}}} -->
-<div class="wp-block-button"><a class="wp-block-button__link wp-element-button"></a></div>
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="#">View</a></div>
 <!-- /wp:button -->
 </div>
 <!-- /wp:buttons -->

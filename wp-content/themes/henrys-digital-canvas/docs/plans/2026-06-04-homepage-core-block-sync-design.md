@@ -68,7 +68,7 @@ New code lives in one theme include tree: `inc/home-core/` (CPT + meta, sync, de
 
 ## 4. Data model — `hdc_repo` CPT
 
-A non-public, admin-visible CPT (`public: false`, `show_ui: true`, `show_in_rest: true`, supports `title` + `custom-fields` only — **not** `page-attributes`, since `menu_order` is sync-owned, see §5). One post per repo, keyed by `github_id`. Meta registered via `register_post_meta()` with `single: true`, `show_in_rest: true`, and explicit sanitizers, in four tiers:
+A **non-public but Query-Loop-able** CPT: `public: false` with **`publicly_queryable: true`** (verified necessary in Phase 1 — core's `build_query_vars_from_query_block()` only honors a non-builtin `postType` when `is_post_type_viewable()`, i.e. `publicly_queryable`; without it the Selected Work loop silently falls back to the `post` type). `rewrite: false` + `has_archive: false` keep it URL-less and `exclude_from_search` stays true (the `public:false` default), so no public surface is created. `show_ui: true`, `show_in_rest: true`, supports `title` + `custom-fields` only — **not** `page-attributes`, since `menu_order` is sync-owned (see §5). One post per repo, keyed by `github_id`. Meta registered via `register_post_meta()` with `single: true`, `show_in_rest: true`, and explicit sanitizers, in four tiers:
 
 | Tier | Owner | Meta keys | Source |
 |---|---|---|---|
