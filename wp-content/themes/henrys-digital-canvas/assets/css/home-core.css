@@ -10,6 +10,26 @@
 	height: 100%;
 }
 
+.hdc-home-page__section--work > .wp-block-query.alignwide {
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+	max-width: none;
+	width: 100%;
+}
+
+.hdc-home-page__section--work .wp-block-post-template {
+	display: grid;
+	gap: 1.5rem;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.hdc-home-page__section--work .wp-block-post {
+	margin: 0;
+}
+
 .hdc-repo-card__meta {
 	gap: 0.5rem;
 	align-items: center;
@@ -41,4 +61,10 @@
 	align-items: center;
 	gap: 0.5rem;
 	margin-top: auto;
+}
+
+@media (max-width: 959px) {
+	.hdc-home-page__section--work .wp-block-post-template {
+		grid-template-columns: 1fr;
+	}
 }

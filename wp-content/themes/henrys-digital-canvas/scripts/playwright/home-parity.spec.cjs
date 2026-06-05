@@ -1,5 +1,67 @@
 const { test, expect } = require( '@playwright/test' );
 
+async function expectWideSection( locator, label ) {
+	const box = await locator.boundingBox();
+	expect(
+		box && box.width,
+		`${ label } should be page-wide`
+	).toBeGreaterThanOrEqual( 1260 );
+	expect(
+		box && box.x,
+		`${ label } should start at the viewport edge`
+	).toBeLessThanOrEqual( 20 );
+}
+
+async function expectCardsInDesktopRow( locator, label ) {
+	const boxes = await locator.evaluateAll( ( cards ) =>
+		cards.map( ( card ) => {
+			const rect = card.getBoundingClientRect();
+			return {
+				top: Math.round( rect.top ),
+			};
+		} )
+	);
+	expect( boxes, `${ label } card count` ).toHaveLength( 3 );
+	const tops = boxes.map( ( box ) => box.top );
+	expect(
+		Math.max( ...tops ) - Math.min( ...tops ),
+		`${ label } cards should share a row`
+	).toBeLessThanOrEqual( 20 );
+}
+
+async function expectHeroContentColumn( hero ) {
+	const boxes = await hero.evaluate( ( element ) =>
+		[
+			'.hdc-home-page__hero-title',
+			'.hdc-home-page__hero-description',
+			'.hdc-home-page__hero-actions',
+		].map( ( selector ) => {
+			const rect = element
+				.querySelector( selector )
+				.getBoundingClientRect();
+			return {
+				left: Math.round( rect.left ),
+				top: Math.round( rect.top ),
+			};
+		} )
+	);
+	const [ title, description, actions ] = boxes;
+	expect(
+		Math.abs( description.left - title.left ),
+		'Hero lede should align with title'
+	).toBeLessThanOrEqual( 4 );
+	expect(
+		Math.abs( actions.left - title.left ),
+		'Hero actions should align with title'
+	).toBeLessThanOrEqual( 4 );
+	expect( description.top, 'Hero lede should follow title' ).toBeGreaterThan(
+		title.top
+	);
+	expect( actions.top, 'Hero actions should follow lede' ).toBeGreaterThan(
+		description.top
+	);
+}
+
 test.describe( 'home page core-block structure', () => {
 	test( 'renders the Phase 2 homepage sections server-side', async ( {
 		page,
@@ -17,29 +79,51 @@ test.describe( 'home page core-block structure', () => {
 
 		const heroBox = await hero.boundingBox();
 		expect( heroBox && heroBox.width ).toBeGreaterThanOrEqual( 1260 );
+		await expectHeroContentColumn( hero );
 
 		const selectedWork = page.locator(
 			'#selected-work.hdc-home-page__section'
 		);
 		await expect( selectedWork ).toHaveCount( 1 );
+		await expectWideSection( selectedWork, 'Selected Work' );
 		await expect( selectedWork ).not.toContainText(
 			/Syncing selected work|Loading selected work/i
 		);
 		await expect(
 			selectedWork.locator( '.is-style-hdc-repo-card' )
 		).toHaveCount( 3 );
+		await expectCardsInDesktopRow(
+			selectedWork.locator( '.is-style-hdc-repo-card' ),
+			'Selected Work'
+		);
 
 		await expect(
 			page.locator( '#throughline.hdc-home-page__section' )
 		).toContainText( 'From the floor to the frontier.' );
+		await expectWideSection(
+			page.locator( '#throughline.hdc-home-page__section' ),
+			'Throughline'
+		);
 		await expect(
 			page.locator( '#resume-snapshot.hdc-home-page__section' )
 		).toContainText( 'Where I contribute fastest' );
+		await expectWideSection(
+			page.locator( '#resume-snapshot.hdc-home-page__section' ),
+			'Resume Snapshot'
+		);
 		await expect(
 			page.locator( '[data-hdc-home-recent-writing]' )
 		).toHaveCount( 1 );
+		await expectWideSection(
+			page.locator( '[data-hdc-home-recent-writing]' ),
+			'Recent Writing'
+		);
 		await expect( page.locator( '#contact-cta' ) ).toContainText(
 			'Need a technical partner?'
+		);
+		await expectWideSection(
+			page.locator( '#contact-cta' ),
+			'Contact CTA'
 		);
 	} );
 } );

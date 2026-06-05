@@ -73,6 +73,18 @@
   padding-top: 3rem;
 }
 
+.wp-block-post-content.has-global-padding > .hdc-home-page__section {
+  margin-left: calc(50% - min(50vw, 700px)) !important;
+  margin-right: calc(50% - min(50vw, 700px)) !important;
+  width: min(100vw, 1400px);
+}
+
+.hdc-home-page__section.has-global-padding > :where(:not(.alignleft):not(.alignright):not(.alignfull)) {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  max-width: none;
+}
+
 .hdc-home-page__section:not(:first-child) {
   border-top: 1px solid hsl(var(--border));
 }
