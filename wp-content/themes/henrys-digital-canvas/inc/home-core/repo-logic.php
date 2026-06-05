@@ -221,3 +221,57 @@ function hdc_repo_rank_featured( array $repos ): array {
 	usort( $featured, 'hdc_repo_compare_for_rank' );
 	return $featured;
 }
+
+/**
+ * Build the one-time seed records by merging repos.json (curated + a live
+ * snapshot) with repo-case-study-details.json (keyed by repo name; supplies
+ * why_it_matters and the winning display_name). Mirrors React's mergeRepoDetails,
+ * where case-study details are spread last.
+ *
+ * @param array $repos_json     Decoded blocks/work-showcase/data/repos.json (list).
+ * @param array $case_study_map Decoded repo-case-study-details.json (object keyed by name).
+ * @return array<int,array> Seed records.
+ */
+function hdc_repo_build_seed( array $repos_json, array $case_study_map ): array {
+	$seed = array();
+
+	foreach ( $repos_json as $repo ) {
+		if ( ! is_array( $repo ) || empty( $repo['name'] ) ) {
+			continue;
+		}
+		$name    = (string) $repo['name'];
+		$details = ( isset( $case_study_map[ $name ] ) && is_array( $case_study_map[ $name ] ) ) ? $case_study_map[ $name ] : array();
+
+		$display_name = '';
+		if ( ! empty( $details['displayName'] ) ) {
+			$display_name = (string) $details['displayName'];
+		} elseif ( ! empty( $repo['displayName'] ) ) {
+			$display_name = (string) $repo['displayName'];
+		}
+
+		$topics = ( isset( $repo['topics'] ) && is_array( $repo['topics'] ) )
+			? array_values( array_filter( $repo['topics'], 'is_string' ) )
+			: array();
+
+		$seed[] = array(
+			'name'              => $name,
+			// curated
+			'featured'          => ! empty( $repo['featured'] ),
+			'featured_priority' => ( isset( $repo['featuredPriority'] ) && is_numeric( $repo['featuredPriority'] ) ) ? (int) $repo['featuredPriority'] : null,
+			'origin'            => isset( $repo['origin'] ) ? (string) $repo['origin'] : 'curated',
+			'access'            => isset( $repo['access'] ) ? (string) $repo['access'] : 'public',
+			'display_name'      => $display_name,
+			'why_it_matters'    => ! empty( $details['whyItMatters'] ) ? (string) $details['whyItMatters'] : '',
+			// initial live snapshot from repos.json
+			'description'       => isset( $repo['description'] ) ? (string) $repo['description'] : '',
+			'language'          => isset( $repo['language'] ) ? (string) $repo['language'] : '',
+			'stars'             => isset( $repo['stars'] ) ? (int) $repo['stars'] : 0,
+			'forks'             => isset( $repo['forks'] ) ? (int) $repo['forks'] : 0,
+			'updated_at'        => isset( $repo['updatedAt'] ) ? (string) $repo['updatedAt'] : '',
+			'url'               => isset( $repo['url'] ) ? (string) $repo['url'] : '',
+			'topics'            => $topics,
+		);
+	}
+
+	return $seed;
+}
