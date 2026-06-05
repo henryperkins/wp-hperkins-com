@@ -99,11 +99,19 @@
   align-items: center;
   background: hsl(var(--inverse-background));
   border-bottom: 1px solid hsl(var(--inverse-border));
+  box-sizing: border-box;
   color: hsl(var(--inverse-foreground));
   display: flex;
   margin-inline: calc(50% - 50vw);
+  max-width: none;
   min-height: max(30rem, calc(82svh - var(--layout-header-height)));
   padding: 4rem clamp(1.25rem, 3vw, 2rem);
+  width: 100vw;
+}
+
+.wp-block-post-content.has-global-padding > .wp-block-group.alignfull.is-style-home-hero {
+  margin-left: calc(50% - 50vw) !important;
+  margin-right: calc(50% - 50vw) !important;
 }
 
 .is-style-home-hero::before {

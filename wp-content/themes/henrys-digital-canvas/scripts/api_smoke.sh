@@ -130,99 +130,105 @@ else
 fi
 
 if [[ "${RUN_FRONT_PAGE_SHAPE_CHECK:-0}" == "1" ]]; then
-  printf "Front-page shape check: innerBlocks tree (DB read via WP-CLI)\n"
+  printf "Front-page shape check: core-block Home pattern (DB read via WP-CLI)\n"
   WP_ROOT="${WP_ROOT:-/home/dev/wp-hperkins-com}"
   FRONT_PAGE_ID="$(wp --path="${WP_ROOT}" option get page_on_front 2>/dev/null || echo 0)"
   if [[ "${FRONT_PAGE_ID}" -eq 0 ]]; then
-    printf "[FAIL] page_on_front is not set; cannot run innerBlocks shape check.\n" >&2
+    printf "[FAIL] page_on_front is not set; cannot run front-page shape check.\n" >&2
     exit 1
   fi
 
-  EXPECTED_BLOCKS=(
-    "henrys-digital-canvas/home-page"
-    "henrys-digital-canvas/home-hero"
-    "henrys-digital-canvas/home-selected-work"
-    "henrys-digital-canvas/home-throughline"
-    "henrys-digital-canvas/home-resume-snapshot"
-    "henrys-digital-canvas/home-recent-writing"
-    "henrys-digital-canvas/home-contact-cta"
+  REQUIRED_SERIALIZED_MARKERS=(
+    "is-style-home-hero"
+    "\"namespace\":\"hdc/selected-work\""
+    "wp:henrys-digital-canvas/home-recent-writing"
+    "is-style-ember-veil"
   )
 
-  declare -A REQUIRED_ATTRS=(
-    ["henrys-digital-canvas/home-page"]="align"
-    ["henrys-digital-canvas/home-hero"]="eyebrow title description primaryCtaLabel primaryCtaHref secondaryCtaLabel secondaryCtaHref"
-    ["henrys-digital-canvas/home-selected-work"]="title actionLabel actionHref loadingLabel emptyTitle emptyDescriptionLive emptyDescriptionFallback repoCount"
-    ["henrys-digital-canvas/home-throughline"]="title paragraphs quote"
-    ["henrys-digital-canvas/home-resume-snapshot"]="title actionLabel actionHref positioningEyebrow label items bestFitEyebrow bestFitTitle focusAreas actionLinks"
-    ["henrys-digital-canvas/home-recent-writing"]="title actionLabel actionHref emptyTitle emptyDescription blogCount"
-    ["henrys-digital-canvas/home-contact-cta"]="eyebrow title description primaryCtaLabel primaryCtaHref secondaryCtaLabel secondaryCtaHref"
+  FORBIDDEN_SERIALIZED_MARKERS=(
+    "wp:henrys-digital-canvas/home-page"
+    "wp:henrys-digital-canvas/home-hero"
+    "wp:henrys-digital-canvas/home-selected-work"
+    "wp:henrys-digital-canvas/home-throughline"
+    "wp:henrys-digital-canvas/home-resume-snapshot"
+    "wp:henrys-digital-canvas/home-contact-cta"
   )
 
-  hdc_assert_home_shape_json() {
-    local shape_json="$1"
+  REQUIRED_RENDERED_MARKERS=(
+    "is-style-home-hero"
+    "is-style-hdc-repo-card"
+    "hdc-home-page__section--throughline"
+    "data-hdc-home-recent-writing"
+    "hdc-home-page__cta-card"
+  )
+
+  hdc_assert_contains_marker() {
+    local haystack="$1"
+    local marker="$2"
+    local label="$3"
+
+    if ! rg -F -q -- "${marker}" <<<"${haystack}"; then
+      printf "[FAIL] %s is missing marker %s\n" "${label}" "${marker}" >&2
+      exit 1
+    fi
+  }
+
+  hdc_assert_missing_marker() {
+    local haystack="$1"
+    local marker="$2"
+    local label="$3"
+
+    if rg -F -q -- "${marker}" <<<"${haystack}"; then
+      printf "[FAIL] %s still contains retired marker %s\n" "${label}" "${marker}" >&2
+      exit 1
+    fi
+  }
+
+  hdc_assert_serialized_home_pattern() {
+    local content="$1"
     local label="$2"
-    local block
-    local attr
+    local marker
 
-    for block in "${EXPECTED_BLOCKS[@]}"; do
-      if ! jq -e --arg block "${block}" 'has($block)' >/dev/null <<<"${shape_json}"; then
-        printf "[FAIL] %s is missing block %s\n" "${label}" "${block}" >&2
-        exit 1
-      fi
+    for marker in "${REQUIRED_SERIALIZED_MARKERS[@]}"; do
+      hdc_assert_contains_marker "${content}" "${marker}" "${label}"
+    done
 
-      for attr in ${REQUIRED_ATTRS[${block}]}; do
-        if ! jq -e --arg block "${block}" --arg attr "${attr}" '(.[$block] // []) | index($attr) != null' >/dev/null <<<"${shape_json}"; then
-          printf "[FAIL] %s block %s is missing attribute %s\n" "${label}" "${block}" "${attr}" >&2
-          exit 1
-        fi
-      done
+    for marker in "${FORBIDDEN_SERIALIZED_MARKERS[@]}"; do
+      hdc_assert_missing_marker "${content}" "${marker}" "${label}"
     done
   }
 
-  DB_SHAPE_JSON="$(
+  hdc_assert_rendered_home_pattern() {
+    local html="$1"
+    local label="$2"
+    local marker
+
+    for marker in "${REQUIRED_RENDERED_MARKERS[@]}"; do
+      hdc_assert_contains_marker "${html}" "${marker}" "${label}"
+    done
+  }
+
+  DB_CONTENT_B64="$(
     wp --path="${WP_ROOT}" eval '
       $front_page_id = (int) get_option( "page_on_front" );
       $content       = (string) get_post_field( "post_content", $front_page_id );
-      $shape         = array();
-      $walk          = function ( $blocks ) use ( &$walk, &$shape ) {
-        foreach ( $blocks as $block ) {
-          if ( ! empty( $block["blockName"] ) ) {
-            $attrs = isset( $block["attrs"] ) && is_array( $block["attrs"] ) ? $block["attrs"] : array();
-            $shape[ $block["blockName"] ] = array_keys( $attrs );
-          }
-          if ( ! empty( $block["innerBlocks"] ) && is_array( $block["innerBlocks"] ) ) {
-            $walk( $block["innerBlocks"] );
-          }
-        }
-      };
-      $walk( parse_blocks( $content ) );
-      echo wp_json_encode( $shape );
+      echo base64_encode( $content );
     '
   )"
+  DB_CONTENT="$(printf '%s' "${DB_CONTENT_B64}" | base64 -d)"
+  hdc_assert_serialized_home_pattern "${DB_CONTENT}" "DB post_content"
+  printf "Front-page serialized shape check (DB): core Home markers present and retired child markers absent.\n"
 
-  hdc_assert_home_shape_json "${DB_SHAPE_JSON}" "DB post_content"
-  printf "Front-page shape check (DB): all 7 home-page blocks and required attributes present in post_content.\n"
-
-  wp --path="${WP_ROOT}" eval '
-    $html = do_blocks( "<!-- wp:henrys-digital-canvas/home-page /-->" );
-    foreach (
-      array(
-        "alignfull",
-        "hdc-home-page__hero",
-        "data-hdc-home-selected-work",
-        "hdc-home-page__section--throughline",
-        "data-hdc-home-resume-snapshot",
-        "data-hdc-home-recent-writing",
-        "hdc-home-page__cta-card",
-      ) as $marker
-    ) {
-      if ( false === strpos( $html, $marker ) ) {
-        fwrite( STDERR, "[FAIL] Legacy home-page fallback is missing marker " . $marker . PHP_EOL );
-        exit( 1 );
-      }
-    }
-  '
-  printf "Front-page legacy fallback check: self-closing home-page renders full-bleed home sections.\n"
+  DB_RENDERED_B64="$(
+    wp --path="${WP_ROOT}" eval '
+      $front_page_id = (int) get_option( "page_on_front" );
+      $content       = (string) get_post_field( "post_content", $front_page_id );
+      echo base64_encode( apply_filters( "the_content", $content ) );
+    '
+  )"
+  DB_RENDERED="$(printf '%s' "${DB_RENDERED_B64}" | base64 -d)"
+  hdc_assert_rendered_home_pattern "${DB_RENDERED}" "rendered front-page content"
+  printf "Front-page render check: core Home pattern renders hero, selected work, writing, and contact markers.\n"
 
   if [[ "${RUN_REST_SHAPE_CHECK_AUTHENTICATED:-0}" == "1" ]]; then
     if [[ -z "${WP_REST_USER:-}" || -z "${WP_REST_APP_PASSWORD:-}" ]]; then
@@ -248,29 +254,8 @@ if [[ "${RUN_FRONT_PAGE_SHAPE_CHECK:-0}" == "1" ]]; then
       exit 1
     fi
 
-    REST_RAW_B64="$(printf '%s' "${REST_RAW}" | base64 -w 0)"
-    REST_SHAPE_JSON="$(
-      REST_RAW_B64="${REST_RAW_B64}" wp --path="${WP_ROOT}" eval '
-        $content = (string) base64_decode( (string) getenv( "REST_RAW_B64" ) );
-        $shape   = array();
-        $walk    = function ( $blocks ) use ( &$walk, &$shape ) {
-          foreach ( $blocks as $block ) {
-            if ( ! empty( $block["blockName"] ) ) {
-              $attrs = isset( $block["attrs"] ) && is_array( $block["attrs"] ) ? $block["attrs"] : array();
-              $shape[ $block["blockName"] ] = array_keys( $attrs );
-            }
-            if ( ! empty( $block["innerBlocks"] ) && is_array( $block["innerBlocks"] ) ) {
-              $walk( $block["innerBlocks"] );
-            }
-          }
-        };
-        $walk( parse_blocks( $content ) );
-        echo wp_json_encode( $shape );
-      '
-    )"
-
-    hdc_assert_home_shape_json "${REST_SHAPE_JSON}" "REST content.raw"
-    printf "Front-page shape check (authenticated): all 7 home-page blocks and required attributes present in content.raw.\n"
+    hdc_assert_serialized_home_pattern "${REST_RAW}" "REST content.raw"
+    printf "Front-page shape check (authenticated): core Home markers present and retired child markers absent in content.raw.\n"
   fi
 else
   printf "Front-page shape check skipped (RUN_FRONT_PAGE_SHAPE_CHECK=%s).\n" "${RUN_FRONT_PAGE_SHAPE_CHECK:-0}"

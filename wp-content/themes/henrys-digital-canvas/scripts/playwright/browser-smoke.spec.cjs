@@ -108,7 +108,7 @@ test.describe( 'Henrys Digital Canvas browser smoke', () => {
 
 	test( 'route matrix renders expected blocks', async ( { page } ) => {
 		const routes = [
-			{ path: '/', selector: '.hdc-home-page', status: 200 },
+			{ path: '/', selector: '.is-style-home-hero', status: 200 },
 			{ path: '/work/', selector: '.hdc-work-showcase', status: 200 },
 			{
 				path: `/work/${ WORK_DETAIL_REPO }/`,
@@ -151,30 +151,29 @@ test.describe( 'Henrys Digital Canvas browser smoke', () => {
 	test( 'home selected work renders exactly the configured cards', async ( {
 		page,
 	} ) => {
-		await page.goto( '/', { waitUntil: 'networkidle' } );
+		await page.goto( '/', { waitUntil: 'domcontentloaded' } );
 
-		const selectedWork = page.locator( '[data-hdc-home-selected-work]' );
+		const selectedWork = page.locator(
+			'#selected-work.hdc-home-page__section'
+		);
 		await expect( selectedWork ).toHaveCount( 1, { timeout: 10000 } );
 
-		const rawConfig = await selectedWork.getAttribute( 'data-config' );
-		const config = JSON.parse( rawConfig || '{}' );
-		const expectedCardCount = Number.isFinite( Number( config.repoCount ) )
-			? Number( config.repoCount )
-			: 3;
-		const cards = selectedWork.locator(
-			'.hdc-home-page__work-card:not(.hdc-home-page__work-card--skeleton)'
+		await expect( selectedWork ).not.toContainText(
+			/Syncing selected work|Loading selected work/i
 		);
+
+		const cards = selectedWork.locator( '.is-style-hdc-repo-card' );
 
 		await expect
 			.poll( async () => cards.count(), { timeout: 20000 } )
-			.toBe( expectedCardCount );
+			.toBe( 3 );
 
 		const cardTitles = await cards
-			.locator( '.hdc-home-page__card-title' )
+			.locator( '.wp-block-post-title' )
 			.allTextContents();
 		expect(
 			cardTitles.map( ( title ) => title.trim() ).filter( Boolean )
-		).toHaveLength( expectedCardCount );
+		).toHaveLength( 3 );
 	} );
 
 	test( 'work signals panel renders stat cards and loads contributor metrics route', async ( {
