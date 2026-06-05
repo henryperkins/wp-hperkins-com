@@ -75,3 +75,32 @@ function hdc_repo_cta_label( array $repo ): string {
 	}
 	return 'View case study';
 }
+
+/**
+ * Mirror of getRepoDisplayName: prefer curated display name; else split the
+ * kebab/snake slug into tokens, uppercasing tokens of length <= 3 and
+ * capitalizing the rest.
+ */
+function hdc_repo_display_name( array $repo ): string {
+	$display = isset( $repo['display_name'] ) ? trim( (string) $repo['display_name'] ) : '';
+	if ( '' !== $display ) {
+		return $display;
+	}
+
+	$name   = isset( $repo['name'] ) ? (string) $repo['name'] : '';
+	$tokens = preg_split( '/[-_]/', $name );
+	$tokens = array_values( array_filter( (array) $tokens, static function ( $token ) {
+		return '' !== $token;
+	} ) );
+	$tokens = array_map(
+		static function ( $token ) {
+			if ( strlen( $token ) <= 3 ) {
+				return strtoupper( $token );
+			}
+			return strtoupper( substr( $token, 0, 1 ) ) . substr( $token, 1 );
+		},
+		$tokens
+	);
+
+	return implode( ' ', $tokens );
+}

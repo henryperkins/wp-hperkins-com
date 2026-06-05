@@ -52,5 +52,11 @@ hdc_check( 'cta: github public -> View project', hdc_repo_cta_label( array( 'ori
 hdc_check( 'cta: github private -> View case study', hdc_repo_cta_label( array( 'origin' => 'github', 'access' => 'private' ) ), 'View case study' );
 hdc_check( 'cta: curated -> View case study', hdc_repo_cta_label( array( 'origin' => 'curated', 'access' => 'public' ) ), 'View case study' );
 
+// --- hdc_repo_display_name (getRepoDisplayName: curated displayName, else title-case slug; tokens <=3 chars uppercased) ---
+hdc_check( 'display: curated wins', hdc_repo_display_name( array( 'display_name' => 'HPerkins.com', 'name' => 'henry-s-digital-canvas' ) ), 'HPerkins.com' );
+hdc_check( 'display: derive title-case', hdc_repo_display_name( array( 'name' => 'my-cool-project' ) ), 'MY Cool Project' );
+hdc_check( 'display: short tokens uppercased', hdc_repo_display_name( array( 'name' => 'ai-cli-web-funnel' ) ), 'AI CLI WEB Funnel' );
+hdc_check( 'display: underscores split too', hdc_repo_display_name( array( 'name' => 'data_sync' ) ), 'Data Sync' );
+
 echo "\n{$tests_run} checks, {$tests_failed} failures\n";
 exit( $tests_failed > 0 ? 1 : 0 );
