@@ -4,7 +4,7 @@
 
 **Goal:** Expose the immutable numeric GitHub repo `id` from the hperkins.com worker's `/api/github/repos` response so the WordPress sync can key on it (rename/transfer-stable) instead of falling back to repo `name`.
 
-**Architecture:** Three tiny additions to `sanitizeGitHubRepo()` and its two local types in `worker/routes/github.ts`, covered by a Vitest test that drives the real route with a mocked GitHub `fetch`. Then deploy via Wrangler and verify live. Finally, a WordPress-side observability touch-up so the sync's status reflects how many live repos were applied vs skipped (which drops to 0 skips once `id` is flowing).
+**Architecture:** Three tiny additions to `sanitizeGitHubRepo()` and its two local types in `worker/routes/github.ts`, covered by a Vitest test that drives the real route with a mocked GitHub `fetch`. Then deploy via Wrangler and verify live against the exact WordPress sync URL. Finally, a WordPress-side observability touch-up so the sync's status distinguishes raw fetched repos, post-filter attempted repos, applied repos, and skipped repos (skips drop to 0 once `id` is flowing and the exact sync URL is no longer stale).
 
 **Tech Stack:** Cloudflare Worker (TypeScript), Vitest, Wrangler; plus a small PHP change in the theme's `inc/home-core/sync.php`.
 
@@ -34,7 +34,7 @@ git checkout -b feat/worker-expose-repo-id
 | `worker/routes/github.ts` | Add `id` to `GitHubRepoPayload` (`:14-36`) + `GitHubRepoResponse` (`:77-99`) + the `sanitizeGitHubRepo()` return (`:402-430`) | 1 |
 | `src/test/github-worker-id.test.ts` | New Vitest test driving `GET /api/github/repos`, asserting `id` is in the response | 1 |
 | *(deploy)* `wrangler deploy` via `npm run cf:deploy` | Ship to production `hperkins.com` | 2 |
-| `wp-content/.../inc/home-core/sync.php` (theme repo) | Record `applied`/`skipped` counts in `hdc_repo_sync_status` + surface in the WP-CLI message | 3 |
+| `wp-content/.../inc/home-core/sync.php` (theme repo) | Record raw `fetched`, post-filter `attempted`, `applied`, and derived `skipped` counts in `hdc_repo_sync_status` + surface them in the WP-CLI message | 3 |
 
 ---
 
@@ -184,13 +184,19 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 Run: `cd /home/dev/henry-s-digital-canvas && npm run cf:deploy`
 Expected: auth check passes → lint passes → tests pass → build → `wrangler deploy` uploads to `wrangler.jsonc` target (worker `henrys-digital-canvas`, domain `hperkins.com`). Ends with a successful deployment URL/line.
 
-- [ ] **Step 2: Verify the live endpoint now returns `id`**
+- [ ] **Step 2: Verify the live endpoint now returns `id` on the exact sync URL**
 
 Run:
 ```bash
-curl -s 'https://hperkins.com/api/github/repos?per_page=1' | jq '.[0] | {id, name}'
+SYNC_QUERY='per_page=100&username=henryperkins'
+
+# Cache-busted proof that the deployed worker code can emit id.
+curl -s "https://hperkins.com/api/github/repos?${SYNC_QUERY}&_verify=$(date +%s)" | jq '.[0] | {id, name}'
+
+# Exact URL shape used by wp.hperkins.com hdc_github_sync().
+curl -s "https://hperkins.com/api/github/repos?${SYNC_QUERY}" | jq '.[0] | {id, name}'
 ```
-Expected: a JSON object with a **positive integer** `id` and the repo `name`, e.g. `{ "id": 901234567, "name": "..." }`. (Before this deploy, `id` was `null`/absent.)
+Expected: both commands return a JSON object with a **positive integer** `id` and the repo `name`, e.g. `{ "id": 901234567, "name": "..." }`. The second command is mandatory because Cloudflare caches successful GET responses by request URL (`s-maxage=300`), and WordPress syncs this exact query shape. If the cache-busted command has `id` but the exact sync URL is still stale, purge the Cloudflare cache for that URL or wait for `s-maxage` expiry and retry before marking Task 2 verified.
 
 - [ ] **Step 3: Merge/finish the worker branch**
 
@@ -198,7 +204,7 @@ Use the team's normal flow for the worker repo (this plan doesn't prescribe it).
 
 ---
 
-## Task 3: WordPress sync — consume `id` + add applied/skipped observability (theme repo)
+## Task 3: WordPress sync — consume `id` + add full sync observability (theme repo)
 
 > Closes follow-up **#17**. Run this in the **theme repo** `/home/dev/wp-hperkins-com`. The Phase-1 sync already prefers `github_id` matching, so once Task 2 is live the sync auto-upgrades to id-keying; this task makes that observable and verifies it.
 
@@ -212,22 +218,21 @@ cd /home/dev/wp-hperkins-com
 git checkout -b feat/sync-id-observability
 ```
 
-- [ ] **Step 2: Count applied vs skipped in `hdc_github_sync()`**
+- [ ] **Step 2: Count fetched, attempted, applied, and skipped in `hdc_github_sync()`**
 
-In `inc/home-core/sync.php`, inside `hdc_github_sync()`: initialize counters just before the `foreach ( $kept as $api_repo )` loop, increment `$skipped` at the no-match `continue`, and `$applied` after a repo is written. Concretely:
+In `inc/home-core/sync.php`, inside `hdc_github_sync()`: record the raw upstream count before fork/archive filtering, treat `count( $kept )` as the attempted live rows after filtering, increment `$applied` after a repo is written, then derive `$skipped` after the loop as `attempted - applied`. Deriving `skipped` covers every non-applied branch, including malformed rows, no-id/no-name rows, and `wp_insert_post()` failures.
+
+Add after the decoded live array has passed the empty-response guard and before `$kept` is assigned:
+
+```php
+	$fetched = count( $live );
+```
 
 Add before the loop (right after the `hdc_repo_suppress_begin();` line):
 
 ```php
-	$applied = 0;
-	$skipped = 0;
-```
-
-In the loop's no-id/no-name-match branch, where it currently does `continue;` after the `WP_CLI::warning(...)`, precede the `continue;` with:
-
-```php
-				$skipped++;
-				continue;
+	$attempted = count( $kept );
+	$applied   = 0;
 ```
 
 At the very end of a successful per-repo iteration (immediately after the `hdc_repo_write_derived( $post_id, $merged, true );` line), add:
@@ -236,19 +241,27 @@ At the very end of a successful per-repo iteration (immediately after the `hdc_r
 		$applied++;
 ```
 
+After the loop and after `hdc_repo_reconcile();`, derive the skipped count:
+
+```php
+	$skipped = max( 0, $attempted - $applied );
+```
+
 - [ ] **Step 3: Record the counts in the status option + CLI message**
 
-Change the success `update_option( 'hdc_repo_sync_status', ... )` call to include `applied` and `skipped`:
+Change the success `update_option( 'hdc_repo_sync_status', ... )` call to include raw `fetched`, post-filter `attempted`, `applied`, and derived `skipped`. Keep `count` as the existing post-filter count for backward compatibility:
 
 ```php
 	update_option(
 		'hdc_repo_sync_status',
 		array(
-			'time'    => time(),
-			'source'  => 'live',
-			'count'   => count( $kept ),
-			'applied' => $applied,
-			'skipped' => $skipped,
+			'time'      => time(),
+			'source'    => 'live',
+			'count'     => $attempted,
+			'fetched'   => $fetched,
+			'attempted' => $attempted,
+			'applied'   => $applied,
+			'skipped'   => $skipped,
 		),
 		false
 	);
@@ -258,10 +271,12 @@ And change the function's return to carry them:
 
 ```php
 	return array(
-		'source'  => 'live',
-		'count'   => count( $kept ),
-		'applied' => $applied,
-		'skipped' => $skipped,
+		'source'    => 'live',
+		'count'     => $attempted,
+		'fetched'   => $fetched,
+		'attempted' => $attempted,
+		'applied'   => $applied,
+		'skipped'   => $skipped,
 	);
 ```
 
@@ -270,15 +285,16 @@ Then update the WP-CLI `sync-repos` success line to surface them:
 ```php
 			$result = hdc_github_sync();
 			WP_CLI::success( sprintf(
-				'Sync complete: source=%s, fetched=%d, applied=%d, skipped=%d.',
+				'Sync complete: source=%s, fetched=%d, attempted=%d, applied=%d, skipped=%d.',
 				$result['source'],
-				(int) $result['count'],
+				(int) ( $result['fetched'] ?? $result['count'] ?? 0 ),
+				(int) ( $result['attempted'] ?? $result['count'] ?? 0 ),
 				(int) ( $result['applied'] ?? 0 ),
 				(int) ( $result['skipped'] ?? 0 )
 			) );
 ```
 
-(The fallback path's `return`/`update_option` keep their existing `{source, count}` shape — `applied`/`skipped` are only meaningful on a live run; readers should treat them as optional.)
+(The fallback path's `return`/`update_option` may keep its existing `{source, count}` shape, but setting `fetched`, `attempted`, `applied`, and `skipped` to `0` there is also acceptable. CLI readers must treat those keys as optional on fallback.)
 
 - [ ] **Step 4: Run the sync and verify id-keying + honest counts**
 
@@ -287,7 +303,7 @@ Run:
 wp --path=/home/dev/wp-hperkins-com hdc sync-repos
 wp --path=/home/dev/wp-hperkins-com option get hdc_repo_sync_status --format=json
 ```
-Expected (after Task 2 is live): `Success: Sync complete: source=live, fetched=N, applied=N, skipped=0.` — **skipped is 0** because every live repo now carries an `id` and is matched-or-created. (If Task 2 is NOT yet deployed, `skipped` will still be >0 — that's the honest pre-deploy state and confirms the counter works.)
+Expected (after Task 2 is live and the exact sync URL is no longer stale): `Success: Sync complete: source=live, fetched=N, attempted=M, applied=M, skipped=0.` `fetched` is the raw worker array length, while `attempted`/`applied` are lower if forked or archived repos were filtered before sync. If Task 2 is NOT yet deployed, or if the exact sync URL still returns a cached payload without `id`, `skipped` will remain >0 — that's the honest pre-deploy/stale-cache state and confirms the counter works.
 
 - [ ] **Step 5: Verify `github_id` is now populated on the seeded repos**
 
@@ -304,10 +320,11 @@ Expected: a **positive integer** (the immutable GitHub id), confirming the sync 
 ```bash
 cd /home/dev/wp-hperkins-com
 git add wp-content/themes/henrys-digital-canvas/inc/home-core/sync.php
-git commit -m "feat(home-core): record applied/skipped counts in sync status (observability)
+git commit -m "feat(home-core): record full sync counters in sync status
 
-Surfaces how many live repos were applied vs skipped per sync. Skips drop
-to 0 once the worker exposes repo id (Phase 0). Closes follow-up #17.
+Surfaces raw fetched, post-filter attempted, applied, and skipped repo counts
+per sync. Skips drop to 0 once the worker exposes repo id and the exact sync
+URL is no longer stale. Closes follow-up #17.
 
 Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```
@@ -320,7 +337,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 
 **Placeholder scan:** every code step shows the exact edit; every command shows expected output. No TBD/TODO. ✓
 
-**Type/name consistency:** `id` added to both worker types + the mapper with the codebase's existing `Number.isFinite/Number` idiom; the WP status keys (`applied`/`skipped`) are used consistently in the `update_option`, the `return`, and the CLI message. ✓
+**Type/name consistency:** `id` added to both worker types + the mapper with the codebase's existing `Number.isFinite/Number` idiom; the WP status keys (`fetched`/`attempted`/`applied`/`skipped`) are used consistently in the `update_option`, the `return`, and the CLI message. ✓
 
 **Cross-repo note:** Tasks 1–2 (worker) and Task 3 (theme) are independent commits on separate branches; Task 3's *verification* depends on Task 2 being live, but its *code* does not (the counters work regardless; `skipped` just reads >0 until the worker ships `id`).
 

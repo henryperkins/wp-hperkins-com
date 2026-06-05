@@ -12,11 +12,11 @@
 
 ## Scope & relationship to the design phases
 
-This plan implements **Phase 1 only** of `docs/plans/2026-06-04-homepage-core-block-sync-design.md` (rev. 3). The other phases are separate plans:
+This plan implements **Phase 1 only** of `docs/plans/2026-06-04-homepage-core-block-sync-design.md` (rev. 4). See `docs/plans/ACTIVE_PLANS.md` for the current execution index. The other phases are separate plans/statuses:
 
-- **Phase 0 (Worker):** a cross-repo prerequisite, summarized below. The WP sync has a `name`-fallback, so Phase 1 works whether or not Phase 0 has shipped.
-- **Phase 2 (static patterns + styling + assemble the "Home" pattern + retire the parent wrapper + update `sync_page_sources.php`):** future plan.
-- **Phase 3 (Recent Writing + `reading_time` + delete the 6 custom blocks + referrer audit):** future plan.
+- **Phase 0 (Worker):** `2026-06-05-homepage-core-block-sync-phase-0-plan.md`. The WP sync has a `name`-fallback, so Phase 1 works whether or not Phase 0 has shipped.
+- **Phase 2 (static patterns + styling + assemble the "Home" pattern + retire the parent wrapper + update `sync_page_sources.php`):** `2026-06-05-homepage-core-block-sync-phase-2-plan.md`.
+- **Phase 3 (Recent Writing + `reading_time` + delete the 6 custom blocks + referrer audit):** not yet written as an implementation plan; scope is still design-only.
 
 **Definition of done for Phase 1:** `php tests/repo-logic-test.php` passes; `wp hdc seed-repos` and `wp hdc sync-repos` run cleanly; the `hdc_repo` CPT + all meta are registered with `show_in_rest`; the **binding-resolution test passes** (Selected Work card meta resolves to repo values, not empty/not the page's meta); the hourly cron event is scheduled; `npm run smoke:route` still passes (live homepage unchanged).
 
@@ -55,7 +55,9 @@ All task commits land on this branch.
 Then, from the worker repo: add/extend a Vitest unit test asserting `sanitizeGitHubRepo({ id: 123, name: "x" }).id === 123` (`npm test`), deploy, and verify live:
 
 ```bash
-curl -s 'https://hperkins.com/api/github/repos?per_page=1' | jq '.[0].id'
+SYNC_QUERY='per_page=100&username=henryperkins'
+curl -s "https://hperkins.com/api/github/repos?${SYNC_QUERY}&_verify=$(date +%s)" | jq '.[0].id'
+curl -s "https://hperkins.com/api/github/repos?${SYNC_QUERY}" | jq '.[0].id'
 # Expected: a positive integer (e.g. 901234567), not null
 ```
 

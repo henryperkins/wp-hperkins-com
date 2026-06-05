@@ -1,10 +1,19 @@
 # Homepage as synced core blocks — Design
 
 - **Date:** 2026-06-04
-- **Status:** Approved (design, rev. 4 — §4/§5/§13 reconciled with the source-of-truth merge during Phase-1 planning); pending implementation plan
+- **Status:** Approved architecture (design, rev. 4 — §4/§5/§13 reconciled with the source-of-truth merge during Phase-1 planning). Phase 0, Phase 1, and Phase 2 implementation plans now exist; Phase 3 is still design-only and needs its own plan. See `ACTIVE_PLANS.md`.
 - **Topic:** Rebuild the homepage from 7 custom blocks into native core blocks, with live GitHub data synced server-side from hperkins.com.
 - **Related:** `2026-05-03-home-page-ai-readable-innerblocks-design.md`, `2026-06-03-home-selected-work-parity-design.md`
 - **Source of truth (visual/functional parity):** `/home/dev/henry-s-digital-canvas/src/pages/Home.tsx`
+
+## 0. Active implementation plans
+
+Use `ACTIVE_PLANS.md` as the current execution index. In short:
+
+- Phase 0: `2026-06-05-homepage-core-block-sync-phase-0-plan.md` (worker `id` field + sync observability; production deploy requires explicit go-ahead).
+- Phase 1: `2026-06-04-homepage-core-block-sync-phase-1-plan.md` (data layer + Selected Work prerequisite).
+- Phase 2: `2026-06-05-homepage-core-block-sync-phase-2-plan.md` (static patterns + assembled Home + parent block retirement).
+- Phase 3: no implementation plan exists yet; write it from the Phase-3 scope in this design before executing Recent Writing/core-query retirement work.
 
 ## 1. Problem & goals
 
@@ -114,7 +123,7 @@ WP-native equivalent:
 
 `hdc_github_sync()` on an hourly WP-Cron event `hdc_sync_repos` (scheduled on `init` if absent; cleared on `switch_theme`). A WP-CLI command `wp hdc sync-repos` triggers it manually for first run/debugging.
 
-1. `wp_remote_get( hdc_get_portfolio_origin() . '/api/github/repos?per_page=100', [ 'timeout' => 5 ] )` with the configured owner (`hdc_get_configured_github_owner()`). **No auth header is needed** — the endpoint has no client gate (§2). `per_page=100` is the worker default and matches the React client; a single request suffices at this scale.
+1. `wp_remote_get( hdc_get_portfolio_origin() . '/api/github/repos?per_page=100&username=' . hdc_get_configured_github_owner(), [ 'timeout' => 5 ] )`. **No auth header is needed** — the endpoint has no client gate (§2). `per_page=100` is the worker default and matches the React client; a single request suffices at this scale.
 2. **Soft-fail guard** (extends stale-but-present): if the request errored/timed out/rate-limited, **or** returns a `200` whose parseable **live-repo array is empty** (after JSON decode / shape check), then leave the **Live** tier untouched, set `last_sync_source = fallback` (`fallback-empty` for the empty-`200` case), recompute `source_badge` to its snapshot variant ("GitHub snapshot" for github repos, per `getHomeRepoSourceBadge`'s fallback branch), record the `hdc_repo_sync_status` option, and exit. **What the guard actually protects:** because `post_status` is curated-derived and step 3 *retains* repos missing from the API, an empty/failed response can never blackout the section on its own — the guard's job is to avoid (a) stamping stale data as "Live GitHub" and (b) re-ranking against an empty set. The page keeps rendering the last-good cards; curated repos are never affected.
 3. On good response: drop forks/archived. For each live repo, **upsert `hdc_repo` by `github_id`** (meta_query exact match; create if none). If `github_id` is absent (worker not yet deployed), fall back to exact `name`-meta/title match and log a warning. Set the post **slug** from the live `name` and the post **title** from the derived `display_name` (so a rename updates the slug but keeps the same post + curated meta). Merge Live fields (`language`, `stars`, `forks`, `updated_at`, `url`, `topics`); set `origin = github` (live-present, footnote ²); set `description` from live **only if the stored value is empty** (footnote ¹). **Never** touch the editor-owned curated fields (`featured`, `featured_priority`, `why_it_matters`, `display_name`, `access`). Retain curated-only repos missing from the API (e.g. private case studies).
 4. Compute Derived meta — PHP ports of `Home.tsx` helpers. *github-linked* means `origin === 'github'` **or** `url` contains `github.com/` (per `isGitHubLinkedRepo`):
