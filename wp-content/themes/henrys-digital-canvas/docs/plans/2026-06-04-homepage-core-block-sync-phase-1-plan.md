@@ -408,8 +408,8 @@ Add before the final `echo`:
 ```php
 // --- hdc_repo_display_name (getRepoDisplayName: curated displayName, else title-case slug; tokens <=3 chars uppercased) ---
 hdc_check( 'display: curated wins', hdc_repo_display_name( array( 'display_name' => 'HPerkins.com', 'name' => 'henry-s-digital-canvas' ) ), 'HPerkins.com' );
-hdc_check( 'display: derive title-case', hdc_repo_display_name( array( 'name' => 'my-cool-project' ) ), 'My Cool Project' );
-hdc_check( 'display: short tokens uppercased', hdc_repo_display_name( array( 'name' => 'ai-cli-web-funnel' ) ), 'AI CLI Web Funnel' );
+hdc_check( 'display: derive title-case', hdc_repo_display_name( array( 'name' => 'my-cool-project' ) ), 'MY Cool Project' );
+hdc_check( 'display: short tokens uppercased', hdc_repo_display_name( array( 'name' => 'ai-cli-web-funnel' ) ), 'AI CLI WEB Funnel' );
 hdc_check( 'display: underscores split too', hdc_repo_display_name( array( 'name' => 'data_sync' ) ), 'Data Sync' );
 ```
 
