@@ -130,7 +130,7 @@ $page_configs = array(
 	array(
 		'path'          => 'home',
 		'title'         => 'Home',
-		'content'       => hdc_build_home_page_block_markup(),
+		'content'       => function_exists( 'hdc_home_pattern_markup' ) ? hdc_home_pattern_markup() : hdc_build_home_page_block_markup(),
 		'page_template' => 'page-no-title',
 	),
 	array(
