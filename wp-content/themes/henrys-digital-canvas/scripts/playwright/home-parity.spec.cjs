@@ -113,11 +113,28 @@ test.describe( 'home page core-block structure', () => {
 		);
 		await expect(
 			page.locator( '[data-hdc-home-recent-writing]' )
-		).toHaveCount( 1 );
-		await expectWideSection(
-			page.locator( '[data-hdc-home-recent-writing]' ),
-			'Recent Writing'
+		).toHaveCount( 0 );
+		const recentWriting = page.locator(
+			'#recent-writing.hdc-home-page__section--writing'
 		);
+		await expect( recentWriting ).toHaveCount( 1 );
+		await expectWideSection( recentWriting, 'Recent Writing' );
+		await expect( recentWriting ).not.toContainText(
+			/Loading recent writing/i
+		);
+		const articleRows = recentWriting.locator(
+			'.is-style-hdc-article-row'
+		);
+		const articleRowCount = await articleRows.count();
+		if ( articleRowCount > 0 ) {
+			await expect(
+				articleRows.first().locator( '.hdc-home-page__reading-time' )
+			).toContainText( /\d+\s+min read/i );
+		} else {
+			await expect( recentWriting ).toContainText(
+				'Recent writing is updating'
+			);
+		}
 		await expect( page.locator( '#contact-cta' ) ).toContainText(
 			'Need a technical partner?'
 		);

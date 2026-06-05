@@ -141,7 +141,8 @@ if [[ "${RUN_FRONT_PAGE_SHAPE_CHECK:-0}" == "1" ]]; then
   REQUIRED_SERIALIZED_MARKERS=(
     "is-style-home-hero"
     "\"namespace\":\"hdc/selected-work\""
-    "wp:henrys-digital-canvas/home-recent-writing"
+    "\"postType\":\"post\""
+    "\"key\":\"reading_time\""
     "is-style-ember-veil"
   )
 
@@ -151,6 +152,7 @@ if [[ "${RUN_FRONT_PAGE_SHAPE_CHECK:-0}" == "1" ]]; then
     "wp:henrys-digital-canvas/home-selected-work"
     "wp:henrys-digital-canvas/home-throughline"
     "wp:henrys-digital-canvas/home-resume-snapshot"
+    "wp:henrys-digital-canvas/home-recent-writing"
     "wp:henrys-digital-canvas/home-contact-cta"
   )
 
@@ -158,7 +160,8 @@ if [[ "${RUN_FRONT_PAGE_SHAPE_CHECK:-0}" == "1" ]]; then
     "is-style-home-hero"
     "is-style-hdc-repo-card"
     "hdc-home-page__section--throughline"
-    "data-hdc-home-recent-writing"
+    "hdc-home-page__section--writing"
+    "hdc-home-page__recent-writing-query"
     "hdc-home-page__cta-card"
   )
 
