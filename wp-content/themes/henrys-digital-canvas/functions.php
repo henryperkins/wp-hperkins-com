@@ -66,6 +66,13 @@ function hdc_enqueue_frontend_styles() {
 		hdc_asset_version( '/assets/css/background-library.css' )
 	);
 
+	wp_enqueue_style(
+		'hdc-home-sections',
+		get_stylesheet_directory_uri() . '/assets/css/home-sections.css',
+		array( 'hdc-background-library' ),
+		hdc_asset_version( '/assets/css/home-sections.css' )
+	);
+
 	// Load single post styles on single posts
 	if ( is_single() ) {
 		wp_enqueue_style(
