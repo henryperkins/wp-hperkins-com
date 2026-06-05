@@ -15,3 +15,4 @@ require_once __DIR__ . '/repo-cpt.php';
 require_once __DIR__ . '/markup.php';
 require_once __DIR__ . '/patterns.php';
 require_once __DIR__ . '/query-loop.php';
+require_once __DIR__ . '/styles.php';
