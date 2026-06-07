@@ -135,7 +135,7 @@ $page_configs = array(
 	array(
 		'path'          => 'work',
 		'title'         => 'Work',
-		'content'       => '<!-- wp:henrys-digital-canvas/work-showcase {"includeForks":true} /-->',
+		'content'       => '<!-- wp:henrys-digital-canvas/work-showcase {"align":"full","includeForks":true} /-->',
 		'page_template' => '',
 	),
 	array(
@@ -154,7 +154,7 @@ $page_configs = array(
 	array(
 		'path'          => 'hobbies',
 		'title'         => 'Hobbies',
-		'content'       => '<!-- wp:henrys-digital-canvas/hobbies-moments /-->',
+		'content'       => '<!-- wp:henrys-digital-canvas/hobbies-moments {"align":"full"} /-->',
 		'page_template' => '',
 	),
 	array(

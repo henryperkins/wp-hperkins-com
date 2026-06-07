@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $defaults = array(
 	'heading'     => 'Hobbies',
-	'description' => 'Outside work, I spend time building small tools, making music, and tracking what I am learning now, recently, and next.',
+	'description' => 'Side projects, piano sessions, and learning notes — the after-hours practices that sharpen how I work.',
 );
 
 $attrs = wp_parse_args( $attributes, $defaults );
@@ -21,6 +21,7 @@ $config = array(
 	'description' => sanitize_text_field( $attrs['description'] ),
 	'endpoint'    => esc_url_raw( rest_url( 'henrys-digital-canvas/v1/moments' ) ),
 	'fallbackUrl' => esc_url_raw( get_theme_file_uri( 'data/moments.json' ) ),
+	'imageBaseUrl' => esc_url_raw( get_theme_file_uri( 'assets/images' ) ),
 );
 
 $inline_fallback_path = get_theme_file_path( 'data/moments.json' );
