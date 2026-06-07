@@ -9,7 +9,8 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Force orderby=menu_order ASC for the Selected Work loop.
+ * Force orderby=menu_order ASC for the Selected Work loop and keep the
+ * homepage Recent Writing loop from surfacing the default placeholder post.
  *
  * Keyed on post_type: `hdc_repo` is queried only by this loop, so it uniquely
  * identifies it. (core/query's `namespace` attribute is NOT exposed through the
@@ -26,6 +27,21 @@ function hdc_selected_work_query_vars( $query, $block = null ) {
 		$query['orderby'] = 'menu_order';
 		$query['order']   = 'ASC';
 	}
+
+	if ( isset( $query['post_type'] ) && 'post' === $query['post_type'] ) {
+		$placeholder = get_page_by_path( 'hello-world', OBJECT, 'post' );
+		if ( $placeholder instanceof WP_Post ) {
+			$query['post__not_in'] = array_values(
+				array_unique(
+					array_merge(
+						isset( $query['post__not_in'] ) && is_array( $query['post__not_in'] ) ? $query['post__not_in'] : array(),
+						array( (int) $placeholder->ID )
+					)
+				)
+			);
+		}
+	}
+
 	return $query;
 }
 add_filter( 'query_loop_block_query_vars', 'hdc_selected_work_query_vars', 10, 2 );

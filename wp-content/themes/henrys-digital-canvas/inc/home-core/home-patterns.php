@@ -108,31 +108,41 @@ function hdc_home_resume_pattern_markup(): string {
 <!-- /wp:paragraph -->
 </div>
 <!-- /wp:group -->
-<!-- wp:columns {"className":"hdc-home-page__resume-grid"} -->
-<div class="wp-block-columns hdc-home-page__resume-grid">
-<!-- wp:column {"width":"60%"} -->
-<div class="wp-block-column" style="flex-basis:60%">
+<!-- wp:group {"className":"hdc-home-page__resume-grid","layout":{"type":"default"}} -->
+<div class="wp-block-group hdc-home-page__resume-grid">
 <!-- wp:group {"className":"hdc-home-page__resume-card is-style-ember-topography","layout":{"type":"constrained"}} -->
 <div class="wp-block-group hdc-home-page__resume-card is-style-ember-topography">
-<!-- wp:paragraph {"className":"hdc-home-page__eyebrow"} -->
-<p class="hdc-home-page__eyebrow">Positioning</p>
+<!-- wp:paragraph {"className":"hdc-home-page__eyebrow hdc-home-page__eyebrow--body"} -->
+<p class="hdc-home-page__eyebrow hdc-home-page__eyebrow--body">Positioning</p>
 <!-- /wp:paragraph -->
 <!-- wp:heading {"level":3,"className":"hdc-home-page__card-title"} -->
-<h3 class="wp-block-heading hdc-home-page__card-title">Public proof of work</h3>
+<h3 class="wp-block-heading hdc-home-page__card-title">Solutions Engineer | AI Workflows, WordPress, and API Integrations</h3>
 <!-- /wp:heading -->
-<!-- wp:list {"className":"hdc-home-page__list"} -->
-<ul class="wp-block-list hdc-home-page__list"><!-- wp:list-item --><li>Prompt Forge</li><!-- /wp:list-item --><!-- wp:list-item --><li>HPerkins.com</li><!-- /wp:list-item --><!-- wp:list-item --><li>wp-hperkins-com</li><!-- /wp:list-item --></ul>
-<!-- /wp:list -->
+<!-- wp:paragraph {"className":"hdc-home-page__card-copy"} -->
+<p class="hdc-home-page__card-copy">Customer-facing technical delivery across implementation, support, documentation, and enablement.</p>
+<!-- /wp:paragraph -->
+<!-- wp:group {"className":"hdc-home-page__resume-snapshot","layout":{"type":"default"}} -->
+<div class="wp-block-group hdc-home-page__resume-snapshot">
+<!-- wp:paragraph {"className":"hdc-home-page__resume-snapshot-label"} -->
+<p class="hdc-home-page__resume-snapshot-label">Public proof of work</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph {"className":"hdc-home-page__resume-snapshot-items"} -->
+<p class="hdc-home-page__resume-snapshot-items">Prompt Forge <span class="hdc-home-page__inline-dot">&bull;</span> HPerkins.com <span class="hdc-home-page__inline-dot">&bull;</span> wp-hperkins-com</p>
+<!-- /wp:paragraph -->
 </div>
 <!-- /wp:group -->
+<!-- wp:group {"className":"hdc-home-page__badges","layout":{"type":"default"}} -->
+<div class="wp-block-group hdc-home-page__badges"><span class="hdc-home-page__badge">Solutions Engineer</span><span class="hdc-home-page__badge">Implementation Engineer</span><span class="hdc-home-page__badge">Developer Enablement</span></div>
+<!-- /wp:group -->
+<!-- wp:paragraph {"className":"hdc-home-page__inline-links"} -->
+<p class="hdc-home-page__inline-links"><a class="hdc-home-page__card-cta" href="/resume">Interactive resume&nbsp;&rarr;</a><a class="hdc-home-page__card-cta" href="/resume/ats">ATS / recruiter view&nbsp;&rarr;</a></p>
+<!-- /wp:paragraph -->
 </div>
-<!-- /wp:column -->
-<!-- wp:column {"width":"40%"} -->
-<div class="wp-block-column" style="flex-basis:40%">
-<!-- wp:group {"className":"hdc-home-page__resume-card is-style-ember-strong","layout":{"type":"constrained"}} -->
-<div class="wp-block-group hdc-home-page__resume-card is-style-ember-strong">
-<!-- wp:paragraph {"className":"hdc-home-page__eyebrow"} -->
-<p class="hdc-home-page__eyebrow">Best fit</p>
+<!-- /wp:group -->
+<!-- wp:group {"className":"hdc-home-page__resume-card hdc-home-page__resume-card--accent is-style-ember-strong","layout":{"type":"constrained"}} -->
+<div class="wp-block-group hdc-home-page__resume-card hdc-home-page__resume-card--accent is-style-ember-strong">
+<!-- wp:paragraph {"className":"hdc-home-page__eyebrow hdc-home-page__eyebrow--body"} -->
+<p class="hdc-home-page__eyebrow hdc-home-page__eyebrow--body">Best fit</p>
 <!-- /wp:paragraph -->
 <!-- wp:heading {"level":3,"className":"hdc-home-page__card-title"} -->
 <h3 class="wp-block-heading hdc-home-page__card-title">Where I contribute fastest</h3>
@@ -140,22 +150,10 @@ function hdc_home_resume_pattern_markup(): string {
 <!-- wp:list {"className":"hdc-home-page__list"} -->
 <ul class="wp-block-list hdc-home-page__list"><!-- wp:list-item --><li>Customer-facing implementation, onboarding, and support workflows</li><!-- /wp:list-item --><!-- wp:list-item --><li>API integrations, documentation, and escalation triage</li><!-- /wp:list-item --><!-- wp:list-item --><li>AI-assisted workflow delivery grounded in WordPress and durable web systems</li><!-- /wp:list-item --></ul>
 <!-- /wp:list -->
-<!-- wp:buttons {"className":"hdc-home-page__inline-links"} -->
-<div class="wp-block-buttons hdc-home-page__inline-links">
-<!-- wp:button -->
-<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/resume">Interactive resume</a></div>
-<!-- /wp:button -->
-<!-- wp:button {"className":"is-style-outline"} -->
-<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/resume/ats">ATS / recruiter view</a></div>
-<!-- /wp:button -->
-</div>
-<!-- /wp:buttons -->
 </div>
 <!-- /wp:group -->
 </div>
-<!-- /wp:column -->
-</div>
-<!-- /wp:columns -->
+<!-- /wp:group -->
 </div>
 <!-- /wp:group -->
 HTML;
@@ -175,10 +173,10 @@ function hdc_home_contact_pattern_markup(): string {
 <!-- wp:group {"className":"hdc-home-page__cta-body","layout":{"type":"constrained"}} -->
 <div class="wp-block-group hdc-home-page__cta-body">
 <!-- wp:paragraph {"className":"hdc-home-page__eyebrow hdc-home-page__eyebrow--body"} -->
-<p class="hdc-home-page__eyebrow hdc-home-page__eyebrow--body">Need a technical partner?</p>
+<p class="hdc-home-page__eyebrow hdc-home-page__eyebrow--body">Prompt systems. React apps. WordPress fixes.</p>
 <!-- /wp:paragraph -->
 <!-- wp:heading {"className":"hdc-home-page__section-title"} -->
-<h2 class="wp-block-heading hdc-home-page__section-title">Bring me in where support, product, and implementation overlap.</h2>
+<h2 class="wp-block-heading hdc-home-page__section-title">Bring me in when the fix lives between the help desk and the codebase.</h2>
 <!-- /wp:heading -->
 <!-- wp:paragraph {"className":"hdc-home-page__copy"} -->
 <p class="hdc-home-page__copy">I help teams turn support tickets into shipped fixes &#8212; API integrations, documentation, AI-assisted triage &#8212; so the thing that was breaking at 6 AM isn&#8217;t breaking at 6 AM tomorrow.</p>
@@ -248,11 +246,18 @@ function hdc_home_recent_writing_pattern_markup(): string {
 <!-- wp:group {"className":"hdc-home-page__empty-state is-style-ember-strong","layout":{"type":"constrained"}} -->
 <div class="wp-block-group hdc-home-page__empty-state is-style-ember-strong">
 <!-- wp:heading {"level":3,"className":"hdc-home-page__empty-title"} -->
-<h3 class="wp-block-heading hdc-home-page__empty-title">Recent writing is updating</h3>
+<h3 class="wp-block-heading hdc-home-page__empty-title">Could not load recent writing</h3>
 <!-- /wp:heading -->
 <!-- wp:paragraph {"className":"hdc-home-page__empty"} -->
-<p class="hdc-home-page__empty">Recent posts aren&#8217;t available in the homepage feed. Visit All posts to browse the full index.</p>
+<p class="hdc-home-page__empty">The homepage writing feed is temporarily unavailable. Try again or visit the full blog index.</p>
 <!-- /wp:paragraph -->
+<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+<div class="wp-block-buttons">
+<!-- wp:button {"className":"is-style-outline"} -->
+<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/">Try again</a></div>
+<!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
 </div>
 <!-- /wp:group -->
 <!-- /wp:query-no-results -->

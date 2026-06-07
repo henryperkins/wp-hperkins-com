@@ -24,14 +24,12 @@ function hdc_repo_is_github_linked( array $repo ): bool {
 }
 
 /**
- * Mirror of getHomeRepoSummary: whyItMatters ?? description.
- * WP post meta is '' when unset, so an empty why_it_matters falls back to description.
+ * Mirror of the current Home repo objects: use the curated/live description.
+ *
+ * The Work detail data still owns why_it_matters, but the live React homepage
+ * does not merge that field into its Selected Work cards.
  */
 function hdc_repo_summary( array $repo ): string {
-	$why = isset( $repo['why_it_matters'] ) ? trim( (string) $repo['why_it_matters'] ) : '';
-	if ( '' !== $why ) {
-		return $why;
-	}
 	return isset( $repo['description'] ) ? (string) $repo['description'] : '';
 }
 
