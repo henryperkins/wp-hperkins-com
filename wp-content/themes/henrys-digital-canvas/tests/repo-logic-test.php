@@ -28,10 +28,10 @@ hdc_check( 'github-linked: origin github', hdc_repo_is_github_linked( array( 'or
 hdc_check( 'github-linked: curated origin + github url', hdc_repo_is_github_linked( array( 'origin' => 'curated', 'url' => 'https://github.com/henryperkins/tarot' ) ), true );
 hdc_check( 'github-linked: curated, no github url', hdc_repo_is_github_linked( array( 'origin' => 'curated', 'url' => 'https://example.com/x' ) ), false );
 
-// --- hdc_repo_summary (whyItMatters ?? description; '' treated as unset per WP meta) ---
-hdc_check( 'summary: why_it_matters wins', hdc_repo_summary( array( 'why_it_matters' => 'Because X.', 'description' => 'Desc.' ) ), 'Because X.' );
-hdc_check( 'summary: empty why falls back to description', hdc_repo_summary( array( 'why_it_matters' => '', 'description' => 'Desc.' ) ), 'Desc.' );
-hdc_check( 'summary: missing why falls back to description', hdc_repo_summary( array( 'description' => 'Desc.' ) ), 'Desc.' );
+// --- hdc_repo_summary (current Home cards use description; why_it_matters is Work-detail curation) ---
+hdc_check( 'summary: description wins over why_it_matters', hdc_repo_summary( array( 'why_it_matters' => 'Because X.', 'description' => 'Desc.' ) ), 'Desc.' );
+hdc_check( 'summary: empty description stays empty', hdc_repo_summary( array( 'why_it_matters' => 'Because X.', 'description' => '' ) ), '' );
+hdc_check( 'summary: missing why still uses description', hdc_repo_summary( array( 'description' => 'Desc.' ) ), 'Desc.' );
 hdc_check( 'summary: both empty -> empty', hdc_repo_summary( array() ), '' );
 
 // --- hdc_repo_badge_label ---

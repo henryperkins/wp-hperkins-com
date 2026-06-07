@@ -8,6 +8,23 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Sanitize signed integer meta values.
+ *
+ * WordPress passes extra context arguments to meta sanitize callbacks, so this
+ * wrapper cannot be replaced with intval directly.
+ *
+ * @param mixed $value Raw meta value.
+ * @return int|string Signed integer, or an empty string when the value is unset.
+ */
+function hdc_repo_sanitize_signed_int( $value ) {
+	if ( '' === $value || null === $value || ! is_numeric( $value ) ) {
+		return '';
+	}
+
+	return (int) $value;
+}
+
+/**
  * Register the non-public, admin-visible hdc_repo CPT.
  */
 function hdc_repo_register_post_type(): void {
@@ -79,7 +96,7 @@ function hdc_repo_register_meta(): void {
 		)
 	);
 
-	$int_keys = array( 'github_id', 'featured_priority', 'stars', 'forks' );
+	$int_keys = array( 'github_id', 'stars', 'forks' );
 	foreach ( $int_keys as $key ) {
 		register_post_meta(
 			'hdc_repo',
@@ -92,6 +109,17 @@ function hdc_repo_register_meta(): void {
 			)
 		);
 	}
+
+	register_post_meta(
+		'hdc_repo',
+		'featured_priority',
+		array(
+			'single'            => true,
+			'type'              => 'integer',
+			'show_in_rest'      => true,
+			'sanitize_callback' => 'hdc_repo_sanitize_signed_int',
+		)
+	);
 
 	register_post_meta(
 		'hdc_repo',

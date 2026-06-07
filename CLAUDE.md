@@ -2,10 +2,9 @@
 
 ## Project Overview
 
-Personal technical portfolio site for Henry Perkins, migrated from a React SPA to a WordPress block theme. The local production install runs on **WordPress 6.9.4** with **PHP 8.5**, **MariaDB 11.8**, and **Gutenberg 23.x** (check `wp plugin get gutenberg --field=version`).
+Personal technical portfolio site for Henry Perkins, migrated from a React SPA to a WordPress block theme. The local production install runs on **WordPress 7.1-alpha-62469** with **PHP 8.5**, **MariaDB 11.8**, and **Gutenberg 23.3.2** (check `wp plugin get gutenberg --field=version`).
 
-- **Current host URL**: http://209.97.147.66
-- **Target live URL**: https://wp.hperkins.com (switch after DNS points at this host and TLS is issued)
+- **Live URL**: https://wp.hperkins.com (live; served by this install — host IP 209.97.147.66)
 - **Theme**: `henrys-digital-canvas` — block theme, child of `twentytwentyfive`
 - **Theme dir**: `wp-content/themes/henrys-digital-canvas/`
 
@@ -30,7 +29,7 @@ Personal technical portfolio site for Henry Perkins, migrated from a React SPA t
 
 All blocks are registered via `register_block_type_from_metadata()` from `blocks/<name>/block.json`. Each block MUST be identical in design and function to its corresponding TSX page in the source React app.
 
-**Source of truth**: `/home/ubuntu/henry-s-digital-canvas/src/pages/`
+**Source of truth**: `/home/dev/henry-s-digital-canvas/src/pages/`
 
 | Block | Source TSX page |
 |-------|-----------------|
@@ -59,7 +58,7 @@ Converted blocks use `*.asset.php` content hashes for cache-busting. Unconverted
 
 ## Source React App Reference
 
-**Source root**: `/home/ubuntu/henry-s-digital-canvas/src/`
+**Source root**: `/home/dev/henry-s-digital-canvas/src/`
 
 ### Template Part and Layout Mapping
 
@@ -172,7 +171,7 @@ Additional audit scripts:
 Always use the path flag:
 
 ```bash
-wp --path=/home/ubuntu/wp-hperkins-com <command>
+wp --path=/home/dev/wp-hperkins-com <command>
 ```
 
 ## Dev Setup
@@ -214,8 +213,8 @@ The WordPress MCP Adapter entries in `.claude/settings.json` and `.mcp.json` poi
 
 ## Gotchas
 
-- After adding/changing rewrite rules, flush with: `wp --path=/home/ubuntu/wp-hperkins-com rewrite flush`
-- After theme/plugin changes, clear caches: `wp --path=/home/ubuntu/wp-hperkins-com cache flush` (object cache) + purge cache-enabler from admin
+- After adding/changing rewrite rules, flush with: `wp --path=/home/dev/wp-hperkins-com rewrite flush`
+- After theme/plugin changes, clear caches: `wp --path=/home/dev/wp-hperkins-com cache flush` (object cache) + purge cache-enabler from admin
 - `page-ats.html` and `page-resume-ats.html` both exist — `page-ats.html` may be a legacy duplicate
 - Classic PHP templates (`page-work-detail.php`, `page-blog-detail.php`) bypass the block template system — they're the only non-`.html` templates
 - Block `view.js` files are enqueued via `viewScript` in `block.json` — they only load on pages where the block appears

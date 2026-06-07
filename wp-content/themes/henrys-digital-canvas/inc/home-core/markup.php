@@ -18,8 +18,8 @@ function hdc_selected_work_block_markup(): string {
 <!-- wp:query {"queryId":1,"query":{"perPage":3,"pages":0,"offset":0,"postType":"hdc_repo","order":"asc","orderBy":"menu_order","inherit":false},"namespace":"hdc/selected-work","align":"wide"} -->
 <div class="wp-block-query alignwide">
 <!-- wp:post-template -->
-<!-- wp:group {"className":"is-style-hdc-repo-card","layout":{"type":"constrained"}} -->
-<div class="wp-block-group is-style-hdc-repo-card">
+<!-- wp:group {"className":"is-style-hdc-repo-card is-style-ember-topography","layout":{"type":"constrained"}} -->
+<div class="wp-block-group is-style-hdc-repo-card is-style-ember-topography">
 <!-- wp:group {"className":"hdc-repo-card__meta","layout":{"type":"flex","flexWrap":"wrap"}} -->
 <div class="wp-block-group hdc-repo-card__meta">
 <!-- wp:paragraph {"className":"hdc-repo-card__lang","metadata":{"bindings":{"content":{"source":"core/post-meta","args":{"key":"language"}}}}} -->
@@ -33,9 +33,9 @@ function hdc_selected_work_block_markup(): string {
 <!-- /wp:paragraph -->
 </div>
 <!-- /wp:group -->
-<!-- wp:post-title {"level":3,"isLink":false} /-->
-<!-- wp:paragraph {"className":"hdc-repo-card__summary","metadata":{"bindings":{"content":{"source":"core/post-meta","args":{"key":"summary"}}}}} -->
-<p class="hdc-repo-card__summary"></p>
+<!-- wp:post-title {"level":3,"isLink":false,"className":"hdc-home-page__card-title"} /-->
+<!-- wp:paragraph {"className":"hdc-repo-card__summary hdc-home-page__card-copy hdc-home-page__card-copy--clamp","metadata":{"bindings":{"content":{"source":"core/post-meta","args":{"key":"summary"}}}}} -->
+<p class="hdc-repo-card__summary hdc-home-page__card-copy hdc-home-page__card-copy--clamp"></p>
 <!-- /wp:paragraph -->
 <!-- wp:group {"className":"hdc-repo-card__footer","layout":{"type":"flex","justifyContent":"space-between"}} -->
 <div class="wp-block-group hdc-repo-card__footer">
