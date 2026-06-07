@@ -621,50 +621,13 @@
 	margin: 0;
 }
 
-.hdc-work-shell {
-	border: 0;
-	border-radius: 0;
-	background: transparent;
-	padding: 0;
-	box-shadow: none;
-}
-
-.hdc-work-app {
-	display: block;
-}
-
-.hdc-work-page-hero {
-	margin-inline: calc(50% - 50vw);
-	border-bottom: 1px solid hsl(var(--border));
-}
-
-.hdc-work-page-hero__inner {
-	padding-block: 4rem 3rem;
-}
-
-.hdc-work-page-hero__eyebrow {
-	margin: 0 0 0.75rem;
-	text-transform: uppercase;
-	color: hsl(var(--text-meta));
-}
-
-.hdc-work-page-hero__title {
-	margin: 0;
-	max-width: 16rem;
-}
-
-.hdc-work-page-hero__description {
-	margin: 1rem 0 0;
-	max-width: 48rem;
-}
-
-.hdc-work-page-hero__meta {
-	margin-top: 1rem;
-}
-
-.hdc-work-page-body {
-	padding-block: 3rem;
-}
+/*
+ * Full-page composition styles (shell reset, full-bleed hero, page body) are
+ * defined once in the "Source-route parity overrides" block at the end of this
+ * file. They used to be duplicated here, which split the cascade across two
+ * sources of truth and left the hero's full-bleed load-bearing on a rule the
+ * new design block did not contain. Consolidated to keep it self-contained.
+ */
 
 .hdc-work-filters {
 	margin-bottom: 2.5rem;
@@ -1329,5 +1292,198 @@
 
 	.hdc-reveal.is-visible {
 		animation: none;
+	}
+}
+
+/*
+ * Source-route parity overrides: /work is a page composition, not a boxed widget.
+ * This is the single source of truth for the full-page shell, full-bleed hero,
+ * and page body — do not re-declare these selectors elsewhere in this file.
+ */
+.wp-block-henrys-digital-canvas-work-showcase.alignfull {
+	margin: 0;
+	/*
+	 * The hero and page-body backgrounds bleed to the viewport edges (100vw /
+	 * negative inline margins), which can spill ~1 scrollbar-width past the
+	 * alignfull wrapper and trigger a horizontal scrollbar. Clip that spill
+	 * here: this wrapper already spans the full visible width, so clipping is
+	 * invisible. (overflow-x: clip leaves vertical flow and sticky untouched.)
+	 */
+	overflow-x: clip;
+}
+
+.wp-block-henrys-digital-canvas-work-showcase.alignfull .hdc-work-shell,
+.hdc-work-shell {
+	overflow: visible;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+	padding: 0;
+}
+
+.hdc-work-app {
+	display: block;
+	position: relative;
+	isolation: isolate;
+	gap: 0;
+}
+
+.hdc-work-page-hero {
+	position: relative;
+	/* Full-bleed breakout (kept self-contained here, not in a separate rule). */
+	margin-inline: calc(50% - 50vw);
+	overflow: hidden;
+	border: 0;
+	border-radius: 0;
+	background:
+		linear-gradient(180deg, hsl(var(--surface-1)) 0%, hsl(var(--background)) 100%),
+		radial-gradient(44% 48% at 82% 14%, hsl(var(--warning) / 0.14), transparent 68%),
+		radial-gradient(44% 38% at 15% 22%, hsl(var(--info) / 0.1), transparent 66%),
+		image-set(
+			url("../../assets/images/backgrounds/theme-surface-ember-topography-light-960.webp") 1x,
+			url("../../assets/images/backgrounds/theme-surface-ember-topography-light.webp") 2x
+		);
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: auto, auto, auto, cover;
+	background-blend-mode: normal, screen, multiply, soft-light;
+	box-shadow: none;
+	padding: 0;
+}
+
+.hdc-work-page-hero::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background:
+		linear-gradient(180deg, hsl(0 0% 100% / 0.32), transparent 34%),
+		radial-gradient(62% 46% at 50% 0%, hsl(var(--warning) / 0.1), transparent 70%);
+	opacity: 0.72;
+}
+
+.hdc-work-page-hero__inner {
+	position: relative;
+	z-index: 1;
+	margin-inline: auto;
+	width: min(100% - 2rem, 64rem);
+	padding-block: clamp(4.75rem, 8vw, 7rem) clamp(3.25rem, 5vw, 4.5rem);
+}
+
+.hdc-work-page-hero__eyebrow {
+	margin: 0 0 0.85rem;
+	color: hsl(var(--text-accent));
+	font-family: var(--font-mono);
+	font-size: 0.72rem;
+	font-weight: 800;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+}
+
+.hdc-work-page-hero__title {
+	max-width: 12ch;
+	margin: 0;
+	color: hsl(var(--text-strong));
+	font-family: var(--font-serif);
+	font-size: clamp(3.2rem, 8vw, 6.8rem);
+	letter-spacing: -0.055em;
+	line-height: 0.92;
+	text-wrap: balance;
+}
+
+.hdc-work-page-hero__description {
+	max-width: 50rem;
+	margin: 1.1rem 0 0;
+	color: hsl(var(--text-body));
+	font-size: clamp(1.05rem, 1.75vw, 1.28rem);
+	line-height: 1.58;
+}
+
+.hdc-work-page-hero__meta {
+	margin-top: 1rem;
+}
+
+.hdc-work-page-body {
+	position: relative;
+	z-index: 1;
+	margin-inline: auto;
+	width: min(100% - 2rem, 64rem);
+	padding-block: 3rem 4rem;
+}
+
+.hdc-work-page-body::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 50%;
+	z-index: -1;
+	width: 100vw;
+	pointer-events: none;
+	transform: translateX(-50%);
+	background:
+		linear-gradient(180deg, hsl(var(--surface-1)) 0%, hsl(var(--background)) 16%, hsl(var(--surface-1)) 100%),
+		radial-gradient(46% 30% at 84% 16%, hsl(var(--info) / 0.1), transparent 64%),
+		radial-gradient(52% 34% at 14% 42%, hsl(var(--warning) / 0.12), transparent 70%),
+		image-set(
+			url("../../assets/images/backgrounds/theme-surface-learning-paper-light-960.webp") 1x,
+			url("../../assets/images/backgrounds/theme-surface-learning-paper-light.webp") 2x
+		);
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: auto, auto, auto, cover;
+	background-blend-mode: normal, screen, multiply, normal;
+}
+
+.hdc-work-page-body > * {
+	position: relative;
+	z-index: 1;
+}
+
+.hdc-work-page-body > .hdc-work-section,
+.hdc-work-page-body > .hdc-work-filters,
+.hdc-work-page-body > .hdc-work-signals,
+.hdc-work-page-body > .hdc-work-pending {
+	margin-top: 1.5rem;
+}
+
+.hdc-work-page-body > .hdc-work-section:first-child,
+.hdc-work-page-body > .hdc-work-filters:first-child {
+	margin-top: 0;
+}
+
+.hdc-work-featured-card,
+.hdc-work-role-card,
+.hdc-work-repo-card,
+.hdc-work-pending,
+.hdc-work-empty-state,
+.hdc-work-month-group,
+.hdc-work-timeline-item,
+.hdc-work-filters,
+.hdc-work-signals {
+	background:
+		linear-gradient(180deg, hsl(var(--surface-1) / 0.94) 0%, hsl(var(--surface-2) / 0.9) 100%),
+		radial-gradient(80% 80% at 84% 10%, hsl(var(--warning) / 0.08), transparent 62%);
+	border-color: hsl(var(--border-emphasis));
+	box-shadow: var(--shadow-card);
+}
+
+@media (max-width: 47.98rem) {
+	.hdc-work-page-hero__inner,
+	.hdc-work-page-body {
+		width: min(100% - 1.5rem, 64rem);
+	}
+
+	.hdc-work-page-hero__inner {
+		padding-block: 4.25rem 2.75rem;
+	}
+
+	.hdc-work-page-hero__title {
+		font-size: clamp(3rem, 17vw, 4.6rem);
+	}
+
+	.hdc-work-page-body {
+		padding-block: 2rem 3rem;
 	}
 }

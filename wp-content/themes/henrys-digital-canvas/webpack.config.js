@@ -20,6 +20,32 @@ for ( const file of srcFiles ) {
 	);
 }
 
+function normalizeDevServerProxy( proxy, devServer ) {
+	if ( ! proxy || Array.isArray( proxy ) || typeof proxy === 'function' ) {
+		return proxy;
+	}
+
+	return Object.entries( proxy ).map( ( [ context, options ] ) => {
+		const proxyOptions =
+			typeof options === 'object' ? { ...options } : { target: options };
+
+		if (
+			! proxyOptions.target &&
+			! proxyOptions.router &&
+			! proxyOptions.bypass
+		) {
+			proxyOptions.target = `http://${ devServer.host || 'localhost' }:${
+				devServer.port || 8887
+			}`;
+		}
+
+		return {
+			...proxyOptions,
+			context: [ context ],
+		};
+	} );
+}
+
 // Replace the default DependencyExtractionWebpackPlugin with a custom instance
 // that maps hdc-shared-utils imports to the globally enqueued script handle.
 const plugins = defaultConfig.plugins.filter(
@@ -47,5 +73,14 @@ module.exports = {
 		path: path.resolve( __dirname ),
 		filename: '[name].js',
 	},
+	devServer: defaultConfig.devServer
+		? {
+				...defaultConfig.devServer,
+				proxy: normalizeDevServerProxy(
+					defaultConfig.devServer.proxy,
+					defaultConfig.devServer
+				),
+		  }
+		: defaultConfig.devServer,
 	plugins,
 };

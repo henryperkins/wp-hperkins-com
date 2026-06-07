@@ -1,7 +1,7 @@
 [
 	{
 		"name": "tarot",
-		"description": "Tarot card reading AI app with interactive spreads and AI-powered interpretations.",
+		"description": "Tableu \u2014 AI tarot reading app on React 19 + Cloudflare Workers with deterministic draws, multiple spreads (Celtic Cross, Three-Card, Decision, Relationship), GraphRAG narrative context, Azure OpenAI primary with Claude/local fallback, and Azure/Hume TTS narration.",
 		"language": "JavaScript",
 		"stars": 0,
 		"forks": 0,
@@ -173,7 +173,7 @@
 	{
 		"name": "flavor-agent",
 		"displayName": "Flavor Agent",
-		"description": "WordPress plugin that adds grounded AI recommendations to Gutenberg editing flows, backed by retrieval and shared runtime APIs.",
+		"description": "Customer-facing AI for WordPress editors \u2014 contextual Gutenberg recommendations across 8 native surfaces (blocks, content, patterns, templates, template parts, navigation, Global Styles, Style Book) with review-first apply, undo, and a server-backed AI Activity audit, on a multi-provider runtime via Settings > Connectors plus Cloudflare AI Search and Qdrant retrieval.",
 		"language": "PHP",
 		"stars": 0,
 		"forks": 0,
@@ -196,7 +196,7 @@
 	{
 		"name": "wp-hperkins-com",
 		"displayName": "WordPress Portfolio",
-		"description": "Public WordPress repository housing the henrys-digital-canvas block theme, REST contracts, dynamic work and blog routes, and live smoke checks for the portfolio site.",
+		"description": "Public WordPress repository housing the henrys-digital-canvas block theme, REST contracts, dynamic work and blog routes, the codex AI-provider plugin, single-post template, stylebook audit reports, and live smoke checks for the portfolio site.",
 		"language": "JavaScript",
 		"stars": 0,
 		"forks": 0,

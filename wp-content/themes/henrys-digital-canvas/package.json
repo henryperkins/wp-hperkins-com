@@ -18,7 +18,24 @@
     "smoke:history": "./scripts/smoke_history_tail.sh 10"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.2",
-    "@wordpress/scripts": "^31.6.0"
+    "@playwright/test": "^1.60.0",
+    "@wordpress/scripts": "^31.8.0"
+  },
+  "overrides": {
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "9.0.7"
+    },
+    "copy-webpack-plugin": {
+      "serialize-javascript": "7.0.5"
+    },
+    "markdownlint-cli": {
+      "minimatch": "3.1.5"
+    },
+    "sockjs": {
+      "uuid": "11.1.1"
+    },
+    "webpack-dev-server": {
+      ".": "5.2.4"
+    }
   }
 }

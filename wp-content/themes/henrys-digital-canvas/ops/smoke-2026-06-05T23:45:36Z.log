@@ -1,0 +1,59 @@
+
+> henrys-digital-canvas-theme@0.1.0 smoke:full
+> ./scripts/full_smoke.sh
+
+no_important_audit.sh: clean (no retired homepage child block styles remain).
+Route smoke against https://wp.hperkins.com
+PASS	/                                             status=200 marker=is-style-home-hero
+PASS	/work/                                        status=200 marker=hdc-work-showcase
+PASS	/work/henry-s-digital-canvas/                 status=200 marker=hdc-work-detail
+PASS	/resume/                                      status=200 marker=hdc-resume-overview
+PASS	/resume/ats/                                  status=200 marker=hdc-resume-ats
+PASS	/hobbies/                                     status=200 marker=hdc-hobbies-moments
+PASS	/blog/                                        status=200 marker=hdc-blog-index
+PASS	/blog/hello-world/                            status=200 marker=hdc-blog-post
+PASS	/about/                                       status=200 marker=hdc-about-timeline
+PASS	/contact/                                     status=200 marker=hdc-contact-form
+PASS	/route-should-not-exist/                      status=404 marker=hdc-not-found
+
+Route smoke passed.
+API smoke against https://wp.hperkins.com
+PASS	/wp-json/henrys-digital-canvas/v1/resume                               status=200
+PASS	/wp-json/henrys-digital-canvas/v1/resume-ats                           status=200
+PASS	/wp-json/henrys-digital-canvas/v1/moments                              status=200
+PASS	/wp-json/henrys-digital-canvas/v1/blog?limit=3                         status=200
+PASS	/wp-json/henrys-digital-canvas/v1/blog/hello-world                     status=200
+PASS	/wp-json/henrys-digital-canvas/v1/work?limit=3                         status=200
+PASS	/wp-json/henrys-digital-canvas/v1/work/henry-s-digital-canvas          status=200
+PASS	/api/github/repo-proofs?username=henryperkins&repo=wp-hperkins-com     status=200 accepted=200,403,503
+PASS	/api/github/ci-status?username=henryperkins&repo=wp-hperkins-com       status=200 accepted=200,403,503
+PASS	/api/github/language-summary?username=henryperkins&repo=wp-hperkins-com status=200 accepted=200,403,503
+PASS	/api/github/contributor-stats?username=henryperkins&repo=wp-hperkins-com status=200 accepted=200,403,503
+PASS	/wp-json/henrys-digital-canvas/v1/blog?limit=3                         fields=featuredImageUrl,featuredImageAlt,featuredImageSrcSet
+PASS	/wp-json/henrys-digital-canvas/v1/blog/hello-world                     fields=featuredImageUrl,featuredImageAlt,featuredImageSrcSet,relatedPosts
+PASS	/api/github/language-summary?username=henryperkins&repo=wp-hperkins-com fields=analyzedRepoCount,languageByteTotals,byteDataIncomplete
+PASS	/api/github/contributor-stats?username=henryperkins&repo=wp-hperkins-com fields=stats[].repo,stats[].status
+Front-page shape check skipped (RUN_FRONT_PAGE_SHAPE_CHECK=0).
+
+API smoke passed.
+Browser smoke against https://wp.hperkins.com
+
+Running 11 tests using 1 worker
+
+[1A[2K[1/11] scripts/playwright/browser-smoke.spec.cjs:109:2 › Henrys Digital Canvas browser smoke › route matrix renders expected blocks
+[1A[2K[2/11] scripts/playwright/browser-smoke.spec.cjs:151:2 › Henrys Digital Canvas browser smoke › home selected work renders exactly the configured cards
+[1A[2K[3/11] scripts/playwright/browser-smoke.spec.cjs:179:2 › Henrys Digital Canvas browser smoke › work signals panel renders stat cards and loads contributor metrics route
+[1A[2K[4/11] scripts/playwright/browser-smoke.spec.cjs:214:2 › Henrys Digital Canvas browser smoke › hobbies filters update querystring
+[1A[2K[5/11] scripts/playwright/browser-smoke.spec.cjs:231:2 › Henrys Digital Canvas browser smoke › contact validation and success states
+[1A[2K[6/11] scripts/playwright/browser-smoke.spec.cjs:275:2 › Henrys Digital Canvas browser smoke › blog progress and scroll-to-top behavior
+[1A[2K[7/11] scripts/playwright/browser-smoke.spec.cjs:303:2 › Henrys Digital Canvas browser smoke › blog detail missing-post route renders the enhanced state card
+[1A[2K[8/11] scripts/playwright/browser-smoke.spec.cjs:321:2 › Henrys Digital Canvas browser smoke › blog detail enhances HTML code blocks with a toolbar and copy affordance
+[1A[2K[9/11] scripts/playwright/browser-smoke.spec.cjs:348:2 › Henrys Digital Canvas browser smoke › blog detail renders comments, share, related posts, and canonical route metadata
+[1A[2K[10/11] scripts/playwright/browser-smoke.spec.cjs:398:2 › Henrys Digital Canvas browser smoke › blog and home media surfaces follow blog media contract
+[1A[2K[11/11] scripts/playwright/browser-smoke.spec.cjs:490:2 › Henrys Digital Canvas browser smoke › not-found recovery, command palette, and mobile menu
+[1A[2K  1 skipped
+  10 passed (23.6s)
+
+Browser smoke passed.
+
+Full smoke suite passed.

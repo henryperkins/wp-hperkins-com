@@ -3892,6 +3892,11 @@
 					? h(
 						Fragment,
 						null,
+						showFeaturedCaseStudies
+							? h( FeaturedCaseStudies, {
+								repos: featuredCaseStudies,
+							} )
+							: null,
 						h( FiltersBar, {
 							activeRole: activeRole,
 							activeSignals: activeSignals,
@@ -3982,11 +3987,6 @@
 							: h(
 								Fragment,
 								null,
-								showFeaturedCaseStudies
-									? h( FeaturedCaseStudies, {
-										repos: featuredCaseStudies,
-									} )
-									: null,
 								showRoleGroups
 									? h( RoleGroups, { groups: reposByRole, roleDescriptionMap: ROLE_DESCRIPTION_MAP } )
 									: null,
