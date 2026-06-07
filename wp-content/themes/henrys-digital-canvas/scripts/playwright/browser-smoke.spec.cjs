@@ -211,21 +211,28 @@ test.describe( 'Henrys Digital Canvas browser smoke', () => {
 			.toBeTruthy();
 	} );
 
-	test( 'hobbies filters update querystring', async ( { page } ) => {
+	test( 'hobbies renders category sections, jump nav, and expandable cards', async ( { page } ) => {
 		await page.goto( '/hobbies/', { waitUntil: 'networkidle' } );
 
-		const categoryButtons = page
-			.locator( '.hdc-hobbies-moments__filters > div' )
-			.first()
-			.locator( 'button.hdc-hobbies-moments__chip' );
+		// Bento redesign (parity with React Hobbies): three category sections, no filter chips.
+		const sectionTitles = page.locator( 'h2.hobbies-section-title' );
 		await expect
-			.poll( async () => categoryButtons.count(), { timeout: 20000 } )
-			.toBeGreaterThan( 1 );
+			.poll( async () => sectionTitles.count(), { timeout: 20000 } )
+			.toBe( 3 );
 
-		await categoryButtons.nth( 1 ).click();
+		// Sticky "Browse by medium" jump nav anchors to each section.
+		const jumpLinks = page.locator( '.hobbies-jump-nav nav a' );
 		await expect
-			.poll( async () => page.url(), { timeout: 8000 } )
-			.toContain( 'hdcCategory=' );
+			.poll( async () => jumpLinks.count(), { timeout: 8000 } )
+			.toBe( 3 );
+
+		// Moment cards expand/collapse via the disclosure button.
+		const firstDisclosure = page
+			.locator( 'button.hobbies-disclosure-button' )
+			.first();
+		await expect( firstDisclosure ).toHaveAttribute( 'aria-expanded', 'false' );
+		await firstDisclosure.click();
+		await expect( firstDisclosure ).toHaveAttribute( 'aria-expanded', 'true' );
 	} );
 
 	test( 'contact validation and success states', async ( { page } ) => {
