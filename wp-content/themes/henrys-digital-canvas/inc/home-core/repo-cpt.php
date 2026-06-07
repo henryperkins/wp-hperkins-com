@@ -12,8 +12,15 @@ defined( 'ABSPATH' ) || exit;
  *
  * WordPress passes extra context arguments to meta sanitize callbacks, so this
  * wrapper cannot be replaced with intval directly.
+ *
+ * @param mixed $value Raw meta value.
+ * @return int|string Signed integer, or an empty string when the value is unset.
  */
-function hdc_repo_sanitize_signed_int( $value ): int {
+function hdc_repo_sanitize_signed_int( $value ) {
+	if ( '' === $value || null === $value || ! is_numeric( $value ) ) {
+		return '';
+	}
+
 	return (int) $value;
 }
 

@@ -38,6 +38,7 @@ git -C /home/dev/wp-hperkins-com tag prod-known-good-081978470 081978470        
 
 ### A2 — Verify the already-live state (read-only)
 ```bash
+WP="wp --path=/home/dev/wp-hperkins-com"
 cd /home/dev/wp-hperkins-com/wp-content/themes/henrys-digital-canvas
 php tests/repo-logic-test.php
 $WP eval-file tests/registration-check.php
@@ -73,6 +74,7 @@ git push -u origin chore/home-core-finalize   # PR triggers .github/workflows/sm
 
 ### A4 — Reconcile prod to the merge
 ```bash
+WP="wp --path=/home/dev/wp-hperkins-com"
 git -C /home/dev/wp-hperkins-com switch main && git -C /home/dev/wp-hperkins-com pull --ff-only
 $WP cache flush && $WP rewrite flush
 ```
@@ -93,6 +95,7 @@ cp ops/smoke-report-template.md ops/smoke-report-2026-06-07-home-core-finalize.m
 
 ## B. Rollback (if verification fails)
 ```bash
+WP="wp --path=/home/dev/wp-hperkins-com"
 $WP db import "/home/dev/db-backups/wp-hperkins-pre-finalize-$(date +%F).sql"   # only on content/record regression
 git -C /home/dev/wp-hperkins-com stash -u                                       # park live changes (incl. untracked)
 git -C /home/dev/wp-hperkins-com checkout prod-known-good-081978470

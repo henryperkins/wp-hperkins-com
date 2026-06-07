@@ -219,7 +219,7 @@ function hdc_home_recent_writing_pattern_markup(): string {
 <!-- /wp:paragraph -->
 </div>
 <!-- /wp:group -->
-<!-- wp:query {"queryId":2,"query":{"perPage":3,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","inherit":false},"align":"wide","className":"hdc-home-page__recent-writing-query"} -->
+<!-- wp:query {"queryId":2,"namespace":"hdc/recent-writing","query":{"perPage":3,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","inherit":false},"align":"wide","className":"hdc-home-page__recent-writing-query"} -->
 <div class="wp-block-query alignwide hdc-home-page__recent-writing-query">
 <!-- wp:post-template {"className":"hdc-home-page__post-stack"} -->
 <!-- wp:group {"className":"is-style-hdc-article-row","layout":{"type":"default"}} -->
