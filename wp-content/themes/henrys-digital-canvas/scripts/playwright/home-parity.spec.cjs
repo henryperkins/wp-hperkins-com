@@ -92,6 +92,9 @@ test.describe( 'home page core-block structure', () => {
 		await expect(
 			selectedWork.locator( '.is-style-hdc-repo-card' )
 		).toHaveCount( 3 );
+		await expect(
+			selectedWork.locator( '.wp-block-post-title' )
+		).toHaveText( [ 'Flavor Agent', 'Tarot', 'WP Hperkins COM' ] );
 		await expectCardsInDesktopRow(
 			selectedWork.locator( '.is-style-hdc-repo-card' ),
 			'Selected Work'
@@ -132,11 +135,17 @@ test.describe( 'home page core-block structure', () => {
 			).toContainText( /\d+\s+min read/i );
 		} else {
 			await expect( recentWriting ).toContainText(
-				'Recent writing is updating'
+				'Could not load recent writing'
+			);
+			await expect( recentWriting ).toContainText(
+				'The homepage writing feed is temporarily unavailable.'
 			);
 		}
 		await expect( page.locator( '#contact-cta' ) ).toContainText(
-			'Need a technical partner?'
+			'Prompt systems. React apps. WordPress fixes.'
+		);
+		await expect( page.locator( '#contact-cta' ) ).toContainText(
+			'Bring me in when the fix lives between the help desk and the codebase.'
 		);
 		await expectWideSection(
 			page.locator( '#contact-cta' ),
