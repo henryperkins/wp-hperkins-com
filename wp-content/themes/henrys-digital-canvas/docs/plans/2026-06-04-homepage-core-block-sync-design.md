@@ -1,7 +1,7 @@
 # Homepage as synced core blocks — Design
 
 - **Date:** 2026-06-04
-- **Status:** Approved architecture (design, rev. 4 — §4/§5/§13 reconciled with the source-of-truth merge during Phase-1 planning). Phase 0, Phase 1, and Phase 2 implementation plans now exist; Phase 3 is still design-only and needs its own plan. See `ACTIVE_PLANS.md`.
+- **Status:** Approved architecture (design, rev. 4 — §4/§5/§13 reconciled with the source-of-truth merge during Phase-1 planning). Phase 0–3 implementation plans all exist and are complete — every phase is live on production as of 2026-06-07. See `ACTIVE_PLANS.md`.
 - **Topic:** Rebuild the homepage from 7 custom blocks into native core blocks, with live GitHub data synced server-side from hperkins.com.
 - **Related:** `2026-05-03-home-page-ai-readable-innerblocks-design.md`, `2026-06-03-home-selected-work-parity-design.md`
 - **Source of truth (visual/functional parity):** `/home/dev/henry-s-digital-canvas/src/pages/Home.tsx`
@@ -10,10 +10,10 @@
 
 Use `ACTIVE_PLANS.md` as the current execution index. In short:
 
-- Phase 0: `2026-06-05-homepage-core-block-sync-phase-0-plan.md` (worker `id` field + sync observability; production deploy requires explicit go-ahead).
+- Phase 0: `2026-06-05-homepage-core-block-sync-phase-0-plan.md` (worker `id` field + sync observability; deployed to production).
 - Phase 1: `2026-06-04-homepage-core-block-sync-phase-1-plan.md` (data layer + Selected Work prerequisite).
 - Phase 2: `2026-06-05-homepage-core-block-sync-phase-2-plan.md` (static patterns + assembled Home + parent block retirement).
-- Phase 3: no implementation plan exists yet; write it from the Phase-3 scope in this design before executing Recent Writing/core-query retirement work.
+- Phase 3: `2026-06-05-homepage-core-block-sync-phase-3-plan.md` (Recent Writing core Query Loop + `reading_time` meta + child-block retirement) — complete, live on production.
 
 ## 1. Problem & goals
 

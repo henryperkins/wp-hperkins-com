@@ -5,7 +5,7 @@
 - **Topic:** Close out Phases 1–3 of the homepage core-block sync, which are already serving production.
 - **Related:** `ACTIVE_PLANS.md`, `2026-06-04-homepage-core-block-sync-design.md`, phase plans `0/1/2/3`, `../CUTOVER_CHECKLIST.md`
 - **WP-CLI path (live root):** `wp --path=/home/dev/wp-hperkins-com …` (CLAUDE.md's `/home/ubuntu` is stale).
-- **Execution:** A1 backup + A2 verification (all green) done 2026-06-07; A3 home-core committed on branch `chore/home-core-finalize` (hobbies + work-showcase deferred to their own PRs).
+- **Execution:** A1 backup + A2 verification (all green) done 2026-06-07; A3 home-core committed on branch `chore/home-core-finalize` (hobbies + work-showcase deferred to their own PRs); A6 doc updates (ACTIVE_PLANS, CLAUDE.md, design) applied.
 
 ## 0. Current live state — verified 2026-06-07
 
