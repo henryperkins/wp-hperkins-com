@@ -5,7 +5,7 @@
 	"title": "Hobbies Moments",
 	"category": "widgets",
 	"icon": "smiley",
-	"description": "Filterable hobbies timeline with grouped moments and expandable stories.",
+	"description": "Source-parity hobbies page with category sections, jump navigation, and expandable moment cards.",
 	"textdomain": "henrys-digital-canvas",
 	"supports": {
 		"html": false,
@@ -22,7 +22,7 @@
 		},
 		"description": {
 			"type": "string",
-			"default": "Outside work, I spend time building small tools, making music, and tracking what I am learning now, recently, and next.",
+			"default": "Side projects, piano sessions, and learning notes — the after-hours practices that sharpen how I work.",
 			"role": "content"
 		}
 	},

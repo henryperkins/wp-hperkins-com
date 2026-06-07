@@ -4,19 +4,33 @@
     "title": "Terminal tinkering after dinner",
     "category": "dev",
     "timeframe": "now",
-    "story": "Most weeknights end with tea, a terminal window, and one tiny problem to solve. I keep the scope intentionally small so I can feel the full loop in one sitting: write it, run it, refine it.",
-    "takeaway": "Small loops keep the hobby fun and momentum high."
+    "story": "Most weeknights end with tea, a terminal window, and one problem small enough to finish before I start bargaining with myself about sleep. The rule is simple: one script, one fix, one clean rerun. If it turns into a grand plan, I save it for another night.",
+    "takeaway": "A hobby survives when the scope still fits the hour."
   },
   {
-    "id": "music-midnight-guitar-loop",
+    "id": "music-midnight-piano-loop",
     "title": "Chasing a tone at midnight",
     "category": "music",
+    "detailExperience": "moonlight-sonata",
     "timeframe": "now",
-    "story": "Late at night I usually start with one guitar note and a reverb tail, then see where it goes. The best sessions happen when I stop aiming for a finished track and just follow whatever texture feels alive.",
-    "takeaway": "Constraints create better creative decisions.",
+    "story": "Some nights the first movement of the Moonlight Sonata drifts in and everything slows down — the room goes quiet, the triplets keep rolling, and I forget I was doing anything else. Beethoven wrote it in a season of heartbreak, and you can hear it: each note lands like something he couldn't quite say out loud.",
+    "takeaway": "The best music doesn't demand your attention — it just makes everything else disappear.",
     "media": {
       "type": "image",
-      "src": "/images/hero-piano-ide.png",
+      "src": "/images/hobbies/hero-piano-ide-960.webp",
+      "width": 960,
+      "height": 640,
+      "sizes": "(min-width: 1280px) 30vw, (min-width: 768px) 45vw, 100vw",
+      "sources": [
+        {
+          "type": "image/avif",
+          "srcSet": "/images/hobbies/hero-piano-ide-480.avif 480w, /images/hobbies/hero-piano-ide-960.avif 960w"
+        },
+        {
+          "type": "image/webp",
+          "srcSet": "/images/hobbies/hero-piano-ide-480.webp 480w, /images/hobbies/hero-piano-ide-960.webp 960w"
+        }
+      ],
       "alt": "Music desk with keys and ambient lighting"
     }
   },
@@ -25,73 +39,78 @@
     "title": "Weekly learning notes",
     "category": "learning",
     "timeframe": "now",
-    "story": "I keep a lightweight notes ritual every weekend: one concept, one practical example, one open question. It helps me keep curiosity structured without turning free time into homework.",
-    "takeaway": "A tiny cadence beats occasional deep dives."
+    "story": "Last weekend's note: idempotency keys, from a Stripe engineering post on retries at the API boundary. The practical example was this site's contact form — a Worker endpoint that could be retried from a flaky connection, where a stored key stops a double-submit. The open question is still what happens when the client retries faster than the key's TTL, and it's the line I keep rereading. The concept I can look up. The question is the part that's mine.",
+    "takeaway": "Questions stay alive when I write them down."
   },
   {
     "id": "dev-ui-motion-lab",
     "title": "Micro-interaction motion lab",
     "category": "dev",
     "timeframe": "recently",
-    "story": "I spent a weekend comparing easing curves on the same button transition to understand why some animations feel calm and others feel noisy. It was mostly visual trial-and-error with a lot of side-by-side toggling.",
-    "takeaway": "Subtle motion improves feel more than feature count."
+    "story": "Spent a weekend on the Quick Look card's hover transition on this site's work detail pages, nudging duration between 120ms and 240ms. 180ms won. The version I was proudest of — a spring with a small overshoot — was the first one I cut. It called attention to itself, which meant it was doing the card's job and its own.",
+    "takeaway": "Good motion disappears into the gesture it serves.",
+    "media": {
+      "type": "image",
+      "src": "/images/hobbies/theme-surface-dev-signal-grid-960.webp",
+      "width": 960,
+      "height": 640,
+      "sizes": "(min-width: 1280px) 30vw, (min-width: 768px) 45vw, 100vw",
+      "sources": [
+        {
+          "type": "image/webp",
+          "srcSet": "/images/hobbies/theme-surface-dev-signal-grid.webp 480w, /images/hobbies/theme-surface-dev-signal-grid-960.webp 960w"
+        }
+      ],
+      "alt": "Signal grid pattern representing micro-interaction timing"
+    }
   },
   {
     "id": "music-sample-of-week",
     "title": "Sample/patch of the week",
     "category": "music",
     "timeframe": "recently",
-    "story": "I started collecting one sound per week that I actually love, then writing a short note about why it works. This became a better habit than endlessly downloading presets I never revisit.",
-    "takeaway": "Curated inputs produce stronger output."
+    "story": "This week it's the Soft Piano patch from Spitfire Audio LABS. I auditioned a dozen others in Ableton and kept coming back to this one because the felt hammers mute the top octave just enough — the way it sits under a slow triplet figure without asking for attention. Everything else got deleted before Sunday.",
+    "takeaway": "The shortlist gets sharper every time I throw something off it."
   },
   {
     "id": "learning-rabbit-hole-typography",
     "title": "Typography rabbit hole",
     "category": "learning",
     "timeframe": "recently",
-    "story": "A quick article on readability turned into a full rabbit hole on rhythm, spacing, and contrast. I now keep a tiny checklist for what to inspect before calling a text-heavy UI done.",
-    "takeaway": "Readability is a system, not a single setting.",
-    "media": {
-      "type": "image",
-      "src": "/images/amber-pattern.png",
-      "alt": "Abstract pattern used as a visual reference board"
-    }
+    "story": "Started with Matthew Butterick's Practical Typography on a Saturday morning and ended up pasting the same paragraph into Figma at every line length between 45 and 75 characters. Somewhere around 65ch on a 16-pixel base versus 55ch on 18, I could finally feel the difference instead of just seeing it. Now I check rhythm, spacing, contrast, and scan paths before I trust a clean-looking screen.",
+    "takeaway": "A readable page is tuned by ear, the way a mix is."
   },
   {
     "id": "dev-tool-of-month",
     "title": "Favorite tool of the month",
     "category": "dev",
     "timeframe": "recently",
-    "story": "I keep a short running list of one utility that made my workflow meaningfully smoother each month. The goal is not novelty; it is noticing what consistently removes friction.",
-    "takeaway": "The best tools disappear into your process."
+    "story": "Lazygit earned the spot the second week of April, somewhere around the third time I reached for it without thinking. The first ten minutes of a coding session used to go to interactive staging — cycling through git add -p, losing my place when I hit escape by accident. Now they don't. That's the whole test. A month of quiet wins, no ceremony.",
+    "takeaway": "Trust is what's left after a tool stops surprising me."
   },
   {
     "id": "music-live-loop-session",
-    "title": "Live loop practice sessions",
+    "title": "One-take loop nights",
     "category": "music",
     "timeframe": "next",
-    "story": "Next up is a monthly 30-minute session where I build a loop from scratch in one take. No perfection pass, no over-editing, just committing to decisions and enjoying the moment.",
-    "takeaway": "Commitment creates confidence.",
-    "media": {
-      "type": "image",
-      "src": "/images/footer-cinematic-scene.png",
-      "alt": "Cinematic studio scene for creative practice"
-    }
+    "story": "I want a standing 30-minute session where I build one loop in a single take, leave the mistakes in, and practice recovering instead of restarting.",
+    "takeaway": "Recovery is part of musicianship."
   },
   {
     "id": "dev-fake-terminal-toy",
     "title": "Build a playful terminal toy",
     "category": "dev",
-    "timeframe": "next",
-    "story": "I want to ship a tiny scripted terminal interaction that tells a story in a few commands. It is a fun way to blend interface writing, pacing, and a bit of personality.",
-    "takeaway": "Playful constraints make stronger UI storytelling."
+    "detailExperience": "terminal-story",
+    "timeframe": "recently",
+    "story": "I built a tiny scripted terminal interaction around a letter from my dad and spent far too long tuning the pauses so it felt discovered instead of dumped on the screen. It is a small toy, but it reminded me that interface timing can carry emotion.",
+    "takeaway": "Pacing can make interface copy hit like narrative."
   },
   {
     "id": "learning-field-guide",
-    "title": "Create a personal field guide",
+    "title": "One-page field guide",
     "category": "learning",
     "timeframe": "next",
-    "story": "I am planning a one-page field guide for recurring lessons from side experiments: what surprised me, what broke, and what I would do differently next time.",
-    "takeaway": "Reflection turns experiments into reusable knowledge."
+    "story": "I want to keep a single page of repeat lessons from side experiments: what surprised me, what broke first, and which fix I would try sooner next time.",
+    "takeaway": "Write the lesson down before the cleanup hides it."
   }
 ]

@@ -1,237 +1,1394 @@
 .hdc-hobbies-moments {
+  --hobbies-page-bg-start: hsl(36 54% 97%);
+  --hobbies-page-bg-end: hsl(34 48% 92%);
+  --hobbies-page-warm-glow: hsl(32 82% 54% / 0.18);
+  --hobbies-page-cool-glow: hsl(196 62% 54% / 0.08);
+  --hobbies-page-paper-glow: hsl(0 0% 100% / 0.58);
+  --hobbies-page-grain-line: hsl(34 22% 72% / 0.08);
+  --hobbies-hero-fade: hsl(36 44% 94% / 0.96);
+  --hobbies-section-title-color: hsl(var(--text-strong, 20 18% 16%));
+  --hobbies-section-description-color: hsl(var(--text-body, 24 13% 32%));
+  --hobbies-section-eyebrow-color: hsl(30 42% 32%);
+  --hobbies-section-count-border: hsl(30 24% 76% / 0.76);
+  --hobbies-section-count-surface: hsl(0 0% 100% / 0.86);
+  --hobbies-card-shell-border: hsl(30 20% 82% / 0.74);
+  --hobbies-card-shell-highlight: hsl(0 0% 100% / 0.56);
+  --hobbies-card-hover-border: hsl(30 28% 68% / 0.4);
+  --hobbies-card-open-border: hsl(36 64% 48% / 0.28);
+  --hobbies-card-title-color: hsl(var(--text-strong, 20 18% 16%));
+  --hobbies-card-title-hover-color: hsl(var(--text-accent, 28 74% 38%));
+  --hobbies-card-copy-color: hsl(var(--text-body, 24 13% 32%));
+  --hobbies-footer-divider: hsl(30 22% 76% / 0.62);
+  --hobbies-footer-label-color: hsl(var(--text-meta, 26 9% 44%));
+  --hobbies-artifact-border: hsl(30 22% 78% / 0.72);
+  --hobbies-artifact-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.72), 0 16px 28px hsl(28 24% 56% / 0.08);
+  --hobbies-glimpse-border: hsl(30 22% 78% / 0.62);
+  --hobbies-glimpse-surface: linear-gradient(180deg, hsl(0 0% 100% / 0.56) 0%, hsl(36 26% 96% / 0.34) 100%);
+  --hobbies-preview-takeaway-border: hsl(30 22% 74% / 0.6);
+  --hobbies-preview-takeaway-surface: hsl(36 58% 96% / 0.78);
+  --hobbies-story-border: hsl(30 22% 78% / 0.76);
+  --hobbies-story-surface: linear-gradient(180deg, hsl(0 0% 100% / 0.82) 0%, hsl(36 26% 96% / 0.62) 100%);
+  --hobbies-takeaway-surface: linear-gradient(180deg, hsl(36 60% 96% / 0.92) 0%, hsl(36 24% 95% / 0.76) 100%);
   display: block;
 }
 
-.hdc-hobbies-moments__shell {
-  margin: 0 auto;
-  max-width: 1200px;
-  padding: 2rem 1rem;
+.hdc-hobbies-moments .app-container {
+  margin-inline: auto;
+  width: min(100% - 2rem, 64rem);
 }
 
-.hdc-hobbies-moments__status,
-.hdc-hobbies-moments__error,
-.hdc-hobbies-moments__empty {
-  color: hsl(var(--text-meta));
-  font-size: 0.95rem;
+.hdc-hobbies-moments .max-w-5xl {
+  max-width: 64rem;
 }
 
-.hdc-hobbies-moments__hero {
-  margin-bottom: 1.2rem;
+.hobbies-page-shell {
+  --hobbies-jump-nav-overlap: 1.25rem;
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+  background: radial-gradient(circle at 18% 0%, var(--hobbies-page-warm-glow), transparent 28%), radial-gradient(circle at 88% 6%, var(--hobbies-page-cool-glow), transparent 24%), linear-gradient(180deg, var(--hobbies-page-bg-start) 0%, var(--hobbies-page-bg-end) 100%);
 }
 
-.hdc-hobbies-moments__title {
-  color: hsl(var(--foreground));
-  font-family: "Playfair Display", Georgia, serif;
-  font-size: clamp(1.8rem, 3.2vw, 2.5rem);
-  margin: 0;
+.hobbies-page-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.14) 0%, transparent 14%, transparent 82%, hsl(0 0% 100% / 0.2) 100%), radial-gradient(62% 44% at 50% 18%, var(--hobbies-page-paper-glow), transparent 70%), repeating-linear-gradient(90deg, transparent 0 4rem, var(--hobbies-page-grain-line) 4rem 4.08rem);
+  opacity: 0.52;
 }
 
-.hdc-hobbies-moments__desc {
-  color: hsl(var(--text-body));
-  font-size: 0.96rem;
-  margin: 0.45rem 0 0;
-  max-width: 72ch;
+.hobbies-page-shell > * {
+  position: relative;
+  z-index: 1;
 }
 
-.hdc-hobbies-moments__filters {
-  display: grid;
-  gap: 0.9rem;
-  margin: 1rem 0 1.3rem;
+.hobbies-page-hero {
+  position: relative;
+  background-color: var(--hobbies-page-bg-start);
 }
 
-.hdc-hobbies-moments__filter-label {
-  color: hsl(var(--text-meta));
-  display: block;
-  font-size: 0.76rem;
+.hobbies-hero-backdrop {
+  position: relative;
+  min-height: clamp(22rem, 38vw, 33rem);
+  display: flex;
+  align-items: end;
+  overflow: hidden;
+  background: linear-gradient(112deg, hsl(220 24% 4% / 0.9) 0%, hsl(222 28% 3% / 0.92) 100%), image-set(url("../../assets/images/hobbies/theme-hero-after-hours-960.webp") 1x, url("../../assets/images/hobbies/theme-hero-after-hours.webp") 2x);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.hobbies-hero-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(82% 54% at 20% 102%, hsl(36 78% 96% / 0.42) 0%, transparent 58%), linear-gradient(180deg, transparent 58%, hsl(36 62% 95% / 0.08) 74%, hsl(36 72% 96% / 0.26) 100%);
+}
+
+.hobbies-page-hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3.5rem;
+  pointer-events: none;
+  background: linear-gradient(180deg, hsl(220 30% 4% / 0) 0%, var(--hobbies-hero-fade) 80%, var(--hobbies-page-bg-start) 100%);
+}
+
+.hobbies-hero-content {
+  position: relative;
+  z-index: 1;
+  padding-block: clamp(5.25rem, 9vw, 8rem) clamp(4rem, 6vw, 4.75rem);
+  color: hsl(42 48% 94%);
+}
+
+.hobbies-hero-eyebrow,
+.hobbies-section-eyebrow {
+  margin: 0 0 0.85rem;
+  color: var(--hobbies-section-eyebrow-color);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  margin-bottom: 0.35rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
-.hdc-hobbies-moments__chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+.hobbies-hero-eyebrow {
+  color: hsl(36 56% 74%);
 }
 
-.hdc-hobbies-moments__chip {
-  background: hsl(var(--secondary));
-  border: 1px solid hsl(var(--border));
-  border-radius: var(--radius-pill);
-  color: hsl(var(--text-body));
-  cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 600;
-  line-height: 1;
-  min-height: 2rem;
-  padding: 0.45rem 0.65rem;
-}
-
-.hdc-hobbies-moments__chip.is-active {
-  background: hsl(var(--primary));
-  border-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-}
-
-.hdc-hobbies-moments__group {
-  margin-top: 1.5rem;
-}
-
-.hdc-hobbies-moments__group-head {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.hdc-hobbies-moments__group-title {
-  color: hsl(var(--foreground));
-  font-family: "Playfair Display", Georgia, serif;
-  font-size: 1.45rem;
+.hobbies-hero-title {
+  max-width: 12ch;
   margin: 0;
+  color: hsl(38 56% 96%);
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(3.4rem, 9vw, 7.8rem);
+  line-height: 0.9;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
 }
 
-.hdc-hobbies-moments__group-count {
-  background: hsl(var(--secondary));
-  border: 1px solid hsl(var(--border));
-  border-radius: var(--radius-pill);
-  color: hsl(var(--text-meta));
-  font-size: 0.72rem;
-  font-weight: 700;
-  line-height: 1;
-  padding: 0.26rem 0.48rem;
-  text-transform: uppercase;
-}
-
-.hdc-hobbies-moments__group-desc {
-  color: hsl(var(--text-subtle));
-  font-size: 0.88rem;
-  margin: 0.25rem 0 0.75rem;
-}
-
-.hdc-hobbies-moments__grid {
-  display: grid;
-  gap: 0.8rem;
-}
-
-.hdc-hobbies-moments__card {
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: var(--radius-surface);
-  box-shadow: var(--shadow-surface-1);
-  padding: 0.8rem;
-}
-
-.hdc-hobbies-moments__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  margin-bottom: 0.35rem;
-}
-
-.hdc-hobbies-moments__badge {
-  background: hsl(var(--secondary));
-  border: 1px solid hsl(var(--border));
-  border-radius: var(--radius-pill);
-  color: hsl(var(--text-meta));
-  font-size: 0.72rem;
-  line-height: 1;
-  padding: 0.25rem 0.5rem;
-}
-
-.hdc-hobbies-moments__trigger {
-  align-items: center;
-  background: transparent;
-  border: 0;
-  color: hsl(var(--foreground));
-  cursor: pointer;
-  display: flex;
-  font-size: 1rem;
-  font-weight: 700;
-  gap: 0.4rem;
-  justify-content: space-between;
-  padding: 0;
-  text-align: left;
-  width: 100%;
-}
-
-.hdc-hobbies-moments__summary,
-.hdc-hobbies-moments__story,
-.hdc-hobbies-moments__takeaway {
-  color: hsl(var(--text-body));
-  font-size: 0.9rem;
+.hobbies-hero-description {
+  max-width: 46rem;
+  margin: 1.2rem 0 0;
+  color: hsl(37 28% 84%);
+  font-size: clamp(1.08rem, 1.9vw, 1.35rem);
   line-height: 1.55;
 }
 
-.hdc-hobbies-moments__summary {
-  margin: 0.45rem 0 0;
+.hobbies-hero-supporting {
+  max-width: 37rem;
+  margin: 1.15rem 0 0;
+  color: hsl(36 20% 75%);
+  font-size: clamp(0.92rem, 1.3vw, 1rem);
+  line-height: 1.65;
 }
 
-.hdc-hobbies-moments__expanded {
-  margin-top: 0.7rem;
+.hobbies-jump-nav-shell {
+  position: sticky;
+  top: var(--wp-admin--admin-bar--height, 0px);
+  z-index: 20;
+  margin-top: calc(var(--hobbies-jump-nav-overlap) * -1);
+  padding: 0 0 0.55rem;
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.04) 0%, hsl(36 48% 94% / 0.56) 40%, hsl(36 48% 94% / 0) 100%);
+  backdrop-filter: blur(10px);
 }
 
-.hdc-hobbies-moments__story {
+.hobbies-jump-nav {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.55rem 0.4rem 0.35rem;
+}
+
+.hobbies-jump-nav > p {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
   margin: 0;
-}
-
-.hdc-hobbies-moments__media {
-  margin-top: 0.55rem;
-}
-
-.hdc-hobbies-moments__media img,
-.hdc-hobbies-moments__media video,
-.hdc-hobbies-moments__media audio {
-  border: 1px solid hsl(var(--border));
-  border-radius: var(--radius-control);
-  display: block;
-  max-width: 100%;
-}
-
-.hdc-hobbies-moments__takeaway {
-  background: hsl(var(--secondary));
-  border-radius: var(--radius-control);
-  margin: 0.55rem 0 0;
-  padding: 0.55rem;
-}
-
-.hdc-hobbies-moments__takeaway-label {
-  color: hsl(var(--text-meta));
-  font-size: 0.72rem;
+  color: hsl(28 16% 38%);
+  font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.05em;
-  margin: 0.55rem 0 0;
+}
+
+.hobbies-jump-nav > p::before {
+  content: "";
+  width: 0.6rem;
+  height: 0.6rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: radial-gradient(circle at 36% 36%, hsl(0 0% 100% / 0.92) 0.08rem, hsl(36 84% 58%) 0.14rem, hsl(36 78% 48%) 0.3rem, transparent 0.34rem);
+  box-shadow: 0 0 0 0.22rem hsl(36 82% 54% / 0.12);
+}
+
+.hobbies-jump-nav ul {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  justify-content: flex-start;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hobbies-jump-nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding-inline: 0.82rem;
+  border: 1px solid hsl(30 24% 78% / 0.72);
+  border-radius: 999px;
+  background: hsl(0 0% 100% / 0.76);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.52);
+  color: hsl(var(--text-body, 24 13% 32%));
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+}
+
+.hobbies-jump-nav a:hover {
+  border-color: hsl(36 72% 50% / 0.24);
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.92) 0%, hsl(36 52% 94% / 0.96) 100%);
+  color: hsl(var(--text-accent, 28 74% 38%));
+}
+
+.hobbies-route-status {
+  padding-block: 2rem;
+  color: hsl(var(--text-meta, 26 9% 44%));
+}
+
+.hobbies-section {
+  --hobbies-section-visual: none;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: var(--hobbies-section-surface, hsl(36 44% 95%));
+}
+
+.hobbies-section::before,
+.hobbies-section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hobbies-section::before {
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0.94;
+}
+
+.hobbies-section::after {
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.24) 0%, hsl(0 0% 100% / 0.09) 24%, hsl(0 0% 100% / 0.03) 100%), radial-gradient(70% 60% at 16% 14%, hsl(0 0% 100% / 0.2), transparent 60%), radial-gradient(64% 64% at 86% 20%, hsl(0 0% 100% / 0.12), transparent 62%);
+}
+
+.hobbies-section-content {
+  position: relative;
+  z-index: 1;
+  padding-block: 3rem 4rem;
+}
+
+.hobbies-section-first .hobbies-section-content {
+  padding-top: clamp(2.75rem, 4vw, 3.5rem);
+}
+
+.hobbies-section-intro {
+  position: relative;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.25rem;
+}
+
+.hobbies-section-intro::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--hobbies-section-rule, hsl(34 42% 54% / 0.34)), hsl(30 18% 72% / 0.28) 55%, transparent 100%);
+}
+
+.hobbies-section-copy {
+  max-width: 42rem;
+}
+
+.hobbies-section-title {
+  margin: 0;
+  color: var(--hobbies-section-title-color);
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(2.15rem, 4vw, 3.75rem);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.hobbies-section-description {
+  max-width: 40rem;
+  margin: 0.65rem 0 0;
+  color: var(--hobbies-section-description-color);
+  font-size: 0.98rem;
+  line-height: 1.65;
+}
+
+.hobbies-section-count,
+.hobbies-card-badge,
+.hobbies-next-note-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.85rem;
+  width: fit-content;
+  border: 1px solid var(--hobbies-section-count-border);
+  border-radius: 999px;
+  background: var(--hobbies-section-count-surface);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.86), 0 10px 24px hsl(30 26% 56% / 0.1);
+  color: hsl(30 30% 32%);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  padding: 0.42rem 0.62rem;
   text-transform: uppercase;
 }
 
+.hobbies-section-dev {
+  --hobbies-section-rule: hsl(193 54% 44% / 0.3);
+  --hobbies-section-surface: hsl(204 48% 95%);
+}
+
+.hobbies-section-dev::before {
+  background-image: linear-gradient(180deg, hsl(204 56% 98% / 0.97) 0%, hsl(207 42% 94% / 0.97) 100%), radial-gradient(74% 66% at 18% 18%, hsl(193 72% 46% / 0.18), transparent 58%), radial-gradient(72% 70% at 84% 16%, hsl(32 84% 52% / 0.16), transparent 62%), image-set(url("../../assets/images/hobbies/theme-surface-dev-after-hours-960.webp") 1x, url("../../assets/images/hobbies/theme-surface-dev-after-hours.webp") 2x);
+  background-blend-mode: normal, screen, screen, normal;
+  filter: saturate(0.72) brightness(1.1) contrast(0.84);
+}
+
+.hobbies-section-music {
+  --hobbies-section-rule: hsl(34 72% 46% / 0.32);
+  --hobbies-section-surface: hsl(30 50% 94%);
+}
+
+.hobbies-section-music::before {
+  background-image: linear-gradient(180deg, hsl(34 62% 98% / 0.97) 0%, hsl(28 46% 93% / 0.97) 100%), radial-gradient(72% 70% at 22% 20%, hsl(40 88% 52% / 0.2), transparent 58%), radial-gradient(82% 72% at 82% 18%, hsl(26 78% 50% / 0.16), transparent 62%), image-set(url("../../assets/images/hobbies/theme-surface-music-after-hours-960.webp") 1x, url("../../assets/images/hobbies/theme-surface-music-after-hours.webp") 2x);
+  background-blend-mode: normal, screen, screen, normal;
+  filter: saturate(0.74) brightness(1.08) contrast(0.86);
+}
+
+.hobbies-section-learning {
+  --hobbies-section-rule: hsl(48 38% 42% / 0.28);
+  --hobbies-section-surface: hsl(42 28% 94%);
+}
+
+.hobbies-section-learning::before {
+  background-image: linear-gradient(180deg, hsl(38 46% 98% / 0.97) 0%, hsl(42 28% 93% / 0.97) 100%), radial-gradient(78% 70% at 18% 20%, hsl(48 42% 52% / 0.16), transparent 58%), radial-gradient(70% 70% at 82% 16%, hsl(82 22% 42% / 0.14), transparent 62%), image-set(url("../../assets/images/hobbies/theme-surface-learning-after-hours-960.webp") 1x, url("../../assets/images/hobbies/theme-surface-learning-after-hours.webp") 2x);
+  background-blend-mode: normal, screen, screen, normal;
+  filter: saturate(0.72) brightness(1.08) contrast(0.86);
+}
+
+.hobbies-moments-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+}
+
+.hobbies-moments-grid--calm {
+  max-width: 56rem;
+  margin-inline: auto;
+}
+
+.hobbies-card-shell {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--hobbies-card-shell-border);
+  border-radius: 1.35rem;
+  background-color: hsl(0 0% 100% / 0.92);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.76), 0 22px 46px hsl(28 24% 54% / 0.12);
+  animation: hobbies-card-in 520ms ease both;
+}
+
+.hobbies-card-shell:hover {
+  border-color: var(--hobbies-card-hover-border);
+}
+
+.hobbies-card-shell[data-open="true"] {
+  border-color: var(--hobbies-card-open-border);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.76), 0 30px 60px hsl(28 28% 48% / 0.16);
+}
+
+.hobbies-card-shell::before,
+.hobbies-card-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hobbies-card-shell::before {
+  background: linear-gradient(180deg, var(--hobbies-card-shell-highlight) 0%, transparent 24%), repeating-linear-gradient(90deg, transparent 0 3.6rem, hsl(0 0% 100% / 0.22) 3.6rem 3.64rem);
+  opacity: 0.66;
+}
+
+.hobbies-card-shell[data-category="dev"] {
+  background-image: radial-gradient(68% 58% at 16% 10%, hsl(190 76% 46% / 0.15), transparent 62%), radial-gradient(72% 60% at 86% 0%, hsl(32 82% 54% / 0.12), transparent 64%);
+  background-color: hsl(204 52% 96%);
+}
+
+.hobbies-card-shell[data-category="music"] {
+  background-image: radial-gradient(68% 58% at 16% 10%, hsl(34 86% 52% / 0.15), transparent 62%), radial-gradient(72% 60% at 86% 0%, hsl(26 72% 52% / 0.12), transparent 64%);
+  background-color: hsl(28 54% 95%);
+}
+
+.hobbies-card-shell[data-category="learning"] {
+  background-image: radial-gradient(68% 58% at 16% 10%, hsl(46 58% 42% / 0.14), transparent 62%), radial-gradient(72% 60% at 86% 0%, hsl(82 22% 42% / 0.1), transparent 64%);
+  background-color: hsl(40 30% 95%);
+}
+
+.hobbies-card-body {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1rem, 2vw, 1.35rem);
+}
+
+.hobbies-card-meta,
+.hobbies-next-note-head,
+.hobbies-card-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.hobbies-card-status {
+  color: hsl(var(--text-meta, 26 9% 44%));
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hobbies-card-title {
+  margin: 0;
+  color: var(--hobbies-card-title-color);
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.28rem, 2vw, 1.55rem);
+  line-height: 1.06;
+  letter-spacing: -0.028em;
+}
+
+.hobbies-disclosure-button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.hobbies-disclosure-button > span:first-child {
+  min-width: 0;
+}
+
+.hobbies-disclosure-button > [aria-hidden="true"] {
+  border-bottom: 1px solid currentColor;
+  color: hsl(var(--text-meta, 26 9% 44%));
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.hobbies-disclosure-button:hover {
+  color: var(--hobbies-card-title-hover-color);
+}
+
+.hobbies-card-artifact {
+  position: relative;
+  min-height: 10rem;
+  overflow: hidden;
+  border: 1px solid var(--hobbies-artifact-border);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.7), hsl(36 36% 95% / 0.44));
+  box-shadow: var(--hobbies-artifact-shadow);
+}
+
+.hobbies-card-artifact[data-mode="preview"] {
+  aspect-ratio: 16 / 10;
+}
+
+.hobbies-card-artifact-frame,
+.hobbies-card-artifact > div {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hobbies-card-artifact-media-element {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.92) brightness(1.02);
+}
+
+audio.hobbies-card-artifact-media-element {
+  box-sizing: border-box;
+  height: auto;
+  margin: auto;
+  padding: 1rem;
+  filter: none;
+}
+
+video.hobbies-card-artifact-media-element {
+  background: hsl(220 24% 4%);
+  object-fit: contain;
+}
+
+.hobbies-card-glimpse,
+.hobbies-card-detail-story,
+.hobbies-card-detail-takeaway {
+  position: relative;
+  border: 1px solid var(--hobbies-glimpse-border);
+  border-radius: 0.95rem;
+  background: var(--hobbies-glimpse-surface);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.66);
+  color: var(--hobbies-card-copy-color);
+  padding: 0.82rem 0.9rem;
+}
+
+.hobbies-card-glimpse p,
+.hobbies-card-detail-story p,
+.hobbies-card-detail-takeaway p {
+  margin: 0;
+  font-size: 0.91rem;
+  line-height: 1.62;
+}
+
+.hobbies-card-preview-takeaway {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.75rem 0 0;
+  border: 1px solid var(--hobbies-preview-takeaway-border);
+  border-radius: 0.85rem;
+  background: var(--hobbies-preview-takeaway-surface);
+  color: hsl(20 18% 22%);
+  padding: 0.72rem 0.82rem;
+}
+
+.hobbies-card-preview-takeaway-label {
+  color: hsl(var(--text-meta, 26 9% 44%));
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hobbies-card-preview-takeaway-copy {
+  font-size: 0.9rem;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.hobbies-card-footer {
+  justify-content: space-between;
+  border-top: 1px solid var(--hobbies-footer-divider);
+  padding-top: 0.8rem;
+}
+
+.hobbies-card-footer-label,
+.hobbies-card-footer-status {
+  margin: 0;
+  color: var(--hobbies-footer-label-color);
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hobbies-card-panel {
+  border-top: 1px solid hsl(30 22% 76% / 0.78);
+  padding-top: 1rem;
+}
+
+.hobbies-card-panel.hidden {
+  display: none;
+}
+
+.hobbies-card-detail {
+  display: grid;
+  gap: 1rem;
+}
+
+.hobbies-card-detail-stack,
+.hobbies-card-detail-experience {
+  display: grid;
+  gap: 1rem;
+}
+
+.hobbies-card-detail-experience > .hobbies-card-status {
+  margin: 0;
+}
+
+.hobbies-card-detail-story {
+  border-color: var(--hobbies-story-border);
+  background: var(--hobbies-story-surface);
+}
+
+.hobbies-card-detail-takeaway {
+  border-color: var(--hobbies-story-border);
+  background: var(--hobbies-takeaway-surface);
+  font-weight: 700;
+}
+
+.hobbies-artifact-fragment {
+  position: relative;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+.hobbies-artifact-dev {
+  padding: 0.85rem;
+  background: linear-gradient(145deg, hsl(210 20% 10%), hsl(198 28% 14%));
+  color: hsl(183 86% 74%);
+}
+
+.hobbies-artifact-dev-toolbar {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.hobbies-artifact-dev-toolbar span,
+.terminal-story-toolbar span {
+  width: 0.52rem;
+  height: 0.52rem;
+  border-radius: 999px;
+  background: hsl(36 84% 58%);
+}
+
+.hobbies-artifact-dev-toolbar span:nth-child(2),
+.terminal-story-toolbar span:nth-child(2) {
+  background: hsl(190 74% 56%);
+}
+
+.hobbies-artifact-dev-toolbar span:nth-child(3),
+.terminal-story-toolbar span:nth-child(3) {
+  background: hsl(84 48% 54%);
+}
+
+.hobbies-artifact-dev-screen {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 1.1rem;
+}
+
+.hobbies-artifact-dev-line {
+  height: 0.55rem;
+  width: 78%;
+  border-radius: 999px;
+  background: hsl(184 86% 62% / 0.34);
+}
+
+.hobbies-artifact-dev-line-short {
+  width: 48%;
+}
+
+.hobbies-artifact-dev-prompt {
+  position: absolute;
+  left: 0.85rem;
+  right: 0.85rem;
+  bottom: 0.85rem;
+  display: flex;
+  gap: 0.45rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.76rem;
+}
+
+.hobbies-artifact-dev-cursor,
+.terminal-story-cursor {
+  display: inline-block;
+  width: 0.52rem;
+  height: 1em;
+  background: currentColor;
+  animation: hobbies-blink 1.1s steps(2, start) infinite;
+}
+
+.hobbies-artifact-music {
+  background: radial-gradient(circle at 50% 38%, hsl(36 84% 62% / 0.42), transparent 38%), linear-gradient(135deg, hsl(26 36% 18%), hsl(34 42% 26%));
+}
+
+.hobbies-artifact-music-glow {
+  position: absolute;
+  inset: 18% 20%;
+  border-radius: 999px;
+  background: hsl(38 92% 70% / 0.28);
+  filter: blur(18px);
+}
+
+.hobbies-artifact-music-band {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 48%;
+  height: 0.36rem;
+  border-radius: 999px;
+  background: hsl(38 86% 76% / 0.8);
+}
+
+.hobbies-artifact-music-wave {
+  position: absolute;
+  left: 16%;
+  right: 16%;
+  height: 4rem;
+  border: 1px solid hsl(38 86% 76% / 0.38);
+  border-color: hsl(38 86% 76% / 0.38) transparent transparent;
+  border-radius: 50%;
+}
+
+.hobbies-artifact-music-wave-a {
+  top: 30%;
+}
+
+.hobbies-artifact-music-wave-b {
+  top: 39%;
+}
+
+.hobbies-artifact-learning {
+  padding: 1rem;
+  background: linear-gradient(145deg, hsl(44 58% 92%), hsl(38 38% 82%));
+}
+
+.hobbies-artifact-learning-tab {
+  width: 42%;
+  height: 1.3rem;
+  border-radius: 0.6rem 0.6rem 0.2rem 0.2rem;
+  background: hsl(46 58% 42% / 0.36);
+}
+
+.hobbies-artifact-learning-line {
+  display: block;
+  height: 0.62rem;
+  width: 84%;
+  margin-top: 0.8rem;
+  border-radius: 999px;
+  background: hsl(40 24% 34% / 0.18);
+}
+
+.hobbies-artifact-learning-line-short {
+  width: 56%;
+}
+
+.hobbies-piano-preview {
+  position: relative;
+  display: grid;
+  align-content: end;
+  gap: 1.2rem;
+  min-height: 100%;
+  padding: 1rem;
+  background: radial-gradient(80% 70% at 48% 16%, hsl(36 76% 64% / 0.22), transparent 62%), linear-gradient(145deg, hsl(222 26% 9%), hsl(226 28% 4%));
+  color: hsl(36 52% 88%);
+}
+
+.hobbies-piano-preview-title {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
+}
+
+.hobbies-piano-keyboard {
+  position: relative;
+  height: 4.2rem;
+}
+
+.hobbies-piano-white-keys,
+.hobbies-piano-black-keys {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  gap: 0.16rem;
+}
+
+.hobbies-piano-white-key {
+  flex: 1;
+  border-radius: 0 0 0.22rem 0.22rem;
+  background: linear-gradient(180deg, hsl(38 28% 96%), hsl(36 22% 74%));
+}
+
+.hobbies-piano-white-key[data-active="true"] {
+  background: linear-gradient(180deg, hsl(38 86% 86%), hsl(36 76% 58%));
+}
+
+.hobbies-piano-black-keys {
+  inset-inline: 5%;
+  height: 58%;
+  gap: 0.42rem;
+  justify-content: space-around;
+}
+
+.hobbies-piano-black-key {
+  width: 7%;
+  border-radius: 0 0 0.18rem 0.18rem;
+  background: linear-gradient(180deg, hsl(224 18% 12%), hsl(224 24% 4%));
+  box-shadow: 0 8px 16px hsl(0 0% 0% / 0.35);
+}
+
+.hobbies-piano-black-key[data-active="true"] {
+  background: linear-gradient(180deg, hsl(36 72% 44%), hsl(28 64% 24%));
+}
+
+.hobbies-terminal-preview {
+  min-height: 100%;
+  padding: 0.9rem;
+  background: linear-gradient(145deg, hsl(220 20% 10%), hsl(214 24% 5%));
+  color: hsl(38 46% 84%);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.76rem;
+}
+
+.terminal-story-toolbar {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 1.2rem;
+}
+
+.terminal-story-line {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.terminal-story-path {
+  color: hsl(190 76% 74%);
+}
+
+.terminal-story-command {
+  color: hsl(38 52% 86%);
+}
+
+.terminal-story-output-muted {
+  margin: 0.85rem 0 0;
+  color: hsl(38 20% 68%);
+}
+
+.terminal-story-shell {
+  overflow: hidden;
+  border: 1px solid hsl(214 40% 24% / 0.96);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, hsl(223 46% 10% / 0.96), hsl(227 48% 8% / 0.98));
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.04), 0 16px 30px hsl(226 70% 2% / 0.28);
+  color: hsl(212 24% 82%);
+}
+
+.terminal-story-shell .terminal-story-frame {
+  max-height: min(30rem, 66vh);
+}
+
+.terminal-story-shell .terminal-story-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0;
+  padding: 1rem 1rem 0.75rem;
+  background: linear-gradient(180deg, hsl(223 31% 12% / 0.97) 0%, hsl(223 31% 11% / 0.9) 72%, hsl(223 31% 11% / 0) 100%);
+}
+
+.terminal-story-status {
+  color: hsl(188 52% 72% / 0.78);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: lowercase;
+}
+
+.terminal-story-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.terminal-story-controls button,
+.hobbies-moonlight-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.25rem;
+  border: 1px solid hsl(214 48% 30% / 0.96);
+  border-radius: 999px;
+  background: hsl(224 42% 13% / 0.86);
+  color: hsl(214 26% 76%);
+  cursor: default;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  padding: 0.5rem 0.75rem;
+  text-transform: uppercase;
+}
+
+.terminal-story-controls button:disabled {
+  opacity: 0.72;
+}
+
+.terminal-story-helper {
+  margin: 0;
+  padding: 0 1rem 0.75rem;
+  color: hsl(214 16% 68%);
+  font-size: 0.74rem;
+  line-height: 1.55;
+}
+
+.terminal-story-output-pane {
+  max-height: min(24rem, 58vh);
+  overflow-y: auto;
+  padding: 0 1rem 1rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.82rem;
+  line-height: 1.72;
+}
+
+.terminal-story-output-pane::-webkit-scrollbar,
+.hobbies-moonlight-keyboard-shell::-webkit-scrollbar {
+  width: 0.7rem;
+  height: 0.55rem;
+}
+
+.terminal-story-output-pane::-webkit-scrollbar-thumb,
+.hobbies-moonlight-keyboard-shell::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: hsl(214 36% 24% / 0.92);
+  background-clip: padding-box;
+}
+
+.terminal-story-row {
+  margin-bottom: 0.75rem;
+}
+
+.terminal-story-shell .terminal-story-line {
+  display: flex;
+  gap: 0.4rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.terminal-story-symbol {
+  color: hsl(220 18% 46%);
+}
+
+.terminal-story-output-block {
+  margin: 0.15rem 0 0;
+  color: hsl(212 22% 74%);
+  font-family: inherit;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.terminal-story-output-warm {
+  color: hsl(42 55% 59%);
+}
+
+.terminal-story-output-success {
+  color: hsl(138 31% 64%);
+}
+
+.terminal-story-output-italic {
+  font-style: italic;
+}
+
+.hobbies-moonlight-study {
+  --moonlight-white-key-width: 18px;
+  --moonlight-black-key-width: 12px;
+  --moonlight-keyboard-height: 5.125rem;
+  --moonlight-black-key-height: 3.375rem;
+  position: relative;
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden;
+  border: 1px solid var(--hobbies-artifact-border);
+  border-radius: 1rem;
+  background: radial-gradient(circle at 18% 16%, hsl(34 86% 52% / 0.18), transparent 28%), radial-gradient(circle at 82% 8%, hsl(0 0% 100% / 0.08), transparent 24%), linear-gradient(180deg, hsl(22 18% 16% / 0.96), hsl(18 16% 10% / 0.98));
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.06), var(--hobbies-artifact-shadow);
+  color: hsl(34 14% 76%);
+  isolation: isolate;
+  padding: 1.25rem 1rem;
+}
+
+.hobbies-moonlight-study::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.08) 0%, transparent 18%, transparent 82%, hsl(0 0% 0% / 0.14) 100%), repeating-linear-gradient(90deg, transparent 0 3rem, hsl(0 0% 100% / 0.018) 3rem 3.08rem);
+  opacity: 0.9;
+}
+
+.hobbies-moonlight-study > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hobbies-moonlight-header {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.hobbies-moonlight-eyebrow {
+  margin: 0 0 0.6rem;
+  color: hsl(34 18% 58%);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.64rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.hobbies-moonlight-title {
+  margin: 0;
+  color: hsl(40 28% 84%);
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.45rem, 4vw, 2rem);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  line-height: 1.05;
+}
+
+.hobbies-moonlight-subtitle {
+  margin: 0.45rem 0 0;
+  color: hsl(36 14% 58%);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+}
+
+.hobbies-moonlight-lede {
+  max-width: 34rem;
+  margin: 0.9rem auto 0;
+  color: hsl(34 14% 76%);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.hobbies-moonlight-keyboard-shell {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  scrollbar-color: hsl(0 0% 100% / 0.16) transparent;
+  scrollbar-width: thin;
+}
+
+.hobbies-moonlight-keyboard {
+  position: relative;
+  height: calc(var(--moonlight-keyboard-height) + 0.625rem);
+  margin-inline: auto;
+  user-select: none;
+}
+
+.hobbies-moonlight-white-keys {
+  display: flex;
+  height: var(--moonlight-keyboard-height);
+}
+
+.hobbies-moonlight-white-key {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: var(--moonlight-white-key-width);
+  height: var(--moonlight-keyboard-height);
+  border: 1px solid hsl(26 18% 16% / 0.96);
+  border-radius: 0 0 4px 4px;
+  background: linear-gradient(180deg, hsl(42 32% 97%) 0%, hsl(34 22% 88%) 68%, hsl(30 18% 74%) 100%);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.7), inset 0 -6px 10px hsl(30 24% 52% / 0.12);
+}
+
+.hobbies-moonlight-white-key[data-active="true"] {
+  background: linear-gradient(180deg, hsl(45 66% 94%) 0%, hsl(38 74% 68%) 58%, hsl(34 76% 46%) 100%);
+  box-shadow: 0 0 18px hsl(34 86% 52% / 0.22), inset 0 1px 0 hsl(0 0% 100% / 0.64), inset 0 -8px 12px hsl(28 58% 28% / 0.22);
+}
+
+.hobbies-moonlight-black-key {
+  position: absolute;
+  top: 0;
+  z-index: 2;
+  box-sizing: border-box;
+  width: var(--moonlight-black-key-width);
+  height: var(--moonlight-black-key-height);
+  border: 1px solid hsl(24 18% 10% / 0.96);
+  border-radius: 0 0 3px 3px;
+  background: linear-gradient(180deg, hsl(22 18% 18%) 0%, hsl(18 18% 6%) 100%);
+  box-shadow: 0 3px 6px hsl(0 0% 0% / 0.42), inset 0 1px 0 hsl(0 0% 100% / 0.06);
+}
+
+.hobbies-moonlight-black-key[data-active="true"] {
+  background: linear-gradient(180deg, hsl(40 84% 62%) 0%, hsl(34 72% 48%) 56%, hsl(26 54% 24%) 100%);
+  box-shadow: 0 0 16px hsl(34 86% 52% / 0.3), 0 3px 8px hsl(0 0% 0% / 0.3), inset 0 1px 0 hsl(0 0% 100% / 0.16);
+}
+
+.hobbies-moonlight-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.hobbies-moonlight-control {
+  width: 3rem;
+  min-height: 3rem;
+  border-color: hsl(34 24% 30% / 0.96);
+  background: transparent;
+  color: hsl(36 24% 78%);
+  padding: 0;
+}
+
+.hobbies-moonlight-progress-shell {
+  width: min(100%, 26rem);
+}
+
+.hobbies-moonlight-progress-track {
+  height: 0.2rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: hsl(24 14% 18%);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.04);
+}
+
+.hobbies-moonlight-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, hsl(28 44% 32%), hsl(34 82% 46%));
+  box-shadow: 0 0 14px hsl(34 86% 52% / 0.18);
+}
+
+.hobbies-moonlight-status-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  color: hsl(36 12% 56%);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hobbies-moonlight-status-row > span:nth-child(2) {
+  color: hsl(34 18% 58%);
+  text-align: center;
+}
+
+.hobbies-moonlight-status-row > span:first-child,
+.hobbies-moonlight-status-row > span:last-child {
+  min-width: 3.3rem;
+}
+
+.hobbies-next-note-shell {
+  position: relative;
+  margin-top: 1.5rem;
+}
+
+.hobbies-next-note,
+.hobbies-closing-note {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid hsl(30 26% 76% / 0.74);
+  border-radius: 1.25rem;
+  background: linear-gradient(180deg, hsl(0 0% 100% / 0.96) 0%, hsl(36 42% 95% / 0.98) 100%);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.84), 0 24px 46px hsl(30 28% 56% / 0.12);
+  padding: clamp(1rem, 2vw, 1.35rem);
+}
+
+.hobbies-next-note-grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.hobbies-next-note-copy,
+.hobbies-note-title,
+.hobbies-note-story,
+.hobbies-note-takeaway,
+.hobbies-closing-copy {
+  margin: 0;
+  color: hsl(var(--text-body, 24 13% 32%));
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.hobbies-note-title {
+  color: hsl(var(--text-strong, 20 18% 16%));
+  font-weight: 800;
+}
+
+.hobbies-note-story,
+.hobbies-note-takeaway {
+  margin-top: 0.45rem;
+}
+
+.hobbies-note-takeaway {
+  color: hsl(28 28% 28%);
+  font-weight: 700;
+}
+
+.hobbies-next-note-item {
+  border-left: 1px solid hsl(30 24% 72% / 0.72);
+  padding-left: 1rem;
+}
+
+.hobbies-closing-shell {
+  padding-block: 2.25rem 4rem;
+}
+
+.hobbies-transition-dev-music,
+.hobbies-transition-music-learning {
+  height: 4.25rem;
+  background: linear-gradient(180deg, transparent, hsl(34 48% 92% / 0.6), transparent);
+}
+
 .hdc-hobbies-moments-editor {
-  border: 1px dashed hsl(var(--border));
-  border-radius: var(--radius-surface);
+  border: 1px dashed hsl(var(--border, 30 18% 80%));
+  border-radius: var(--radius-surface, 1rem);
   padding: 0.8rem;
 }
 
 .hdc-hobbies-moments-editor__title {
-  color: hsl(var(--foreground));
+  color: hsl(var(--foreground, 20 18% 16%));
   font-family: "Playfair Display", Georgia, serif;
   font-size: 1.2rem;
   margin: 0;
 }
 
 .hdc-hobbies-moments-editor__desc {
-  color: hsl(var(--text-meta));
+  color: hsl(var(--text-meta, 26 9% 44%));
   font-size: 0.9rem;
   margin-top: 0.4rem;
 }
 
-@media (min-width: 840px) {
-  .hdc-hobbies-moments__grid {
+@keyframes hobbies-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hobbies-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (min-width: 48rem) {
+  .hobbies-page-shell {
+    --hobbies-jump-nav-overlap: 2.25rem;
+  }
+
+  .hobbies-jump-nav {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    padding: 0.8rem 1.1rem 0.65rem;
+  }
+
+  .hobbies-jump-nav ul {
+    justify-content: flex-end;
+  }
+
+  .hobbies-jump-nav a {
+    min-width: 7rem;
+  }
+
+  .hobbies-moments-grid--dense {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hobbies-moments-grid--roomy,
+  .hobbies-moments-grid--calm {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (min-width: 1120px) {
-  .hdc-hobbies-moments__grid {
+@media (min-width: 80rem) {
+  .hobbies-moments-grid--dense {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 47.98rem) {
+  .hdc-hobbies-moments .app-container {
+    width: min(100% - 1.5rem, 64rem);
+  }
+
+  .hobbies-hero-backdrop {
+    min-height: 23rem;
+    background-image: linear-gradient(112deg, hsl(220 24% 4% / 0.9) 0%, hsl(222 28% 3% / 0.92) 100%), url("../../assets/images/hobbies/theme-hero-after-hours-960.webp");
+  }
+
+  .hobbies-hero-content {
+    padding-block: 5rem 2.7rem;
+  }
+
+  .hobbies-hero-title {
+    font-size: clamp(3.25rem, 18vw, 4.8rem);
+  }
+
+  .hobbies-jump-nav-shell {
+    padding-bottom: 0.2rem;
+  }
+
+  .hobbies-jump-nav > p {
+    display: none;
+  }
+
+  .hobbies-jump-nav {
+    padding: 0.5rem 0 0.35rem;
+  }
+
+  .hobbies-jump-nav ul {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+  }
+
+  .hobbies-jump-nav a {
+    min-height: 2.75rem;
+    padding-inline: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .hobbies-section-content {
+    padding-block: 2rem 3rem;
+  }
+
+  .hobbies-section-first .hobbies-section-content {
+    padding-top: 1.45rem;
+  }
+
+  .hobbies-section-intro {
+    display: grid;
+    align-items: start;
+    margin-bottom: 1.6rem;
+  }
+
+  .hobbies-section-title {
+    font-size: clamp(2rem, 12vw, 3rem);
+  }
+
+  .hobbies-disclosure-button {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hobbies-card-artifact[data-mode="preview"] {
+    aspect-ratio: 16 / 11;
+  }
+
+  .hobbies-transition-dev-music,
+  .hobbies-transition-music-learning {
+    height: 3.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hobbies-card-shell,
+  .hobbies-artifact-dev-cursor,
+  .terminal-story-cursor {
+    animation: none;
   }
 }

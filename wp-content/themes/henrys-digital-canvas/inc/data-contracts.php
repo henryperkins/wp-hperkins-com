@@ -693,6 +693,41 @@ function hdc_get_moments_data_contract( $category = '', $timeframe = '' ) {
 				if ( 0 === strpos( $src, '/images/' ) ) {
 					$moment['media']['src'] = get_theme_file_uri( 'assets/images/' . ltrim( substr( $src, strlen( '/images/' ) ), '/' ) );
 				}
+
+				if ( ! empty( $moment['media']['poster'] ) ) {
+					$poster = (string) $moment['media']['poster'];
+					if ( 0 === strpos( $poster, '/images/' ) ) {
+						$moment['media']['poster'] = get_theme_file_uri( 'assets/images/' . ltrim( substr( $poster, strlen( '/images/' ) ), '/' ) );
+					}
+				}
+
+				if ( ! empty( $moment['media']['sources'] ) && is_array( $moment['media']['sources'] ) ) {
+					foreach ( $moment['media']['sources'] as $source_index => $source ) {
+						if ( ! is_array( $source ) || empty( $source['srcSet'] ) ) {
+							continue;
+						}
+
+						$candidates = array_filter(
+							array_map(
+								static function ( $candidate ) {
+									$parts = preg_split( '/\s+/', trim( (string) $candidate ) );
+									if ( empty( $parts[0] ) ) {
+										return '';
+									}
+
+									if ( 0 === strpos( $parts[0], '/images/' ) ) {
+										$parts[0] = get_theme_file_uri( 'assets/images/' . ltrim( substr( $parts[0], strlen( '/images/' ) ), '/' ) );
+									}
+
+									return implode( ' ', $parts );
+								},
+								explode( ',', (string) $source['srcSet'] )
+							)
+						);
+
+						$moment['media']['sources'][ $source_index ]['srcSet'] = implode( ', ', $candidates );
+					}
+				}
 			}
 
 			return $moment;
