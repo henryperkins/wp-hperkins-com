@@ -1,6 +1,6 @@
 ---
 name: parity-fix
-description: Run parity checker on a block, then fix any gaps found. Use when a block needs parity remediation against its source React TSX.
+description: Use when a custom theme block has drifted from its source React TSX page and needs parity remediation (missing features, design/function gaps, WP-only extras).
 disable-model-invocation: true
 ---
 
@@ -10,7 +10,8 @@ Runs the full parity remediation workflow for a single block: check -> triage ->
 
 ### Required input
 
-- **Block name** (e.g., `work-showcase`, `about-timeline`)
+- **Block name** (e.g., `work-showcase`, `about-timeline`) — must be one of the 12 blocks in CLAUDE.md's "Custom Blocks" table
+- **Not valid**: `home-page` (+ its 6 children) was retired in the June 2026 core-block sync. Homepage parity is native core blocks driven by `inc/home-core/` — check it with `npm run parity:site` (theme dir), not this pipeline.
 
 ### Step 1: Run parity checker
 
@@ -20,9 +21,9 @@ Launch the `parity-checker` agent for the given block:
 Agent(subagent_type: "parity-checker", prompt: "Compare the WordPress block <name> against its source React TSX...")
 ```
 
-- Block files: `/home/ubuntu/wp-hperkins-com/wp-content/themes/henrys-digital-canvas/blocks/<name>/`
+- Block files: `/home/dev/wp-hperkins-com/wp-content/themes/henrys-digital-canvas/blocks/<name>/`
 - Source TSX: look up the mapping in CLAUDE.md's "Custom Blocks" table
-- React source root: `/home/ubuntu/henry-s-digital-canvas/src/`
+- React source root: `/home/dev/henry-s-digital-canvas/src/`
 
 ### Step 2: Evaluate verdict
 
@@ -68,8 +69,8 @@ Note any reusable patterns for the implementation phase.
 #### Full plan flow
 
 1. Present the gap list and ask about ambiguous extras (same rule as above)
-2. Write design doc to `docs/plans/YYYY-MM-DD-<block-name>-parity-design.md`
-3. Invoke the `writing-plans` skill with the design doc path
+2. Write design doc to `docs/plans/YYYY-MM-DD-<block-name>-parity-design.md` (in the theme dir)
+3. Invoke the `superpowers:writing-plans` skill with the design doc path
 4. Offer execution options: Subagent-Driven (this session) or Parallel Session
 
 ### Step 5a: Implement fixes (fast-path)
@@ -87,11 +88,12 @@ Follow the generated implementation plan, running smoke tests after each phase.
 ### Step 6: Verify
 
 - Run `npm run smoke:route` and `npm run smoke:api` from the theme dir
-- Flush caches: `wp --path=/home/ubuntu/wp-hperkins-com cache flush`
-- Browser-check the live page (Playwright snapshot) to confirm visible changes
+- Flush the object cache: `wp --path=/home/dev/wp-hperkins-com cache flush`
+- Browser-check the live page (Playwright snapshot) to confirm visible changes — **this checkout IS production**, so fixes are live as soon as they're saved
+- Optionally run `npm run parity:site` (Playwright parity spec vs the source React app)
 
 ### Reference
 
-- Existing examples: `docs/plans/2026-03-09-work-showcase-parity-design.md`, `docs/plans/2026-03-09-home-page-parity-design.md`
+- Existing examples (theme `docs/plans/`): `2026-05-02-work-showcase-parity-design.md`, `2026-03-15-about-timeline-parity-design.md`
 - Smoke tests: `npm run smoke:full` from theme dir
 - Final verification: re-run parity checker to confirm PARITY or MINOR_DRIFT

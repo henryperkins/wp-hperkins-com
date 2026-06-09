@@ -11,13 +11,14 @@ Run the parity-checker agent for every block in the theme and produce a single a
 
 ## Block List
 
-Read the "Custom Blocks" table in `/home/ubuntu/wp-hperkins-com/CLAUDE.md` to get the full block-to-TSX mapping. Skip `digital-canvas-feed` (no dedicated TSX page).
+Read the "Custom Blocks" table in `/home/dev/wp-hperkins-com/CLAUDE.md` to get the full block-to-TSX mapping. Skip `digital-canvas-feed` (no dedicated TSX page).
 
-Blocks to check (11 total):
+The former `home-page` block was retired in the June 2026 core-block sync — the homepage is native core blocks now (`inc/home-core/`, checked via `npm run parity:site`), so it is NOT part of this batch.
+
+Blocks to check (10 total):
 
 | Block | Source TSX |
 |-------|-----------|
-| home-page | Home.tsx |
 | about-timeline | About.tsx |
 | work-showcase | Work.tsx |
 | work-detail | WorkDetail.tsx |
@@ -64,6 +65,6 @@ For each NEEDS_WORK block, list all missing features with severity and a one-lin
 
 ### Recommended Fix Order
 
-Order blocks by: (1) page traffic importance (home > work > about > resume > blog > hobbies > contact > not-found), (2) gap count.
+Order blocks by: (1) page traffic importance (work > about > resume > blog > hobbies > contact > not-found), (2) gap count.
 
 Save the report to `docs/parity-report-YYYY-MM-DD.md` in the theme directory.

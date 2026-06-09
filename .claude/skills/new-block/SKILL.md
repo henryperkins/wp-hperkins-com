@@ -9,7 +9,7 @@ disable-model-invocation: true
 ### Required inputs
 
 - **Block name** (kebab-case, e.g., `portfolio-grid`)
-- **Source TSX page** (path under `/home/ubuntu/henry-s-digital-canvas/src/pages/`)
+- **Source TSX page** (path under `/home/dev/henry-s-digital-canvas/src/pages/`)
 
 ### Steps
 
@@ -45,7 +45,7 @@ disable-model-invocation: true
 ### Reference
 
 Existing blocks to use as patterns:
-- Simple static block: `blocks/home-page/`
+- Static content via data contract: `blocks/about-timeline/`
 - Block with REST data: `blocks/blog-index/`
 - Block with GitHub API: `blocks/work-showcase/`
 - Block with URL params: `blocks/work-detail/`

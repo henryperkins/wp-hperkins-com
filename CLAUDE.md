@@ -2,9 +2,10 @@
 
 ## Project Overview
 
-Personal technical portfolio site for Henry Perkins, migrated from a React SPA to a WordPress block theme. The local production install runs on **WordPress 7.1-alpha-62469** with **PHP 8.5**, **MariaDB 11.8**, and **Gutenberg 23.3.2** (check `wp plugin get gutenberg --field=version`).
+Personal technical portfolio site for Henry Perkins, migrated from a React SPA to a WordPress block theme. The local production install runs on **WordPress 7.1-alpha nightlies** (auto-updated by `wordpress-beta-tester` — check `wp core version`) with **PHP 8.5**, **MariaDB 11.8**, and **Gutenberg 23.3.2** (check `wp plugin get gutenberg --field=version`).
 
 - **Live URL**: https://wp.hperkins.com (live; served by this install — host IP 209.97.147.66)
+- **⚠️ This checkout IS production** — the web root serves the git working tree, so uncommitted edits are live immediately. Never run destructive git ops (`checkout`/`stash`/`clean`/`reset`) without `wp db export` first. "Deploy" = commit code that is already live.
 - **Theme**: `henrys-digital-canvas` — block theme, child of `twentytwentyfive`
 - **Theme dir**: `wp-content/themes/henrys-digital-canvas/`
 
@@ -15,11 +16,12 @@ Personal technical portfolio site for Henry Perkins, migrated from a React SPA t
 | `wp-content/themes/henrys-digital-canvas/` | Custom child theme (all active development) |
 | `theme.json` (in theme dir) | Global settings/styles — uses WPDS-backed token values |
 | `assets/css/design-system.css` | Token system + utility classes (WPDS semantic adapter) |
-| `blocks/` | 13 custom Gutenberg blocks (`block.json` + `render.php` + `view.js`). Converted blocks have `src/` (JSX source) and `build/` (compiled output). |
+| `blocks/` | 12 custom Gutenberg blocks (`block.json` + `render.php` + `view.js`). Converted blocks have `src/` (JSX source) and `build/` (compiled output). |
 | `templates/` | Block theme templates (`front-page.html`, `page-*.html`, `404.html`, etc.) |
 | `parts/` | Template parts (`header.html`, `footer.html`) |
 | `inc/data-contracts.php` | Data contract functions for REST endpoints |
 | `inc/rest-api.php` | Custom REST API route registration |
+| `inc/home-core/` | Homepage core-block machinery: `hdc_repo` CPT, GitHub sync cron, patterns, block styles, reading-time meta |
 | `functions.php` | Enqueues, block registration, rewrite rules, document titles |
 | `scripts/` | Smoke tests, sync scripts, audits |
 | `data/` | Static JSON data for data contracts |
@@ -33,7 +35,6 @@ All blocks are registered via `register_block_type_from_metadata()` from `blocks
 
 | Block | Source TSX page |
 |-------|-----------------|
-| `home-page` | `Home.tsx` |
 | `about-timeline` | `About.tsx` |
 | `work-showcase` | `Work.tsx` |
 | `work-detail` | `WorkDetail.tsx` |
@@ -49,9 +50,12 @@ All blocks are registered via `register_block_type_from_metadata()` from `blocks
 
 When modifying any block, always compare against the source TSX to maintain parity.
 
+The former `home-page` block (+ 6 child blocks) was retired in the June 2026 core-block sync — `Home.tsx` parity now lives in native core blocks driven by `inc/home-core/` (see **Homepage (Native Core Blocks)** below).
+
 ### Block Categories
 
-- **createElement blocks** (11): Use `wp.element.createElement` — candidates for JSX conversion via wp-scripts
+- **Converted blocks** (1): `contact-form` — JSX in `src/`, compiled to `build/` via wp-scripts
+- **createElement blocks** (9): Use `wp.element.createElement` — candidates for JSX conversion via wp-scripts
 - **DOM-only blocks** (2): `site-shell` and `not-found` use pure DOM manipulation — stay as hand-written JS
 
 Converted blocks use `*.asset.php` content hashes for cache-busting. Unconverted blocks use WordPress core's `filemtime()`.
@@ -129,7 +133,7 @@ All under `/wp-json/henrys-digital-canvas/v1/`:
 - `GET /resume`, `GET /resume-ats`, `GET /moments`
 - `GET /blog`, `GET /blog/{slug}`
 - `GET /work`, `GET /work/{repo}`
-- `POST /contact`
+- `POST /contact`, `POST /blog-comments/submit`
 
 ## Dynamic Routes
 
@@ -141,7 +145,7 @@ All under `/wp-json/henrys-digital-canvas/v1/`:
 - New CSS custom properties MUST use `--wpds-*` semantic naming
 - Existing aliases (e.g. `--background`, `--primary`) are transitional adapters mapped FROM `--wpds-*` tokens
 - `theme.json` presets reference WPDS-backed values
-- See `WPDS_TARGET_STATEMENT.md` for the full mapping table and definition of done
+- See `docs/WPDS_TARGET_STATEMENT.md` (in the theme dir) for the full mapping table and definition of done
 - Dark mode tokens are in `design-system.css` under `[data-theme="dark"]`
 
 ## Smoke Tests
@@ -155,6 +159,7 @@ npm run smoke:api           # REST API contract checks
 npm run smoke:browser       # Playwright visual checks
 npm run smoke:cadence       # Cadence logger run
 npm run smoke:history       # Last 10 cadence entries
+npm run parity:site         # Playwright parity spec vs source React app
 ```
 
 First-time browser smoke setup: `npm install` (installs Playwright).
@@ -173,6 +178,8 @@ Always use the path flag:
 ```bash
 wp --path=/home/dev/wp-hperkins-com <command>
 ```
+
+Theme-provided commands: `wp hdc sync-repos` (refresh the `hdc_repo` CPT from GitHub) and `wp hdc seed-repos` (first-time seed from `repos.json`).
 
 ## Dev Setup
 
@@ -197,15 +204,23 @@ Build artifacts (`blocks/*/build/`) are committed to git — there is no CI/CD p
 - `/blog/` is page-backed; `page_for_posts` is intentionally unset
 - After changing which block powers a route, rerun: `npm run sync:pages`
 
+## Homepage (Native Core Blocks)
+
+The front page (page id 4, via `page_on_front`) is built from **native core blocks** — the former `home-page` block + 6 children were retired in June 2026. Supporting machinery lives in `inc/home-core/`.
+
+- **Static sections** (Hero, Throughline, Resume Snapshot, Contact CTA): pattern copy is **baked into the page record** from `data/home-content.json` by `scripts/sync_page_sources.php`. Editing the JSON does NOT change the live page until you run `npm run sync:pages` (theme dir) + `wp cache flush`.
+- **Selected Work**: core Query Loop over the `hdc_repo` CPT, refreshed hourly by the `hdc_sync_repos` cron. Manual: `wp hdc sync-repos`; first-time seed: `wp hdc seed-repos`.
+- **Recent Writing**: core Query Loop over native posts with REST-visible `reading_time` meta.
+
 ## Migration Status
 
-All 8 migration phases are `functional-migration-complete`. Parity remediation and WPDS foundation are `verified`. Full status in `MIGRATION_PROGRESS.md`.
+All 8 migration phases are `functional-migration-complete`. Parity remediation and WPDS foundation are `verified`. Full status in the theme's `docs/MIGRATION_PROGRESS.md`.
 
 ## Active Plugins
 
-cache-enabler, gutenberg, hdc-ai-media-modal
+ai (+ `ai-provider-for-anthropic`, `ai-provider-for-openai`, `ai-provider-for-codex`), akismet, flavor-agent, gutenberg, hdc-ai-media-modal, plugin-check, wordpress-beta-tester. Mu-plugin: `background-update-policy`. Verify with `wp plugin list`.
 
-Service-backed plugins such as Jetpack, Site Kit, MailPoet, Redis object cache, MCP adapter, and AI providers need their production credentials/infrastructure before activation. The public `ai` plugin currently requires WordPress 7.0, so do not activate it on the stable 6.9.x install.
+**cache-enabler is NOT installed** — there is no page cache to purge; `wp cache flush` (object cache) is sufficient. Service-backed plugins such as Jetpack, Site Kit, MailPoet, and Redis object cache need their production credentials/infrastructure before activation.
 
 ## MCP Servers
 
@@ -214,7 +229,8 @@ The WordPress MCP Adapter entries in `.claude/settings.json` and `.mcp.json` poi
 ## Gotchas
 
 - After adding/changing rewrite rules, flush with: `wp --path=/home/dev/wp-hperkins-com rewrite flush`
-- After theme/plugin changes, clear caches: `wp --path=/home/dev/wp-hperkins-com cache flush` (object cache) + purge cache-enabler from admin
+- After theme/plugin changes, clear the object cache: `wp --path=/home/dev/wp-hperkins-com cache flush` (no page-cache plugin is installed)
+- Editing `data/home-content.json` (or other page-source JSON) does not change live pages until `npm run sync:pages` + cache flush — static copy is baked into page records
 - `page-ats.html` and `page-resume-ats.html` both exist — `page-ats.html` may be a legacy duplicate
 - Classic PHP templates (`page-work-detail.php`, `page-blog-detail.php`) bypass the block template system — they're the only non-`.html` templates
 - Block `view.js` files are enqueued via `viewScript` in `block.json` — they only load on pages where the block appears

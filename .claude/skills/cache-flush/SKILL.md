@@ -1,6 +1,6 @@
 ---
 name: cache-flush
-description: Flush all WordPress caches (object cache, page cache, rewrite rules). Use after theme changes, plugin updates, or deployment.
+description: Flush WordPress caches (object cache, rewrite rules). Use after theme changes, plugin updates, or deployment.
 disable-model-invocation: true
 ---
 
@@ -8,28 +8,23 @@ disable-model-invocation: true
 
 Clears all WordPress cache layers in the correct order.
 
+**No page-cache plugin is installed** (cache-enabler was removed) — the object cache flush below is sufficient. Do not look for a page cache to purge.
+
 ### Steps
 
 1. **Flush object cache**
    ```bash
-   wp --path=/home/ubuntu/wp-hperkins-com cache flush
+   wp --path=/home/dev/wp-hperkins-com cache flush
    ```
 
-2. **Flush rewrite rules**
+2. **Flush rewrite rules** (only needed after rewrite/route changes)
    ```bash
-   wp --path=/home/ubuntu/wp-hperkins-com rewrite flush
+   wp --path=/home/dev/wp-hperkins-com rewrite flush
    ```
 
-3. **Purge page cache**
-   Cache Enabler does not have a WP-CLI command. Inform the user:
-   > Page cache (Cache Enabler) must be purged from the WordPress admin:
-   > Settings > Cache Enabler > Clear Cache, or use the admin bar "Clear Cache" button.
-   >
-   > Direct link: https://wp.hperkins.com/wp-admin/options-general.php?page=cache-enabler
-
-4. **Confirm**
+3. **Confirm**
    ```bash
-   wp --path=/home/ubuntu/wp-hperkins-com cache type
+   wp --path=/home/dev/wp-hperkins-com cache type
    ```
    Report which object cache backend is active.
 
